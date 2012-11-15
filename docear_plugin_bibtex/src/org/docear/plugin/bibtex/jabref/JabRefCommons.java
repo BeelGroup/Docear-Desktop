@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.io.Reader;
 import java.net.URI;
 import java.util.ArrayList;
@@ -54,6 +55,7 @@ import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.mode.Controller;
+import org.freeplane.plugin.workspace.io.StringOutputStream;
 
 import spl.Tools;
 import spl.gui.ImportDialog;
@@ -239,8 +241,15 @@ public abstract class JabRefCommons {
 					if (importDialog.getResult() == JOptionPane.OK_OPTION) {
 						// xmp metadata was selected
 						if (importDialog.getRadioButtonXmp().isSelected()) {
-							ImportMenuItem importer = new ImportMenuItem(jabRefFrame, false);
-							importer.automatedImport(new String[] { fileName });
+							PrintStream old_err = System.err;
+							try {
+								System.setErr(new PrintStream(new StringOutputStream(), false));
+								ImportMenuItem importer = new ImportMenuItem(jabRefFrame, false);
+								importer.automatedImport(new String[] { fileName });
+							} 
+							finally {
+								System.setErr(old_err);
+							}
 						}
 						// docear services was selected
 						else if (importDialog.getRadioButtonMrDlib().isSelected()) {
