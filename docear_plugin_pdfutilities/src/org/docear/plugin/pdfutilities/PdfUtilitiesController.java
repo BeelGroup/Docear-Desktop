@@ -110,6 +110,8 @@ import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.features.ui.INodeViewLifeCycleListener;
+import org.freeplane.features.url.UrlManager;
+import org.freeplane.features.url.mindmapmode.MFileManager;
 import org.freeplane.features.url.mindmapmode.MapVersionInterpreter;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.event.IWorkspaceEventListener;
@@ -960,6 +962,8 @@ public class PdfUtilitiesController extends ALanguageController {
 //						list.add(map.getRootNode());
 //						AddMonitoringFolderAction.updateNodesAgainstMonitoringDir(list, true);
 					}
+					map.setSaved(false);
+					((MFileManager) UrlManager.getController()).save(map, false);
 				}
 				if (DocearEventType.NEW_MY_PUBLICATIONS.equals(event.getType())) {
 					MapModel map = (MapModel) event.getEventObject();
