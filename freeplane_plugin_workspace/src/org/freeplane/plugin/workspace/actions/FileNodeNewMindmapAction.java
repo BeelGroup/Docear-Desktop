@@ -18,6 +18,7 @@ import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mapio.MapIO;
 import org.freeplane.features.mapio.mindmapmode.MMapIO;
 import org.freeplane.features.mode.Controller;
+import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.n3.nanoxml.XMLException;
 import org.freeplane.n3.nanoxml.XMLParseException;
 import org.freeplane.plugin.workspace.WorkspaceController;
@@ -40,7 +41,8 @@ public class FileNodeNewMindmapAction extends AWorkspaceAction {
 		super("workspace.action.file.new.mindmap", TextUtils.getRawText("workspace.action.file.new.mindmap.label"), icon);
 	}
 	
-	public void actionPerformed(final ActionEvent e) {	
+	public void actionPerformed(final ActionEvent e) {
+		Controller.getCurrentController().selectMode(MModeController.MODENAME);
 		AWorkspaceTreeNode targetNode = this.getNodeFromActionEvent(e);
 		if(targetNode instanceof IFileSystemRepresentation ) {
 			String fileName = JOptionPane.showInputDialog(Controller.getCurrentController().getViewController().getContentPane(),
@@ -69,8 +71,8 @@ public class FileNodeNewMindmapAction extends AWorkspaceAction {
     }
 	
 	private boolean createNewMindmap(final File f) throws FileNotFoundException, XMLParseException, MalformedURLException, IOException, URISyntaxException {
-		WorkspaceUtils.createNewMindmap(f, FilenameUtils.getBaseName(f.getName()));
 		final MMapIO mapIO = (MMapIO) Controller.getCurrentModeController().getExtension(MapIO.class);
+		WorkspaceUtils.createNewMindmap(f, FilenameUtils.getBaseName(f.getName()));
 		
 		try {
 			mapIO.newMap(f.toURI().toURL());
