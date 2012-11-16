@@ -60,6 +60,9 @@ public class FileNodeDeleteAction extends AWorkspaceAction {
 			((DefaultFileNode) node).delete();
 		} 
 		else if (node instanceof LinkTypeFileNode) {
+			WorkspaceUtils.getModel().removeNodeFromParent(node);
+			WorkspaceController.getController().refreshWorkspace();
+			
 			File file = WorkspaceUtils.resolveURI(((LinkTypeFileNode) node).getLinkPath());
 			if(file != null) {
 				if(!file.delete()) {
@@ -67,8 +70,7 @@ public class FileNodeDeleteAction extends AWorkspaceAction {
 				}
 			}			
 		}
-		WorkspaceUtils.getModel().removeNodeFromParent(node);
-		WorkspaceController.getController().refreshWorkspace();
+		
 	}
 
 }
