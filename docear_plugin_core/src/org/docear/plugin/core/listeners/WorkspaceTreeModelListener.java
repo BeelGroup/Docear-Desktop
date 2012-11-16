@@ -35,7 +35,7 @@ public class WorkspaceTreeModelListener implements TreeModelListener {
 							MapModel map = Controller.getCurrentController().getMapViewManager().getMaps().get(str);
 							map.setSaved(false);
 							map.setURL(null);
-							Controller.getCurrentController().getMapViewManager().updateMapViewName();
+							Controller.getCurrentController().getViewController().setTitle();
 						}
 					} catch (MalformedURLException e) {
 						LogUtils.warn(e);
