@@ -44,6 +44,16 @@ public class ConfigurationUtils {
     			if (file.canRead()) {
     				return file;
     			}
+    			//DOCEAR - enable non freeplane based files to pass
+    			File absoluteFile;
+				try {
+					absoluteFile = new File(document);
+					if (absoluteFile.canRead()) {
+	    				return absoluteFile;
+	    			}
+				} catch (Exception e) {
+					LogUtils.warn(e);
+				}    			
     		}
     	}
         return null;

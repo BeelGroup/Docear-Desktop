@@ -161,7 +161,7 @@ public class CoreConfiguration extends ALanguageController {
 	}
 	
 	private void loadAndStoreVersion(Controller controller) {
-		//FIXME: has to be called before the splash is showing
+		//DOCEAR: has to be called before the splash is showing
 		final Properties versionProperties = new Properties();
 		InputStream in = null;
 		try {
@@ -191,6 +191,15 @@ public class CoreConfiguration extends ALanguageController {
 	}
 	
 	private void adjustProperties(Controller controller) {
+		final Properties coreProperties = new Properties();
+		InputStream in = null;
+		try {
+			in = this.getClass().getResource("/core.properties").openStream();
+			coreProperties.load(in);
+		}
+		catch (final IOException e) {			
+		}
+		
 		ResourceController resController = controller.getResourceController();
 		
 		final URL defaults = this.getClass().getResource(ResourceController.PLUGIN_DEFAULTS_RESOURCE);
@@ -198,17 +207,17 @@ public class CoreConfiguration extends ALanguageController {
 			throw new RuntimeException("cannot open " + ResourceController.PLUGIN_DEFAULTS_RESOURCE);
 		resController.addDefaults(defaults);
 		
-		resController.setProperty(WEB_FREEPLANE_LOCATION, resController.getProperty(WEB_DOCEAR_LOCATION));
-		resController.setProperty(BUG_TRACKER_LOCATION, resController.getProperty(DOCEAR_BUG_TRACKER_LOCATION));
-		resController.setProperty(HELP_FORUM_LOCATION, resController.getProperty("docear_helpForumLocation"));
-		resController.setProperty(FEATURE_TRACKER_LOCATION, resController.getProperty(DOCEAR_FEATURE_TRACKER_LOCATION));
-		resController.setProperty(WEB_DOCU_LOCATION, resController.getProperty(DOCEAR_WEB_DOCU_LOCATION));
+		resController.setProperty(WEB_FREEPLANE_LOCATION, coreProperties.getProperty(WEB_DOCEAR_LOCATION));
+		resController.setProperty(BUG_TRACKER_LOCATION, coreProperties.getProperty(DOCEAR_BUG_TRACKER_LOCATION));
+		resController.setProperty(HELP_FORUM_LOCATION, coreProperties.getProperty("docear_helpForumLocation"));
+		resController.setProperty(FEATURE_TRACKER_LOCATION, coreProperties.getProperty(DOCEAR_FEATURE_TRACKER_LOCATION));
+		resController.setProperty(WEB_DOCU_LOCATION, coreProperties.getProperty(DOCEAR_WEB_DOCU_LOCATION));
 		resController.setProperty("docu-online", "http://www.docear.org/wp-content/uploads/2012/04/docear-welcome.mm");
 		
-		if (resController.getProperty("ApplicationName").equals("Docear")) {
-			resController.setProperty("first_start_map", "/doc/docear-welcome.mm");
-			resController.setProperty("tutorial_map", "/doc/docear-welcome.mm");
-		}
+//		if (resController.getProperty("ApplicationName").equals("Docear")) {
+//			resController.setProperty("first_start_map", "/doc/docear-welcome.mm");
+//			resController.setProperty("tutorial_map", "/doc/docear-welcome.mm");
+//		}
 		
 		
 		if (!resController.getProperty(APPLICATION_NAME, "").equals(DOCEAR)) {

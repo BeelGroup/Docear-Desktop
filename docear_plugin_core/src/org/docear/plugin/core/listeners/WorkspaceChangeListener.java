@@ -21,8 +21,10 @@ import org.docear.plugin.core.workspace.creator.LinkTypeLiteratureAnnotationsCre
 import org.docear.plugin.core.workspace.creator.LinkTypeMyPublicationsCreator;
 import org.docear.plugin.core.workspace.creator.LinkTypeReferencesCreator;
 import org.docear.plugin.core.workspace.node.FolderTypeLibraryNode;
+import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.LogUtils;
+import org.freeplane.features.mode.Controller;
 import org.freeplane.plugin.workspace.WorkspaceConfiguration;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.WorkspaceUtils;
@@ -53,6 +55,12 @@ public class WorkspaceChangeListener implements IWorkspaceEventListener {
 
 	public void workspaceReady(WorkspaceEvent event) {	
 		setSystemNodes();
+		ResourceController resController = Controller.getCurrentController().getResourceController();
+		if (resController.getProperty("ApplicationName").equals("Docear")) {
+			String mapPath = new File(WorkspaceUtils.getDataDirectory(), "/help/docear-welcome.mm").toURI().getPath();
+			resController.setProperty("first_start_map", mapPath);
+			resController.setProperty("tutorial_map", mapPath);
+		}
 	}
 
 	private void setSystemNodes() {
