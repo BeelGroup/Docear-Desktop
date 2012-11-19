@@ -1,15 +1,20 @@
 package org.docear.plugin.core.listeners;
 
+import java.awt.Component;
 import java.io.File;
 import java.net.MalformedURLException;
+import java.util.List;
 
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 
+import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.mode.Controller;
+import org.freeplane.main.application.ApplicationResourceController;
 import org.freeplane.plugin.workspace.io.IFileSystemRepresentation;
+import org.freeplane.view.swing.map.MapView;
 
 public class WorkspaceTreeModelListener implements TreeModelListener {
 
@@ -31,10 +36,30 @@ public class WorkspaceTreeModelListener implements TreeModelListener {
 				if(file != null && file.getName().toLowerCase().endsWith(".mm")) {
 					try {
 						String str = Controller.getCurrentController().getMapViewManager().checkIfFileIsAlreadyOpened(file.toURI().toURL());
+						//if map is open right now, remove url and clean all tracking lists 
 						if(str != null) {
 							MapModel map = Controller.getCurrentController().getMapViewManager().getMaps().get(str);
-							map.setSaved(false);
+							//get all view to access the map view needed to clean the currently opened list
+							List<Component> views = Controller.getCurrentController().getMapViewManager().getViews(map);
+							ResourceController resCtrl = Controller.getCurrentController().getResourceController();
+							if(resCtrl instanceof ApplicationResourceController) {
+								//retrieve the internal map save name
+								String name = ((ApplicationResourceController) resCtrl).getLastOpenedList().getRestoreable(map);
+								//remove from last opened list
+								((ApplicationResourceController) resCtrl).getLastOpenedList().remove(name);
+								//go through all view to get to the map view
+								for(Component comp : views) {
+									if(comp instanceof MapView) {
+										//use map view to remove the map from the currently opened list by simulating that it was closed 
+										((ApplicationResourceController) resCtrl).getLastOpenedList().afterViewClose(comp);										
+									}
+								}
+							}
+							//reset the url (save path)
 							map.setURL(null);
+							//set to unsaved 
+							map.setSaved(false);
+							//update the application title to show that the map is not saved
 							Controller.getCurrentController().getViewController().setTitle();
 						}
 					} catch (MalformedURLException e) {

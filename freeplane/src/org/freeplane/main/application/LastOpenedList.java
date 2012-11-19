@@ -65,7 +65,7 @@ import org.freeplane.n3.nanoxml.XMLException;
  * provide persistence for the last recent maps. Maps should be shown in the
  * format:"mode\:key",ie."Mindmap\:/home/joerg/freeplane.mm"
  */
-class LastOpenedList implements IMapViewChangeListener, IMapChangeListener {
+public class LastOpenedList implements IMapViewChangeListener, IMapChangeListener {
 	private static final String MENU_CATEGORY = "main_menu_most_recent_files";
 	private static final String LAST_OPENED_LIST_LENGTH = "last_opened_list_length";
 	private static final String OPENED_NOW = "openedNow_1.0.20";
@@ -106,7 +106,10 @@ class LastOpenedList implements IMapViewChangeListener, IMapChangeListener {
 		if (restoreable == null) {
 			return;
 		}
-		currenlyOpenedList.remove(restoreable);
+		if(!currenlyOpenedList.remove(restoreable)) {
+			//DOCEAR - decode url string
+			currenlyOpenedList.remove(sun.net.www.ParseUtil.decode(restoreable));
+		}
 	}
 
 	public void afterViewCreated(final Component mapView) {
@@ -175,7 +178,8 @@ class LastOpenedList implements IMapViewChangeListener, IMapChangeListener {
 		}
 		final URL after = (URL) event.getNewValue();
 		if (after != null) {
-			final String fileAfter = after.getFile();
+			//DOCEAR - decode url string
+			final String fileAfter = sun.net.www.ParseUtil.decode(after.getFile());
 			if (fileAfter != null) {
 				final String restorable = getRestorable(new File(fileAfter));
 				currenlyOpenedList.add(restorable);
@@ -240,9 +244,11 @@ class LastOpenedList implements IMapViewChangeListener, IMapChangeListener {
 		}
 	}
 
-	private void remove(final String restoreable) {
-		//DOCEAR - decode url string
-		lastOpenedList.remove(sun.net.www.ParseUtil.decode(restoreable));
+	public void remove(final String restoreable) {
+		if(!lastOpenedList.remove(restoreable)) {
+			//DOCEAR - decode url string
+			lastOpenedList.remove(sun.net.www.ParseUtil.decode(restoreable));
+		}
 		updateMenus();
 	}
 
