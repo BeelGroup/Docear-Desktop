@@ -170,7 +170,8 @@ public class LastOpenedList implements IMapViewChangeListener, IMapChangeListene
 		}
 		final URL before = (URL) event.getOldValue();
 		if (before != null) {
-			final String fileBefore = before.getFile();
+			//DOCEAR - decode url string
+			final String fileBefore = sun.net.www.ParseUtil.decode(before.getFile());
 			if (fileBefore != null) {
 				final String restorable = getRestorable(new File(fileBefore));
 				currenlyOpenedList.remove(restorable);
