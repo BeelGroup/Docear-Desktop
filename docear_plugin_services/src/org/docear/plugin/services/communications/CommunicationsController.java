@@ -440,7 +440,7 @@ public class CommunicationsController implements PropertyLoadListener, IWorkspac
 		else {
 			setConnectionProperties(registeredUser, "", "");
 			if (!silent) {
-				throw new DocearServiceException(readResponseContent(response.getEntityInputStream()));
+				throw new DocearServiceException(readResponseContent(getErrorMessageInputStream(response)));
 			}
 		}
 		return false;
@@ -460,7 +460,7 @@ public class CommunicationsController implements PropertyLoadListener, IWorkspac
 		ResourceController.getResourceController().setProperty(propertyAccessToken, token);
 	}
 
-	private String readResponseContent(InputStream is) throws IOException {
+	private static String readResponseContent(InputStream is) throws IOException {
 		int chr;
 		StringBuilder message = new StringBuilder();
 		while ((chr = is.read()) > -1) {
@@ -549,18 +549,8 @@ public class CommunicationsController implements PropertyLoadListener, IWorkspac
 							response.getEntityInputStream());
 				}
 				else {
-					InputStream is = response.getEntityInputStream();
-					if(status != null) {
-						// rewrite http server error messages
-						if(status.getStatusCode() >= 500 || status.getStatusCode() == 408 || status.getStatusCode() == 413  || status.getStatusCode() == 414) {
-							is = new ByteArrayInputStream(TextUtils.getText("docear.service.error.server", "[missing translation]").getBytes());
-						}
-						else if(status.getStatusCode() == 404) {
-							is = new ByteArrayInputStream(TextUtils.getText("docear.service.error.not_found", "[missing translation]").getBytes());
-						}
-					}
 					return new DocearServiceResponse(org.docear.plugin.services.communications.features.DocearServiceResponse.Status.FAILURE,
-							is);
+							getErrorMessageInputStream(response));
 				}
 			}
 			finally {
@@ -609,7 +599,7 @@ public class CommunicationsController implements PropertyLoadListener, IWorkspac
 				}
 				else {
 					return new DocearServiceResponse(org.docear.plugin.services.communications.features.DocearServiceResponse.Status.FAILURE,
-							response.getEntityInputStream());
+							getErrorMessageInputStream(response));
 				}
 			}
 			finally {
@@ -632,6 +622,30 @@ public class CommunicationsController implements PropertyLoadListener, IWorkspac
 					e.getMessage().getBytes()));
 		}
 
+	}
+
+	private static InputStream getErrorMessageInputStream(ClientResponse response) {
+		Status status = response.getClientResponseStatus();
+		InputStream is = response.getEntityInputStream();
+		if(status != null) {
+			// rewrite http server error messages
+			if(status.getStatusCode() >= 500 || status.getStatusCode() == 408 || status.getStatusCode() == 413  || status.getStatusCode() == 414) {
+				is = new ByteArrayInputStream(TextUtils.getText("docear.service.error.server", "[missing translation]").getBytes());
+			}
+			else if(status.getStatusCode() == 404) {
+				is = new ByteArrayInputStream(TextUtils.getText("docear.service.error.not_found", "[missing translation]").getBytes());
+			}
+		}
+		return is;
+	}
+	
+	public static String getErrorMessageString(ClientResponse response) {
+		try {
+			return readResponseContent(getErrorMessageInputStream(response));
+		}
+		catch (Exception e) {
+		}
+		return "";
 	}
 
 	private void addPluginDefaults() {

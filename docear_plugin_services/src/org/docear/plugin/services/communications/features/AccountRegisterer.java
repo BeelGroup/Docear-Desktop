@@ -66,7 +66,7 @@ public class AccountRegisterer {
 			ClientResponse response = CommunicationsController.getController().post(res, queryParams);
 			try {
 				if (response.getClientResponseStatus() != Status.OK) {
-					throw new DocearServiceException(response.getEntity(String.class));
+					throw new DocearServiceException(CommunicationsController.getErrorMessageString(response));
 				}
 			}
 			finally {
