@@ -28,25 +28,25 @@ public class WorkspaceTreeModelListener implements TreeModelListener {
 
 	@Override
 	public void treeNodesChanged(TreeModelEvent event) {
-		if(event instanceof WorkspaceTreeModelEvent && ((WorkspaceTreeModelEvent) event).getType() == WorkspaceTreeModelEventType.rename) {		
-			File from = (File) ((WorkspaceTreeModelEvent) event).getFrom();
-			File to = (File) ((WorkspaceTreeModelEvent) event).getTo();
-			
-			if(true || ((WorkspaceTreeModelEvent) event).getFrom() == null || from == null || to == null) {
-				return;
-			}
-			Object obj = event.getTreePath().getLastPathComponent();
-			if(obj instanceof DefaultFileNode) {
-				if(to.isDirectory()) {
-					//go through all subdirs and files
-					traversThrough(to, from);
-				}
-				else {
-					updateFileTracking(from, to);
-				}
-			}			
-			
-		}
+//		if(event instanceof WorkspaceTreeModelEvent && ((WorkspaceTreeModelEvent) event).getType() == WorkspaceTreeModelEventType.rename) {		
+//			File from = (File) ((WorkspaceTreeModelEvent) event).getFrom();
+//			File to = (File) ((WorkspaceTreeModelEvent) event).getTo();
+//			
+//			if(((WorkspaceTreeModelEvent) event).getFrom() == null || from == null || to == null) {
+//				return;
+//			}
+//			Object obj = event.getTreePath().getLastPathComponent();
+//			if(obj instanceof DefaultFileNode) {
+//				if(to.isDirectory()) {
+//					//go through all subdirs and files
+//					traversThrough(to, from);
+//				}
+//				else {
+//					updateFileTracking(from, to);
+//				}
+//			}			
+//			
+//		}
 	}
 
 	@Override

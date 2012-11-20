@@ -549,8 +549,18 @@ public class CommunicationsController implements PropertyLoadListener, IWorkspac
 							response.getEntityInputStream());
 				}
 				else {
+					InputStream is = response.getEntityInputStream();
+					if(status != null) {
+						// rewrite http server error messages
+						if(status.getStatusCode() >= 500 || status.getStatusCode() == 408 || status.getStatusCode() == 413  || status.getStatusCode() == 414) {
+							is = new ByteArrayInputStream(TextUtils.getText("docear.service.error.server", "[missing translation]").getBytes());
+						}
+						else if(status.getStatusCode() == 404) {
+							is = new ByteArrayInputStream(TextUtils.getText("docear.service.error.not_found", "[missing translation]").getBytes());
+						}
+					}
 					return new DocearServiceResponse(org.docear.plugin.services.communications.features.DocearServiceResponse.Status.FAILURE,
-							response.getEntityInputStream());
+							is);
 				}
 			}
 			finally {
