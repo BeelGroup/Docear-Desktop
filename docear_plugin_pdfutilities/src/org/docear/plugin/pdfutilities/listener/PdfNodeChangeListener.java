@@ -25,7 +25,7 @@ import de.intarsys.pdf.parser.COSLoadException;
 
 public class PdfNodeChangeListener implements INodeChangeListener {
 
-	public void nodeChanged(org.freeplane.features.map.NodeChangeEvent event) {		
+	public void nodeChanged(org.freeplane.features.map.NodeChangeEvent event) {
 		if (event.getProperty().equals(NodeModel.HYPERLINK_CHANGED)) {
 			URI newUri = (URI) event.getNewValue();
 			if (newUri != null) {
