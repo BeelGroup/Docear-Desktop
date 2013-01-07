@@ -175,6 +175,10 @@ public class AnnotationModel implements IAnnotation{
 	public String getDocumentHash() {
 		return AnnotationController.getDocumentHash(getUri());
 	}
+	
+	public String getDocumentTitle() {
+		return AnnotationController.getDocumentTitle(getUri());
+	}
 
 	public AnnotationModel getParent() {
 		return parent;

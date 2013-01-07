@@ -41,9 +41,13 @@ public class PdfNodeChangeListener implements INodeChangeListener {
 							AnnotationController.setModel(event.getNode(), model);
 						}
 					}
+					else {
+						event.getNode().removeExtension(AnnotationModel.class);
+					}
 				}
 				catch(Exception e){
 					LogUtils.warn(e);
+					//DOCEAR - remove model if exists?
 				}
 			}
 			else if(AnnotationController.getModel(event.getNode(), false) != null){
