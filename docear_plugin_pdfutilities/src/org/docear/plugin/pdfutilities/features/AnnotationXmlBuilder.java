@@ -172,12 +172,12 @@ public class AnnotationXmlBuilder implements IElementDOMHandler, IExtensionEleme
 		if(documentHash != null && documentHash.length() > 0){
 			pdfAnnotation.setAttribute(DOCUMENT_HASH_XML_TAG, "" + documentHash);
 			final String documentTitle = AnnotationController.getDocumentTitle(model.getUri());
-//			if(documentTitle != null) {
-//				final XMLElement pdftitle = new XMLElement();
-//				pdftitle.setName(PDF_TITLE_XML_TAG);
-//				pdftitle.setContent(documentTitle);
-//				pdfAnnotation.addChild(pdftitle);
-//			}
+			if(documentTitle != null) {
+				final XMLElement pdftitle = new XMLElement();
+				pdftitle.setName(PDF_TITLE_XML_TAG);
+				pdftitle.setContent(documentTitle);
+				pdfAnnotation.addChild(pdftitle);
+			}
 		}
 		
 		writer.addElement(model, pdfAnnotation);
