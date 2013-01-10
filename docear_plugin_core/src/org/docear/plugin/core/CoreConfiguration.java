@@ -26,6 +26,8 @@ import org.docear.plugin.core.features.DocearMapModelController;
 import org.docear.plugin.core.features.DocearMapModelExtension;
 import org.docear.plugin.core.features.DocearMapWriter;
 import org.docear.plugin.core.features.DocearNodeModelExtensionController;
+import org.docear.plugin.core.features.DocearNodeMovedExtensionController;
+import org.docear.plugin.core.listeners.MapChangeListenerAdapter;
 import org.docear.plugin.core.listeners.MapLifeCycleAndViewListener;
 import org.docear.plugin.core.listeners.PropertyListener;
 import org.docear.plugin.core.listeners.PropertyLoadListener;
@@ -251,7 +253,9 @@ public class CoreConfiguration extends ALanguageController {
 	}
 
 	private void registerController(ModeController modeController) {
-		DocearNodeModelExtensionController.install(new DocearNodeModelExtensionController(modeController));		
+		DocearNodeModelExtensionController.install(new DocearNodeModelExtensionController(modeController));
+		DocearNodeModelExtensionController.install(new DocearNodeModelExtensionController(modeController));
+		DocearNodeMovedExtensionController.install(modeController);
 	}
 
 	private void replaceFreeplaneStringsAndActions(ModeController modeController) {
@@ -363,6 +367,7 @@ public class CoreConfiguration extends ALanguageController {
 		Controller.getCurrentController().getOptionPanelController().addPropertyLoadListener(new PropertyLoadListener());
 		Controller.getCurrentController().getResourceController().addPropertyChangeListener(new PropertyListener());
 		modeController.getMapController().addMapLifeCycleListener(new MapLifeCycleAndViewListener());
+		modeController.getMapController().addMapChangeListener(new MapChangeListenerAdapter());
 		Controller.getCurrentController().getMapViewManager().addMapViewChangeListener(new MapLifeCycleAndViewListener());
 		WorkspaceController.getIOController().registerNodeActionListener(AWorkspaceTreeNode.class, WorkspaceActionEvent.WSNODE_OPEN_DOCUMENT, new WorkspaceOpenDocumentListener());
 		WorkspaceUtils.getModel().addTreeModelListener(new WorkspaceTreeModelListener());

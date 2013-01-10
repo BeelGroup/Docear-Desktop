@@ -28,6 +28,22 @@ public class XmlPath {
 		return parent.length() + 1;
 	}
 	
-	
+	public XmlPath getParentPath() {
+		return parent;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public boolean contains(String name) {
+		if(name != null && name.equals(getName())) {
+			return true;
+		}
+		if(parent == null) {
+			return false;
+		}
+		return getParentPath().contains(name);
+	}
 
 }

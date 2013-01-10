@@ -24,6 +24,7 @@ public class AnnotationXmlBuilder implements IElementDOMHandler, IExtensionEleme
 	private static final String ANNOTATION_GENERATION_NUMBER_XML_TAG = "generation_number"; //$NON-NLS-1$
 	private static final String DOCUMENT_HASH_XML_TAG = "document_hash"; //$NON-NLS-1$
 	private static final String PDF_ANNOTATION_XML_TAG = "pdf_annotation"; //$NON-NLS-1$
+	private static final String PDF_TITLE_XML_TAG = "pdf_title";
 	
 	
 	public AnnotationXmlBuilder(){		
@@ -31,6 +32,15 @@ public class AnnotationXmlBuilder implements IElementDOMHandler, IExtensionEleme
 	
 	public void registerBy(final ReadManager reader, final WriteManager writer) {
 		reader.addElementHandler(PDF_ANNOTATION_XML_TAG, this);
+		//DOCEAR - just read the title elements to prevent freeplane from handling it as unknown
+		reader.addElementHandler(PDF_TITLE_XML_TAG, new IElementDOMHandler() {			
+			public Object createElement(Object parent, String tag, XMLElement attributes) {
+				return null;
+			}
+			
+			public void endElement(Object parent, String tag, Object element, XMLElement dom) {				
+			}
+		});
 		registerAttributeHandlers(reader);
 		writer.addExtensionElementWriter(AnnotationModel.class, this);		
 	}
@@ -87,9 +97,13 @@ public class AnnotationXmlBuilder implements IElementDOMHandler, IExtensionEleme
 		reader.addAttributeHandler(PDF_ANNOTATION_XML_TAG, DOCUMENT_HASH_XML_TAG, new IAttributeHandler() {
 			
 			public void setAttribute(Object node, String value) {
-				final AnnotationModel annotation = (AnnotationModel) node;				
-				//annotation.setDocumentHash(value);
-				AnnotationController.registerDocumentHash(annotation.getUri(), value);
+				final AnnotationModel annotation = (AnnotationModel) node;
+				try {
+					AnnotationController.registerDocumentHash(annotation.getUri(), value);
+				}
+				catch (Throwable e) {
+					System.out.println("Error ("+e.getMessage()+") for: "+annotation.getUri());
+				}
 			}
 			
 		});
@@ -157,6 +171,13 @@ public class AnnotationXmlBuilder implements IElementDOMHandler, IExtensionEleme
 		final String documentHash = model.getDocumentHash();
 		if(documentHash != null && documentHash.length() > 0){
 			pdfAnnotation.setAttribute(DOCUMENT_HASH_XML_TAG, "" + documentHash);
+			final String documentTitle = AnnotationController.getDocumentTitle(model.getUri());
+			if(documentTitle != null) {
+				final XMLElement pdftitle = new XMLElement();
+				pdftitle.setName(PDF_TITLE_XML_TAG);
+				pdftitle.setContent(documentTitle);
+				pdfAnnotation.addChild(pdftitle);
+			}
 		}
 		
 		writer.addElement(model, pdfAnnotation);

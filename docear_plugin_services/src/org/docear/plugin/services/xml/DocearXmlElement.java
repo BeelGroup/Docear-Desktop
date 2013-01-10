@@ -48,6 +48,16 @@ public class DocearXmlElement {
 		return children;
 	}
 	
+	public boolean hasParent(String elementName) {
+		if(elementName == null || getParent() == null) {
+			return false;
+		}
+		if(elementName.equals(getParent().getName())) {
+			return true;
+		}
+		return getParent().hasParent(elementName);
+	}
+	
 	public boolean hasChildren() {
 		return childCount() > 0;
 	}

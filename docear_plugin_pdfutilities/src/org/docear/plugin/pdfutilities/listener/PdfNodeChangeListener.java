@@ -25,7 +25,7 @@ import de.intarsys.pdf.parser.COSLoadException;
 
 public class PdfNodeChangeListener implements INodeChangeListener {
 
-	public void nodeChanged(org.freeplane.features.map.NodeChangeEvent event) {		
+	public void nodeChanged(org.freeplane.features.map.NodeChangeEvent event) {
 		if (event.getProperty().equals(NodeModel.HYPERLINK_CHANGED)) {
 			URI newUri = (URI) event.getNewValue();
 			if (newUri != null) {
@@ -41,9 +41,13 @@ public class PdfNodeChangeListener implements INodeChangeListener {
 							AnnotationController.setModel(event.getNode(), model);
 						}
 					}
+					else {
+						event.getNode().removeExtension(AnnotationModel.class);
+					}
 				}
 				catch(Exception e){
 					LogUtils.warn(e);
+					//DOCEAR - remove model if exists?
 				}
 			}
 			else if(AnnotationController.getModel(event.getNode(), false) != null){

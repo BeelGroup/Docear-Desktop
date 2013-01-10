@@ -23,6 +23,7 @@ import org.docear.plugin.services.xml.DocearXmlBuilder;
 import org.docear.plugin.services.xml.DocearXmlElement;
 import org.docear.plugin.services.xml.DocearXmlRootElement;
 import org.freeplane.core.ui.components.UITools;
+import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.map.IMapLifeCycleListener;
 import org.freeplane.features.map.MapController;
@@ -204,10 +205,18 @@ public class DocearRecommendationsMapController extends MapController {
 					Collection<DocearXmlElement> documents = result.findAll("document");
 					List<RecommendationEntry> recommendations = new ArrayList<RecommendationEntry>();
 					for (DocearXmlElement document : documents) {
-						String title = document.find("title").getContent();
-						String url = document.find("sourceid").getContent();
-						String click = document.getParent().getAttributeValue("fulltext");
-						recommendations.add(new RecommendationEntry(title, url, click));
+						try {
+							// exclude reference documents -> may not have a sourceid and the parent does not have a fulltext attribute
+							if(!document.hasParent("document")) {
+								String title = document.find("title").getContent();
+								String url = document.find("sourceid").getContent();
+								String click = document.getParent().getAttributeValue("fulltext");
+								recommendations.add(new RecommendationEntry(title, url, click));
+							}
+						}
+						catch (Exception e) {
+							LogUtils.warn("error while parsing recommendations: " + e.getMessage());
+						}
 					}
 
 					return recommendations;

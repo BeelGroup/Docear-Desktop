@@ -19,12 +19,11 @@ public abstract class Traverser {
 	
 	public Collection<DocearXmlElement> traverse(DocearXmlElement element) {
 		List<DocearXmlElement> acceptedElements = new ArrayList<DocearXmlElement>();		
-		acceptedElements.addAll(traverse(element, null));
+		traverse(element, null, acceptedElements);
 		return acceptedElements;
 	}
-	
-	private Collection<DocearXmlElement> traverse(DocearXmlElement element, XmlPath path) {
-		List<DocearXmlElement> acceptedElements = new ArrayList<DocearXmlElement>();
+		
+	private void traverse(DocearXmlElement element, XmlPath path, Collection<DocearXmlElement> acceptedElements) {
 		int count = 0;
 		if(this.method.equals(TraversalMethod.BREADTH_FIRST)) {
 			for(DocearXmlElement child : element.getChildren()) {
@@ -35,7 +34,7 @@ public abstract class Traverser {
 			}
 			count = 0;
 			for(DocearXmlElement child : element.getChildren()) {
-				acceptedElements.addAll(traverse(child, new XmlPath(path, child.getName()+"["+count+"]")));
+				traverse(child, new XmlPath(path, child.getName()+"["+count+"]"), acceptedElements);
 				count++;
 			}			
 		}
@@ -45,12 +44,10 @@ public abstract class Traverser {
 				if(acceptElement(child, nPath)) {
 					acceptedElements.add(child);
 				}
-				acceptedElements.addAll(traverse(child, nPath));
+				traverse(child, nPath, acceptedElements);
 				count++;
 			}
 		}
-
-		return acceptedElements;
 	}
 
 }

@@ -36,6 +36,7 @@ public class AnnotationController implements IExtension{
 	
 	private final static Set<IAnnotationImporter> annotationImporters = new HashSet<IAnnotationImporter>();
 	private final static Map<String, CachedHashItem> documentHashMap = new HashMap<String, CachedHashItem>();
+	private final static Map<String, String> documentTitleMap = new HashMap<String, String>();
 	private static final String NO_HASH_AVAILABLE = "";
 	private static Executor executor = Executors.newFixedThreadPool(2);
 	
@@ -303,29 +304,39 @@ public class AnnotationController implements IExtension{
 	}
 	
 	public static String getDocumentTitle(URI uri) {
-		if(uri == null) {
-			return null;
-		}
+		String title = null;
 		
-		File file = new File(uri);
-		try {
-			PdfDataExtractor extractor = new PdfDataExtractor(file);
-			String title = extractor.extractTitle();
+		if(uri == null) {
 			return title;
 		}
-		catch (Exception e) {
-			LogUtils.info("could not extract title from document: "+ e.getMessage());
+		
+		String hashCode = getDocumentHash(uri);
+		
+		if(hashCode != null) {
+			synchronized (documentTitleMap) {
+				title = documentTitleMap.get(hashCode);
+			}
 		}
-		return null;
+		return title;
 	}
 	
 	private static String updateDocumentHashCache(final File file, final long lastModified) {
 		String hashCode = null;
+		String title = null;
 		try {
 			PdfDataExtractor extractor = new PdfDataExtractor(file);
+			title = extractor.extractTitle();
 			hashCode = extractor.getUniqueHashCode();
 			if(hashCode == null ) {
 				hashCode = NO_HASH_AVAILABLE;
+			}
+			else {
+				synchronized (documentTitleMap) {
+					//keep existing titles: could be a user input or retrieved via bibtex or sth else
+					if(!documentTitleMap.containsKey(hashCode)) {
+						documentTitleMap.put(hashCode, title);
+					}
+				}
 			}
 			CachedHashItem newItem = new CachedHashItem(hashCode, lastModified);
 			synchronized (documentHashMap) {
