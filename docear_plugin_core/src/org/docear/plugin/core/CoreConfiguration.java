@@ -254,7 +254,6 @@ public class CoreConfiguration extends ALanguageController {
 
 	private void registerController(ModeController modeController) {
 		DocearNodeModelExtensionController.install(new DocearNodeModelExtensionController(modeController));
-		DocearNodeModelExtensionController.install(new DocearNodeModelExtensionController(modeController));
 		DocearNodeMovedExtensionController.install(modeController);
 	}
 
