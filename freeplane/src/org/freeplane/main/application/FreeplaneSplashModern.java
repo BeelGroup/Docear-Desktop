@@ -63,7 +63,7 @@ public class FreeplaneSplashModern extends JWindow {
 	public FreeplaneSplashModern(final JFrame frame) {
 		super(frame);
 		appName = ResourceController.getResourceController().getProperty("ApplicationName", "Freeplane");
-		//FIXME - DOCEAR: synch with plugin/app start			
+		//DOCEAR: synch with plugin/app start			
 		if(appName != null && !"freeplane".equals(appName.toLowerCase())) {
 			freeplaneNumber = ResourceController.getResourceController().getProperty(appName.toLowerCase()+"_version");
 			status = ResourceController.getResourceController().getProperty(appName.toLowerCase()+"_version_status");
@@ -113,20 +113,22 @@ public class FreeplaneSplashModern extends JWindow {
 		splashImage.paintIcon(this, g2, 0, 0);
 		if(splashResource.getProtocol().equals("file"))
 			return;
-		g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-		final FreeplaneVersion version = FreeplaneVersion.getVersion();
-		final String freeplaneNumber = version.numberToString();
-		final String status = version.getType().toUpperCase();
-		{
-			g2.setColor(Color.WHITE);
-			int xCoordinate = 10;
-			final int yCoordinate = getSize().height - 10;
-			g2.drawString(description, xCoordinate, yCoordinate);
-			if (mWidth3 == null) {
-				mWidth3 = new Integer(g2.getFontMetrics().stringWidth(copyright));
+		if("Freeplane".equals(appName)) {
+			g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+			final FreeplaneVersion version = FreeplaneVersion.getVersion();
+			final String freeplaneNumber = version.numberToString();
+			final String status = version.getType().toUpperCase();
+			{
+				g2.setColor(Color.WHITE);
+				int xCoordinate = 10;
+				final int yCoordinate = getSize().height - 10;
+				g2.drawString(description, xCoordinate, yCoordinate);
+				if (mWidth3 == null) {
+					mWidth3 = new Integer(g2.getFontMetrics().stringWidth(copyright));
+				}
+				xCoordinate = getSize().width - mWidth3.intValue() - 10;
+				g2.drawString(copyright, xCoordinate, yCoordinate);
 			}
-			xCoordinate = getSize().width - mWidth3.intValue() - 10;
-			g2.drawString(copyright, xCoordinate, yCoordinate);
 		}
 	}
 

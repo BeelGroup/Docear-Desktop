@@ -411,6 +411,9 @@ public class CommunicationsController implements PropertyLoadListener, IWorkspac
 			if (e instanceof DocearServiceException) {
 				throw ((DocearServiceException) e);
 			}
+			if(e.getCause() != null && e.getCause() instanceof DocearServiceException) {
+				throw ((DocearServiceException) e.getCause());
+			}
 			DocearController.getController().dispatchDocearEvent(new DocearEvent(FiletransferClient.class, FiletransferClient.NO_CONNECTION));
 			throw (new DocearServiceException(TextUtils.getText("docear.no_connection"), DocearServiceExceptionType.NO_CONNECTION));
 		}
@@ -767,11 +770,11 @@ public class CommunicationsController implements PropertyLoadListener, IWorkspac
 			AccountRegisterer ar = new AccountRegisterer();
 			try {
 				ar.createAnonymousUser();
+				accessToken = ResourceController.getResourceController().getProperty(DOCEAR_CONNECTION_ANONYMOUS_USERNAME_PROPERTY);
 			}
 			catch (Exception e) {
 				LogUtils.warn(e);
 			}
-			accessToken = ResourceController.getResourceController().getProperty(DOCEAR_CONNECTION_ANONYMOUS_USERNAME_PROPERTY);
 			DocearController.getController().getSemaphoreController().unlock(CREATING_USER);
 		}
 		return accessToken;
@@ -855,11 +858,6 @@ public class CommunicationsController implements PropertyLoadListener, IWorkspac
 
 	public void workspaceChanged(WorkspaceEvent event) {
 		WorkspaceController.getController().addToolBar(connectionBar);
-		new Thread() {
-			public void run() {
-				checkConnection();
-			}
-		}.start();
 	}
 
 	public void openWorkspace(WorkspaceEvent event) {

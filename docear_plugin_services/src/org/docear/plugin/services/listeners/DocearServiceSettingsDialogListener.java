@@ -46,11 +46,19 @@ public class DocearServiceSettingsDialogListener implements ActionListener {
 			}
 			((JOptionPane)cont).setValue(settings.getOkButton());
 		} 
-		catch (DocearServiceException e) {		    
-			JOptionPane.showMessageDialog(settings, 
-					TextUtils.getText("docear.uploadchooser.warning.notregistered")+e.getMessage(), 
-					TextUtils.getText("docear.uploadchooser.warning.notregistered.title"), 
-					JOptionPane.WARNING_MESSAGE);
+		catch (DocearServiceException e) {
+			if(settings.useRegistration()) {
+				JOptionPane.showMessageDialog(settings, 
+						TextUtils.getText("docear.uploadchooser.warning.notregistered")+e.getMessage(), 
+						TextUtils.getText("docear.uploadchooser.warning.notregistered.title"), 
+						JOptionPane.WARNING_MESSAGE);
+			}
+			else {
+				JOptionPane.showMessageDialog(settings, 
+						TextUtils.getText("docear.uploadchooser.warning.wronglogin")+e.getMessage(), 
+						TextUtils.getText("docear.uploadchooser.warning.wronglogin.title"), 
+						JOptionPane.WARNING_MESSAGE);
+			}
 			if (DocearServiceExceptionType.NO_CONNECTION.equals(e.getType())) {
 			    settings.clearUserData();
 			}

@@ -75,14 +75,13 @@ public class ServiceController extends UploadController {
 		Controller.getCurrentController().addAction(new DocearAllowUploadChooserAction());
 		Controller.getCurrentController().addAction(new DocearCheckForUpdatesAction());
 		Controller.getCurrentController().addAction(new ShowRecommendationsAction());
-		
-		startRecommendationsMode();
 	}
 
 	protected static void initialize(ModeController modeController) {
 		if (serviceController == null) {
 
 			serviceController = new ServiceController(modeController);
+			serviceController.startRecommendationsMode();
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					serviceController.getUploader().start();

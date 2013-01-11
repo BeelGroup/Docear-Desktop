@@ -1,10 +1,14 @@
 package org.docear.plugin.services.communications.features;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.ws.rs.core.MultivaluedMap;
 
@@ -56,7 +60,8 @@ public class AccountRegisterer {
 			throws DocearServiceException {
 				
 		final TaskState state= new TaskState(); 
-		Future<TaskState> future = Executors.newSingleThreadExecutor().submit(new Runnable() {
+		ExecutorService execSrv = Executors.newSingleThreadExecutor();
+		Future<TaskState> future = execSrv.submit(new Runnable() {
 			public void run() {
 				final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
 				try {
@@ -75,8 +80,12 @@ public class AccountRegisterer {
 					queryParams.add("isMale", isMale == null ? null : isMale.toString());
 		
 					WebResource res = CommunicationsController.getController().getServiceResource().path("/user/" + name);
-					
+					long time = System.currentTimeMillis();
 					ClientResponse response = CommunicationsController.getController().post(res, queryParams);
+					LogUtils.info("user creation took (ms): "+(System.currentTimeMillis()-time));
+					if(Thread.interrupted()) {
+						throw new DocearServiceException("request aborted");
+					}
 					try {
 						if (response.getClientResponseStatus() != Status.OK) {
 							throw new DocearServiceException(CommunicationsController.getErrorMessageString(response));
@@ -87,15 +96,15 @@ public class AccountRegisterer {
 					}
 				}
 				catch (DocearServiceException e) {
-					LogUtils.warn(e);
+					LogUtils.info("DocearServiceException in AccountRegisterer.createUser().Future: "+e.getMessage());
 					state.ex = e;
 				}
 				catch (ClientHandlerException e) {
-					LogUtils.warn(e);
+					LogUtils.info("ClientHandlerException in AccountRegisterer.createUser().Future: "+e.getMessage());
 					state.ex = new DocearServiceException(TextUtils.getText("docear.service.connect.no_connection"), DocearServiceExceptionType.NO_CONNECTION);
 				}
 				catch (Exception e) {
-					LogUtils.warn(e);
+					LogUtils.info("Exception in AccountRegisterer.createUser().Future: "+e.getMessage());
 					state.ex = new DocearServiceException(TextUtils.getText("docear.service.connect.unknown_error"));
 				}
 				finally {
@@ -104,11 +113,26 @@ public class AccountRegisterer {
 				
 			}
 		}, state);
-		try {
+		long time = System.currentTimeMillis();
+		try {			
 			future.get(CommunicationsController.CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
-		} catch (Exception e) {
+		} catch (InterruptedException e) {
+			future.cancel(true);
+			execSrv.shutdown();
+			throw new DocearServiceException("registration failed because of: interrupted", DocearServiceExceptionType.SIGNUP_FAILED);
+		} catch (ExecutionException e) {
+			future.cancel(true);
+			execSrv.shutdown();
 			throw new DocearServiceException("registration failed because of: "+e.getMessage(), DocearServiceExceptionType.SIGNUP_FAILED);
+		} catch (TimeoutException e) {
+			future.cancel(true);
+			execSrv.shutdown();
+			throw new DocearServiceException("registration failed because of: timeout", DocearServiceExceptionType.SIGNUP_FAILED);
 		}
+		finally {
+			LogUtils.info("user creation wait (ms): "+(System.currentTimeMillis()-time));
+		}
+		
 		
 		if(state.ex != null) {
 			if(state.ex instanceof DocearServiceException) {
