@@ -113,7 +113,7 @@
   </body>
 </html>
 </richcontent>
-<edge COLOR="#00ff00" WIDTH="3"/>
+<edge COLOR="#00ff00"/>
 <node TEXT="Docear -- An Academic&#xa;Literature Suite.pdf" ID="ID_1133327934" CREATED="1345719244799" MODIFIED="1345719321171" LINK="@LITERATURE_REPO_DEMO@/Docear%20--%20An%20Academic%20Literature%20Suite.pdf">
 <pdf_annotation type="PDF_FILE"/>
 <attribute NAME="key" VALUE="Beel2011c"/>

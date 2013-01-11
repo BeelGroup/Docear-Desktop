@@ -535,7 +535,7 @@
   </body>
 </html>
 </richcontent>
-<edge COLOR="#ffff00" WIDTH="3"/>
+<edge COLOR="#ffff00"/>
 </node>
 </node>
 </map>

@@ -53,7 +53,7 @@
 </hook>
 <hook NAME="AutomaticEdgeColor" COUNTER="2"/>
 <node TEXT="Introduction" POSITION="right" ID="ID_1693751078" CREATED="1344508137611" MODIFIED="1344511498257">
-<edge COLOR="#ff0000" WIDTH="3"/>
+<edge COLOR="#ff0000"/>
 <hook NAME="FirstGroupNode"/>
 <node TEXT="In the past years, many academic&#xa;search engines evolved such as" ID="ID_1380533534" CREATED="1344510886390" MODIFIED="1344510975382">
 <node TEXT="Google Scholar" ID="ID_199412342" CREATED="1344510907159" MODIFIED="1344510909777">
@@ -93,7 +93,7 @@
 <node TEXT="{and so on...}" ID="ID_1309584788" CREATED="1344511454738" MODIFIED="1344511861030"/>
 </node>
 <node TEXT="Related Work" POSITION="right" ID="ID_1098134891" CREATED="1344508140609" MODIFIED="1344510296844">
-<edge COLOR="#0000ff" WIDTH="3"/>
+<edge COLOR="#0000ff"/>
 <node TEXT="The idea of &quot;optimizing&quot; papers&#xa;for academic search engines&#xa;evolved in 2010" ID="ID_512165507" CREATED="1344511282609" MODIFIED="1344511366924">
 <node TEXT="ASEO, original paper" ID="ID_321401039" CREATED="1345719440507" MODIFIED="1345719440508" LINK="workspace:/../Docear_Bzr/docear_resources/demo%20files/docear_example_pdfs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="COMMENT" page="1" object_number="540" generation_number="0"/>
@@ -162,30 +162,30 @@
 <node TEXT="{and so on...}" ID="ID_591738915" CREATED="1344511414252" MODIFIED="1344511836412"/>
 </node>
 <node TEXT="All of the PDFs and annotations&#xa;were copied from the Literature&#xa;&amp; Annotations Map. The &quot;normal&quot;&#xa;text nodes were individually created" POSITION="right" ID="ID_227074519" CREATED="1344511498251" MODIFIED="1344511910289">
-<edge COLOR="#7c7c00" WIDTH="3"/>
+<edge COLOR="#7c7c00"/>
 <hook NAME="SummaryNode"/>
 </node>
 <node TEXT="Methdology" FOLDED="true" POSITION="right" ID="ID_837868971" CREATED="1344508144956" MODIFIED="1344510296845">
 <hook NAME="FirstGroupNode"/>
-<edge COLOR="#00ff00" WIDTH="3"/>
+<edge COLOR="#00ff00"/>
 <node TEXT="todo" ID="ID_1595771395" CREATED="1344508164522" MODIFIED="1344508165334"/>
 </node>
 <node TEXT="Results" FOLDED="true" POSITION="right" ID="ID_220604319" CREATED="1344508149448" MODIFIED="1344510296846">
-<edge COLOR="#ff00ff" WIDTH="3"/>
+<edge COLOR="#ff00ff"/>
 <node TEXT="todo" ID="ID_1262024868" CREATED="1344508161499" MODIFIED="1344508162311"/>
 </node>
 <node TEXT="Conclusion" FOLDED="true" POSITION="right" ID="ID_335508516" CREATED="1344508153289" MODIFIED="1344510296847">
-<edge COLOR="#00ffff" WIDTH="3"/>
+<edge COLOR="#00ffff"/>
 <node TEXT="todo" ID="ID_183681093" CREATED="1344508158399" MODIFIED="1344508159274"/>
 </node>
 <node TEXT="This is an example how a draft of your paper/assignemnt/thesis/book could look like.&#xa;&#xa;You create your chapters (introduction, related work, etc.), and then create a node for each sentence you want to write. From your Literature &amp; Annotations Map you copy those PDFs and annotations that you want to cite. In the right window you create new references and drag&amp;drop a PDF/annotation on that entry. The bibliographic data will then automatically be added to the node" LOCALIZED_STYLE_REF="defaultstyle.floating" POSITION="left" ID="ID_989309610" CREATED="1344498811808" MODIFIED="1344511437016" HGAP="-47" VSHIFT="-167"/>
 <node TEXT="Potential Conferences to&#xa;publish the paper" POSITION="left" ID="ID_916121753" CREATED="1344511928953" MODIFIED="1344511944841">
-<edge COLOR="#ff0000" WIDTH="3"/>
+<edge COLOR="#ff0000"/>
 <node TEXT="WWW 2013" ID="ID_1266382435" CREATED="1344511967357" MODIFIED="1344512599046" LINK="http://www2013.org/"/>
 <node TEXT="SIGIR 2013" ID="ID_196579720" CREATED="1344511986050" MODIFIED="1344511992523" LINK="http://sigir2013.ie/"/>
 </node>
 <node TEXT="todo" POSITION="left" ID="ID_156430450" CREATED="1344512008068" MODIFIED="1344512009201">
-<edge COLOR="#0000ff" WIDTH="3"/>
+<edge COLOR="#0000ff"/>
 <node TEXT="talk with supervisor" ID="ID_1086499639" CREATED="1344512010740" MODIFIED="1344512015059"/>
 <node TEXT="ask John to proof-read" ID="ID_624499378" CREATED="1344512015939" MODIFIED="1344512023308"/>
 <node TEXT="ask Doe for full-text of his paper" ID="ID_158830913" CREATED="1344512025181" MODIFIED="1344512037455"/>

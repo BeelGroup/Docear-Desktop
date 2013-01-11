@@ -71,7 +71,7 @@
   </body>
 </html>
 </richcontent>
-<edge COLOR="#ff0000" WIDTH="3"/>
+<edge COLOR="#ff0000"/>
 <node TEXT="By year" ID="ID_1272394717" CREATED="1345646644459" MODIFIED="1345646647848">
 <node TEXT="2011" OBJECT="java.lang.Long|2011" ID="ID_37380019" CREATED="1345646336806" MODIFIED="1345719735262">
 <hook NAME="FirstGroupNode"/>

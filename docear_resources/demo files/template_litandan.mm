@@ -75,7 +75,7 @@
 </html>
 
 </richcontent>
-<edge COLOR="#ff0000" WIDTH="3"/>
+<edge COLOR="#ff0000"/>
 <node TEXT="Academic Software&#xa;&amp; Services" FOLDED="true" ID="ID_1702652111" CREATED="1344508592622" MODIFIED="1344509666867">
 <hook NAME="FirstGroupNode"/>
 <node TEXT="Literature Management" ID="ID_1064987695" CREATED="1344508500160" MODIFIED="1344508606413">
