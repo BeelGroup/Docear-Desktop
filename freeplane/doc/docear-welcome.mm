@@ -1,4 +1,4 @@
-<map version="freeplane 1.2.0" dialect="docear 1.0" dcr_id="" dcr_uri="workspace:/../DocearWorkspace/trunk/freeplane/doc/docear-welcome.mm" docear_map_version="1.0" software_name="SciPlore_MindMapping" software_version="0.14" private="1" mapID="88c560da-0c67-49c7-870a-fa7c1b63bc38">
+<map version="doceare 1.0">
 <!--To view this file, download Docear - The Academic Literature Suite from http://www.docear.org -->
 <node TEXT="Welcome" FOLDED="false" ID="ID_1723255651" CREATED="1283093380553" MODIFIED="1322910607046" COLOR="#ffffff" BACKGROUND_COLOR="#0099cc">
 <font SIZE="16" BOLD="true" ITALIC="false"/>
@@ -238,7 +238,7 @@
 <node TEXT="Submit a Bug Report" ID="ID_1791784277" CREATED="1322912251555" MODIFIED="1323419137090" LINK="http://www.docear.org/support/bug-report/"/>
 <node TEXT="FAQ" ID="ID_418884785" CREATED="1322912256419" MODIFIED="1323419159561" LINK="http://www.docear.org/support/faq-frequently-asked-questions/"/>
 <node TEXT="Buy a Feature" ID="ID_850664765" CREATED="1322912265218" MODIFIED="1323419184426" LINK="http://www.docear.org/support/buy-a-feature/"/>
-<node TEXT="Watch a video" ID="ID_1137752462" CREATED="1326904333762" MODIFIED="1326904339279" LINK="http://www.youtube.com/watch?v=3T5V4wTo2uo"/>
+<node TEXT="Watch a video" ID="ID_1137752462" CREATED="1326904333762" MODIFIED="1326904339279" LINK="http://www.youtube.com/watch?v=ijU5BbbrZ_Y"/>
 </node>
 <node TEXT="Examples" POSITION="left" ID="ID_703448322" CREATED="1322906814721" MODIFIED="1322910930433" BACKGROUND_COLOR="#8dc9fc">
 <font SIZE="14" BOLD="true"/>
@@ -496,7 +496,7 @@
 <node TEXT="Mouse Actions" FOLDED="true" ID="ID_156487929" CREATED="1322910158642" MODIFIED="1323262060434">
 <font BOLD="true"/>
 <node TEXT="You can move nodes very quick with the mouse in various ways" ID="ID_1710120997" CREATED="1323262075512" MODIFIED="1323262092440"/>
-<node TEXT="Drag&amp;Drop the left corner of a node" ID="ID_1620693421" CREATED="1323262118533" MODIFIED="1323262129325">
+<node TEXT="Drag&amp;Drop the inner corner of a node" ID="ID_1620693421" CREATED="1323262118533" MODIFIED="1323262129325">
 <node TEXT="This will move the node to a free postion" ID="ID_1932019998" CREATED="1323262132244" MODIFIED="1323262141379"/>
 </node>
 <node TEXT="Drag&amp;Drop the center of a node" ID="ID_448465592" CREATED="1323262143077" MODIFIED="1323263781732">
