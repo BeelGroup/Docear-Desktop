@@ -10,9 +10,21 @@ public class RecommendationEntry {
 	private final URL clickUrl;
 	
 	public RecommendationEntry(String title, String url, String clickUrl) throws MalformedURLException {
-		this.title = title;
+		this.title = normalize(title);
 		this.link = (url==null ? null:new URL(url));
 		this.clickUrl = (clickUrl==null ? null:new URL(clickUrl));
+	}
+
+	private String normalize(String str) {
+		String[] tokens = str.split("\\s+");
+		StringBuilder sb = new StringBuilder();
+		for (String token : tokens) {
+			String tmp = token.trim();
+			sb.append(tmp.charAt(0));
+			sb.append(tmp.substring(1).toLowerCase());
+			sb.append(" ");
+		}
+		return sb.toString().trim();
 	}
 
 	public String getTitle() {
