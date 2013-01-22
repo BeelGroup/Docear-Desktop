@@ -13,8 +13,8 @@
 <intAttribute key="default_start_level" value="1"/>
 <booleanAttribute key="includeOptional" value="true"/>
 <listAttribute key="org.eclipse.debug.ui.favoriteGroups">
-<listEntry value="org.eclipse.debug.ui.launchGroup.run"/>
 <listEntry value="org.eclipse.debug.ui.launchGroup.debug"/>
+<listEntry value="org.eclipse.debug.ui.launchGroup.run"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.JAVA_COMMAND" value="java"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -console"/>
@@ -27,6 +27,6 @@
 <booleanAttribute key="tracing" value="false"/>
 <booleanAttribute key="useCustomFeatures" value="false"/>
 <booleanAttribute key="useDefaultConfigArea" value="true"/>
-<stringAttribute key="workspace_bundles" value="docear_plugin_optionpane@default:default,org.docear.plugin.bibtex@default:default,org.docear.plugin.core@default:default,org.docear.plugin.pdfutilities@default:default,org.docear.plugin.search@default:default,org.docear.plugin.services@default:default,org.freeplane.core@2:default,org.freeplane.plugin.bugreport@default:default,org.freeplane.plugin.formula@default:default,org.freeplane.plugin.help@default:default,org.freeplane.plugin.latex@default:default,org.freeplane.plugin.script@default:default,org.freeplane.plugin.svg@default:default,org.freeplane.plugin.workspace@default:default,org.freeplane.uispec4j@default:default"/>
+<stringAttribute key="workspace_bundles" value="org.docear.plugin.bibtex@default:default,org.docear.plugin.core@default:default,org.docear.plugin.pdfutilities@default:default,org.docear.plugin.search@default:default,org.docear.plugin.services@default:default,org.freeplane.core@2:default,org.freeplane.plugin.bugreport@default:default,org.freeplane.plugin.formula@default:default,org.freeplane.plugin.help@default:default,org.freeplane.plugin.latex@default:default,org.freeplane.plugin.script@default:default,org.freeplane.plugin.svg@default:default,org.freeplane.plugin.workspace@default:default,org.freeplane.uispec4j@default:default"/>
 <stringAttribute key="yk-options" value="&#10;snapshots-dir=&#10;additional-options2=onexit\=snapshot&#10;startup=0&#10;"/>
 </launchConfiguration>

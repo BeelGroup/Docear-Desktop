@@ -13,13 +13,13 @@ import java.util.Stack;
 
 import javax.swing.SwingUtilities;
 
-import org.docear.plugin.core.features.DocearNodeModelExtension.DocearExtensionKey;
-import org.docear.plugin.core.features.DocearNodeModelExtensionController;
 import org.docear.plugin.core.ui.SwingWorkerDialog;
 import org.docear.plugin.core.ui.SwingWorkerDialogLite;
 import org.docear.plugin.core.util.NodeUtilities;
 import org.docear.plugin.core.util.Tools;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
+import org.docear.plugin.pdfutilities.features.DocearNodeMonitoringExtensionController;
+import org.docear.plugin.pdfutilities.features.DocearNodeMonitoringExtension.DocearExtensionKey;
 import org.docear.plugin.pdfutilities.util.MonitoringUtils;
 import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.util.TextUtils;
@@ -112,7 +112,7 @@ public class MonitoringFlattenSubfoldersAction extends DocearAction {
 					SwingUtilities.invokeAndWait(
 					        new Runnable() {
 					            public void run(){					            	
-					            	NodeModel target = NodeUtilities.createFolderStructurePath(selected, entry.getValue());
+					            	NodeModel target = MonitoringUtils.createFolderStructurePath(selected, entry.getValue());
 									((MMapController) Controller.getCurrentModeController().getMapController()).moveNode(entry.getKey(), target, target.getChildCount());															
 					            }
 					        }
@@ -148,7 +148,7 @@ public class MonitoringFlattenSubfoldersAction extends DocearAction {
 	private void removePathNodes(NodeModel selected) throws InterruptedException, InvocationTargetException {
 		List<NodeModel> pathNodes = new ArrayList<NodeModel>();
 		for(NodeModel node : selected.getChildren()){
-			if(DocearNodeModelExtensionController.containsKey(node, DocearExtensionKey.MONITOR_PATH)){
+			if(DocearNodeMonitoringExtensionController.containsKey(node, DocearExtensionKey.MONITOR_PATH)){
 				pathNodes.add(node);
 			}
 		}
@@ -167,7 +167,7 @@ public class MonitoringFlattenSubfoldersAction extends DocearAction {
 		List<NodeModel> pathNodes = new ArrayList<NodeModel>();
 		List<NodeModel> monitorNodes = new ArrayList<NodeModel>();
 		for(NodeModel node : children){
-			if(DocearNodeModelExtensionController.containsKey(node, DocearExtensionKey.MONITOR_PATH)){
+			if(DocearNodeMonitoringExtensionController.containsKey(node, DocearExtensionKey.MONITOR_PATH)){
 				pathNodes.add(node);
 			}
 			else{

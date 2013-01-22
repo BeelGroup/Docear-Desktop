@@ -4,8 +4,8 @@ import java.util.Map.Entry;
 
 import org.docear.plugin.core.features.DocearMapModelController;
 import org.docear.plugin.core.features.DocearMapModelExtension;
-import org.docear.plugin.core.features.DocearNodeModelExtension;
-import org.docear.plugin.core.features.DocearNodeModelExtensionController;
+import org.docear.plugin.pdfutilities.features.DocearNodeMonitoringExtension;
+import org.docear.plugin.pdfutilities.features.DocearNodeMonitoringExtensionController;
 import org.docear.plugin.pdfutilities.features.IAnnotation;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
 import org.freeplane.core.util.TextUtils;
@@ -60,7 +60,7 @@ public class DocearNodeSelectionListener implements INodeSelectionListener {
 			Controller.getCurrentController().getViewController().addStatusInfo(TextUtils.getText("DocearNodeSelectionListener.12"), builder.toString()); //$NON-NLS-1$
 		}
 		
-		DocearNodeModelExtension extension = DocearNodeModelExtensionController.getModel(node);
+		DocearNodeMonitoringExtension extension = DocearNodeMonitoringExtensionController.getModel(node);
 		if(extension != null){
 			StringBuilder builder = new StringBuilder();
 			

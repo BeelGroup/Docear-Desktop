@@ -1,6 +1,5 @@
 package org.docear.plugin.core.util;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -11,11 +10,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Stack;
 
 import org.apache.commons.lang.NullArgumentException;
-import org.docear.plugin.core.features.DocearNodeModelExtension.DocearExtensionKey;
-import org.docear.plugin.core.features.DocearNodeModelExtensionController;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.attribute.AttributeController;
 import org.freeplane.features.attribute.AttributeRegistry;
@@ -32,7 +28,6 @@ import org.freeplane.features.mapio.mindmapmode.MMapIO;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.mode.mindmapmode.MModeController;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
 import org.freeplane.view.swing.map.MapView;
 import org.freeplane.view.swing.map.NodeView;
 import org.freeplane.view.swing.map.attribute.AttributeView;
@@ -126,30 +121,6 @@ public class NodeUtilities {
 		((MMapController) Controller.getCurrentModeController().getMapController()).insertNode(node, target, false, isLeft, isLeft);
 
 		return node;
-	}
-
-	public static NodeModel createFolderStructurePath(NodeModel target, Stack<File> pathStack) {
-		if (pathStack.isEmpty()) {
-			return target;
-		}
-		File parent = pathStack.pop();
-		NodeModel pathNode = null;
-		for (NodeModel child : target.getChildren()) {
-			if (child.getText().equals(parent.getName()) && DocearNodeModelExtensionController.containsKey(child, DocearExtensionKey.MONITOR_PATH)) {
-				pathNode = child;
-				break;
-			}
-		}
-		if (pathNode != null) {
-			return createFolderStructurePath(pathNode, pathStack);
-		}
-		else {
-			pathNode = ((MMapController) Controller.getCurrentModeController().getMapController()).newNode(parent.getName(), target.getMap());
-			DocearNodeModelExtensionController.setEntry(pathNode, DocearExtensionKey.MONITOR_PATH, null);
-			setLinkFrom(WorkspaceUtils.getURI(parent), pathNode);
-			insertChildNodeFrom(pathNode, target.isLeft(), target);
-			return createFolderStructurePath(pathNode, pathStack);
-		}
 	}
 
 	public static boolean setAttributeValue(NodeModel target, String attributeKey, Object value) {

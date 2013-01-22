@@ -67,6 +67,7 @@ import org.docear.plugin.pdfutilities.actions.RadioButtonAction;
 import org.docear.plugin.pdfutilities.actions.ShowInstalledPdfReadersDialogAction;
 import org.docear.plugin.pdfutilities.actions.ShowPdfReaderDefinitionDialogAction;
 import org.docear.plugin.pdfutilities.actions.UpdateMonitoringFolderAction;
+import org.docear.plugin.pdfutilities.features.DocearNodeMonitoringExtensionController;
 import org.docear.plugin.pdfutilities.features.IAnnotation;
 import org.docear.plugin.pdfutilities.features.PDFReaderHandle;
 import org.docear.plugin.pdfutilities.features.PDFReaderHandle.RegistryBranch;
@@ -75,8 +76,8 @@ import org.docear.plugin.pdfutilities.listener.DocearAutoMonitoringListener;
 import org.docear.plugin.pdfutilities.listener.DocearNodeDropListener;
 import org.docear.plugin.pdfutilities.listener.DocearNodeMouseMotionListener;
 import org.docear.plugin.pdfutilities.listener.DocearNodeSelectionListener;
-import org.docear.plugin.pdfutilities.listener.PdfNodeChangeListener;
 import org.docear.plugin.pdfutilities.listener.MonitorungNodeUpdater;
+import org.docear.plugin.pdfutilities.listener.PdfNodeChangeListener;
 import org.docear.plugin.pdfutilities.listener.WorkspaceNodeOpenDocumentListener;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
 import org.docear.plugin.pdfutilities.map.MapConverter;
@@ -619,7 +620,9 @@ public class PdfUtilitiesController extends ALanguageController {
 				}
 				return null;
 			}
-		});	
+		});
+		DocearNodeMonitoringExtensionController.install(new DocearNodeMonitoringExtensionController(modecontroller));
+		
 	}
 
 	private void registerActions() {

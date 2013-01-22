@@ -17,6 +17,7 @@ import javax.swing.SwingUtilities;
 import org.docear.plugin.core.actions.DocearAboutAction;
 import org.docear.plugin.core.actions.DocearOpenUrlAction;
 import org.docear.plugin.core.actions.DocearQuitAction;
+import org.docear.plugin.core.actions.DocearSetNodePrivacyAction;
 import org.docear.plugin.core.actions.DocearShowDataPrivacyStatementAction;
 import org.docear.plugin.core.actions.DocearShowDataProcessingTermsAction;
 import org.docear.plugin.core.actions.DocearShowTermsOfUseAction;
@@ -25,8 +26,8 @@ import org.docear.plugin.core.actions.SaveAsAction;
 import org.docear.plugin.core.features.DocearMapModelController;
 import org.docear.plugin.core.features.DocearMapModelExtension;
 import org.docear.plugin.core.features.DocearMapWriter;
-import org.docear.plugin.core.features.DocearNodeModelExtensionController;
-import org.docear.plugin.core.features.DocearNodeMovedExtensionController;
+import org.docear.plugin.core.features.DocearNodeModifiedExtensionController;
+import org.docear.plugin.core.features.DocearNodePrivacyExtensionController;
 import org.docear.plugin.core.listeners.MapChangeListenerAdapter;
 import org.docear.plugin.core.listeners.MapLifeCycleAndViewListener;
 import org.docear.plugin.core.listeners.PropertyListener;
@@ -107,12 +108,6 @@ public class CoreConfiguration extends ALanguageController {
 		loadAndStoreVersion(controller);
 		
 		adjustProperties(controller);
-		
-//		AFreeplaneAction previousAction = controller.getAction("QuitAction");
-//		if(previousAction != null) {
-//			controller.removeAction("QuitAction");
-//		}
-//		controller.addAction(new DocearQuitAction());
 		
 		AFreeplaneAction action = new DocearAboutAction();
 		replaceAction(action.getKey(), action);
@@ -238,6 +233,14 @@ public class CoreConfiguration extends ALanguageController {
 				builder.addAction("/menu_bar/help", new DocearShowDataPrivacyStatementAction(),	MenuBuilder.AS_CHILD);
 				builder.addAction("/menu_bar/help", new DocearShowDataProcessingTermsAction(),	MenuBuilder.AS_CHILD);
 				//builder.addAction("/menu_bar/help", new DocearShowNotificationBar(),	MenuBuilder.AS_CHILD);
+				if("true".equals(System.getProperty("docear.debug", "false"))) {
+					modeController.addAction(new DocearSetNodePrivacyAction());
+					builder.addSeparator("/menu_bar/edit", MenuBuilder.AS_CHILD);
+					builder.addAction("/menu_bar/edit", new DocearSetNodePrivacyAction(),	MenuBuilder.AS_CHILD);
+					builder.addSeparator("/node_popup", MenuBuilder.AS_CHILD);
+					builder.addAction("/node_popup", new DocearSetNodePrivacyAction(),	MenuBuilder.AS_CHILD);
+					
+				}
 			}
 		});
 		modeController.getUserInputListenerFactory().addToolBar(NotificationBar.TOOLBAR_NAME, ViewController.TOP, new NotificationBar());
@@ -253,8 +256,8 @@ public class CoreConfiguration extends ALanguageController {
 	}
 
 	private void registerController(ModeController modeController) {
-		DocearNodeModelExtensionController.install(new DocearNodeModelExtensionController(modeController));
-		DocearNodeMovedExtensionController.install(modeController);
+		DocearNodeModifiedExtensionController.install(modeController);
+		DocearNodePrivacyExtensionController.install(modeController);
 	}
 
 	private void replaceFreeplaneStringsAndActions(ModeController modeController) {
@@ -366,7 +369,12 @@ public class CoreConfiguration extends ALanguageController {
 		Controller.getCurrentController().getOptionPanelController().addPropertyLoadListener(new PropertyLoadListener());
 		Controller.getCurrentController().getResourceController().addPropertyChangeListener(new PropertyListener());
 		modeController.getMapController().addMapLifeCycleListener(new MapLifeCycleAndViewListener());
-		modeController.getMapController().addMapChangeListener(new MapChangeListenerAdapter());
+		MapChangeListenerAdapter adapter = new MapChangeListenerAdapter();
+		modeController.getMapController().addMapLifeCycleListener(adapter);
+		modeController.getMapController().addMapChangeListener(adapter);
+		modeController.getMapController().addNodeChangeListener(adapter);
+		modeController.getMapController().addNodeSelectionListener(adapter);
+		Controller.getCurrentController().getMapViewManager().addMapViewChangeListener(adapter);
 		Controller.getCurrentController().getMapViewManager().addMapViewChangeListener(new MapLifeCycleAndViewListener());
 		WorkspaceController.getIOController().registerNodeActionListener(AWorkspaceTreeNode.class, WorkspaceActionEvent.WSNODE_OPEN_DOCUMENT, new WorkspaceOpenDocumentListener());
 		WorkspaceUtils.getModel().addTreeModelListener(new WorkspaceTreeModelListener());

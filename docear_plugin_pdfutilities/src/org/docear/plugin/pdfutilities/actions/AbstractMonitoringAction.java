@@ -23,9 +23,6 @@ import org.docear.plugin.core.event.DocearEvent;
 import org.docear.plugin.core.event.DocearEventType;
 import org.docear.plugin.core.features.AnnotationID;
 import org.docear.plugin.core.features.DocearMapModelController;
-import org.docear.plugin.core.features.DocearNodeModelExtension;
-import org.docear.plugin.core.features.DocearNodeModelExtension.DocearExtensionKey;
-import org.docear.plugin.core.features.DocearNodeModelExtensionController;
 import org.docear.plugin.core.logger.DocearLogEvent;
 import org.docear.plugin.core.ui.SwingWorkerDialog;
 import org.docear.plugin.core.util.HtmlUtils;
@@ -34,7 +31,10 @@ import org.docear.plugin.core.util.Tools;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
 import org.docear.plugin.pdfutilities.features.AnnotationNodeModel;
+import org.docear.plugin.pdfutilities.features.DocearNodeMonitoringExtension;
+import org.docear.plugin.pdfutilities.features.DocearNodeMonitoringExtensionController;
 import org.docear.plugin.pdfutilities.features.IAnnotation;
+import org.docear.plugin.pdfutilities.features.DocearNodeMonitoringExtension.DocearExtensionKey;
 import org.docear.plugin.pdfutilities.features.IAnnotation.AnnotationType;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
 import org.docear.plugin.pdfutilities.map.MapConverter;
@@ -449,10 +449,10 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 				if (Tools.getAbsoluteUri(node1, node1.getMap()) == null && Tools.getAbsoluteUri(node2, node2.getMap()) != null) {
 					return false;
 				}
-				if (node1.containsExtension(DocearNodeModelExtension.class) && !node2.containsExtension(DocearNodeModelExtension.class)) {
+				if (node1.containsExtension(DocearNodeMonitoringExtension.class) && !node2.containsExtension(DocearNodeMonitoringExtension.class)) {
 					return false;
 				}
-				if (node2.containsExtension(DocearNodeModelExtension.class) && !node1.containsExtension(DocearNodeModelExtension.class)) {
+				if (node2.containsExtension(DocearNodeMonitoringExtension.class) && !node1.containsExtension(DocearNodeMonitoringExtension.class)) {
 					return false;
 				}
 				if (node1.containsExtension(IAnnotation.class) && !node2.containsExtension(IAnnotation.class)) {
@@ -461,7 +461,7 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 				if (node2.containsExtension(IAnnotation.class) && !node1.containsExtension(IAnnotation.class)) {
 					return false;
 				}
-				if (node1.containsExtension(DocearNodeModelExtension.class) && !node2.containsExtension(DocearNodeModelExtension.class)) {
+				if (node1.containsExtension(DocearNodeMonitoringExtension.class) && !node2.containsExtension(DocearNodeMonitoringExtension.class)) {
 					return false;
 				}
 				if (node1.containsExtension(AnnotationModel.class) && !node2.containsExtension(AnnotationModel.class)) {
@@ -524,7 +524,7 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 							if (canceled()) return result;
 							NodeModel node = ((MMapController) Controller.getCurrentModeController().getMapController()).newNode(parent.getName(),
 									target.getMap());
-							DocearNodeModelExtensionController.setEntry(node, DocearExtensionKey.MONITOR_PATH, null);
+							DocearNodeMonitoringExtensionController.setEntry(node, DocearExtensionKey.MONITOR_PATH, null);
 							NodeUtilities.setLinkFrom(WorkspaceUtils.getURI(parent), node);
 							result.push(node);
 							parent = parent.getParentFile();

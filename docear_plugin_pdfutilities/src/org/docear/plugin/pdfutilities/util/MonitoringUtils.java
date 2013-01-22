@@ -18,6 +18,8 @@ import org.docear.plugin.core.util.Tools;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
 import org.docear.plugin.pdfutilities.features.AnnotationNodeModel;
+import org.docear.plugin.pdfutilities.features.DocearNodeMonitoringExtension.DocearExtensionKey;
+import org.docear.plugin.pdfutilities.features.DocearNodeMonitoringExtensionController;
 import org.docear.plugin.pdfutilities.features.IAnnotation;
 import org.docear.plugin.pdfutilities.features.IAnnotation.AnnotationType;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
@@ -30,6 +32,7 @@ import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.map.mindmapmode.MMapController;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.mindmapmode.MModeController;
+import org.freeplane.plugin.workspace.WorkspaceUtils;
 
 public abstract class MonitoringUtils {
 	
@@ -161,11 +164,34 @@ public abstract class MonitoringUtils {
 		newList.add(root);
 		if(!flattenSubfolder){		
 			Stack<File> folderStack = getFolderStructureStack(target, pdfFile);
-			target = NodeUtilities.createFolderStructurePath(target, folderStack);
+			target = createFolderStructurePath(target, folderStack);
 		}
 		return insertNewChildNodesFrom(newList, isLeft, target, target);
 	}
 	
+	public static NodeModel createFolderStructurePath(NodeModel target, Stack<File> pathStack) {
+		if (pathStack.isEmpty()) {
+			return target;
+		}
+		File parent = pathStack.pop();
+		NodeModel pathNode = null;
+		for (NodeModel child : target.getChildren()) {
+			if (child.getText().equals(parent.getName()) && DocearNodeMonitoringExtensionController.containsKey(child, DocearExtensionKey.MONITOR_PATH)) {
+				pathNode = child;
+				break;
+			}
+		}
+		if (pathNode != null) {
+			return createFolderStructurePath(pathNode, pathStack);
+		}
+		else {
+			pathNode = ((MMapController) Controller.getCurrentModeController().getMapController()).newNode(parent.getName(), target.getMap());
+			DocearNodeMonitoringExtensionController.setEntry(pathNode, DocearExtensionKey.MONITOR_PATH, null);
+			NodeUtilities.setLinkFrom(WorkspaceUtils.getURI(parent), pathNode);
+			NodeUtilities.insertChildNodeFrom(pathNode, target.isLeft(), target);
+			return createFolderStructurePath(pathNode, pathStack);
+		}
+	}
 	public static Map<AnnotationID, Collection<AnnotationNodeModel>> getOldAnnotationsFromMaps(Collection<URI> mindmaps){
 		Map<AnnotationID, Collection<AnnotationNodeModel>> result = new HashMap<AnnotationID, Collection<AnnotationNodeModel>>();
 		for(MapModel map : NodeUtilities.getMapsFromUris(mindmaps)){
