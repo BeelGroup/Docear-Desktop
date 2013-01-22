@@ -1,7 +1,7 @@
 <map version="docear 1.0">
 <!--To view this file, download Docear - The Academic Literature Suite from http://www.docear.org -->
 <attribute_registry SHOW_ATTRIBUTES="hide"/>
-<node FOLDED="false" ID="ID_1723255651" CREATED="1283093380553" MODIFIED="1345708716792"><richcontent TYPE="NODE">
+<node FOLDED="false" ID="ID_1723255651" CREATED="1283093380553" MODIFIED="1358858562619" DCR_PRIVACY_LEVEL="DEMO"><richcontent TYPE="NODE">
 
 <html>
   <head>
@@ -68,7 +68,7 @@
 </map_styles>
 </hook>
 <hook NAME="AutomaticEdgeColor" COUNTER="8"/>
-<node LOCALIZED_STYLE_REF="defaultstyle.floating" POSITION="right" ID="ID_989309610" CREATED="1344498811808" MODIFIED="1345720865038" HGAP="-134" VSHIFT="-59"><richcontent TYPE="NODE">
+<node LOCALIZED_STYLE_REF="defaultstyle.floating" POSITION="right" ID="ID_989309610" CREATED="1344498811808" MODIFIED="1358858562619" HGAP="-134" VSHIFT="-59" DCR_PRIVACY_LEVEL="DEMO"><richcontent TYPE="NODE">
 
 <html>
   <head>
@@ -94,7 +94,7 @@
 </html>
 </richcontent>
 </node>
-<node POSITION="right" ID="ID_1842977434" CREATED="1344501206478" MODIFIED="1344504253928"><richcontent TYPE="NODE">
+<node POSITION="right" ID="ID_1842977434" CREATED="1344501206478" MODIFIED="1358858562619" DCR_PRIVACY_LEVEL="DEMO"><richcontent TYPE="NODE">
 
 <html>
   <head>
@@ -114,19 +114,19 @@
 </html>
 </richcontent>
 <edge COLOR="#00ff00"/>
-<node TEXT="Docear -- An Academic&#xa;Literature Suite.pdf" ID="ID_1133327934" CREATED="1345719244799" MODIFIED="1345719321171" LINK="@LITERATURE_REPO_DEMO@/Docear%20--%20An%20Academic%20Literature%20Suite.pdf">
+<node TEXT="Docear -- An Academic&#xa;Literature Suite.pdf" ID="ID_1133327934" CREATED="1345719244799" MODIFIED="1358858562619" LINK="@LITERATURE_REPO_DEMO@/Docear%20--%20An%20Academic%20Literature%20Suite.pdf" DCR_PRIVACY_LEVEL="DEMO">
 <pdf_annotation type="PDF_FILE"/>
 <attribute NAME="key" VALUE="Beel2011c"/>
 <attribute NAME="authors" VALUE="{B}eel, {J}oeran and {G}ipp, {B}ela and {L}anger, {S}tefan and {G}enzmehr, {M}arcel"/>
 <attribute NAME="title" VALUE="{D}ocear: {A}n {A}cademic {L}iterature {S}uite for {S}earching, {O}rganizing and {C}reating {A}cademic {L}iterature"/>
 <attribute NAME="year" VALUE="2011"/>
-<node TEXT="Components&#xa;of Docear" ID="ID_1088249400" CREATED="1345719244815" MODIFIED="1345719324793" LINK="@LITERATURE_REPO_DEMO@/Docear%20--%20An%20Academic%20Literature%20Suite.pdf">
+<node TEXT="Components&#xa;of Docear" ID="ID_1088249400" CREATED="1345719244815" MODIFIED="1358858562619" LINK="@LITERATURE_REPO_DEMO@/Docear%20--%20An%20Academic%20Literature%20Suite.pdf" DCR_PRIVACY_LEVEL="DEMO">
 <pdf_annotation type="BOOKMARK" page="1" object_number="260" generation_number="0"/>
 <attribute NAME="key" VALUE="Beel2011c"/>
 <attribute NAME="authors" VALUE="{B}eel, {J}oeran and {G}ipp, {B}ela and {L}anger, {S}tefan and {G}enzmehr, {M}arcel"/>
 <attribute NAME="title" VALUE="{D}ocear: {A}n {A}cademic {L}iterature {S}uite for {S}earching, {O}rganizing and {C}reating {A}cademic {L}iterature"/>
 <attribute NAME="year" VALUE="2011"/>
-<node TEXT="Digital Library" ID="ID_1644946250" CREATED="1345719244819" MODIFIED="1345719310537" LINK="@LITERATURE_REPO_DEMO@/Docear%20--%20An%20Academic%20Literature%20Suite.pdf">
+<node TEXT="Digital Library" ID="ID_1644946250" CREATED="1345719244819" MODIFIED="1358858562619" LINK="@LITERATURE_REPO_DEMO@/Docear%20--%20An%20Academic%20Literature%20Suite.pdf" DCR_PRIVACY_LEVEL="DEMO">
 <pdf_annotation type="BOOKMARK" page="1" object_number="263" generation_number="0"/>
 <attribute NAME="key" VALUE="Beel2011c"/>
 <attribute NAME="authors" VALUE="{B}eel, {J}oeran and {G}ipp, {B}ela and {L}anger, {S}tefan and {G}enzmehr, {M}arcel"/>
@@ -134,53 +134,53 @@
 <attribute NAME="year" VALUE="2011"/>
 <hook NAME="FirstGroupNode"/>
 </node>
-<node TEXT="Research Module" ID="ID_1677163355" CREATED="1345719244824" MODIFIED="1345719244824" LINK="@LITERATURE_REPO_DEMO@/Docear%20--%20An%20Academic%20Literature%20Suite.pdf">
+<node TEXT="Research Module" ID="ID_1677163355" CREATED="1345719244824" MODIFIED="1358858562619" LINK="@LITERATURE_REPO_DEMO@/Docear%20--%20An%20Academic%20Literature%20Suite.pdf" DCR_PRIVACY_LEVEL="DEMO">
 <pdf_annotation type="BOOKMARK" page="1" object_number="266" generation_number="0"/>
 <attribute NAME="key" VALUE="Beel2011c"/>
 <attribute NAME="authors" VALUE="{B}eel, {J}oeran and {G}ipp, {B}ela and {L}anger, {S}tefan and {G}enzmehr, {M}arcel"/>
 <attribute NAME="title" VALUE="{D}ocear: {A}n {A}cademic {L}iterature {S}uite for {S}earching, {O}rganizing and {C}reating {A}cademic {L}iterature"/>
 <attribute NAME="year" VALUE="2011"/>
 </node>
-<node TEXT="PDF Viewer" ID="ID_1343576812" CREATED="1345719244828" MODIFIED="1345719244828" LINK="@LITERATURE_REPO_DEMO@/Docear%20--%20An%20Academic%20Literature%20Suite.pdf">
+<node TEXT="PDF Viewer" ID="ID_1343576812" CREATED="1345719244828" MODIFIED="1358858562619" LINK="@LITERATURE_REPO_DEMO@/Docear%20--%20An%20Academic%20Literature%20Suite.pdf" DCR_PRIVACY_LEVEL="DEMO">
 <pdf_annotation type="BOOKMARK" page="1" object_number="269" generation_number="0"/>
 <attribute NAME="key" VALUE="Beel2011c"/>
 <attribute NAME="authors" VALUE="{B}eel, {J}oeran and {G}ipp, {B}ela and {L}anger, {S}tefan and {G}enzmehr, {M}arcel"/>
 <attribute NAME="title" VALUE="{D}ocear: {A}n {A}cademic {L}iterature {S}uite for {S}earching, {O}rganizing and {C}reating {A}cademic {L}iterature"/>
 <attribute NAME="year" VALUE="2011"/>
 </node>
-<node TEXT="Mind Mapping" ID="ID_1384418042" CREATED="1345719244833" MODIFIED="1345719244833" LINK="@LITERATURE_REPO_DEMO@/Docear%20--%20An%20Academic%20Literature%20Suite.pdf">
+<node TEXT="Mind Mapping" ID="ID_1384418042" CREATED="1345719244833" MODIFIED="1358858562619" LINK="@LITERATURE_REPO_DEMO@/Docear%20--%20An%20Academic%20Literature%20Suite.pdf" DCR_PRIVACY_LEVEL="DEMO">
 <pdf_annotation type="BOOKMARK" page="1" object_number="272" generation_number="0"/>
 <attribute NAME="key" VALUE="Beel2011c"/>
 <attribute NAME="authors" VALUE="{B}eel, {J}oeran and {G}ipp, {B}ela and {L}anger, {S}tefan and {G}enzmehr, {M}arcel"/>
 <attribute NAME="title" VALUE="{D}ocear: {A}n {A}cademic {L}iterature {S}uite for {S}earching, {O}rganizing and {C}reating {A}cademic {L}iterature"/>
 <attribute NAME="year" VALUE="2011"/>
 </node>
-<node TEXT="Word Processor" ID="ID_1530515638" CREATED="1345719244837" MODIFIED="1345719244837" LINK="@LITERATURE_REPO_DEMO@/Docear%20--%20An%20Academic%20Literature%20Suite.pdf">
+<node TEXT="Word Processor" ID="ID_1530515638" CREATED="1345719244837" MODIFIED="1358858562619" LINK="@LITERATURE_REPO_DEMO@/Docear%20--%20An%20Academic%20Literature%20Suite.pdf" DCR_PRIVACY_LEVEL="DEMO">
 <pdf_annotation type="BOOKMARK" page="1" object_number="275" generation_number="0"/>
 <attribute NAME="key" VALUE="Beel2011c"/>
 <attribute NAME="authors" VALUE="{B}eel, {J}oeran and {G}ipp, {B}ela and {L}anger, {S}tefan and {G}enzmehr, {M}arcel"/>
 <attribute NAME="title" VALUE="{D}ocear: {A}n {A}cademic {L}iterature {S}uite for {S}earching, {O}rganizing and {C}reating {A}cademic {L}iterature"/>
 <attribute NAME="year" VALUE="2011"/>
 </node>
-<node TEXT="Reference Manager" ID="ID_878641558" CREATED="1345719244841" MODIFIED="1345719244842" LINK="@LITERATURE_REPO_DEMO@/Docear%20--%20An%20Academic%20Literature%20Suite.pdf">
+<node TEXT="Reference Manager" ID="ID_878641558" CREATED="1345719244841" MODIFIED="1358858562619" LINK="@LITERATURE_REPO_DEMO@/Docear%20--%20An%20Academic%20Literature%20Suite.pdf" DCR_PRIVACY_LEVEL="DEMO">
 <pdf_annotation type="BOOKMARK" page="1" object_number="278" generation_number="0"/>
 <attribute NAME="key" VALUE="Beel2011c"/>
 <attribute NAME="authors" VALUE="{B}eel, {J}oeran and {G}ipp, {B}ela and {L}anger, {S}tefan and {G}enzmehr, {M}arcel"/>
 <attribute NAME="title" VALUE="{D}ocear: {A}n {A}cademic {L}iterature {S}uite for {S}earching, {O}rganizing and {C}reating {A}cademic {L}iterature"/>
 <attribute NAME="year" VALUE="2011"/>
 </node>
-<node TEXT="Import/Export Filter" ID="ID_639641377" CREATED="1345719244846" MODIFIED="1345719244846" LINK="@LITERATURE_REPO_DEMO@/Docear%20--%20An%20Academic%20Literature%20Suite.pdf">
+<node TEXT="Import/Export Filter" ID="ID_639641377" CREATED="1345719244846" MODIFIED="1358858562619" LINK="@LITERATURE_REPO_DEMO@/Docear%20--%20An%20Academic%20Literature%20Suite.pdf" DCR_PRIVACY_LEVEL="DEMO">
 <pdf_annotation type="BOOKMARK" page="1" object_number="281" generation_number="0"/>
 <attribute NAME="key" VALUE="Beel2011c"/>
 <attribute NAME="authors" VALUE="{B}eel, {J}oeran and {G}ipp, {B}ela and {L}anger, {S}tefan and {G}enzmehr, {M}arcel"/>
 <attribute NAME="title" VALUE="{D}ocear: {A}n {A}cademic {L}iterature {S}uite for {S}earching, {O}rganizing and {C}reating {A}cademic {L}iterature"/>
 <attribute NAME="year" VALUE="2011"/>
 </node>
-<node TEXT="these PDF bookmarks are not&#xa;yet in any other mind map.&#xa;You could move them now to the&#xa;Literature &amp; Annotations Map" ID="ID_900629802" CREATED="1345719310533" MODIFIED="1345719312235">
+<node TEXT="these PDF bookmarks are not&#xa;yet in any other mind map.&#xa;You could move them now to the&#xa;Literature &amp; Annotations Map" ID="ID_900629802" CREATED="1345719310533" MODIFIED="1358858562619" DCR_PRIVACY_LEVEL="DEMO">
 <hook NAME="SummaryNode"/>
 </node>
 </node>
-<node TEXT="Description of Docear&apos;s&#xa;general concept" ID="ID_1859668322" CREATED="1345719244850" MODIFIED="1345719330569" LINK="@LITERATURE_REPO_DEMO@/Docear%20--%20An%20Academic%20Literature%20Suite.pdf">
+<node TEXT="Description of Docear&apos;s&#xa;general concept" ID="ID_1859668322" CREATED="1345719244850" MODIFIED="1358858562619" LINK="@LITERATURE_REPO_DEMO@/Docear%20--%20An%20Academic%20Literature%20Suite.pdf" DCR_PRIVACY_LEVEL="DEMO">
 <pdf_annotation type="BOOKMARK" page="2" object_number="322" generation_number="0"/>
 <attribute NAME="key" VALUE="Beel2011c"/>
 <attribute NAME="authors" VALUE="{B}eel, {J}oeran and {G}ipp, {B}ela and {L}anger, {S}tefan and {G}enzmehr, {M}arcel"/>

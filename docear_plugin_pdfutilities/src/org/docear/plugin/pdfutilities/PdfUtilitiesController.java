@@ -959,7 +959,7 @@ public class PdfUtilitiesController extends ALanguageController {
 					else {
 						NodeUtilities.setAttributeValue(map.getRootNode(), PdfUtilitiesController.MON_FLATTEN_DIRS, 0);
 					}
-					DocearMapModelController.getModel(map).setType(DocearMapType.incoming);
+//					DocearMapModelController.getModel(map).setType(DocearMapType.incoming);
 					if (!isMonitoringNode) {
 //						List<NodeModel> list = new ArrayList<NodeModel>();
 //						list.add(map.getRootNode());
@@ -968,14 +968,14 @@ public class PdfUtilitiesController extends ALanguageController {
 					map.setSaved(false);
 					((MFileManager) UrlManager.getController()).save(map, false);
 				}
-				if (DocearEventType.NEW_MY_PUBLICATIONS.equals(event.getType())) {
-					MapModel map = (MapModel) event.getEventObject();
-					DocearMapModelController.getModel(map).setType(DocearMapType.my_publications);
-				}
-				if (DocearEventType.NEW_LITERATURE_ANNOTATIONS.equals(event.getType())) {
-					MapModel map = (MapModel) event.getEventObject();
-					DocearMapModelController.getModel(map).setType(DocearMapType.literature_annotations);
-				}
+//				if (DocearEventType.NEW_MY_PUBLICATIONS.equals(event.getType())) {
+//					MapModel map = (MapModel) event.getEventObject();
+//					DocearMapModelController.getModel(map).setType(DocearMapType.my_publications);
+//				}
+//				if (DocearEventType.NEW_LITERATURE_ANNOTATIONS.equals(event.getType())) {
+//					MapModel map = (MapModel) event.getEventObject();
+//					DocearMapModelController.getModel(map).setType(DocearMapType.literature_annotations);
+//				}
 			}
 		});
 		WorkspaceController.getController().addWorkspaceListener(new DefaultWorkspaceEventListener());

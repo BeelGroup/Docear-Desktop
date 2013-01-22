@@ -24,13 +24,14 @@ public class DocearNodeSelectionListener implements INodeSelectionListener {
 	public void onSelect(NodeModel node) {	
 		DocearMapModelExtension mapExtension = DocearMapModelController.getModel(node.getMap());
 		String mapVersion = ""; //$NON-NLS-1$
+		Controller.getCurrentController().getViewController().removeStatus("DocearMapInfo");
 		if(mapExtension != null){
 			mapVersion = TextUtils.getText("DocearNodeSelectionListener.4") + mapExtension.getVersion();  //$NON-NLS-1$
 		}
 		else{
 			mapVersion = TextUtils.getText("DocearNodeSelectionListener.5");  //$NON-NLS-1$
 		}
-		Controller.getCurrentController().getViewController().addStatusInfo(TextUtils.getText("DocearNodeSelectionListener.6"), mapVersion); //$NON-NLS-1$
+		Controller.getCurrentController().getViewController().addStatusInfo("DocearMapInfo", mapVersion); //$NON-NLS-1$
 		
 		
 		IAnnotation model = AnnotationController.getModel(node, false);
@@ -57,7 +58,10 @@ public class DocearNodeSelectionListener implements INodeSelectionListener {
 				builder.append(TextUtils.getText("DocearNodeSelectionListener.11") + model.getAnnotationID().getId()); //$NON-NLS-1$
 			}
 			
-			Controller.getCurrentController().getViewController().addStatusInfo(TextUtils.getText("DocearNodeSelectionListener.12"), builder.toString()); //$NON-NLS-1$
+			Controller.getCurrentController().getViewController().addStatusInfo("DocearAnnotationModelInfo", builder.toString()); //$NON-NLS-1$
+		}
+		else {
+			Controller.getCurrentController().getViewController().removeStatus("DocearAnnotationModelInfo");
 		}
 		
 		DocearNodeMonitoringExtension extension = DocearNodeMonitoringExtensionController.getModel(node);
@@ -83,7 +87,10 @@ public class DocearNodeSelectionListener implements INodeSelectionListener {
 				}
 			}
 			
-			Controller.getCurrentController().getViewController().addStatusInfo("Docear Extension Info", builder.toString()); //$NON-NLS-1$
+			Controller.getCurrentController().getViewController().addStatusInfo("DocearExtensionInfo", builder.toString()); //$NON-NLS-1$
+		}
+		else {
+			Controller.getCurrentController().getViewController().removeStatus("DocearExtensionInfo");
 		}
 	}
 

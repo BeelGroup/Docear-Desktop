@@ -10,7 +10,10 @@ import org.apache.commons.io.FileUtils;
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.features.DocearMapModelController;
 import org.docear.plugin.core.features.DocearMapModelExtension;
+import org.docear.plugin.core.features.DocearNodePrivacyExtensionController;
 import org.docear.plugin.core.features.DocearMapModelExtension.DocearMapType;
+import org.docear.plugin.core.features.DocearNodePrivacyExtensionController.DocearNodePrivacyExtension;
+import org.docear.plugin.core.features.DocearNodePrivacyExtensionController.DocearPrivacyLevel;
 import org.docear.plugin.core.logger.DocearLogEvent;
 import org.docear.plugin.core.ui.MapIdsConflictsPanel;
 import org.freeplane.core.ui.components.UITools;
@@ -114,18 +117,26 @@ public class MapLifeCycleAndViewListener implements IMapLifeCycleListener, IMapV
 			dmme.setMapId(DocearMapModelController.createMapId());
 		}
 		
-		//DOCEAR: hack to prevent old trash maps from not having the type "trash"
+		//DOCEAR - hack to prevent old trash maps from not having the type "trash"
 		File f = map.getFile();
 		File libraryPath = WorkspaceUtils.resolveURI(DocearController.getController().getLibraryPath());
 		if (f != null) {
 			if ("trash.mm".equals(f.getName())) {				
 				if (f.getAbsolutePath().startsWith(libraryPath.getAbsolutePath())) {
 					dmme.setType(DocearMapType.trash);
+					DocearNodePrivacyExtension ext = DocearNodePrivacyExtensionController.getExtension(map.getRootNode());
+					if(ext == null) {
+						DocearNodePrivacyExtensionController.getController().setPrivacyLevel(map.getRootNode(), DocearPrivacyLevel.DEMO);
+					}
 				}
 			}
 			else if ("temp.mm".equals(f.getName())) {				
 				if (f.getAbsolutePath().startsWith(libraryPath.getAbsolutePath())) {
 					dmme.setType(DocearMapType.temp);
+					DocearNodePrivacyExtension ext = DocearNodePrivacyExtensionController.getExtension(map.getRootNode());
+					if(ext == null) {
+						DocearNodePrivacyExtensionController.getController().setPrivacyLevel(map.getRootNode(), DocearPrivacyLevel.DEMO);
+					}
 				}
 			}
 		}

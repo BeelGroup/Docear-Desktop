@@ -1,5 +1,7 @@
 package org.docear.plugin.core.features;
 
+import java.util.Date;
+
 import org.freeplane.core.extension.IExtension;
 import org.freeplane.core.io.IAttributeHandler;
 import org.freeplane.core.io.IExtensionAttributeWriter;
@@ -8,6 +10,7 @@ import org.freeplane.core.io.ReadManager;
 import org.freeplane.core.io.WriteManager;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.MapController;
+import org.freeplane.features.map.NodeChangeEvent;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
@@ -79,11 +82,18 @@ public class DocearNodePrivacyExtensionController implements IExtension {
 			return;
 		}
 		DocearNodePrivacyExtension extension = getExtension(node);
+		DocearPrivacyLevel oldValue = null;
 		if(extension == null) {
 			extension = new DocearNodePrivacyExtension();
 			node.addExtension(extension);
 		}
+		else {
+			oldValue = extension.getPrivacyLevel();
+		}
 		extension.setPrivacyLevel(level);
+		// update modification time
+		node.getHistoryInformation().setLastModifiedAt(new Date());
+		node.fireNodeChanged(new NodeChangeEvent(node, "DOCEAR_PRIVACY_LEVEL", oldValue, level));
 		
 	}
 	

@@ -1,7 +1,7 @@
 <map version="docear 1.0">
 <!--To view this file, download Docear - The Academic Literature Suite from http://www.docear.org -->
 <attribute_registry SHOW_ATTRIBUTES="hide"/>
-<node TEXT="Literature &amp; Annotations" FOLDED="false" ID="ID_1723255651" CREATED="1283093380553" MODIFIED="1345646166454"><hook NAME="MapStyle" zoom="1.099">
+<node TEXT="Literature &amp; Annotations" FOLDED="false" ID="ID_1723255651" CREATED="1283093380553" MODIFIED="1358858549683" DCR_PRIVACY_LEVEL="DEMO"><hook NAME="MapStyle" zoom="1.099">
     <properties show_icon_for_attributes="true" show_note_icons="true"/>
 
 <map_styles>
@@ -52,7 +52,7 @@
 </map_styles>
 </hook>
 <hook NAME="AutomaticEdgeColor" COUNTER="2"/>
-<node FOLDED="true" POSITION="right" ID="ID_1626968962" CREATED="1344504053189" MODIFIED="1345720584095"><richcontent TYPE="NODE">
+<node FOLDED="true" POSITION="right" ID="ID_1626968962" CREATED="1344504053189" MODIFIED="1358858549683" DCR_PRIVACY_LEVEL="DEMO"><richcontent TYPE="NODE">
 
 <html>
   <head>
@@ -73,7 +73,6 @@
     </p>
   </body>
 </html>
-
 </richcontent>
 <edge COLOR="#ff0000"/>
 <node TEXT="Academic Software&#xa;&amp; Services" FOLDED="true" ID="ID_1702652111" CREATED="1344508592622" MODIFIED="1344509666867">
@@ -509,14 +508,13 @@
     </p>
   </body>
 </html>
-
 </richcontent>
 <hook NAME="SummaryNode"/>
 <font BOLD="true"/>
 </node>
 </node>
 </node>
-<node LOCALIZED_STYLE_REF="defaultstyle.floating" POSITION="left" ID="ID_989309610" CREATED="1344498811808" MODIFIED="1345720799830" HGAP="-280" VSHIFT="-171"><richcontent TYPE="NODE">
+<node LOCALIZED_STYLE_REF="defaultstyle.floating" POSITION="left" ID="ID_989309610" CREATED="1344498811808" MODIFIED="1358858549683" HGAP="-280" VSHIFT="-171" DCR_PRIVACY_LEVEL="DEMO"><richcontent TYPE="NODE">
 
 <html>
   <head>

@@ -38,8 +38,6 @@ public class DocearSetNodePrivacyAction extends AFreeplaneAction {
 			for (NodeModel nodeModel : nodes) {
 				// set the privacy level
 				DocearNodePrivacyExtensionController.getController().setPrivacyLevel(nodeModel, level);
-				// update modification time
-				nodeModel.getHistoryInformation().setLastModifiedAt(now);
 				dirtyMap = true;
 			}
 			if(dirtyMap) {
