@@ -7,13 +7,13 @@ package org.freeplane.plugin.workspace.controller;
 import java.util.Iterator;
 import java.util.Stack;
 
-import javax.swing.JTree;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.components.IWorkspaceView;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
-import org.freeplane.plugin.workspace.model.WorkspaceIndexedTreeModel;
+import org.freeplane.plugin.workspace.model.WorkspaceModel;
 
 /**
  * 
@@ -38,22 +38,25 @@ public class DefaultWorkspaceExpansionStateHandler extends AWorkspaceExpansionSt
 	 * {@inheritDoc}
 	 */
 	public void restoreExpansionStates() {
-		lock();		
-		WorkspaceIndexedTreeModel model = WorkspaceController.getController().getWorkspaceModel();
-		JTree view = WorkspaceController.getController().getWorkspaceViewTree();
-		Iterator<String> iterator = getSet().iterator(); 
-		while(iterator.hasNext()) {
-			String key = iterator.next();
-			if(model.containsNode(key)) {			
-				view.expandPath(model.getNode(key).getTreePath());
-			} else {
-				iterator.remove();
+		lock();
+		AWorkspaceModeExtension ctrl = WorkspaceController.getCurrentModeExtension();
+		if(ctrl.getView() != null) {
+			WorkspaceModel model = ctrl.getModel();
+			IWorkspaceView view = ctrl.getView();
+			Iterator<String> iterator = getSet().iterator(); 
+			while(iterator.hasNext()) {
+				String key = iterator.next();
+				if(model.containsNode(key)) {			
+					view.expandPath(model.getNode(key).getTreePath());
+				} else {
+					iterator.remove();
+				}
 			}
-		}
-		while(!collapseStack.isEmpty()) {
-			String key = collapseStack.pop();
-			if(model.containsNode(key)) {			
-				view.collapsePath(model.getNode(key).getTreePath());
+			while(!collapseStack.isEmpty()) {
+				String key = collapseStack.pop();
+				if(model.containsNode(key)) {			
+					view.collapsePath(model.getNode(key).getTreePath());
+				}
 			}
 		}
 		unlock();

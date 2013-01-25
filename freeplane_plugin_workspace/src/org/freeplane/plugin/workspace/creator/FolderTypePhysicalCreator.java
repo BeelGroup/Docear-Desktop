@@ -5,7 +5,6 @@ import java.net.URI;
 
 import org.freeplane.n3.nanoxml.XMLElement;
 import org.freeplane.plugin.workspace.WorkspaceController;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
 import org.freeplane.plugin.workspace.model.AWorkspaceNodeCreator;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.nodes.AFolderNode;
@@ -27,7 +26,7 @@ public class FolderTypePhysicalCreator extends AWorkspaceNodeCreator {
 		}
 		node.setPath(URI.create(path));
 
-		File file = WorkspaceUtils.resolveURI(node.getPath());
+		File file = WorkspaceController.resolveFile(node.getPath());
 		if (file == null) {
 			return null;
 		}
@@ -50,11 +49,8 @@ public class FolderTypePhysicalCreator extends AWorkspaceNodeCreator {
 			return;
 		}
 
-		WorkspaceController
-				.getController()
-				.getFilesystemMgr()
-				.scanFileSystem((AWorkspaceTreeNode) currentNode,
-						WorkspaceUtils.resolveURI(((FolderLinkNode) currentNode).getPath()));
+		WorkspaceController.getFilesystemMgr().scanFileSystem((AWorkspaceTreeNode) currentNode,
+						WorkspaceController.resolveFile(((FolderLinkNode) currentNode).getPath()));
 
 	}
 

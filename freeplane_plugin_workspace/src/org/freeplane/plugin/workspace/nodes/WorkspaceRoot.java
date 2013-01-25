@@ -18,27 +18,10 @@ import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.plugin.workspace.WorkspaceController;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
-import org.freeplane.plugin.workspace.actions.FileNodeDeleteAction;
-import org.freeplane.plugin.workspace.actions.FileNodeNewFileAction;
-import org.freeplane.plugin.workspace.actions.FileNodeNewMindmapAction;
-import org.freeplane.plugin.workspace.actions.NodeCopyAction;
-import org.freeplane.plugin.workspace.actions.NodeEnableMonitoringAction;
-import org.freeplane.plugin.workspace.actions.NodeNewFolderAction;
-import org.freeplane.plugin.workspace.actions.NodeNewLinkAction;
-import org.freeplane.plugin.workspace.actions.NodeOpenLocationAction;
-import org.freeplane.plugin.workspace.actions.NodePasteAction;
-import org.freeplane.plugin.workspace.actions.NodeRefreshAction;
-import org.freeplane.plugin.workspace.actions.NodeRemoveAction;
-import org.freeplane.plugin.workspace.actions.NodeRenameAction;
-import org.freeplane.plugin.workspace.actions.PhysicalFolderSortOrderAction;
-import org.freeplane.plugin.workspace.actions.WorkspaceChangeLocationAction;
-import org.freeplane.plugin.workspace.actions.WorkspaceCollapseAction;
-import org.freeplane.plugin.workspace.actions.WorkspaceExpandAction;
-import org.freeplane.plugin.workspace.actions.WorkspaceHideAction;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
 import org.freeplane.plugin.workspace.config.IConfigurationInfo;
+import org.freeplane.plugin.workspace.controller.IExpansionStateHandler;
 import org.freeplane.plugin.workspace.dnd.IDropAcceptor;
 import org.freeplane.plugin.workspace.dnd.WorkspaceTransferable;
 import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
@@ -46,7 +29,7 @@ import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.io.annotation.ExportAsAttribute;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 
-public class WorkspaceRoot extends AFolderNode implements IConfigurationInfo, IWorkspaceNodeActionListener, IDropAcceptor {
+public class WorkspaceRoot extends AFolderNode implements IWorkspaceNodeActionListener, IDropAcceptor, IConfigurationInfo {
 
 	private static final long serialVersionUID = 1L;
 	private static Icon DEFAULT_ICON = new ImageIcon(
@@ -102,28 +85,28 @@ public class WorkspaceRoot extends AFolderNode implements IConfigurationInfo, IW
 	public void initializePopup() {
 		if (popupMenu == null) {
 			Controller controller = Controller.getCurrentController();
-			controller.addAction(new WorkspaceExpandAction());
-			controller.addAction(new WorkspaceCollapseAction());
-			controller.addAction(new WorkspaceChangeLocationAction());
-			controller.addAction(new NodeRefreshAction());
-			controller.addAction(new WorkspaceHideAction());
-			controller.addAction(new NodeRemoveAction());
-			controller.addAction(new NodeNewFolderAction());
-			controller.addAction(new NodeNewLinkAction());
-			controller.addAction(new NodeEnableMonitoringAction());
-			controller.addAction(new NodeOpenLocationAction());
-			
-			//FIXME: #332
-//			controller.addAction(new NodeCutAction());
-			controller.addAction(new NodeRenameAction());
-			controller.addAction(new NodeCopyAction());
-			controller.addAction(new NodePasteAction());
-			
-			controller.addAction(new FileNodeNewMindmapAction());
-			controller.addAction(new FileNodeNewFileAction());
-			controller.addAction(new FileNodeDeleteAction());
-			
-			controller.addAction(new PhysicalFolderSortOrderAction());
+//			controller.addAction(new WorkspaceExpandAction());
+//			controller.addAction(new WorkspaceCollapseAction());
+//			controller.addAction(new WorkspaceChangeLocationAction());
+//			controller.addAction(new NodeRefreshAction());
+//			controller.addAction(new WorkspaceHideAction());
+//			controller.addAction(new NodeRemoveAction());
+//			controller.addAction(new NodeNewFolderAction());
+//			controller.addAction(new NodeNewLinkAction());
+//			controller.addAction(new NodeEnableMonitoringAction());
+//			controller.addAction(new NodeOpenLocationAction());
+//			
+//			//FIXME: #332
+////			controller.addAction(new NodeCutAction());
+//			controller.addAction(new NodeRenameAction());
+//			controller.addAction(new NodeCopyAction());
+//			controller.addAction(new NodePasteAction());
+//			
+//			controller.addAction(new FileNodeNewMindmapAction());
+//			controller.addAction(new FileNodeNewFileAction());
+//			controller.addAction(new FileNodeDeleteAction());
+//			
+//			controller.addAction(new PhysicalFolderSortOrderAction());
 			
 			popupMenu = new WorkspacePopupMenu();
 			WorkspacePopupMenuBuilder.addActions(popupMenu, new String[] {
@@ -167,11 +150,11 @@ public class WorkspaceRoot extends AFolderNode implements IConfigurationInfo, IW
 	}
 	
 	public String getName() {
-		return WorkspaceController.getController().getPreferences().getWorkspaceProfile() + " (Workspace)"; 
+		return "workspace"; //WorkspaceController.getController().getPreferences().getWorkspaceProfile() + " (Workspace)"; 
 	}
 	
 	public void refresh() {
-		WorkspaceController.getController().refreshWorkspace();
+		//WorkspaceController.getController().refreshWorkspace();
 	}
 
 	public boolean acceptDrop(DataFlavor[] flavors) {
@@ -235,7 +218,7 @@ public class WorkspaceRoot extends AFolderNode implements IConfigurationInfo, IW
 					} 
 					else if (dropAction == DnDConstants.ACTION_MOVE) {
 						AWorkspaceTreeNode parent = node.getParent();
-						WorkspaceUtils.getModel().cutNodeFromParent(node);
+						WorkspaceController.getCurrentModel().cutNodeFromParent(node);
 						parent.refresh();
 						newNode = node;
 					}
@@ -243,10 +226,12 @@ public class WorkspaceRoot extends AFolderNode implements IConfigurationInfo, IW
 				if(newNode == null) {
 					continue;
 				}
-				WorkspaceUtils.getModel().addNodeTo(newNode, this);
-				WorkspaceController.getController().getExpansionStateHandler().addPathKey(this.getKey());
+				WorkspaceController.getCurrentModel().addNodeTo(newNode, this);
+				if(WorkspaceController.getCurrentModeExtension().getView() instanceof IExpansionStateHandler) { 
+					((IExpansionStateHandler) WorkspaceController.getCurrentModeExtension().getView()).addPathKey(this.getKey());
+				}
 			}
-			WorkspaceUtils.saveCurrentConfiguration();
+			//WorkspaceUtils.saveCurrentConfiguration();
 			
 		}
 		catch (Exception e) {
@@ -258,9 +243,9 @@ public class WorkspaceRoot extends AFolderNode implements IConfigurationInfo, IW
 	private void processFileListDrop(List<File> files, int dropAction) {
 		try {		
 			for(File srcFile : files) {
-				WorkspaceUtils.getModel().addNodeTo(createFSNodeLinks(srcFile), this);		
+				WorkspaceController.getCurrentModel().addNodeTo(createFSNodeLinks(srcFile), this);		
 			}
-			WorkspaceUtils.saveCurrentConfiguration();
+			//WorkspaceUtils.saveCurrentConfiguration();
 		}
 		catch (Exception e) {
 			LogUtils.warn(e);
@@ -275,9 +260,9 @@ public class WorkspaceRoot extends AFolderNode implements IConfigurationInfo, IW
 				if(srcFile == null || !srcFile.exists()) {
 					continue;
 				}
-				WorkspaceUtils.getModel().addNodeTo(createFSNodeLinks(srcFile), this);
+				WorkspaceController.getCurrentModel().addNodeTo(createFSNodeLinks(srcFile), this);
 			};
-			WorkspaceUtils.saveCurrentConfiguration();
+			//WorkspaceUtils.saveCurrentConfiguration();
 		}
 		catch (Exception e) {
 			LogUtils.warn(e);
@@ -294,12 +279,12 @@ public class WorkspaceRoot extends AFolderNode implements IConfigurationInfo, IW
 		AWorkspaceTreeNode node = null;
 		if(file.isDirectory()) {
 			FolderLinkNode pNode = new FolderLinkNode();
-			pNode.setPath(WorkspaceUtils.getWorkspaceRelativeURI(file));
+//			pNode.setPath(WorkspaceUtils.getWorkspaceRelativeURI(file));
 			node = pNode;
 		}
 		else {
 			LinkTypeFileNode lNode = new LinkTypeFileNode();
-			lNode.setLinkPath(WorkspaceUtils.getWorkspaceRelativeURI(file));
+//			lNode.setLinkPath(WorkspaceUtils.getWorkspaceRelativeURI(file));
 			node = lNode;
 		}
 		node.setName(file.getName());

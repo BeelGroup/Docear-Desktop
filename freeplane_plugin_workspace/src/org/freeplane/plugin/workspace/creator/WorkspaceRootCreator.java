@@ -1,14 +1,15 @@
 package org.freeplane.plugin.workspace.creator;
 
 import org.freeplane.n3.nanoxml.XMLElement;
-import org.freeplane.plugin.workspace.WorkspaceConfiguration;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.controller.WorkspaceConfiguration;
 import org.freeplane.plugin.workspace.model.AWorkspaceNodeCreator;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.nodes.WorkspaceRoot;
 
 public class WorkspaceRootCreator extends AWorkspaceNodeCreator {
 	private final WorkspaceConfiguration configuration;
+	
 	public WorkspaceRootCreator(WorkspaceConfiguration configuration) {
 		this.configuration = configuration;
 	}
@@ -21,7 +22,7 @@ public class WorkspaceRootCreator extends AWorkspaceNodeCreator {
 		
 		node.setName(name);
 		node.setVersion(version);
-		node.setMeta(meta);
+		node.setMeta(meta); 
 		this.configuration.setConfigurationInfo(node);
 		return node;
 	}

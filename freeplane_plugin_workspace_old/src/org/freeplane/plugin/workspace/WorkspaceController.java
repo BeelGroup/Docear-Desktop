@@ -489,14 +489,6 @@ public class WorkspaceController implements IFreeplanePropertyListener, IMapLife
 	 **********************************************************************************/
 
 	public void propertyChanged(String propertyName, String newValue, String oldValue) {
-		// if (propertyName.equals(WorkspacePreferences.WORKSPACE_LOCATION_NEW))
-		// {
-		// if (newValue != null && newValue.trim().length() > 0) {
-		// Controller.getCurrentController().getResourceController()
-		// .setProperty(WorkspacePreferences.SHOW_WORKSPACE_PROPERTY_KEY, true);
-		// reloadWorkspace();
-		// }
-		// }
 	}
 	
 	public void actionPerformed(ActionEvent e) {		

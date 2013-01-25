@@ -126,7 +126,7 @@ public class JResizer extends JComponent{
 					else if(d.equals(Direction.DOWN)){
 						size.height -= (point2.x - point.x);
 					}
-					resizedComponent.setPreferredSize(size);
+					resizedComponent.setPreferredSize(new Dimension(Math.max(size.width, 0), Math.max(size.height, 0)));
 					parent.revalidate();
 					parent.repaint();
 				}

@@ -23,6 +23,7 @@ import javax.swing.tree.TreePath;
 
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.components.WorkspaceNodeRenderer;
+import org.freeplane.plugin.workspace.controller.AWorkspaceModeExtension;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.nodes.WorkspaceRoot;
 /**
@@ -106,8 +107,9 @@ public class WorkspaceTransferHandler extends TransferHandler implements DropTar
 	}
 
 	public int getSourceActions(JComponent comp) {
-		if(comp == WorkspaceController.getController().getWorkspaceViewTree()) {
-			TreePath selectionPath = WorkspaceController.getController().getWorkspaceViewTree().getSelectionPath();
+		AWorkspaceModeExtension ctrl = WorkspaceController.getCurrentModeExtension();
+		if(ctrl.getView().containsComponent(comp)) {
+			TreePath selectionPath = ctrl.getView().getSelectionPath();
 			if(selectionPath != null) {
 				if(selectionPath.getLastPathComponent() instanceof WorkspaceRoot) {
 					return NONE;
@@ -143,7 +145,7 @@ public class WorkspaceTransferHandler extends TransferHandler implements DropTar
 	/* DropTarget Methods */
 
 	public final void drop(DropTargetDropEvent event) {
-		if(WorkspaceController.getController().getWorkspaceViewTree().getPathForLocation(event.getLocation().x, event.getLocation().y) == null) {
+		if(WorkspaceController.getCurrentModeExtension().getView().getPathForLocation(event.getLocation().x, event.getLocation().y) == null) {
 			return;
 		}
 		// new method to handle drop events

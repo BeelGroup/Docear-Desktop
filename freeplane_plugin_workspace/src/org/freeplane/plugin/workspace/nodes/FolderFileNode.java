@@ -24,9 +24,9 @@ import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.plugin.workspace.WorkspaceController;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
+import org.freeplane.plugin.workspace.controller.IExpansionStateHandler;
 import org.freeplane.plugin.workspace.dnd.WorkspaceTransferable;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
@@ -92,9 +92,9 @@ public class FolderFileNode extends DefaultFileNode {
 	public void refresh() {
 		try {
 			if (getFile().isDirectory()) {
-				WorkspaceUtils.getModel().removeAllElements(this);
-				WorkspaceController.getController().getFilesystemMgr().scanFileSystem(this, getFile());
-				WorkspaceUtils.getModel().reload(this);				
+				WorkspaceController.getCurrentModel().removeAllElements(this);
+				WorkspaceController.getFilesystemMgr().scanFileSystem(this, getFile());
+				WorkspaceController.getCurrentModel().reload(this);				
 			}
 		}
 		catch (Exception e) {
@@ -153,21 +153,21 @@ public class FolderFileNode extends DefaultFileNode {
 							((DefaultFileNode) node).moveTo(targetDir);
 							File newFile = new File(targetDir, ((DefaultFileNode) node).getName());
 							AWorkspaceTreeNode parent = node.getParent();							
-							WorkspaceUtils.getModel().cutNodeFromParent(node);
+							WorkspaceController.getCurrentModel().cutNodeFromParent(node);
 							parent.refresh();
-							WorkspaceUtils.getModel().nodeMoved(node, oldFile, newFile);
+							WorkspaceController.getCurrentModel().nodeMoved(node, oldFile, newFile);
 						}
 					}
 				}
 				else if(node instanceof LinkTypeFileNode) {
-					File srcFile = WorkspaceUtils.resolveURI(((LinkTypeFileNode) node).getLinkPath());
+					File srcFile = WorkspaceController.resolveFile(((LinkTypeFileNode) node).getLinkPath());
 					if(targetDir != null && targetDir.isDirectory()) {
 						FileUtils.copyFileToDirectory(srcFile, targetDir);
 						if(dropAction == DnDConstants.ACTION_MOVE) {
 							AWorkspaceTreeNode parent = node.getParent();
-							WorkspaceUtils.getModel().cutNodeFromParent(node);
+							WorkspaceController.getCurrentModel().cutNodeFromParent(node);
 							parent.refresh();
-							WorkspaceUtils.getModel().nodeMoved(node, srcFile, new File(targetDir, srcFile.getName()));
+							WorkspaceController.getCurrentModel().nodeMoved(node, srcFile, new File(targetDir, srcFile.getName()));
 						}
 					}
 				}
@@ -176,7 +176,9 @@ public class FolderFileNode extends DefaultFileNode {
 		catch (Exception e) {
 			LogUtils.warn(e);
 		}
-		WorkspaceController.getController().getExpansionStateHandler().addPathKey(this.getKey());
+		if(WorkspaceController.getCurrentModeExtension().getView() instanceof IExpansionStateHandler) {
+			((IExpansionStateHandler) WorkspaceController.getCurrentModeExtension().getView()).addPathKey(this.getKey());
+		}
 		refresh();
 	}
 	
@@ -284,7 +286,6 @@ public class FolderFileNode extends DefaultFileNode {
 	 **********************************************************************************/
 	public void handleAction(WorkspaceActionEvent event) {	
 		if(event.getType() == WorkspaceActionEvent.WSNODE_CHANGED) {
-			Controller.getCurrentController().selectMode(MModeController.MODENAME);
 			if(rename(event.getBaggage().toString())) {
 				setName(event.getBaggage().toString());
 				if(event.getSource() instanceof AWorkspaceTreeNode) {

@@ -248,7 +248,7 @@ abstract public class ViewController implements IMapViewChangeListener, IFreepla
 
 		toolbarPanel[TOP] = new HorizontalToolbarPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		toolbarPanel[BOTTOM] = Box.createHorizontalBox();
-		toolbarPanel[LEFT] = Box.createVerticalBox();
+		toolbarPanel[LEFT] = Box.createHorizontalBox();
 		toolbarPanel[RIGHT] = Box.createVerticalBox();
 		scrollPane = new MapViewScrollPane();
 		resourceController.addPropertyChangeListener(this);
@@ -624,6 +624,7 @@ abstract public class ViewController implements IMapViewChangeListener, IFreepla
 				int i = 0;
 				for (final JComponent toolBar : newToolBars) {
 					toolBar.setVisible(isToolbarVisible(toolBar));
+					toolBar.getClientProperty("Constraints");
 					toolbarPanel[j].add(toolBar, i++);
 				}
 				toolbarPanel[j].revalidate();

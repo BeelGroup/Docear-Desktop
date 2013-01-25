@@ -11,7 +11,7 @@ import java.util.Set;
 /**
  * 
  */
-public abstract class AWorkspaceExpansionStateHandler {
+public abstract class AWorkspaceExpansionStateHandler implements IExpansionStateHandler{
 	
 	private Set<String> expandedSet;
 	
@@ -50,10 +50,6 @@ public abstract class AWorkspaceExpansionStateHandler {
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
 	 **********************************************************************************/
-	/**
-	 * try to expand all tree nodes that were previously expanded
-	 */
-	public abstract void restoreExpansionStates();
-	public abstract void reset();
+	
 
 }

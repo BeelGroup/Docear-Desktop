@@ -23,7 +23,6 @@ import org.freeplane.features.mapio.MapIO;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.plugin.workspace.WorkspaceController;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
 import org.freeplane.plugin.workspace.dnd.IWorkspaceTransferableCreator;
@@ -77,32 +76,30 @@ public class LinkTypeFileNode extends ALinkNode implements IWorkspaceNodeActionL
 	public void setLinkPath(URI linkPath) {
 		this.linkPath = linkPath;
 		if(linkPath != null) {			
-			fileIcon = WorkspaceController.getController().getNodeTypeIconManager().getIconForNode(this);
+			fileIcon = WorkspaceController.getCurrentModeExtension().getView().getNodeTypeIconManager().getIconForNode(this);
 		} else {
 			fileIcon = null;
 		}
 	}	
 
 	public void handleAction(WorkspaceActionEvent event) {
-		if(event.getType() == WorkspaceActionEvent.WSNODE_OPEN_DOCUMENT) {			
-			Controller.getCurrentController().selectMode(MModeController.MODENAME);
+		if(event.getType() == WorkspaceActionEvent.WSNODE_OPEN_DOCUMENT) {
 			
-			File file = WorkspaceUtils.resolveURI(getLinkPath());
+			File file = WorkspaceController.resolveFile(getLinkPath());
 			if(file != null) {
 				if(!file.exists() && this.isSystem()){
-					if(!WorkspaceUtils.createNewMindmap(WorkspaceUtils.resolveURI(getLinkPath()), getName())) {
-						LogUtils.warn("could not create " + getLinkPath());
-					}
+//					if(!WorkspaceUtils.createNewMindmap(WorkspaceController.resolveFile(getLinkPath()), getName())) {
+//						LogUtils.warn("could not create " + getLinkPath());
+//					}
 				}
 				if(!file.exists() && !this.isSystem()) {
-					WorkspaceUtils.showFileNotFoundMessage(file);
+					//WorkspaceUtils.showFileNotFoundMessage(file);
 					return;
 				}
 				if(file.getName().toLowerCase().endsWith(".mm") || file.getName().toLowerCase().endsWith(".dcr")) {
 					try {
 						final URL mapUrl = Compat.fileToUrl(file);
 						
-						Controller.getCurrentController().selectMode(MModeController.MODENAME);
 						final MapIO mapIO = (MapIO) MModeController.getMModeController().getExtension(MapIO.class);		
 						
 						mapIO.newMap(mapUrl);
@@ -129,7 +126,7 @@ public class LinkTypeFileNode extends ALinkNode implements IWorkspaceNodeActionL
 	public Transferable getTransferable() {
 		WorkspaceTransferable transferable = new WorkspaceTransferable();
 		try {
-			URI uri = WorkspaceUtils.absoluteURI(getLinkPath());
+			URI uri = WorkspaceController.resolveURI(getLinkPath());
 			transferable.addData(WorkspaceTransferable.WORKSPACE_URI_LIST_FLAVOR, uri.toString());
 			List<File> fileList = new Vector<File>();
 			fileList.add(new File(uri));
@@ -175,7 +172,7 @@ public class LinkTypeFileNode extends ALinkNode implements IWorkspaceNodeActionL
 	}
 	
 	public boolean setIcons(DefaultTreeCellRenderer renderer) {
-		File file = WorkspaceUtils.resolveURI(getLinkPath());
+		File file = WorkspaceController.resolveFile(getLinkPath());
 		if((file == null || !file.exists()) && !isSystem()) {
 			renderer.setLeafIcon(NOT_EXISTING);
 			renderer.setOpenIcon(NOT_EXISTING);
@@ -200,7 +197,7 @@ public class LinkTypeFileNode extends ALinkNode implements IWorkspaceNodeActionL
 		assert(newName.trim().length() > 0);
 		
 		if(renameLink) {
-			File oldFile = WorkspaceUtils.resolveURI(getLinkPath());
+			File oldFile = WorkspaceController.resolveFile(getLinkPath());
 			try{
 				if(oldFile == null) {
 					throw new Exception("failed to resolve the file for"+getName());
@@ -208,7 +205,7 @@ public class LinkTypeFileNode extends ALinkNode implements IWorkspaceNodeActionL
 				File destFile = new File(oldFile.getParentFile(), newName);
 				if(oldFile.exists() && oldFile.renameTo(destFile)) {
 					try {
-						WorkspaceUtils.getModel().changeNodeName(this, newName);
+						WorkspaceController.getCurrentModel().changeNodeName(this, newName);
 						return true;
 					}
 					catch(Exception ex) {
@@ -226,7 +223,7 @@ public class LinkTypeFileNode extends ALinkNode implements IWorkspaceNodeActionL
 		}
 		else {
 			try {
-				WorkspaceUtils.getModel().changeNodeName(this, newName);
+				WorkspaceController.getCurrentModel().changeNodeName(this, newName);
 			}
 			catch(Exception ex) {
 				// do nth.

@@ -10,18 +10,27 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Properties;
 
 import org.freeplane.core.io.ListHashTable;
 import org.freeplane.core.resources.ResourceController;
+import org.freeplane.core.util.LogUtils;
+import org.freeplane.plugin.workspace.creator.DefaultFileNodeCreator;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 
 public class FilesystemManager {
 
 	private final FileReadManager typeManager;
 	private boolean filtering = true;
+	private FileReadManager fileTypeManager;
 
 	public FilesystemManager(final FileReadManager typeManager) {
-		this.typeManager = typeManager;
+		if(typeManager == null) {
+			this.typeManager = getDefaultFileTypeManager();
+		}
+		else {
+			this.typeManager = typeManager;
+		}
 	}
 
 	public boolean isFiltering() {
@@ -191,5 +200,41 @@ public class FilesystemManager {
 			}
 			return false;
 		}
-	}	
+	}
+	
+	private FileReadManager getDefaultFileTypeManager() {
+		if (this.fileTypeManager == null) {
+			this.fileTypeManager = new FileReadManager();
+			Properties props = new Properties();
+			try {
+				props.load(this.getClass().getResourceAsStream("/conf/filenodetypes.properties"));
+
+				Class<?>[] args = {};
+				for (Object key : props.keySet()) {
+					try {
+						Class<?> clazz = DefaultFileNodeCreator.class;
+						
+						clazz = this.getClass().getClassLoader().loadClass(key.toString());
+
+						AFileNodeCreator handler = (AFileNodeCreator) clazz.getConstructor(args).newInstance();
+						handler.setFileTypeList(props.getProperty(key.toString(), ""), "\\|");
+						this.fileTypeManager.addFileHandler(handler);
+					}
+					catch (ClassNotFoundException e) {
+						LogUtils.warn("Class not found [" + key + "]", e);
+					}
+					catch (ClassCastException e) {
+						LogUtils.warn("Class [" + key + "] is not of type: PhysicalNode", e);
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return this.fileTypeManager;
+	}
 }

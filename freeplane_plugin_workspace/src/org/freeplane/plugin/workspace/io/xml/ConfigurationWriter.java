@@ -36,13 +36,13 @@ public class ConfigurationWriter implements IElementWriter, IAttributeWriter {
 	 * METHODS
 	 **********************************************************************************/
 	
-	public void writeConfigurationAsXml(final Writer fileout) throws IOException {
-		final TreeXmlWriter xmlWriter = new TreeXmlWriter(writeManager, fileout);
-		xmlWriter.setHint(Hint.MODE, MapWriter.Mode.FILE);
-		writeNode(xmlWriter, (AWorkspaceTreeNode) WorkspaceController.getController().getWorkspaceModel().getRoot());
-		xmlWriter.flush();
-		fileout.close();
-	}
+//	public void writeConfigurationAsXml(final Writer fileout) throws IOException {
+//		final TreeXmlWriter xmlWriter = new TreeXmlWriter(writeManager, fileout);
+//		xmlWriter.setHint(Hint.MODE, MapWriter.Mode.FILE);
+//		writeNode(xmlWriter, (AWorkspaceTreeNode) WorkspaceController.getController().getWorkspaceModel().getRoot());
+//		xmlWriter.flush();
+//		fileout.close();
+//	}
 
 	private void writeNode(final ITreeWriter xmlWriter, final AWorkspaceTreeNode node) throws IOException {
 		final String nodeTag = node.getTagName();

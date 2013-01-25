@@ -2,18 +2,16 @@ package org.freeplane.plugin.workspace;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.List;
 
-import org.freeplane.core.resources.components.ComboProperty;
-import org.freeplane.core.resources.components.IPropertyControl;
-import org.freeplane.core.resources.components.IPropertyControlCreator;
-import org.freeplane.core.ui.FreeplaneActionCascade;
 import org.freeplane.core.ui.IndexedTree;
 import org.freeplane.core.util.LogUtils;
+import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.mode.mindmapmode.MModeController;
+import org.freeplane.main.osgi.IControllerExtensionProvider;
 import org.freeplane.main.osgi.IModeControllerExtensionProvider;
-import org.freeplane.plugin.workspace.components.WorkspaceInformingQuitAction;
+import org.freeplane.plugin.workspace.controller.ModeControlAlreadyRegisteredException;
+import org.freeplane.plugin.workspace.mindmapmode.MModeWorkspaceController;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -23,25 +21,37 @@ import org.osgi.service.url.URLStreamHandlerService;
 
 public class Activator implements BundleActivator {
 
-	public void start(final BundleContext context) throws Exception {		
+	public void start(final BundleContext context) throws Exception {	
+		registerClasspathUrlHandler(context);
+			
+		context.registerService(IControllerExtensionProvider.class.getName(), new IControllerExtensionProvider() {
+			public void installExtension(Controller controller) {
+				WorkspaceController.install(controller);
+				try {
+					WorkspaceController.registerWorkspaceModeExtension(MModeController.class, MModeWorkspaceController.class);
+				} catch (ModeControlAlreadyRegisteredException e) {
+					e.printStackTrace();
+				}
+			}
+		}, null);
+		
 		final Hashtable<String, String[]> props = new Hashtable<String, String[]>();
 		props.put("mode", new String[] { MModeController.MODENAME });
-		registerClasspathUrlHandler(context);		
+		
 		context.registerService(IModeControllerExtensionProvider.class.getName(),
 		    new IModeControllerExtensionProvider() {
 				public void installExtension(ModeController modeController) {
 			    	registerLinkTypeOption();
 			    	changeQuitAction();
-				    WorkspaceController.createController(modeController);
-				    WorkspaceController.getController().initialStart();
+			    	WorkspaceController.getController().installMode(modeController);
 				    startPluginServices(context, modeController);
-				    WorkspaceController.getController().loadWorkspace();
+//				    WorkspaceController.getController().loadWorkspace();
 			    }
 		    }, props);
 	}
 	
 	protected final void changeQuitAction() {
-		FreeplaneActionCascade.addAction(new WorkspaceInformingQuitAction());
+//		FreeplaneActionCascade.addAction(new WorkspaceInformingQuitAction());
 	}
 
 	private void registerClasspathUrlHandler(final BundleContext context) {
@@ -55,9 +65,9 @@ public class Activator implements BundleActivator {
     }
 	
 	private void registerLinkTypeOption() {
-		IndexedTree.Node node = (IndexedTree.Node) MModeController.getMModeController().getOptionPanelBuilder().getRoot();
-		IndexedTree.Node found = getNodeForPath("Environment/hyperlink_types/links", node);
-		found.setUserObject(new OptionPanelExtender((IPropertyControlCreator) found.getUserObject()));
+//		IndexedTree.Node node = (IndexedTree.Node) MModeController.getMModeController().getOptionPanelBuilder().getRoot();
+//		IndexedTree.Node found = getNodeForPath("Environment/hyperlink_types/links", node);
+//		found.setUserObject(new OptionPanelExtender((IPropertyControlCreator) found.getUserObject()));
 	}
 	
 	private IndexedTree.Node getNodeForPath(String path, IndexedTree.Node node) {
@@ -77,7 +87,7 @@ public class Activator implements BundleActivator {
 	
 	public void stop(BundleContext context) throws Exception {
 		LogUtils.info("DOCEAR: save config ...");
-		WorkspaceUtils.saveCurrentConfiguration();
+//		WorkspaceUtils.saveCurrentConfiguration();
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -99,20 +109,20 @@ public class Activator implements BundleActivator {
 		}
 	}
 	
-	private class OptionPanelExtender implements IPropertyControlCreator {
-		private final IPropertyControlCreator creator;
-		
-		public OptionPanelExtender(final IPropertyControlCreator creator) {
-			this.creator = creator;
-		}
-
-		public IPropertyControl createControl() {
-			ComboProperty property = (ComboProperty) creator.createControl();
-			List<String> list = property.getPossibleValues();
-			list.add(WorkspacePreferences.RELATIVE_TO_WORKSPACE);
-			return new ComboProperty(WorkspacePreferences.LINK_PROPERTY_KEY, list.toArray(new String[] {}));
-		}
-
-	}
+//	private class OptionPanelExtender implements IPropertyControlCreator {
+//		private final IPropertyControlCreator creator;
+//		
+//		public OptionPanelExtender(final IPropertyControlCreator creator) {
+//			this.creator = creator;
+//		}
+//
+//		public IPropertyControl createControl() {
+//			ComboProperty property = (ComboProperty) creator.createControl();
+//			List<String> list = property.getPossibleValues();
+//			list.add(WorkspacePreferences.RELATIVE_TO_WORKSPACE);
+//			return new ComboProperty(WorkspacePreferences.LINK_PROPERTY_KEY, list.toArray(new String[] {}));
+//		}
+//
+//	}
 
 }

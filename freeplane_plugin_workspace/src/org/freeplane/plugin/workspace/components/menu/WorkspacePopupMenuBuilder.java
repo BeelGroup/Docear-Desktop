@@ -16,7 +16,7 @@ import org.freeplane.core.ui.SelectableAction;
 import org.freeplane.core.ui.components.JAutoCheckBoxMenuItem;
 import org.freeplane.core.ui.components.JFreeplaneMenuItem;
 import org.freeplane.features.mode.Controller;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.actions.AWorkspaceAction;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 
@@ -176,7 +176,7 @@ public class WorkspacePopupMenuBuilder {
 							AWorkspaceTreeNode node = (AWorkspaceTreeNode) path.getLastPathComponent();
 							((AWorkspaceAction) action).setEnabledFor(node);
 						} else {
-							((AWorkspaceAction) action).setEnabledFor((AWorkspaceTreeNode) WorkspaceUtils.getModel().getRoot());
+							((AWorkspaceAction) action).setEnabledFor((AWorkspaceTreeNode) WorkspaceController.getCurrentModel().getRoot());
 						}
 					}
 					else {

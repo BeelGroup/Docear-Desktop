@@ -2,7 +2,7 @@ package org.freeplane.plugin.workspace.model;
 
 import org.freeplane.core.io.IElementDOMHandler;
 import org.freeplane.n3.nanoxml.XMLElement;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.nodes.WorkspaceRoot;
 
 public abstract class AWorkspaceNodeCreator implements IElementDOMHandler {
@@ -26,12 +26,12 @@ public abstract class AWorkspaceNodeCreator implements IElementDOMHandler {
 		node.setMandatoryAttributes(attributes);
 		node.initializePopup();
 			
-		if (!WorkspaceUtils.getModel().containsNode(node.getKey())) {
+		if (!WorkspaceController.getCurrentModel().containsNode(node.getKey())) {
 			if(node instanceof WorkspaceRoot) {
-				WorkspaceUtils.getModel().setRoot(node);
+				WorkspaceController.getCurrentModel().setRoot(node);
 			} 
 			else {
-				WorkspaceUtils.getModel().addNodeTo(node, (AWorkspaceTreeNode) parent);
+				WorkspaceController.getCurrentModel().addNodeTo(node, (AWorkspaceTreeNode) parent);
 			}
 			
 		}

@@ -1,535 +1,101 @@
 package org.freeplane.plugin.workspace;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Enumeration;
-import java.util.Properties;
-import java.util.Vector;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
-import javax.swing.JTree;
-
-import org.freeplane.core.resources.IFreeplanePropertyListener;
-import org.freeplane.core.resources.ResourceController;
-import org.freeplane.core.util.LogUtils;
-import org.freeplane.features.map.IMapLifeCycleListener;
-import org.freeplane.features.map.MapModel;
+import org.freeplane.core.extension.IExtension;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
-import org.freeplane.features.mode.mindmapmode.MModeController;
-import org.freeplane.features.ui.ViewController;
-import org.freeplane.features.url.UrlManager;
-import org.freeplane.main.application.ApplicationResourceController;
-import org.freeplane.plugin.workspace.components.TreeView;
-import org.freeplane.plugin.workspace.components.WorkspaceSplitPaneUI;
-import org.freeplane.plugin.workspace.controller.AWorkspaceExpansionStateHandler;
-import org.freeplane.plugin.workspace.controller.DefaultNodeTypeIconManager;
-import org.freeplane.plugin.workspace.controller.DefaultWorkspaceComponentHandler;
-import org.freeplane.plugin.workspace.controller.DefaultWorkspaceExpansionStateHandler;
-import org.freeplane.plugin.workspace.controller.DefaultWorkspaceKeyHandler;
-import org.freeplane.plugin.workspace.controller.DefaultWorkspaceMouseHandler;
-import org.freeplane.plugin.workspace.controller.DefaultWorkspaceTreeModelListener;
-import org.freeplane.plugin.workspace.controller.INodeTypeIconManager;
-import org.freeplane.plugin.workspace.controller.IOController;
-import org.freeplane.plugin.workspace.dnd.WorkspaceTransferHandler;
-import org.freeplane.plugin.workspace.event.IWorkspaceEventListener;
-import org.freeplane.plugin.workspace.event.WorkspaceEvent;
-import org.freeplane.plugin.workspace.io.AFileNodeCreator;
-import org.freeplane.plugin.workspace.io.FileReadManager;
-import org.freeplane.plugin.workspace.io.FileSystemAlterationMonitor;
+import org.freeplane.plugin.workspace.controller.AWorkspaceModeExtension;
+import org.freeplane.plugin.workspace.controller.ModeControlAlreadyRegisteredException;
 import org.freeplane.plugin.workspace.io.FilesystemManager;
-import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
-import org.freeplane.plugin.workspace.model.WorkspaceIndexedTreeModel;
-import org.freeplane.plugin.workspace.nodes.WorkspaceRoot;
+import org.freeplane.plugin.workspace.model.WorkspaceModel;
 
-public class WorkspaceController implements IFreeplanePropertyListener, IMapLifeCycleListener, ActionListener {
+public final class WorkspaceController implements IExtension {
+	
 	public static final String WORKSPACE_RESOURCE_URL_PROTOCOL = "workspace";
 	public static final String PROPERTY_RESOURCE_URL_PROTOCOL = "property";
 	public static final String WORKSPACE_VERSION = "1.0";
-		
-	private static WorkspaceController workspaceController;
-	private static WorkspaceConfiguration configuration ;
-	private static final IOController workspaceIOController = new IOController();
 	
-	private static final FileSystemAlterationMonitor monitor = new FileSystemAlterationMonitor(30000);
-
-	private final FilesystemManager fsReader;
-	private final Vector<IWorkspaceEventListener> workspaceListeners = new Vector<IWorkspaceEventListener>();
-
-	private TreeView view;
-	private Container oldContentPane;
-	private Container WSContentPane;
-	private SingleContentPane contentPane;
-	private WorkspacePreferences preferences;
-
-	private FileReadManager fileTypeManager;
-
-	private WorkspaceTransferHandler transferHandler;
-	private WorkspaceIndexedTreeModel model = new WorkspaceIndexedTreeModel();
+//	public static final String SHOW_WORKSPACE_PROPERTY_KEY = "workspace.enabled";
+//	public static final String COLLAPSE_WORKSPACE_PROPERTY_KEY = "workspace.collapsed";
+//	public static final String WORKSPACE_WIDTH_PROPERTY_KEY = "workspace_view_width";
 	
-	String workspaceLocation;
-	private boolean isInitialized = false;
-	private DefaultWorkspaceExpansionStateHandler expansionStateHandler;
-	private INodeTypeIconManager nodeTypeIconManager;
-	protected static final boolean firstApplicationStart;
-	static {
-		final File userPreferencesFile = ApplicationResourceController.getUserPreferencesFile();
-		firstApplicationStart = !userPreferencesFile.exists();
+	private static WorkspaceController self;
+	private static Map<Class<? extends ModeController>, Class<? extends AWorkspaceModeExtension>> modeWorkspaceCtrlMap = new HashMap<Class<? extends ModeController>, Class<? extends AWorkspaceModeExtension>>();
+	
+	private WorkspaceController(Controller controller) {
+		self = this;
 	}
 
-	/***********************************************************************************
-	 * CONSTRUCTORS
-	 **********************************************************************************/
-
-	private WorkspaceController(ModeController modeController) {
-		LogUtils.info("Initializing WorkspaceEnvironment");
-		registerToIMapLifeCycleListener();		
-		preparePreferences(modeController);
-		initTree();
-		registerTreeModelEventListener();
-		this.fsReader = new FilesystemManager(getFileTypeManager());
-	}
-	
-	/***********************************************************************************
-	 * METHODS
-	 * @return 
-	 **********************************************************************************/
-	
-	protected static WorkspaceController createController(ModeController modeController) {
-		if(workspaceController == null) {
-			workspaceController = new WorkspaceController(modeController);
-			configuration = new WorkspaceConfiguration();
+	public static void install(Controller controller) {
+		if(self == null) {
+			new WorkspaceController(controller);
 		}
-		return workspaceController;
-		
-	}	
-	
-	private void registerToIMapLifeCycleListener() {
-		Controller.getCurrentModeController().getMapController().addMapLifeCycleListener(this);
+		controller.addExtension(WorkspaceController.class, self);
 	}
 	
-	private void registerTreeModelEventListener(){
-		getWorkspaceModel().addTreeModelListener(new DefaultWorkspaceTreeModelListener());
-	}
-	
-	public static boolean isFirstApplicationStart() {
-		return firstApplicationStart;
-	}
-	
-	public void initialStart() {
-
-		
-		//initializeConfiguration();
-		initializeView();
-		isInitialized = true;		
-	}
-
 	public static WorkspaceController getController() {
-		return workspaceController;
+		return self;
 	}
 	
-	public static IOController getIOController() {
-		return workspaceIOController;
-	}
-
-	public boolean isInitialized() {
-		return isInitialized;
-	}
-
-	public WorkspaceConfiguration getConfiguration() {
-		return configuration;
-	}
-
-	public FileSystemAlterationMonitor getFileSystemAlterationMonitor() {
-		return monitor;
-	}
-
-	public INodeTypeIconManager getNodeTypeIconManager() {
-		if(nodeTypeIconManager == null) {
-			nodeTypeIconManager = new DefaultNodeTypeIconManager();
-		}
-		return nodeTypeIconManager;
-	}
-	public JTree getWorkspaceViewTree() {
-		return getWorkspaceView().getTreeView();
-	}
-
-	public void showWorkspace(boolean visible) {
-		ResourceController resCtrl = Controller.getCurrentController().getResourceController();
-		resCtrl.setProperty(WorkspacePreferences.SHOW_WORKSPACE_PROPERTY_KEY, visible);
-		if (visible) {
-			int width = resCtrl.getIntProperty(WorkspacePreferences.WORKSPACE_WIDTH_PROPERTY_KEY, 200);
-			setWorkspaceWidth(width);
-			getContentPane().revalidate();
-		}
-		else {
-			setWorkspaceWidth(-1);
-			getContentPane().revalidate();
-		}
-	}
-
-	public FilesystemManager getFilesystemMgr() {
-		return this.fsReader;
-	}
-	
-	public void addToolBar(JComponent bar) {
-		getWorkspaceView().add(bar, BorderLayout.PAGE_END);
-		getWorkspaceView().repaint();
-	}
-	
-	public void removeToolBar(JComponent bar) {
-		getWorkspaceView().remove(bar);
-	}
-
-	public void saveConfigurationAsXML(Writer writer) {
-		getConfiguration().saveConfiguration(writer);
-	}
-
-	public WorkspaceTransferHandler getTransferHandler() {
-		return transferHandler;
-	}
-
-	public void removeWorkspaceListener(IWorkspaceEventListener listener) {
-		synchronized (workspaceListeners) {
-			workspaceListeners.remove(listener);
-		}
-		
-	}
-
-	public void addWorkspaceListener(IWorkspaceEventListener listener) {
-		synchronized (workspaceListeners) {
-			this.workspaceListeners.add(listener);
-		}
-	}
-
-	public void removeAllListeners() {
-		synchronized (workspaceListeners) {
-			this.workspaceListeners.removeAllElements();
-		}
-	}
-
-	private boolean loadInProcess = false;
-	public void loadWorkspace() {
-		if(loadInProcess) {
-			return;
-		}
-		loadInProcess = true;
-		WorkspaceController.getController().fireOpenWorkspace(new WorkspaceEvent(this));
-		if (getPreferences().getWorkspaceLocation() == null) {
-			WorkspaceUtils.showWorkspaceChooserDialog();
-		}
-		initTree();
-		initializeConfiguration();
-		reloadView();
-		showWorkspace(Controller.getCurrentController().getResourceController().getBooleanProperty(WorkspacePreferences.SHOW_WORKSPACE_PROPERTY_KEY));
-		getExpansionStateHandler().restoreExpansionStates();
-		fireWorkspaceReady(new WorkspaceEvent(getConfiguration()));
-		loadInProcess = false;
-	}
-
-	public void refreshWorkspace() {
-		Enumeration<AWorkspaceTreeNode> children = ((WorkspaceRoot) getWorkspaceModel().getRoot()).children();
-		while(children.hasMoreElements()) {
-			children.nextElement().refresh();			
-		}
-	}
-	
-	public WorkspaceIndexedTreeModel getWorkspaceModel() {
-		if(model == null) {
-			model = new WorkspaceIndexedTreeModel();
-		}
-		
-		return model;
-	}
-
-	private void preparePreferences(ModeController modeController) {
-		if (this.preferences == null) {
-			this.preferences = new WorkspacePreferences(modeController);
-			ResourceController resCtrl = Controller.getCurrentController().getResourceController();
-			resCtrl.addPropertyChangeListener(this);
-		}
-	}
-	
-	public WorkspacePreferences getPreferences() {
-		return this.preferences;
-	}
-
-	public AWorkspaceExpansionStateHandler getExpansionStateHandler() {
-		if (expansionStateHandler == null) {
-			expansionStateHandler = new DefaultWorkspaceExpansionStateHandler();
-		}
-		return expansionStateHandler;
-	}
-
-	private void initTree() {
-		getWorkspaceModel().resetIndex();
-		getWorkspaceModel().setRoot(new WorkspaceRoot());		
-	}
-
-	private void initializeConfiguration() {
-		ResourceController resCtrl = Controller.getCurrentController().getResourceController();
-		
-		String workspaceLocation = getPreferences().getWorkspaceLocation();
-		if (workspaceLocation == null || workspaceLocation.trim().length() <= 0) {
-			resCtrl.setProperty(WorkspacePreferences.SHOW_WORKSPACE_PROPERTY_KEY, false);
-			showWorkspace(false);
-			return;
-		}
-		resetWorkspaceView();
-		fireConfigurationBeforeLoading(new WorkspaceEvent(getConfiguration()));
-		if (getConfiguration().load()) {
-			fireConfigurationLoaded(new WorkspaceEvent(getConfiguration()));
-			showWorkspace(getPreferences().isWorkspaceVisible());
-			UrlManager.getController().setLastCurrentDir(new File(getPreferences().getWorkspaceLocation()));			
-			fireWorkspaceChanged(new WorkspaceEvent(getConfiguration()));
-		}
-		else {
-			showWorkspace(Controller.getCurrentController().getResourceController()
-					.getBooleanProperty(WorkspacePreferences.SHOW_WORKSPACE_PROPERTY_KEY));
-			getPreferences().setNewWorkspaceLocation(null);
-		}
-	}
-
-	private TreeView getWorkspaceView() {
-		if (this.view == null) {
-			this.view = new TreeView();
-			this.view.getTreeView().setModel(getWorkspaceModel());
-			this.view.addComponentListener(new DefaultWorkspaceComponentHandler(this.view));
-			DefaultWorkspaceMouseHandler mouseHandler = new DefaultWorkspaceMouseHandler();
-			this.view.getTreeView().addMouseListener(mouseHandler);
-			this.view.getTreeView().addMouseMotionListener(mouseHandler);
-			this.view.getTreeView().addKeyListener(new DefaultWorkspaceKeyHandler());
-			this.view.getTreeView().setRowHeight(18);
-			this.view.getTreeView().addTreeExpansionListener((DefaultWorkspaceExpansionStateHandler) getExpansionStateHandler());
-			this.transferHandler = WorkspaceTransferHandler.configureDragAndDrop(this.view.getTreeView());
-		}
-		return this.view;
-	}
-
-	private Container getOldContentPane() {
-		if (this.oldContentPane == null) {
-			MModeController modeController = (MModeController) Controller.getCurrentModeController();
-			this.oldContentPane = new JPanel(new BorderLayout());
-			for (Component comp : modeController.getController().getViewController().getJFrame().getContentPane().getComponents()) {
-				this.oldContentPane.add(comp);
+	public static void registerWorkspaceModeExtension(Class<? extends ModeController> modeController, Class<? extends AWorkspaceModeExtension> modeWorkspaceCtrl) throws ModeControlAlreadyRegisteredException {
+		synchronized (modeWorkspaceCtrlMap) {
+			if(modeWorkspaceCtrlMap.containsKey(modeController)) {
+				throw new ModeControlAlreadyRegisteredException(modeController);
 			}
-
+			modeWorkspaceCtrlMap.put(modeController, modeWorkspaceCtrl);
 		}
-		return this.oldContentPane;
 	}
 	
-	private Container getWSContentPane() {
-		if (this.WSContentPane == null) {
-			this.WSContentPane = new JPanel(new BorderLayout());
-			this.WSContentPane.setMinimumSize(new Dimension(0, 0));
-			final JSplitPane splitPane = new JSplitPane();
-			splitPane.setDividerSize(7);
-			splitPane.setUI(new WorkspaceSplitPaneUI());
-			splitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);			
-			splitPane.setAutoscrolls(true);
-			splitPane.setLeftComponent(getWorkspaceView());
-			splitPane.setRightComponent(getOldContentPane());
-			this.WSContentPane.add(splitPane);
-		}
-		return this.WSContentPane;
-	}
- 
-	private void setWorkspaceWidth(int width) {
-		JSplitPane splitPane = (JSplitPane) (getWSContentPane().getComponent(0));
-		if(width != -1) {
-			getWorkspaceView().setVisible(true);
-			getWorkspaceView().setSize(width, 0);
-			splitPane.setDividerLocation(width);
-			splitPane.setDividerSize(7);
-			splitPane.setEnabled(true);
-		} 
-		else {
-			getWorkspaceView().setVisible(false);
-			splitPane.setEnabled(false);
-			splitPane.setDividerSize(0);
+	public static void removeWorkspaceModeExtension(Class<? extends ModeController> modeController) {
+		synchronized (modeWorkspaceCtrlMap) {
+			modeWorkspaceCtrlMap.remove(modeController);
 		}
 	}
 
-	private void resetWorkspaceView() {
-		this.view = null;
-		this.WSContentPane = null;
-	}
-
-	private void initializeView() {
-		getOldContentPane();
-		ViewController viewController = (ViewController) Controller.getCurrentController().getViewController();
-		viewController.getJFrame().setContentPane(new JPanel(new BorderLayout()));
-		viewController.getJFrame().getContentPane().add(getContentPane());
-		reloadView();
-	}
-
-	private void reloadView() {
-		getContentPane().setComponent(getWSContentPane());		
-	}
-
-	private SingleContentPane getContentPane() {
-		if (this.contentPane == null) {
-			this.contentPane = new SingleContentPane();
-			this.contentPane.setLayout(new BorderLayout());
-		}
-		return this.contentPane;
-	}
-
-	private FileReadManager getFileTypeManager() {
-		if (this.fileTypeManager == null) {
-			this.fileTypeManager = new FileReadManager();
-			Properties props = new Properties();
+	public boolean installMode(ModeController modeController) {
+		AWorkspaceModeExtension modeCtrl = modeController.getExtension(AWorkspaceModeExtension.class);
+		if(modeCtrl == null) {
+			Class<? extends AWorkspaceModeExtension> clazz = modeWorkspaceCtrlMap.get(modeController.getClass());
+			if(clazz == null) {
+				return false;
+			}
 			try {
-				props.load(this.getClass().getResourceAsStream("/conf/filenodetypes.properties"));
-
-				Class<?>[] args = {};
-				for (Object key : props.keySet()) {
-					try {
-						Class<?> clazz = org.freeplane.plugin.workspace.creator.DefaultFileNodeCreator.class;
-						
-						clazz = this.getClass().getClassLoader().loadClass(key.toString());
-
-						AFileNodeCreator handler = (AFileNodeCreator) clazz.getConstructor(args).newInstance();
-						handler.setFileTypeList(props.getProperty(key.toString(), ""), "\\|");
-						this.fileTypeManager.addFileHandler(handler);
-					}
-					catch (ClassNotFoundException e) {
-						LogUtils.warn("Class not found [" + key + "]", e);
-					}
-					catch (ClassCastException e) {
-						LogUtils.warn("Class [" + key + "] is not of type: PhysicalNode", e);
-					}
-					catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			}
-			catch (IOException e) {
+				modeCtrl = clazz.getConstructor(ModeController.class).newInstance(modeController);
+				modeController.addExtension(AWorkspaceModeExtension.class, modeCtrl);
+				return true;
+			} catch (Exception e) {
 				e.printStackTrace();
-			}
+			}			
 		}
-		return this.fileTypeManager;
-	}
-
-//	protected void dispatchWorkspaceEvent(WorkspaceEvent event) {
-//		for (IWorkspaceEventListener listener : workspaceListener) {
-//			//listener.processEvent(event);
-//		}
-//	}
-	
-	protected void fireOpenWorkspace(WorkspaceEvent event) {
-		synchronized (workspaceListeners) {
-			for (IWorkspaceEventListener listener : workspaceListeners) {
-				listener.openWorkspace(event);
-				//listener.processEvent(event);
-			}
+		else {
+			return true;
 		}
-	}
-	
-	protected void fireCloseWorkspace(WorkspaceEvent event) {
-		synchronized (workspaceListeners) {
-			for (IWorkspaceEventListener listener : workspaceListeners) {
-				listener.closeWorkspace(event);
-			}
-		}
-	}
-	
-	protected void fireWorkspaceChanged(WorkspaceEvent event) {
-		synchronized (workspaceListeners) {
-			for (IWorkspaceEventListener listener : workspaceListeners) {
-				listener.workspaceChanged(event);
-				//listener.processEvent(event);
-			}
-		}
-	}
-	
-	protected void fireWorkspaceReady(WorkspaceEvent event) {
-		synchronized (workspaceListeners) {
-			for (IWorkspaceEventListener listener : workspaceListeners) {
-				listener.workspaceReady(event);
-			}
-		}
-	}
-	
-	protected void fireConfigurationLoaded(WorkspaceEvent event) {
-		synchronized (workspaceListeners) {
-			for (IWorkspaceEventListener listener : workspaceListeners) {
-				listener.configurationLoaded(event);
-			}
-		}
-	}
-	
-	protected void fireConfigurationBeforeLoading(WorkspaceEvent event) {
-		synchronized (workspaceListeners) {
-			for (IWorkspaceEventListener listener : workspaceListeners) {
-				listener.configurationBeforeLoading(event);
-			}
-		}
-	}
-	
-	protected void fireToolBarChanged(WorkspaceEvent event) {
-		synchronized (workspaceListeners) {
-			for (IWorkspaceEventListener listener : workspaceListeners) {
-				listener.toolBarChanged(event);
-			}
-		}
-	}
-
-	/***********************************************************************************
-	 * REQUIRED METHODS FOR INTERFACES
-	 **********************************************************************************/
-
-	public void propertyChanged(String propertyName, String newValue, String oldValue) {
-		// if (propertyName.equals(WorkspacePreferences.WORKSPACE_LOCATION_NEW))
-		// {
-		// if (newValue != null && newValue.trim().length() > 0) {
-		// Controller.getCurrentController().getResourceController()
-		// .setProperty(WorkspacePreferences.SHOW_WORKSPACE_PROPERTY_KEY, true);
-		// reloadWorkspace();
-		// }
-		// }
-	}
-	
-	public void actionPerformed(ActionEvent e) {		
-	}
-
-
-	/***********************************************************************************
-	 * INTERNAL CLASSES
-	 **********************************************************************************/
-
-	private class SingleContentPane extends JPanel {
-		
-		private static final long serialVersionUID = 1L;
-		
-		public void setComponent(Component comp) {
-			this.removeAll();
-			this.add(comp);
-		}
-	}
-
-	public void onCreate(MapModel map) {
+		return false;
 		
 	}
-
-	public void onRemove(MapModel map) {
-		
+	
+	public static WorkspaceModel getCurrentModel() {
+		return getCurrentModeExtension().getModel();
 	}
 
-	public void onSavedAs(MapModel map) {
-		refreshWorkspace();
+	public static AWorkspaceModeExtension getCurrentModeExtension() {
+		return Controller.getCurrentModeController().getExtension(AWorkspaceModeExtension.class);
+	}
+	
+	public static FilesystemManager getFilesystemMgr() {
+		return new FilesystemManager(getCurrentModeExtension().getFileTypeManager());
 	}
 
-	public void onSaved(MapModel map) {
-		
+	public static URI resolveURI(URI uri) {
+		//TODO - get absolute uri
+		return uri;
+	}
+
+	public static File resolveFile(URI path) {
+		return new File(resolveURI(path));
 	}
 }

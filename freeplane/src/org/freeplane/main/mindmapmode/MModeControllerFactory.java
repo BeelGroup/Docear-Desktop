@@ -239,7 +239,7 @@ public class MModeControllerFactory {
 		    .getStatusBar());
 		final JTabbedPane tabs = new JTabbedPane();
 		Box resisableTabs = Box.createHorizontalBox();
-		//FIXME: DOCEAR - new OneTouchCollapseResizer
+		//DOCEAR - new OneTouchCollapseResizer
 		resisableTabs.add(new OneTouchCollapseResizer(Direction.RIGHT, CollapseDirection.COLLAPSE_RIGHT));
 		//resisableTabs.add(new JResizer(Direction.RIGHT));
 		resisableTabs.add(tabs);

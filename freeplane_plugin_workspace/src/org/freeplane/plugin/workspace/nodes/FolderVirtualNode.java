@@ -17,7 +17,6 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
 import org.freeplane.plugin.workspace.dnd.IDropAcceptor;
@@ -159,12 +158,12 @@ public class FolderVirtualNode extends AFolderNode implements IWorkspaceNodeActi
 		AWorkspaceTreeNode node = null;
 		if(file.isDirectory()) {
 			FolderLinkNode pNode = new FolderLinkNode();
-			pNode.setPath(WorkspaceUtils.getWorkspaceRelativeURI(file));
+//			pNode.setPath(WorkspaceUtils.getWorkspaceRelativeURI(file));
 			node = pNode;
 		}
 		else {
 			LinkTypeFileNode lNode = new LinkTypeFileNode();
-			lNode.setLinkPath(WorkspaceUtils.getWorkspaceRelativeURI(file));
+//			lNode.setLinkPath(WorkspaceUtils.getWorkspaceRelativeURI(file));
 			node = lNode;
 		}
 		node.setName(file.getName());
@@ -185,7 +184,7 @@ public class FolderVirtualNode extends AFolderNode implements IWorkspaceNodeActi
 					} 
 					else if (dropAction == DnDConstants.ACTION_MOVE) {
 						AWorkspaceTreeNode parent = node.getParent();
-						WorkspaceUtils.getModel().cutNodeFromParent(node);
+						WorkspaceController.getCurrentModel().cutNodeFromParent(node);
 						parent.refresh();
 						newNode = node;
 					}
@@ -193,10 +192,10 @@ public class FolderVirtualNode extends AFolderNode implements IWorkspaceNodeActi
 				if(newNode == null) {
 					continue;
 				}
-				WorkspaceUtils.getModel().addNodeTo(newNode, this);
-				WorkspaceController.getController().getExpansionStateHandler().addPathKey(this.getKey());
+				WorkspaceController.getCurrentModel().addNodeTo(newNode, this);
+//				WorkspaceController.getController().getExpansionStateHandler().addPathKey(this.getKey());
 			}
-			WorkspaceUtils.saveCurrentConfiguration();
+//			WorkspaceUtils.saveCurrentConfiguration();
 			
 		}
 		catch (Exception e) {
@@ -209,10 +208,10 @@ public class FolderVirtualNode extends AFolderNode implements IWorkspaceNodeActi
 		try {		
 			for(File srcFile : files) {
 				AWorkspaceTreeNode node = createFSNodeLinks(srcFile);
-				WorkspaceUtils.getModel().addNodeTo(node, this);
+				WorkspaceController.getCurrentModel().addNodeTo(node, this);
 				node.refresh();
 			}
-			WorkspaceUtils.saveCurrentConfiguration();
+//			WorkspaceUtils.saveCurrentConfiguration();
 		}
 		catch (Exception e) {
 			LogUtils.warn(e);
@@ -228,10 +227,10 @@ public class FolderVirtualNode extends AFolderNode implements IWorkspaceNodeActi
 					continue;
 				}
 				AWorkspaceTreeNode node = createFSNodeLinks(srcFile);
-				WorkspaceUtils.getModel().addNodeTo(node, this);
+				WorkspaceController.getCurrentModel().addNodeTo(node, this);
 				node.refresh();
 			};
-			WorkspaceUtils.saveCurrentConfiguration();
+//			WorkspaceUtils.saveCurrentConfiguration();
 		}
 		catch (Exception e) {
 			LogUtils.warn(e);
@@ -255,6 +254,6 @@ public class FolderVirtualNode extends AFolderNode implements IWorkspaceNodeActi
 	}
 	
 	public void refresh() {
-		WorkspaceUtils.getModel().reload(this);
+		WorkspaceController.getCurrentModel().reload(this);
 	}
 }

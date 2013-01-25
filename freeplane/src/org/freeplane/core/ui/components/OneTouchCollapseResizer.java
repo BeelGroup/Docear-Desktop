@@ -22,6 +22,7 @@ import javax.swing.JPanel;
 public class OneTouchCollapseResizer extends JResizer {
 
 	private static final long serialVersionUID = 3836146387249880446L;
+	public static final String COLLAPSED = "OneTouchCollapseResizer.collapsed";
 	
 	public enum CollapseDirection {COLLAPSE_LEFT, COLLAPSE_RIGHT};
 	
@@ -32,6 +33,7 @@ public class OneTouchCollapseResizer extends JResizer {
 	private int inset = 2;
 	private final Direction direction;
 	private Integer resizeComponentIndex;
+	private Dimension lastComponentMinimum;
 	
 	
 	/***********************************************************************************
@@ -90,7 +92,7 @@ public class OneTouchCollapseResizer extends JResizer {
 
 			public void mouseClicked(MouseEvent e) {
 				final JComponent parent = (JComponent) getParent();
-				final Component resizedComponent = parent.getComponent(resizeComponentIndex);
+				final Component resizedComponent = getResizedParent();
 				if(e.getComponent() == getHotSpot()) {					
 					final Dimension size = new Dimension(resizedComponent.getPreferredSize());
 					
@@ -102,11 +104,24 @@ public class OneTouchCollapseResizer extends JResizer {
 //						}
 //						else if(d.equals(Direction.UP) || d.equals(Direction.DOWN)){
 //							size.height = getDivederSize();
-//						}						
+//						}
+						if(resizedComponent instanceof JComponent) {
+							((JComponent) resizedComponent).putClientProperty(COLLAPSED, "true");
+						}
+						else {
+							lastComponentMinimum = resizedComponent.getMinimumSize();
+							resizedComponent.setMinimumSize(new Dimension(0,lastComponentSize.height));
+						}
 						resizedComponent.setPreferredSize(new Dimension(0,0));
 						expanded = false;
 					}
 					else {
+						if(resizedComponent instanceof JComponent) {
+							((JComponent) resizedComponent).putClientProperty(COLLAPSED, null);
+						}
+						else if(lastComponentMinimum != null) {
+							resizedComponent.setMinimumSize(lastComponentMinimum);
+						}
 						resizedComponent.setPreferredSize(lastComponentSize);						
 						expanded = true;
 					}				
@@ -115,6 +130,12 @@ public class OneTouchCollapseResizer extends JResizer {
 				} 
 				else {
 					if (!expanded) {
+						if(resizedComponent instanceof JComponent) {
+							((JComponent) resizedComponent).putClientProperty(COLLAPSED, null);
+						}
+						else if(lastComponentMinimum != null) {
+							resizedComponent.setMinimumSize(lastComponentMinimum);
+						}
 						resizedComponent.setPreferredSize(lastComponentSize);	
 						expanded = true;
 						parent.revalidate();
@@ -143,21 +164,21 @@ public class OneTouchCollapseResizer extends JResizer {
 			h = 0;
 		}
 		else if(direction.equals(Direction.LEFT)){
+			h = 0;
+			w = size;
+		}
+		else if(direction.equals(Direction.UP)){
 			h = size;
 			w = 0;
 		}
-		else if(direction.equals(Direction.UP)){
-			h = 0;
-			w = size;
-		}
 		else /*Direction.DOWN*/ {
-			h = 0;
-			w = size;
+			h = size;
+			w = 0;
 		}		
 		setPreferredSize(new Dimension(w, h));
 	}
 	
-	public int getDivederSize() {
+	public int getDividerSize() {
 		if(direction.equals(Direction.RIGHT) || direction.equals(Direction.LEFT)){
 			return getPreferredSize().width;
 		}
@@ -178,18 +199,22 @@ public class OneTouchCollapseResizer extends JResizer {
 		}
 		super.paint(g);
 		int center_y = getHeight()/2;
-		int divSize = getDivederSize();
+		int divSize = getDividerSize();
 		getHotSpot().setBounds(0, center_y-15, divSize, 30);
 		Dimension size = getResizedParent().getPreferredSize();
-		if((direction.equals(Direction.RIGHT) || direction.equals(Direction.LEFT)) && size.width <= getDivederSize()) {
+		if((direction.equals(Direction.RIGHT) || direction.equals(Direction.LEFT)) && size.width <= getDividerSize()) {
 			expanded = false;
+			
 		}
-		else if((direction.equals(Direction.UP) || direction.equals(Direction.DOWN)) && size.height <= getDivederSize()){
+		else if((direction.equals(Direction.UP) || direction.equals(Direction.DOWN)) && size.height <= getDividerSize()){
 			expanded = false;
 		}
 		else {
 			expanded = true;
 			//getHotSpot().setBounds(0, 0, getDividerSize(), 24);
+		}
+		if(getResizedParent() instanceof JComponent) {
+			((JComponent) getResizedParent()).putClientProperty(COLLAPSED, (expanded ? null : "true"));
 		}
 		getHotSpot().paint(g.create(getHotSpot().getLocation().x, getHotSpot().getLocation().y, getHotSpot().getWidth(), getHotSpot().getHeight()));
 	}

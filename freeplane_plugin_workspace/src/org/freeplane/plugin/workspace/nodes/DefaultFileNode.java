@@ -31,7 +31,6 @@ import org.freeplane.features.mapio.MapIO;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.plugin.workspace.WorkspaceController;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
 import org.freeplane.plugin.workspace.dnd.IDropAcceptor;
@@ -74,7 +73,7 @@ public class DefaultFileNode extends AWorkspaceTreeNode implements IWorkspaceNod
 		super("physical_file");
 		this.setName(name);
 		this.file = file;
-		icon = WorkspaceController.getController().getNodeTypeIconManager().getIconForNode(this);
+		icon = WorkspaceController.getCurrentModeExtension().getView().getNodeTypeIconManager().getIconForNode(this);
 	}
 
 	/***********************************************************************************
@@ -85,7 +84,7 @@ public class DefaultFileNode extends AWorkspaceTreeNode implements IWorkspaceNod
 		File newFile = new File(getFile().getParentFile(), name);
 		if(getFile().renameTo(newFile)) {
 			this.file = newFile;
-			icon = WorkspaceController.getController().getNodeTypeIconManager().getIconForNode(this);
+			icon = WorkspaceController.getCurrentModeExtension().getView().getNodeTypeIconManager().getIconForNode(this);
 			return true;
 		}
 		return false;
@@ -238,12 +237,11 @@ public class DefaultFileNode extends AWorkspaceTreeNode implements IWorkspaceNod
 			}
 		}
 		else if(event.getType() == WorkspaceActionEvent.WSNODE_OPEN_DOCUMENT) {
-			Controller.getCurrentController().selectMode(MModeController.MODENAME);
 			
 			if(getFile() != null) {
 				
 				if(!file.exists()) {
-					WorkspaceUtils.showFileNotFoundMessage(file);
+//					WorkspaceUtils.showFileNotFoundMessage(file);
 					return;
 				}						
 				if(file.getName().toLowerCase().endsWith(".mm") || file.getName().toLowerCase().endsWith(".dcr")) {
@@ -291,7 +289,7 @@ public class DefaultFileNode extends AWorkspaceTreeNode implements IWorkspaceNod
 	public Transferable getTransferable() {
 		WorkspaceTransferable transferable = new WorkspaceTransferable();
 		try {
-			URI uri = WorkspaceUtils.absoluteURI(getFile().toURI());
+			URI uri = WorkspaceController.resolveURI(getFile().toURI());
 			transferable.addData(WorkspaceTransferable.WORKSPACE_URI_LIST_FLAVOR, uri.toString());
 			List<File> fileList = new Vector<File>();
 			fileList.add(new File(uri));
@@ -341,7 +339,7 @@ public class DefaultFileNode extends AWorkspaceTreeNode implements IWorkspaceNod
 		String oldName = getName();
 		if(rename(newName)) {
 			try {
-				WorkspaceUtils.getModel().changeNodeName(this, newName);
+				WorkspaceController.getCurrentModel().changeNodeName(this, newName);
 				return true;
 			}
 			catch(Exception ex) {

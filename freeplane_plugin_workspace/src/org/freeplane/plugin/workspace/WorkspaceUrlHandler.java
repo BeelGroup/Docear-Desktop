@@ -11,7 +11,7 @@ import org.osgi.service.url.AbstractURLStreamHandlerService;
 public class WorkspaceUrlHandler extends AbstractURLStreamHandlerService {
 
 	public URLConnection openConnection(URL url) throws IOException {
-		String path = WorkspaceUtils.getWorkspaceBaseURI().toURL().getPath();
+		String path = "";//WorkspaceUtils.getWorkspaceBaseURI().toURL().getPath();
 		URL ret = new URL("file", null,  path + url.getPath());
 		try {
 			URI uri = ret.toURI();

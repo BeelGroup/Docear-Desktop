@@ -13,7 +13,7 @@ import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 
 import org.freeplane.plugin.workspace.WorkspaceController;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.plugin.workspace.components.TreeView;
 import org.freeplane.plugin.workspace.components.WorkspaceNodeRenderer;
 import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
@@ -45,7 +45,7 @@ public class DefaultWorkspaceMouseHandler implements MouseListener, MouseMotionL
 		}
 		TreePath path = ((JTree) e.getSource()).getPathForLocation(e.getX(), e.getY());
 		
-		WorkspaceController.getController().getWorkspaceViewTree().addSelectionPath(path);
+		((TreeView)WorkspaceController.getCurrentModeExtension().getView()).addSelectionPath(path);
 		if (path != null) {			
 			AWorkspaceTreeNode node = (AWorkspaceTreeNode) path.getLastPathComponent();
 			// encode buttons
@@ -65,7 +65,7 @@ public class DefaultWorkspaceMouseHandler implements MouseListener, MouseMotionL
 			
 			WorkspaceActionEvent event = new WorkspaceActionEvent(node, eventType, e.getX(), e.getY(), e.getComponent());
 			
-			List<IWorkspaceNodeActionListener> nodeEventListeners = WorkspaceController.getIOController().getNodeActionListeners(node.getClass(), eventType);
+			List<IWorkspaceNodeActionListener> nodeEventListeners = WorkspaceController.getCurrentModeExtension().getIOController().getNodeActionListeners(node.getClass(), eventType);
 			if(nodeEventListeners != null)  {
 				for(IWorkspaceNodeActionListener listener : nodeEventListeners) {
 					if(event.isConsumed()) {
@@ -83,7 +83,7 @@ public class DefaultWorkspaceMouseHandler implements MouseListener, MouseMotionL
 		else {
 			if (e.getButton() == MouseEvent.BUTTON3) {
 				//WorkspaceController.getController().getPopups().showWorkspacePopup(e.getComponent(), e.getX(), e.getY());
-				((AWorkspaceTreeNode) WorkspaceUtils.getModel().getRoot()).showPopup(e.getComponent(), e.getX(), e.getY());
+				((AWorkspaceTreeNode) WorkspaceController.getCurrentModel().getRoot()).showPopup(e.getComponent(), e.getX(), e.getY());
 			}
 		}
 	}
