@@ -18,13 +18,13 @@ import org.freeplane.core.util.LogUtils;
 import org.freeplane.plugin.workspace.creator.DefaultFileNodeCreator;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 
-public class FilesystemManager {
+public class FileSystemManager {
 
 	private final FileReadManager typeManager;
 	private boolean filtering = true;
 	private FileReadManager fileTypeManager;
 
-	public FilesystemManager(final FileReadManager typeManager) {
+	public FileSystemManager(final FileReadManager typeManager) {
 		if(typeManager == null) {
 			this.typeManager = getDefaultFileTypeManager();
 		}

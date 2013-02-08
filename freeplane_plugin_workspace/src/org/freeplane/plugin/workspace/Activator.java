@@ -1,17 +1,13 @@
 package org.freeplane.plugin.workspace;
 
-import java.util.Enumeration;
 import java.util.Hashtable;
 
-import org.freeplane.core.ui.IndexedTree;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.main.osgi.IControllerExtensionProvider;
 import org.freeplane.main.osgi.IModeControllerExtensionProvider;
-import org.freeplane.plugin.workspace.controller.ModeControlAlreadyRegisteredException;
-import org.freeplane.plugin.workspace.mindmapmode.MModeWorkspaceController;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -20,18 +16,12 @@ import org.osgi.service.url.URLConstants;
 import org.osgi.service.url.URLStreamHandlerService;
 
 public class Activator implements BundleActivator {
-
 	public void start(final BundleContext context) throws Exception {	
 		registerClasspathUrlHandler(context);
 			
 		context.registerService(IControllerExtensionProvider.class.getName(), new IControllerExtensionProvider() {
 			public void installExtension(Controller controller) {
 				WorkspaceController.install(controller);
-				try {
-					WorkspaceController.registerWorkspaceModeExtension(MModeController.class, MModeWorkspaceController.class);
-				} catch (ModeControlAlreadyRegisteredException e) {
-					e.printStackTrace();
-				}
 			}
 		}, null);
 		
@@ -45,7 +35,7 @@ public class Activator implements BundleActivator {
 			    	changeQuitAction();
 			    	WorkspaceController.getController().installMode(modeController);
 				    startPluginServices(context, modeController);
-//				    WorkspaceController.getController().loadWorkspace();
+				    WorkspaceController.getController().startModeExtension(modeController);
 			    }
 		    }, props);
 	}
@@ -70,20 +60,20 @@ public class Activator implements BundleActivator {
 //		found.setUserObject(new OptionPanelExtender((IPropertyControlCreator) found.getUserObject()));
 	}
 	
-	private IndexedTree.Node getNodeForPath(String path, IndexedTree.Node node) {
-		Enumeration<?> children = node.children();
-		while(children.hasMoreElements()) {
-			IndexedTree.Node child = (IndexedTree.Node)children.nextElement();
-			if(child.getKey() != null && path.startsWith(child.getKey().toString())) {
-				if(path.equals(child.getKey().toString())) {
-					return child;
-				}
-				return getNodeForPath(path, child);
-				
-			}
-		}
-		return null;
-	}
+//	private IndexedTree.Node getNodeForPath(String path, IndexedTree.Node node) {
+//		Enumeration<?> children = node.children();
+//		while(children.hasMoreElements()) {
+//			IndexedTree.Node child = (IndexedTree.Node)children.nextElement();
+//			if(child.getKey() != null && path.startsWith(child.getKey().toString())) {
+//				if(path.equals(child.getKey().toString())) {
+//					return child;
+//				}
+//				return getNodeForPath(path, child);
+//				
+//			}
+//		}
+//		return null;
+//	}
 	
 	public void stop(BundleContext context) throws Exception {
 		LogUtils.info("DOCEAR: save config ...");

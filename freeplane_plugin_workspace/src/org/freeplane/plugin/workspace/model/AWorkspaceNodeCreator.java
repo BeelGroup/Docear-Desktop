@@ -2,11 +2,11 @@ package org.freeplane.plugin.workspace.model;
 
 import org.freeplane.core.io.IElementDOMHandler;
 import org.freeplane.n3.nanoxml.XMLElement;
-import org.freeplane.plugin.workspace.WorkspaceController;
-import org.freeplane.plugin.workspace.nodes.WorkspaceRoot;
 
 public abstract class AWorkspaceNodeCreator implements IElementDOMHandler {
 	
+	private IResultProcessor resultProcessor;
+
 	abstract public AWorkspaceTreeNode getNode(final XMLElement data);
 	
 			
@@ -25,19 +25,25 @@ public abstract class AWorkspaceNodeCreator implements IElementDOMHandler {
 		node.setParent((AWorkspaceTreeNode) parent);
 		node.setMandatoryAttributes(attributes);
 		node.initializePopup();
-			
-		if (!WorkspaceController.getCurrentModel().containsNode(node.getKey())) {
-			if(node instanceof WorkspaceRoot) {
-				WorkspaceController.getCurrentModel().setRoot(node);
-			} 
-			else {
-				WorkspaceController.getCurrentModel().addNodeTo(node, (AWorkspaceTreeNode) parent);
-			}
-			
-		}
+		processResult((AWorkspaceTreeNode) parent, node);
 		return node;
 	}
 
 	public void endElement(final Object parent, final String tag, final Object userObject, final XMLElement lastBuiltElement) {
-	}	
+	}
+	
+	public void setResultProcessor(IResultProcessor processor) {
+		this.resultProcessor = processor;
+	}
+	
+	public IResultProcessor getResultProcessor() {
+		return this.resultProcessor;
+	}
+	
+	private void processResult(AWorkspaceTreeNode parent, AWorkspaceTreeNode node) {
+		if(getResultProcessor() == null) {
+			return;
+		}
+		getResultProcessor().process(parent, node);
+	}
 }

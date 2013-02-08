@@ -30,7 +30,7 @@ import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.WorkspaceUtils;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
 import org.freeplane.plugin.workspace.event.IWorkspaceEventListener;
-import org.freeplane.plugin.workspace.event.WorkspaceEvent;
+import org.freeplane.plugin.workspace.event.AWorkspaceEvent;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.nodes.ALinkNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
@@ -40,20 +40,20 @@ public class WorkspaceChangeListener implements IWorkspaceEventListener {
 
 	private boolean workspacePrepared = false;	
 
-	public void openWorkspace(WorkspaceEvent event) {
+	public void openWorkspace(AWorkspaceEvent event) {
 		if (DocearController.getController().isLicenseDialogNecessary()) 
 		{
 			DocearController.getController().dispatchDocearEvent(new DocearEvent(DocearController.getController(), DocearEventType.SHOW_LICENSES));
 		}
 	}
 
-	public void closeWorkspace(WorkspaceEvent event) {}
+	public void closeWorkspace(AWorkspaceEvent event) {}
 
-	public void workspaceChanged(WorkspaceEvent event) {}
+	public void workspaceChanged(AWorkspaceEvent event) {}
 
-	public void toolBarChanged(WorkspaceEvent event) {}
+	public void toolBarChanged(AWorkspaceEvent event) {}
 
-	public void workspaceReady(WorkspaceEvent event) {	
+	public void workspaceReady(AWorkspaceEvent event) {	
 		setSystemNodes();
 		ResourceController resController = Controller.getCurrentController().getResourceController();
 		if (resController.getProperty("ApplicationName").equals("Docear")) {
@@ -90,7 +90,7 @@ public class WorkspaceChangeListener implements IWorkspaceEventListener {
 		}
 	}
 
-	public void configurationLoaded(WorkspaceEvent event) {
+	public void configurationLoaded(AWorkspaceEvent event) {
 		linkWelcomeMindmapAfterWorkspaceCreation();
 		IDocearLibrary lib = DocearController.getController().getLibrary();
 		if(lib != null && lib instanceof FolderTypeLibraryNode) {
@@ -100,7 +100,7 @@ public class WorkspaceChangeListener implements IWorkspaceEventListener {
 			
 	}
 
-	public void configurationBeforeLoading(WorkspaceEvent event) {
+	public void configurationBeforeLoading(AWorkspaceEvent event) {
 		removeLibraryPaths();
 		prepareWorkspace();
 	}

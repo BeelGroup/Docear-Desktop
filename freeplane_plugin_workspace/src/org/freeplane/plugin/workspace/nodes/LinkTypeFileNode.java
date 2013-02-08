@@ -205,7 +205,7 @@ public class LinkTypeFileNode extends ALinkNode implements IWorkspaceNodeActionL
 				File destFile = new File(oldFile.getParentFile(), newName);
 				if(oldFile.exists() && oldFile.renameTo(destFile)) {
 					try {
-						WorkspaceController.getCurrentModel().changeNodeName(this, newName);
+						getModel().changeNodeName(this, newName);
 						return true;
 					}
 					catch(Exception ex) {
@@ -223,7 +223,7 @@ public class LinkTypeFileNode extends ALinkNode implements IWorkspaceNodeActionL
 		}
 		else {
 			try {
-				WorkspaceController.getCurrentModel().changeNodeName(this, newName);
+				getModel().changeNodeName(this, newName);
 			}
 			catch(Exception ex) {
 				// do nth.

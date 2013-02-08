@@ -67,7 +67,7 @@ private static final long serialVersionUID = 1L;
 					File parentFolder = WorkspaceUtils.resolveURI(((IDocearLibrary)targetNode).getLibraryPath());
 					File file = new File(parentFolder, fileName);
 					try {
-						file = WorkspaceController.getController().getFilesystemMgr().createFile(fileName, parentFolder);
+						file = WorkspaceController.getController().getFileSystemMgr().createFile(fileName, parentFolder);
 						
 //					if (file.exists()) {
 //						JOptionPane.showMessageDialog(Controller.getCurrentController().getViewController().getContentPane(),

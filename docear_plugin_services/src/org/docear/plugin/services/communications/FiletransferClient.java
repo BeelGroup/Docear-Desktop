@@ -54,7 +54,12 @@ public class FiletransferClient {
 						throw new IOException("file upload not accepted ("+ response+"):"+response.getEntity(String.class));
 					}
 					else if (deleteIfTransferred) {
-						inStream.close();
+						try {
+							inStream.close();
+							response.close();
+						}
+						catch (Exception e) {
+						}
 						System.gc();
 						file.delete();
 					}

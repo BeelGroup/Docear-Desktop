@@ -14,11 +14,11 @@ import org.freeplane.core.io.WriteManager;
 import org.freeplane.core.io.xml.TreeXmlWriter;
 import org.freeplane.features.map.MapWriter;
 import org.freeplane.features.map.MapWriter.Hint;
-import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
 
-public class ConfigurationWriter implements IElementWriter, IAttributeWriter {
+public class ProjectSettingsWriter implements IElementWriter, IAttributeWriter {
 
 	final private WriteManager writeManager;
 
@@ -26,7 +26,7 @@ public class ConfigurationWriter implements IElementWriter, IAttributeWriter {
 	 * CONSTRUCTORS
 	 **********************************************************************************/
 
-	public ConfigurationWriter(final WriteManager manager) {
+	public ProjectSettingsWriter(final WriteManager manager) {
 		writeManager = manager;
 		
 	}
@@ -36,13 +36,13 @@ public class ConfigurationWriter implements IElementWriter, IAttributeWriter {
 	 * METHODS
 	 **********************************************************************************/
 	
-//	public void writeConfigurationAsXml(final Writer fileout) throws IOException {
-//		final TreeXmlWriter xmlWriter = new TreeXmlWriter(writeManager, fileout);
-//		xmlWriter.setHint(Hint.MODE, MapWriter.Mode.FILE);
-//		writeNode(xmlWriter, (AWorkspaceTreeNode) WorkspaceController.getController().getWorkspaceModel().getRoot());
-//		xmlWriter.flush();
-//		fileout.close();
-//	}
+	public void storeProject(final Writer writer, AWorkspaceProject project) throws IOException {
+		final TreeXmlWriter xmlWriter = new TreeXmlWriter(writeManager, writer);
+		xmlWriter.setHint(Hint.MODE, MapWriter.Mode.FILE);
+		writeNode(xmlWriter, project.getModel().getRoot());
+		xmlWriter.flush();
+		writer.close();
+	}
 
 	private void writeNode(final ITreeWriter xmlWriter, final AWorkspaceTreeNode node) throws IOException {
 		final String nodeTag = node.getTagName();

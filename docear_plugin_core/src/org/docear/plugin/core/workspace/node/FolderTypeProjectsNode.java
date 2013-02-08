@@ -295,7 +295,7 @@ public class FolderTypeProjectsNode extends AFolderNode implements IWorkspaceNod
 			File file = WorkspaceUtils.resolveURI(getPath());
 			if (file != null) {
 				WorkspaceUtils.getModel().removeAllElements(this);
-				WorkspaceController.getController().getFilesystemMgr().scanFileSystem(this, file);
+				WorkspaceController.getController().getFileSystemMgr().scanFileSystem(this, file);
 				WorkspaceUtils.getModel().reload(this);
 			}			
 		}

@@ -6,7 +6,6 @@ import javax.swing.tree.TreePath;
 
 import org.freeplane.plugin.workspace.controller.INodeTypeIconManager;
 import org.freeplane.plugin.workspace.dnd.WorkspaceTransferHandler;
-import org.freeplane.plugin.workspace.model.WorkspaceModel;
 
 
 public interface IWorkspaceView {
@@ -14,12 +13,10 @@ public interface IWorkspaceView {
 	public void expandPath(TreePath treePath);
 
 	public void collapsePath(TreePath treePath);
-	
-	public void setModel(WorkspaceModel model);
-	
-	public WorkspaceTransferHandler getTransferHandler();
-
+		
 	public boolean containsComponent(Component comp);
+		
+	public WorkspaceTransferHandler getTransferHandler();	
 
 	public TreePath getSelectionPath();
 

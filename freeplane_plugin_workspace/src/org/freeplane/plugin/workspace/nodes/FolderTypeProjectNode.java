@@ -1,9 +1,10 @@
 /**
  * author: Marcel Genzmehr
- * 22.07.2011
+ * 23.08.2011
  */
 package org.freeplane.plugin.workspace.nodes;
 
+import java.awt.Component;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
@@ -11,7 +12,6 @@ import java.awt.dnd.DropTargetDropEvent;
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 
 import javax.swing.Icon;
@@ -24,132 +24,82 @@ import org.freeplane.core.util.TextUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
+import org.freeplane.plugin.workspace.dnd.IDropAcceptor;
 import org.freeplane.plugin.workspace.dnd.WorkspaceTransferable;
+import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
+import org.freeplane.plugin.workspace.io.annotation.ExportAsAttribute;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
+import org.freeplane.plugin.workspace.model.project.IProjectSettings;
 
-/**
- * 
- */
-public class FolderFileNode extends DefaultFileNode {
-	private static final Icon FOLDER_OPEN_ICON = new ImageIcon(DefaultFileNode.class.getResource("/images/16x16/folder-orange_open.png"));
-	private static final Icon FOLDER_CLOSED_ICON = new ImageIcon(DefaultFileNode.class.getResource("/images/16x16/folder-orange.png"));
-	private static final Icon NOT_EXISTING = new ImageIcon(DefaultFileNode.class.getResource("/images/16x16/folder-orange-missing.png"));
-	
+
+public class FolderTypeProjectNode extends AFolderNode implements IWorkspaceNodeActionListener, IDropAcceptor {
+
 	private static final long serialVersionUID = 1L;
-	
+	private static final Icon DEFAULT_ICON = new ImageIcon(AFolderNode.class.getResource("/images/project-open-2.png"));
 	private static WorkspacePopupMenu popupMenu = null;
+	private String projectID;
+	private URI projectRoot = null;
 	
 	/***********************************************************************************
 	 * CONSTRUCTORS
 	 **********************************************************************************/
 	
-	/**
-	 * @param name
-	 * @param file
-	 */
-	public FolderFileNode(String name, File file) {
-		super(name, file);
+	public FolderTypeProjectNode() {
+		this(null);
 	}
-
+	
+	public FolderTypeProjectNode(String type) {
+		super(null);
+		setParent(WorkspaceController.getCurrentModel().getRoot());
+	}
+	
 	/***********************************************************************************
 	 * METHODS
 	 **********************************************************************************/
-	public void delete() {
-		delete(getFile());
+	
+	public URI getPath() {
+		return this.projectRoot;		
 	}
 	
-	private void delete(File file) {
-		if(file.isDirectory()) {
-			for(File child : file.listFiles()) {
-				delete(child);
-			}			
-		}
-		file.delete();	
+	@ExportAsAttribute(name="ID")
+	public String getProjectID() {
+		return this.projectID;
+	}
+	
+	public void setProjectID(String id) {
+		this.projectID = id;
+	}
+	
+	public IProjectSettings getSetting() {
+		return null;
 	}
 	
 	public boolean setIcons(DefaultTreeCellRenderer renderer) {
-		if(getFile() == null || !getFile().exists()) {
-			renderer.setLeafIcon(NOT_EXISTING);
-			renderer.setOpenIcon(NOT_EXISTING);
-			renderer.setClosedIcon(NOT_EXISTING);
-			return true;
-		}
-		renderer.setOpenIcon(FOLDER_OPEN_ICON);
-		renderer.setClosedIcon(FOLDER_CLOSED_ICON);
-		renderer.setLeafIcon(FOLDER_CLOSED_ICON);
+		renderer.setOpenIcon(DEFAULT_ICON);
+		renderer.setClosedIcon(DEFAULT_ICON);
+		renderer.setLeafIcon(DEFAULT_ICON);
 		return true;
 	}
-	
-	public AWorkspaceTreeNode clone() {
-		FolderFileNode node = new FolderFileNode(getName(), getFile());
-		return clone(node);
-	}
-	
-	public void refresh() {
-		try {
-			if (getFile().isDirectory()) {
-				getModel().removeAllElements(this);
-				WorkspaceController.getFileSystemMgr().scanFileSystem(this, getFile());
-				getModel().reload(this);				
-			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}		
-	}
-	
-	public void initializePopup() {
-		if (popupMenu == null) {
-					
-			if (popupMenu == null) {			
-				popupMenu = new WorkspacePopupMenu();
-				WorkspacePopupMenuBuilder.addActions(popupMenu, new String[] {
-						WorkspacePopupMenuBuilder.createSubMenu(TextUtils.getRawText("workspace.action.new.label")),
-						"workspace.action.node.new.folder",
-						"workspace.action.file.new.mindmap",
-						//WorkspacePopupMenuBuilder.SEPARATOR,
-						//"workspace.action.file.new.file",
-						WorkspacePopupMenuBuilder.endSubMenu(),
-						WorkspacePopupMenuBuilder.SEPARATOR,
-						"workspace.action.node.open.location",
-						WorkspacePopupMenuBuilder.SEPARATOR,
-						"workspace.action.node.cut",
-						"workspace.action.node.copy", 
-						"workspace.action.node.paste",
-						WorkspacePopupMenuBuilder.SEPARATOR,
-						"workspace.action.node.rename",
-						"workspace.action.node.remove",
-						"workspace.action.file.delete",
-						WorkspacePopupMenuBuilder.SEPARATOR,
-						"workspace.action.node.refresh"		
-				});
-			}
-		}
-	}
-	
-	public WorkspacePopupMenu getContextMenu() {
-		if (popupMenu == null) {
-			initializePopup();
-		}
-		return popupMenu;
+
+	protected AWorkspaceTreeNode clone(FolderTypeProjectNode node) {
+		return super.clone(node);
 	}
 	
 	private void processWorkspaceNodeDrop(List<AWorkspaceTreeNode> nodes, int dropAction) {
 		try {	
-			File targetDir = getFile();
+			File targetDir = WorkspaceController.resolveFile(getPath());
 			for(AWorkspaceTreeNode node : nodes) {
 				if(node instanceof DefaultFileNode) {					
 					if(targetDir != null && targetDir.isDirectory()) {
 						if(dropAction == DnDConstants.ACTION_COPY) {
 							((DefaultFileNode) node).copyTo(targetDir);
 						} 
-						else if(dropAction == DnDConstants.ACTION_MOVE) {							
+						else if(dropAction == DnDConstants.ACTION_MOVE) {
 							File oldFile = ((DefaultFileNode) node).getFile();
-							if(oldFile.equals(targetDir)) return;
 							((DefaultFileNode) node).moveTo(targetDir);
 							File newFile = new File(targetDir, ((DefaultFileNode) node).getName());
-							AWorkspaceTreeNode parent = node.getParent();							
+							AWorkspaceTreeNode parent = node.getParent();
 							getModel().cutNodeFromParent(node);
 							parent.refresh();
 							getModel().nodeMoved(node, oldFile, newFile);
@@ -168,24 +118,21 @@ public class FolderFileNode extends DefaultFileNode {
 						}
 					}
 				}
-			}			
+			}
+//			WorkspaceController.getController().getExpansionStateHandler().addPathKey(this.getKey());
+			refresh();
 		}
 		catch (Exception e) {
 			LogUtils.warn(e);
-		}
-		//TODO DOCEAR - do sth to save the expanded state
-//		if(WorkspaceController.getCurrentModeExtension().getView() instanceof IExpansionStateHandler) {
-//			((IExpansionStateHandler) WorkspaceController.getCurrentModeExtension().getView()).addPathKey(this.getKey());
-//		}
-		refresh();
+		}	
 	}
 	
 	private void processFileListDrop(List<File> files, int dropAction) {
 		try {
-			File targetDir = getFile();			
+			File targetDir = WorkspaceController.resolveFile(getPath());			
 			for(File srcFile : files) {
 				if(srcFile.isDirectory()) {
-						FileUtils.copyDirectoryToDirectory(srcFile, targetDir);
+					FileUtils.copyDirectoryToDirectory(srcFile, targetDir);
 				}
 				else {
 					FileUtils.copyFileToDirectory(srcFile, targetDir, true);
@@ -201,7 +148,7 @@ public class FolderFileNode extends DefaultFileNode {
 	
 	private void processUriListDrop(List<URI> uris, int dropAction) {
 		try {
-			File targetDir = getFile();			
+			File targetDir = WorkspaceController.resolveFile(getPath());			
 			for(URI uri : uris) {
 				File srcFile = new File(uri);
 				if(srcFile == null || !srcFile.exists()) {
@@ -219,7 +166,69 @@ public class FolderFileNode extends DefaultFileNode {
 		catch (Exception e) {
 			LogUtils.warn(e);
 		}
-		refresh();		
+		refresh();
+		
+	}
+		
+	/***********************************************************************************
+	 * REQUIRED METHODS FOR INTERFACES
+	 **********************************************************************************/
+	
+	public void handleAction(WorkspaceActionEvent event) {
+		if (event.getType() == WorkspaceActionEvent.MOUSE_RIGHT_CLICK) {
+			showPopup((Component) event.getBaggage(), event.getX(), event.getY());
+		}
+	}
+	
+	public void refresh() {
+		try {
+			getModel().reload(this);			
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public AWorkspaceTreeNode clone() {
+		FolderTypeProjectNode node = new FolderTypeProjectNode(getType());
+		return clone(node);
+	}
+
+	public void initializePopup() {
+		if (popupMenu == null) {			
+			popupMenu = new WorkspacePopupMenu();
+			WorkspacePopupMenuBuilder.addActions(popupMenu, new String[] {
+					WorkspacePopupMenuBuilder.createSubMenu(TextUtils.getRawText("workspace.action.new.label")),
+					"workspace.action.node.new.folder",
+					"workspace.action.file.new.mindmap",
+					//WorkspacePopupMenuBuilder.SEPARATOR,
+					//"workspace.action.file.new.file",
+					WorkspacePopupMenuBuilder.endSubMenu(),
+					WorkspacePopupMenuBuilder.SEPARATOR,
+					"workspace.action.docear.uri.change",
+					"workspace.action.node.open.location",
+					WorkspacePopupMenuBuilder.SEPARATOR,
+					"workspace.action.node.cut",
+					"workspace.action.node.copy",						
+					"workspace.action.node.paste",
+					WorkspacePopupMenuBuilder.SEPARATOR,
+					"workspace.action.node.rename",
+					"workspace.action.node.remove",
+					"workspace.action.file.delete",
+					WorkspacePopupMenuBuilder.SEPARATOR,
+					"workspace.action.node.physical.sort",
+					WorkspacePopupMenuBuilder.SEPARATOR,
+					"workspace.action.node.refresh"	
+			});
+		}
+		
+	}	
+	
+	public WorkspacePopupMenu getContextMenu() {
+		if (popupMenu == null) {
+			initializePopup();
+		}
+		return popupMenu;
 	}
 	
 	public boolean acceptDrop(DataFlavor[] flavors) {
@@ -234,17 +243,6 @@ public class FolderFileNode extends DefaultFileNode {
 		return false;
 	}
 
-	public boolean processDrop(DropTargetDropEvent event) {
-		event.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
-		Transferable transferable = event.getTransferable();
-		if(processDrop(transferable, event.getDropAction())) {
-			event.dropComplete(true);
-			return true;
-		}
-		event.dropComplete(false);
-		return false;
-	}
-		
 	@SuppressWarnings("unchecked")
 	public boolean processDrop(Transferable transferable, int dropAction) {
 		try {
@@ -278,45 +276,18 @@ public class FolderFileNode extends DefaultFileNode {
 		return true;
 	}
 	
-	public boolean isLeaf() {
+	public boolean processDrop(DropTargetDropEvent event) {
+		event.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+		Transferable transferable = event.getTransferable();
+		if(processDrop(transferable, event.getDropAction())) {
+			event.dropComplete(true);
+			return true;
+		}
+		event.dropComplete(false);
 		return false;
 	}
-		
 	
-	/***********************************************************************************
-	 * REQUIRED METHODS FOR INTERFACES
-	 **********************************************************************************/
-	public void handleAction(WorkspaceActionEvent event) {	
-		if(event.getType() == WorkspaceActionEvent.WSNODE_CHANGED) {
-			if(rename(event.getBaggage().toString())) {
-				setName(event.getBaggage().toString());
-				if(event.getSource() instanceof AWorkspaceTreeNode) {
-					Enumeration<AWorkspaceTreeNode> childs = ((AWorkspaceTreeNode)event.getSource()).children();
-					while(childs.hasMoreElements()) {
-						AWorkspaceTreeNode node = ((AWorkspaceTreeNode) childs.nextElement());
-						if(node instanceof DefaultFileNode) {
-							((DefaultFileNode)node).relocateFile(getFile());							
-						}
-					}
-				}
-			}
-			else {
-				LogUtils.warn("Could not rename File("+getName()+") to File("+event.getBaggage()+")");
-			}
-			
-		} 
-		else if(event.getType() == WorkspaceActionEvent.WSNODE_OPEN_DOCUMENT) {
-//			try {
-//				Controller.getCurrentController().getViewController().openDocument(Compat.fileToUrl(getFile()));
-//				event.consume();
-//			} catch (Exception e) {
-//				LogUtils.warn(e);
-//			}
-		}
-		else {
-			super.handleAction(event);
-		}
+	public String getTagName() {
+		return "project";
 	}
-	
-	
 }

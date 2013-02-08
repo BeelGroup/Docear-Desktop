@@ -49,7 +49,7 @@ public class FolderTypePhysicalCreator extends AWorkspaceNodeCreator {
 			return;
 		}
 
-		WorkspaceController.getFilesystemMgr().scanFileSystem((AWorkspaceTreeNode) currentNode,
+		WorkspaceController.getFileSystemMgr().scanFileSystem((AWorkspaceTreeNode) currentNode,
 						WorkspaceController.resolveFile(((FolderLinkNode) currentNode).getPath()));
 
 	}

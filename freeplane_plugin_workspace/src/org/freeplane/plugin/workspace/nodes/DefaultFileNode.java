@@ -29,7 +29,6 @@ import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.mapio.MapIO;
 import org.freeplane.features.mode.Controller;
-import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
@@ -339,7 +338,7 @@ public class DefaultFileNode extends AWorkspaceTreeNode implements IWorkspaceNod
 		String oldName = getName();
 		if(rename(newName)) {
 			try {
-				WorkspaceController.getCurrentModel().changeNodeName(this, newName);
+				getModel().changeNodeName(this, newName);
 				return true;
 			}
 			catch(Exception ex) {

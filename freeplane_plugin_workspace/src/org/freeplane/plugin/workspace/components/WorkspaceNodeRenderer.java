@@ -26,6 +26,7 @@ public class WorkspaceNodeRenderer extends DefaultTreeCellRenderer {
 	private static final Icon DEFAULT_FOLDER_OPEN_ICON = new ImageIcon(WorkspaceNodeRenderer.class.getResource("/images/16x16/folder-blue_open.png"));
 	
 	public WorkspaceNodeRenderer() {
+		
 	}
 
 	public Component getTreeCellRendererComponent(JTree tree, Object treeNode, boolean sel, boolean expanded, boolean leaf, int row,
@@ -44,7 +45,7 @@ public class WorkspaceNodeRenderer extends DefaultTreeCellRenderer {
 					label.setBorder(BorderFactory.createLineBorder(label.getForeground(), 1));
 				}
 			}
-			label.setText(node.getName());			
+			label.setText(node.getName());
 			return label;
 		}
 		return super.getTreeCellRendererComponent(tree, treeNode, sel, expanded, leaf, row, hasFocus);

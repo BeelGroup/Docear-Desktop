@@ -13,7 +13,6 @@ import javax.swing.tree.TreePath;
 
 import org.docear.lang.Destructable;
 import org.freeplane.n3.nanoxml.XMLElement;
-import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.io.annotation.ExportAsAttribute;
 
@@ -37,6 +36,8 @@ public abstract class AWorkspaceTreeNode implements Cloneable, TreeNode, Destruc
 	private final String type;
 	private boolean system = false;
 	private boolean isTranferable = true;
+
+	private WorkspaceTreeModel treeModel;
 	
 	/***********************************************************************************
 	 * CONSTRUCTORS
@@ -173,7 +174,7 @@ public abstract class AWorkspaceTreeNode implements Cloneable, TreeNode, Destruc
 	
 	public void refresh() {
 		//override in child class, if needed
-		WorkspaceController.getCurrentModel().reload(this);
+		getModel().reload(this);
 	}
 	
 	protected AWorkspaceTreeNode clone(AWorkspaceTreeNode node) {		
@@ -232,6 +233,17 @@ public abstract class AWorkspaceTreeNode implements Cloneable, TreeNode, Destruc
 		return !allowsChildren  || (children.size() == 0);
 	}
 	
+	public WorkspaceTreeModel getModel() {
+		if(this.treeModel == null && getParent() != null) {
+			return getParent().getModel();
+		}
+		return this.treeModel;
+	}
+	
+	public void setModel(WorkspaceTreeModel model) {
+		this.treeModel = model;
+	}
+	
 	public Enumeration<AWorkspaceTreeNode> children() {
 		return new Enumeration<AWorkspaceTreeNode>() {
 		    int count = 0;
@@ -252,9 +264,11 @@ public abstract class AWorkspaceTreeNode implements Cloneable, TreeNode, Destruc
 	}
 
 	public void disassociateReferences() {
-		WorkspaceController.getCurrentModel().removeAllElements(this);
+		getModel().removeAllElements(this);
 		this.parent = null;
 	}
+
+	
 
 	
 

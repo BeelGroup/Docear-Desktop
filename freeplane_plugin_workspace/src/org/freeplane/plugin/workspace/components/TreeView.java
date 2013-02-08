@@ -18,12 +18,11 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import org.freeplane.core.ui.components.OneTouchCollapseResizer;
+import org.freeplane.core.ui.components.OneTouchCollapseResizer.ComponentCollapseListener;
+import org.freeplane.core.ui.components.ResizeEvent;
 import org.freeplane.plugin.workspace.controller.DefaultNodeTypeIconManager;
-import org.freeplane.plugin.workspace.controller.DefaultWorkspaceExpansionStateHandler;
 import org.freeplane.plugin.workspace.controller.DefaultWorkspaceKeyHandler;
 import org.freeplane.plugin.workspace.controller.DefaultWorkspaceMouseHandler;
-import org.freeplane.plugin.workspace.controller.IExpansionStateHandler;
 import org.freeplane.plugin.workspace.controller.INodeTypeIconManager;
 import org.freeplane.plugin.workspace.dnd.WorkspaceTransferHandler;
 import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
@@ -33,7 +32,7 @@ import org.freeplane.plugin.workspace.listener.DefaultWorkspaceSelectionListener
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.WorkspaceModel;
 
-public class TreeView extends JPanel implements IWorkspaceView, IExpansionStateHandler {
+public class TreeView extends JPanel implements IWorkspaceView, ComponentCollapseListener {
 
 	
 
@@ -42,7 +41,6 @@ public class TreeView extends JPanel implements IWorkspaceView, IExpansionStateH
 	
 	protected JTree mTree;
 	protected JTextField m_display;
-	private DefaultWorkspaceExpansionStateHandler expansionStateHandle;
 	private WorkspaceTransferHandler transferHandler;
 	private INodeTypeIconManager nodeTypeIconManager;
 	
@@ -54,8 +52,6 @@ public class TreeView extends JPanel implements IWorkspaceView, IExpansionStateH
 		mTree.putClientProperty("JTree.lineStyle", "Angled");
 		mTree.setCellRenderer(new WorkspaceNodeRenderer());
 		mTree.setCellEditor(new WorkspaceCellEditor(mTree, (DefaultTreeCellRenderer) mTree.getCellRenderer()));
-		expansionStateHandle = new DefaultWorkspaceExpansionStateHandler();
-		mTree.addTreeExpansionListener(expansionStateHandle);
 		mTree.addTreeExpansionListener(new DefaultTreeExpansionListener());
         mTree.addTreeSelectionListener(new DefaultWorkspaceSelectionListener());
 		mTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
@@ -86,17 +82,7 @@ public class TreeView extends JPanel implements IWorkspaceView, IExpansionStateH
 	}
 	
 	public void setPreferredSize(Dimension size) {
-		if(this.getClientProperty(OneTouchCollapseResizer.COLLAPSED) == null) {
-			if(this.getMinimumSize() == null) {
-				super.setPreferredSize(new Dimension(Math.max(size.width, 0), Math.max(size.height, 0)));
-			}
-			else {
-				super.setPreferredSize(new Dimension(Math.max(size.width, getMinimumSize().width), Math.max(size.height, getMinimumSize().height)));
-			}
-		}
-		else {
-			super.setPreferredSize(new Dimension(Math.max(size.width, 0), Math.max(size.height, 0)));
-		}
+		super.setPreferredSize(new Dimension(Math.max(size.width, getMinimumSize().width), Math.max(size.height, getMinimumSize().height)));	
 	}
 
 	public void expandPath(TreePath treePath) {
@@ -124,15 +110,7 @@ public class TreeView extends JPanel implements IWorkspaceView, IExpansionStateH
 	public void addSelectionPath(TreePath path) {
 		mTree.addSelectionPath(path);		
 	}
-	
-	public void restoreExpansionStates() {
-		expansionStateHandle.restoreExpansionStates();		
-	}
-
-	public void reset() {
-		expansionStateHandle.reset();		
-	}
-	
+		
 	public class TreeModelProxy implements TreeModel {
 		private final WorkspaceModel model;
 
@@ -212,7 +190,19 @@ public class TreeView extends JPanel implements IWorkspaceView, IExpansionStateH
 	}
 
 	public void addPathKey(String key) {
-		this.expansionStateHandle.addPathKey(key);		
+		//DOCEAR - modify: use TreePath as key
+	}
+
+	public void componentCollapsed(ResizeEvent event) {
+		if(this.equals(event.getSource())) {
+			super.setPreferredSize(new Dimension(0, getPreferredSize().height));
+		}
+	}
+
+	public void componentExpanded(ResizeEvent event) {
+		if(this.equals(event.getSource())) {
+			// nothing
+		}
 	}
 
 	

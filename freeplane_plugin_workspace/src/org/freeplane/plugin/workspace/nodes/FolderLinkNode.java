@@ -23,7 +23,6 @@ import org.freeplane.core.util.TextUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
-import org.freeplane.plugin.workspace.controller.IExpansionStateHandler;
 import org.freeplane.plugin.workspace.dnd.IDropAcceptor;
 import org.freeplane.plugin.workspace.dnd.IWorkspaceTransferableCreator;
 import org.freeplane.plugin.workspace.dnd.WorkspaceTransferable;
@@ -182,9 +181,9 @@ public class FolderLinkNode extends AFolderNode implements IWorkspaceNodeActionL
 		try {
 			folder = WorkspaceController.resolveFile(getPath());
 			if (folder.isDirectory()) {
-				WorkspaceController.getCurrentModel().removeAllElements(this);
-				WorkspaceController.getFilesystemMgr().scanFileSystem(this, folder);
-				WorkspaceController.getCurrentModel().reload(this);				
+				getModel().removeAllElements(this);
+				WorkspaceController.getFileSystemMgr().scanFileSystem(this, folder);
+				getModel().reload(this);				
 			}
 		}
 		catch (Exception e) {
@@ -212,9 +211,9 @@ public class FolderLinkNode extends AFolderNode implements IWorkspaceNodeActionL
 							((DefaultFileNode) node).moveTo(targetDir);
 							File newFile = new File(targetDir, ((DefaultFileNode) node).getName());
 							AWorkspaceTreeNode parent = node.getParent();
-							WorkspaceController.getCurrentModel().cutNodeFromParent(node);
+							getModel().cutNodeFromParent(node);
 							parent.refresh();
-							WorkspaceController.getCurrentModel().nodeMoved(node, oldFile, newFile);
+							getModel().nodeMoved(node, oldFile, newFile);
 						}
 					}
 				}
@@ -224,16 +223,17 @@ public class FolderLinkNode extends AFolderNode implements IWorkspaceNodeActionL
 						FileUtils.copyFileToDirectory(srcFile, targetDir);
 						if(dropAction == DnDConstants.ACTION_MOVE) {
 							AWorkspaceTreeNode parent = node.getParent();
-							WorkspaceController.getCurrentModel().cutNodeFromParent(node);
+							getModel().cutNodeFromParent(node);
 							parent.refresh();
-							WorkspaceController.getCurrentModel().nodeMoved(node, srcFile, new File(targetDir, srcFile.getName()));
+							getModel().nodeMoved(node, srcFile, new File(targetDir, srcFile.getName()));
 						}
 					}
 				}
 			}
-			if(WorkspaceController.getCurrentModeExtension().getView() instanceof IExpansionStateHandler) {
-				((IExpansionStateHandler) WorkspaceController.getCurrentModeExtension().getView()).addPathKey(this.getKey());
-			}
+			//TODO DOCEAR - do sth to save the expanded state
+//			if(WorkspaceController.getCurrentModeExtension().getView() instanceof IExpansionStateHandler) {
+//				((IExpansionStateHandler) WorkspaceController.getCurrentModeExtension().getView()).addPathKey(this.getKey());
+//			}
 			refresh();
 		}
 		catch (Exception e) {
@@ -440,7 +440,7 @@ public class FolderLinkNode extends AFolderNode implements IWorkspaceNodeActionL
 				if(oldFile.exists() && oldFile.renameTo(destFile)) {					
 					//this.setName(newName);
 					try {
-						WorkspaceController.getCurrentModel().changeNodeName(this, newName);
+						getModel().changeNodeName(this, newName);
 						return true;
 					}
 					catch(Exception ex) {
@@ -459,7 +459,7 @@ public class FolderLinkNode extends AFolderNode implements IWorkspaceNodeActionL
 		else {
 			//this.setName(newName);
 			try {
-				WorkspaceController.getCurrentModel().changeNodeName(this, newName);
+				getModel().changeNodeName(this, newName);
 				return true;
 			}
 			catch(Exception ex) {

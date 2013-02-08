@@ -16,7 +16,6 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
-import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
 import org.freeplane.plugin.workspace.dnd.IDropAcceptor;
@@ -184,7 +183,7 @@ public class FolderVirtualNode extends AFolderNode implements IWorkspaceNodeActi
 					} 
 					else if (dropAction == DnDConstants.ACTION_MOVE) {
 						AWorkspaceTreeNode parent = node.getParent();
-						WorkspaceController.getCurrentModel().cutNodeFromParent(node);
+						getModel().cutNodeFromParent(node);
 						parent.refresh();
 						newNode = node;
 					}
@@ -192,7 +191,7 @@ public class FolderVirtualNode extends AFolderNode implements IWorkspaceNodeActi
 				if(newNode == null) {
 					continue;
 				}
-				WorkspaceController.getCurrentModel().addNodeTo(newNode, this);
+				getModel().addNodeTo(newNode, this);
 //				WorkspaceController.getController().getExpansionStateHandler().addPathKey(this.getKey());
 			}
 //			WorkspaceUtils.saveCurrentConfiguration();
@@ -208,7 +207,7 @@ public class FolderVirtualNode extends AFolderNode implements IWorkspaceNodeActi
 		try {		
 			for(File srcFile : files) {
 				AWorkspaceTreeNode node = createFSNodeLinks(srcFile);
-				WorkspaceController.getCurrentModel().addNodeTo(node, this);
+				getModel().addNodeTo(node, this);
 				node.refresh();
 			}
 //			WorkspaceUtils.saveCurrentConfiguration();
@@ -227,7 +226,7 @@ public class FolderVirtualNode extends AFolderNode implements IWorkspaceNodeActi
 					continue;
 				}
 				AWorkspaceTreeNode node = createFSNodeLinks(srcFile);
-				WorkspaceController.getCurrentModel().addNodeTo(node, this);
+				getModel().addNodeTo(node, this);
 				node.refresh();
 			};
 //			WorkspaceUtils.saveCurrentConfiguration();
@@ -254,6 +253,6 @@ public class FolderVirtualNode extends AFolderNode implements IWorkspaceNodeActi
 	}
 	
 	public void refresh() {
-		WorkspaceController.getCurrentModel().reload(this);
+		getModel().reload(this);
 	}
 }

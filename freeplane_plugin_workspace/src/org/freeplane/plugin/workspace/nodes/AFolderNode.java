@@ -41,6 +41,9 @@ public abstract class AFolderNode extends AWorkspaceTreeNode {
 	 * REQUIRED METHODS FOR INTERFACES
 	 **********************************************************************************/
 	
+	public boolean isLeaf() {
+		return false;
+	}
 	
 	public String getTagName() {
 		return "folder";
