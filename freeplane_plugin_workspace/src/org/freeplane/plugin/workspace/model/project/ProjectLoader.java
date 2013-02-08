@@ -13,6 +13,7 @@ import org.apache.commons.io.IOExceptionWithCause;
 import org.freeplane.core.io.ReadManager;
 import org.freeplane.core.io.WriteManager;
 import org.freeplane.core.io.xml.TreeXmlReader;
+import org.freeplane.core.util.LogUtils;
 import org.freeplane.n3.nanoxml.XMLException;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.creator.ActionCreator;
@@ -44,6 +45,7 @@ public class ProjectLoader implements IProjectSettingsIOHandler {
 	private ProjectRootCreator projectRootCreator = null;
 	
 	private ProjectSettingsWriter projectWriter;
+	private DefaultResultProcessor resultProcessor;
 		
 	//DOCEAR - required for backwards compatibility   
 //	private final static String CONFIG_FILE_NAME = "workspace.xml";
@@ -87,6 +89,7 @@ public class ProjectLoader implements IProjectSettingsIOHandler {
 	private ProjectRootCreator getProjectRootCreator() {
 		if (this.projectRootCreator == null) {
 			this.projectRootCreator = new ProjectRootCreator();
+			this.projectRootCreator.setResultProcessor(getDefaultResultProcessor());
 		}
 		return this.projectRootCreator;
 	}
@@ -94,6 +97,7 @@ public class ProjectLoader implements IProjectSettingsIOHandler {
 	private FolderCreator getFolderCreator() {
 		if (this.folderCreator == null) {
 			this.folderCreator = new FolderCreator();
+			this.folderCreator.setResultProcessor(getDefaultResultProcessor());
 		}
 		return this.folderCreator;
 	}
@@ -101,6 +105,7 @@ public class ProjectLoader implements IProjectSettingsIOHandler {
 	private ActionCreator getActionCreator() {
 		if (this.actionCreator == null) {
 			this.actionCreator = new ActionCreator();
+			this.actionCreator.setResultProcessor(getDefaultResultProcessor());
 		}
 		return this.actionCreator;
 	}
@@ -108,6 +113,7 @@ public class ProjectLoader implements IProjectSettingsIOHandler {
 	private LinkCreator getLinkCreator() {
 		if (this.linkCreator == null) {
 			this.linkCreator = new LinkCreator();
+			this.linkCreator.setResultProcessor(getDefaultResultProcessor());
 		}
 		return this.linkCreator;
 	}
@@ -116,26 +122,29 @@ public class ProjectLoader implements IProjectSettingsIOHandler {
 		if (typeName == null || typeName.trim().length() <= 0)
 			return;
 		switch (nodeType) {
-		case WSNODE_FOLDER: {
-			getFolderCreator().addTypeCreator(typeName, creator);
-			break;
+			case WSNODE_FOLDER: {
+				getFolderCreator().addTypeCreator(typeName, creator);
+				break;
+			}
+			case WSNODE_LINK: {
+				getLinkCreator().addTypeCreator(typeName, creator);
+				break;
+			}
+			case WSNODE_ACTION: {
+				getActionCreator().addTypeCreator(typeName, creator);
+				break;
+			}
+			default: {
+				throw new IllegalArgumentException("not allowed argument for nodeType. Use only WorkspaceConfiguration.WSNODE_ACTION, WorkspaceConfiguration.WSNODE_FOLDER or WorkspaceConfiguration.WSNODE_LINK.");
+			}
 		}
-		case WSNODE_LINK: {
-			getLinkCreator().addTypeCreator(typeName, creator);
-			break;
-		}
-		case WSNODE_ACTION: {
-			getActionCreator().addTypeCreator(typeName, creator);
-			break;
-		}
-		default: {
-			throw new IllegalArgumentException("not allowed argument for nodeType. Use only WorkspaceConfiguration.WSNODE_ACTION, WorkspaceConfiguration.WSNODE_FOLDER or WorkspaceConfiguration.WSNODE_LINK.");
-		}
+		if(creator.getResultProcessor() == null) {
+			creator.setResultProcessor(getDefaultResultProcessor());
 		}
 
 	}
 
-	private void load(final URI xmlFile, IResultProcessor processor) throws MalformedURLException, XMLException, IOException {
+	private void load(final URI xmlFile) throws MalformedURLException, XMLException, IOException {
 		final TreeXmlReader reader = new TreeXmlReader(readManager);
 		reader.load(new InputStreamReader(new BufferedInputStream(xmlFile.toURL().openStream())));
 	}
@@ -145,7 +154,8 @@ public class ProjectLoader implements IProjectSettingsIOHandler {
 			
 			File projectSettings = new File(WorkspaceController.resolveFile(project.getProjectDataPath()),"settings.xml");
 			if(projectSettings.exists()) {
-				this.load(projectSettings.toURI(), new DefaultResultProcessor(project));
+				getDefaultResultProcessor().setProject(project);
+				this.load(projectSettings.toURI());
 			}
 			else {
 				DefaultProject prj = new DefaultProject();
@@ -158,6 +168,13 @@ public class ProjectLoader implements IProjectSettingsIOHandler {
 		}
 	}
 	
+	public DefaultResultProcessor getDefaultResultProcessor() {
+		if(this.resultProcessor == null) {
+			this.resultProcessor = new DefaultResultProcessor();
+		}
+		return this.resultProcessor;
+	}
+
 	public void storeProject(Writer writer, AWorkspaceProject project) throws IOException {
 		this.projectWriter.storeProject(writer, project);		
 	}
@@ -175,19 +192,38 @@ public class ProjectLoader implements IProjectSettingsIOHandler {
 	
 	private class DefaultResultProcessor implements IResultProcessor {
 
-		private final AWorkspaceProject project;
+		private AWorkspaceProject project;
 
-		public DefaultResultProcessor(AWorkspaceProject project) {
+		public AWorkspaceProject getProject() {
+			return project;
+		}
+
+		public void setProject(AWorkspaceProject project) {
 			this.project = project;
 		}
 
 		public void process(AWorkspaceTreeNode parent, AWorkspaceTreeNode node) {
+			if(getProject() == null) {
+				LogUtils.warn("Missing project container! cannot add node to a model.");
+				return;
+			}
 			if(node instanceof FolderTypeProjectNode) {
-				this.project.getModel().setRoot(node);
+				getProject().getModel().setRoot(node);
+				if(((FolderTypeProjectNode) node).getProjectID() == null) {
+					((FolderTypeProjectNode) node).setProjectID(getProject().getProjectID());
+				}
+				((FolderTypeProjectNode) node).initiateMyFile(getProject());
 			}
 			else {
-				if (this.project.getModel().containsNode(node.getKey())) {
-					this.project.getModel().addNodeTo(node, (AWorkspaceTreeNode) parent);			
+				if(parent == null) {
+					if (!getProject().getModel().containsNode(node.getKey())) {
+						getProject().getModel().addNodeTo(node, (AWorkspaceTreeNode) parent);			
+					}
+				}
+				else {
+					if (!parent.getModel().containsNode(node.getKey())) {
+						parent.getModel().addNodeTo(node, (AWorkspaceTreeNode) parent);			
+					}
 				}
 			}
 		}

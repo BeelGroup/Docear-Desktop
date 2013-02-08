@@ -611,6 +611,9 @@ public class ProjectModel implements WorkspaceTreeModel {
 
 	public void setRoot(AWorkspaceTreeNode object) {
 		this.root = object;
+		if(this.root != null) {
+			this.root.setModel(this);
+		}
 	}
 
 	public Object getChild(Object parent, int index) {

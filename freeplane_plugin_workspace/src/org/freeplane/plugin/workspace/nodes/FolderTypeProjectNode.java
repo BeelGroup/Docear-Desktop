@@ -30,6 +30,7 @@ import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.io.annotation.ExportAsAttribute;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.model.project.IProjectSettings;
 
 
@@ -289,5 +290,11 @@ public class FolderTypeProjectNode extends AFolderNode implements IWorkspaceNode
 	
 	public String getTagName() {
 		return "project";
+	}
+
+	public void initiateMyFile(AWorkspaceProject project) {
+		FolderTypeMyFilesNode myFilesNode = new FolderTypeMyFilesNode(project); 
+		getModel().addNodeTo(myFilesNode, this);
+		myFilesNode.refresh();
 	}
 }

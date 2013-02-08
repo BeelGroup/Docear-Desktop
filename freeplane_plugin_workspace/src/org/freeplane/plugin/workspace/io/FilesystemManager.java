@@ -40,16 +40,20 @@ public class FileSystemManager {
 	public void setFiltering(boolean filtering) {
 		this.filtering = filtering;
 	}
+	
+	public void scanFileSystem(AWorkspaceTreeNode node, File file) {
+		scanFileSystem(node, file, null);
+	}
 
-	public void scanFileSystem(final AWorkspaceTreeNode node, final File file) {
+	public void scanFileSystem(AWorkspaceTreeNode node, File file, FileFilter filter) {
 
 		if (file != null && file.exists()) {
 			if (file.isDirectory()) {
 				if(node instanceof IFileSystemRepresentation) {
-					iterateDirectory(node, file, ((IFileSystemRepresentation) node).orderDescending());
+					iterateDirectory(node, file, filter, ((IFileSystemRepresentation) node).orderDescending());
 				} 
 				else {
-					iterateDirectory(node, file, false);
+					iterateDirectory(node, file, filter, false);
 				}
 			}
 			else {
@@ -104,18 +108,18 @@ public class FileSystemManager {
 		return typeManager.getFileTypeHandlers();
 	}
 
-	private void iterateDirectory(AWorkspaceTreeNode parent, File directory, final boolean orderDescending) {
+	private void iterateDirectory(AWorkspaceTreeNode parent, File directory, FileFilter filter, final boolean orderDescending) {
 		boolean orderDesc = orderDescending;
 //		if(parent instanceof IFileSystemRepresentation) {
 //			orderDesc = ((IFileSystemRepresentation) parent).orderDescending();
 //		}
 		
-		for (File file : sortFiles(directory.listFiles(new DirectoryFilter()), orderDesc, true)) {
+		for (File file : sortFiles(directory.listFiles(new DirectoryFilter(filter)), orderDesc, true)) {
 			AWorkspaceTreeNode newParent = createFileNode(parent, FileReadManager.DIRECTORY_HANDLE, file);
-			iterateDirectory(newParent, file, orderDesc);
+			iterateDirectory(newParent, file, filter, orderDesc);
 
 		}
-		for (File file : sortFiles(directory.listFiles(new FilesOnlyFilter()), orderDesc, true)) {
+		for (File file : sortFiles(directory.listFiles(new FilesOnlyFilter(filter)), orderDesc, true)) {
 			createFileNode(parent, file);
 		}
 	}
@@ -176,13 +180,21 @@ public class FileSystemManager {
 	
 	private class DirectoryFilter implements FileFilter  {
 		private boolean filtering = true;
+		private FileFilter extraFilter;
 		
+		public DirectoryFilter(FileFilter filter) {
+			this.extraFilter = filter;
+		}
+
 		public boolean accept(File pathname) {
 			if(filtering && pathname.getName().startsWith(".") && !pathname.getName().equals("."+ResourceController.getResourceController().getProperty("workspace.profile"))) {
 				return false;
 			}
 			if (pathname.isDirectory()) {
-				return true;
+				if(this.extraFilter == null) {
+					return true;
+				}
+				return this.extraFilter.accept(pathname);
 			}
 			return false;
 		}
@@ -190,13 +202,21 @@ public class FileSystemManager {
 	
 	private class FilesOnlyFilter implements FileFilter {
 		private boolean filtering = true;
+		private FileFilter extraFilter;
 		
+		public FilesOnlyFilter(FileFilter filter) {
+			this.extraFilter = filter;
+		}
+
 		public boolean accept(File pathname) {
 			if(filtering && pathname.getName().startsWith(".")) {
 				return false;
 			}
 			if (pathname.isFile()) {
-				return true;
+				if(this.extraFilter == null) {
+					return true;
+				}
+				return this.extraFilter.accept(pathname);
 			}
 			return false;
 		}

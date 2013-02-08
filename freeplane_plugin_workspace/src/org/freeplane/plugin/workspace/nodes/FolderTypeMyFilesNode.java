@@ -1,6 +1,7 @@
 package org.freeplane.plugin.workspace.nodes;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.net.URI;
 import java.util.Locale;
 
@@ -47,7 +48,15 @@ public class FolderTypeMyFilesNode extends AFolderNode {
 			File file = WorkspaceController.resolveFile(getPath());
 			if (file != null) {
 				getModel().removeAllElements(this);
-				WorkspaceController.getFileSystemMgr().scanFileSystem(this, file);
+				WorkspaceController.getFileSystemMgr().scanFileSystem(this, file, new FileFilter() {
+					
+					public boolean accept(File pathname) {
+						if("_data".equals(pathname.getName())) {
+							return false;
+						}
+						return true;
+					}
+				});
 				getModel().reload(this);
 			}			
 		}

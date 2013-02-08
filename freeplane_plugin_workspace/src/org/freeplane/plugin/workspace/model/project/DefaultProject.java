@@ -18,8 +18,7 @@ public class DefaultProject extends  FolderTypeProjectNode {
 		this.setName(WorkspaceController.resolveFile(project.getProjectHome()).getName());
 		setProjectID(project.getProjectID());
 		// create and load all default nodes
-		FolderTypeMyFilesNode myFilesNode = new FolderTypeMyFilesNode(project); 
-		getModel().addNodeTo(myFilesNode, this);
+		super.initiateMyFile(project);
 		FolderVirtualNode misc = new FolderVirtualNode(AFolderNode.FOLDER_TYPE_VIRTUAL);
 		misc.setName(TextUtils.getText(FolderTypeMyFilesNode.class.getPackage().getName().toLowerCase(Locale.ENGLISH)+".miscnode.name"));
 		project.getModel().addNodeTo(misc, this);

@@ -1,6 +1,7 @@
 package org.freeplane.plugin.workspace.model;
 
 import org.freeplane.core.io.IElementDOMHandler;
+import org.freeplane.core.util.LogUtils;
 import org.freeplane.n3.nanoxml.XMLElement;
 
 public abstract class AWorkspaceNodeCreator implements IElementDOMHandler {
@@ -42,6 +43,7 @@ public abstract class AWorkspaceNodeCreator implements IElementDOMHandler {
 	
 	private void processResult(AWorkspaceTreeNode parent, AWorkspaceTreeNode node) {
 		if(getResultProcessor() == null) {
+			LogUtils.warn("Missing ResultProcessor for node "+ node.getClass().getName());
 			return;
 		}
 		getResultProcessor().process(parent, node);

@@ -26,12 +26,13 @@ public class Activator implements BundleActivator {
 		}, null);
 		
 		final Hashtable<String, String[]> props = new Hashtable<String, String[]>();
+		//TODO DOCEAR - list all modes from freeplane controller
 		props.put("mode", new String[] { MModeController.MODENAME });
 		
 		context.registerService(IModeControllerExtensionProvider.class.getName(),
 		    new IModeControllerExtensionProvider() {
 				public void installExtension(ModeController modeController) {
-			    	registerLinkTypeOption();
+			    	//registerLinkTypeOption();
 			    	changeQuitAction();
 			    	WorkspaceController.getController().installMode(modeController);
 				    startPluginServices(context, modeController);
