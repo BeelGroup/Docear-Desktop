@@ -2,12 +2,14 @@ package org.freeplane.plugin.workspace;
 
 import java.util.Hashtable;
 
+import org.freeplane.core.ui.FreeplaneActionCascade;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.main.osgi.IControllerExtensionProvider;
 import org.freeplane.main.osgi.IModeControllerExtensionProvider;
+import org.freeplane.plugin.workspace.actions.WorkspaceQuitAction;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -26,13 +28,13 @@ public class Activator implements BundleActivator {
 		}, null);
 		
 		final Hashtable<String, String[]> props = new Hashtable<String, String[]>();
+		//TODO DOCEAR - list all modes from freeplane controller
 		props.put("mode", new String[] { MModeController.MODENAME });
 		
 		context.registerService(IModeControllerExtensionProvider.class.getName(),
 		    new IModeControllerExtensionProvider() {
 				public void installExtension(ModeController modeController) {
-			    	registerLinkTypeOption();
-			    	changeQuitAction();
+					addToQuitChain();
 			    	WorkspaceController.getController().installMode(modeController);
 				    startPluginServices(context, modeController);
 				    WorkspaceController.getController().startModeExtension(modeController);
@@ -40,8 +42,8 @@ public class Activator implements BundleActivator {
 		    }, props);
 	}
 	
-	protected final void changeQuitAction() {
-//		FreeplaneActionCascade.addAction(new WorkspaceInformingQuitAction());
+	protected final void addToQuitChain() {
+		FreeplaneActionCascade.addAction(new WorkspaceQuitAction());
 	}
 
 	private void registerClasspathUrlHandler(final BundleContext context) {
@@ -54,29 +56,8 @@ public class Activator implements BundleActivator {
         context.registerService(URLStreamHandlerService.class.getName(), new PropertyUrlHandler(), properties);
     }
 	
-	private void registerLinkTypeOption() {
-//		IndexedTree.Node node = (IndexedTree.Node) MModeController.getMModeController().getOptionPanelBuilder().getRoot();
-//		IndexedTree.Node found = getNodeForPath("Environment/hyperlink_types/links", node);
-//		found.setUserObject(new OptionPanelExtender((IPropertyControlCreator) found.getUserObject()));
-	}
-	
-//	private IndexedTree.Node getNodeForPath(String path, IndexedTree.Node node) {
-//		Enumeration<?> children = node.children();
-//		while(children.hasMoreElements()) {
-//			IndexedTree.Node child = (IndexedTree.Node)children.nextElement();
-//			if(child.getKey() != null && path.startsWith(child.getKey().toString())) {
-//				if(path.equals(child.getKey().toString())) {
-//					return child;
-//				}
-//				return getNodeForPath(path, child);
-//				
-//			}
-//		}
-//		return null;
-//	}
-	
 	public void stop(BundleContext context) throws Exception {
-		LogUtils.info("DOCEAR: save config ...");
+		LogUtils.info("Workspace: shuting down ...");
 //		WorkspaceUtils.saveCurrentConfiguration();
 	}
 	

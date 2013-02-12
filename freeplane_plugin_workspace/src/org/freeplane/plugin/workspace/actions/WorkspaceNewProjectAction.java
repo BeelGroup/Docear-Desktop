@@ -18,7 +18,7 @@ public class WorkspaceNewProjectAction extends AWorkspaceAction {
 	}
 
 	public void actionPerformed(ActionEvent event) {
-		File path = new File(WorkspaceController.getDefaultProjectHome());
+		File path = WorkspaceController.resolveFile(WorkspaceController.getDefaultProjectHome());
 		path = new File(path, "My Project");
 		
 		path.getParentFile().mkdirs();

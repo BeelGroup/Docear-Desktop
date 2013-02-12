@@ -14,8 +14,10 @@ public class ProjectRootCreator extends AWorkspaceNodeCreator {
 
 	public AWorkspaceTreeNode getNode(XMLElement data) {		
 		FolderTypeProjectNode node = new FolderTypeProjectNode();
-		String name = data.getAttribute("name", "project");		
+		String name = data.getAttribute("name", "project");
+		String id = data.getAttribute("id", null);
 		node.setName(name);
+		node.setProjectID(id);
 		return node;
 	}	
 }

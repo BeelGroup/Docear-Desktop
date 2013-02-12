@@ -26,6 +26,7 @@ public abstract class AWorkspaceModeExtension implements IExtension {
 	public abstract IWorkspaceView getView();
 	public abstract FileReadManager getFileTypeManager();
 	public abstract URI getDefaultProjectHome();
+	public abstract void shutdown();
 	
 	public IOController getIOController() {
 		return workspaceIOController;
