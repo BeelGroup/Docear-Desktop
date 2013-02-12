@@ -15,7 +15,7 @@ import org.freeplane.features.mapio.MapIO;
 import org.freeplane.features.mapio.mindmapmode.MMapIO;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.mindmapmode.MModeController;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.view.swing.map.MapView;
 
 public class MapItem {
@@ -37,7 +37,7 @@ public class MapItem {
 			URL url;
 			String mapExtensionKey;
 			try {
-				url = WorkspaceUtils.resolveURI(uri).toURI().toURL();
+				url = WorkspaceController.resolveURI(uri).toURL();
 				mapExtensionKey = Controller.getCurrentController().getMapViewManager().checkIfFileIsAlreadyOpened(url);
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
@@ -53,7 +53,7 @@ public class MapItem {
 
 			map = new MMapModel();
 			try {
-				File f = WorkspaceUtils.resolveURI(uri);
+				File f = WorkspaceController.resolveFile(uri);
 				if (f.exists()) {
 					Controller.getCurrentController().selectMode(MModeController.MODENAME);
 					MMapIO mapIO = (MMapIO) MModeController.getMModeController().getExtension(MapIO.class);

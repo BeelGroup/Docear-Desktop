@@ -1,7 +1,3 @@
-/**
- * author: Marcel Genzmehr
- * 19.08.2011
- */
 package org.docear.plugin.core;
 
 import java.io.IOException;
@@ -202,7 +198,7 @@ public class DocearController implements IDocearEventListener {
 	public URI getLibraryPath() {		
 		Matcher mainMatcher = PATTERN.matcher(DEFAULT_LIBRARY_PATH);
 		String ret = mainMatcher.replaceAll(WorkspaceController.getController().getPreferences().getWorkspaceProfileHome());
-		return WorkspaceUtils.absoluteURI(URI.create(ret));
+		return WorkspaceController.resolveURI(URI.create(ret));
 	}
 	
 	public DocearEventLogger getDocearEventLogger() {

@@ -28,7 +28,6 @@ import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.link.LinkController;
 import org.freeplane.plugin.workspace.WorkspaceController;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
 import org.swingplus.JHyperlink;
 
 import com.jgoodies.forms.factories.FormFactory;
@@ -91,9 +90,9 @@ public class LocationDialog extends JPanel {
 	private void onOkButton() {
 		String bibPath = "";
 		if (chckbxUseDefaults.isSelected()) {
-			setLiteratureLocation(WorkspaceUtils.resolveURI(URI.create(LITERATURE_REPOSITORY_INIT_PATH)).getPath());
-			setProjectsLocation(WorkspaceUtils.resolveURI(URI.create(PROJECTS_PATH_INIT)).getPath());
-			bibPath = WorkspaceUtils.resolveURI(URI.create(BIBTEX_PATH_INIT)).getPath();
+			setLiteratureLocation(WorkspaceController.resolveURI(URI.create(LITERATURE_REPOSITORY_INIT_PATH)).getPath());
+			setProjectsLocation(WorkspaceController.resolveURI(URI.create(PROJECTS_PATH_INIT)).getPath());
+			bibPath = WorkspaceController.resolveURI(URI.create(BIBTEX_PATH_INIT)).getPath();
 		} else {
 			setLiteratureLocation(literatureLocation.getText());
 			setProjectsLocation(projectsLocation.getText());			

@@ -64,8 +64,6 @@ import org.freeplane.features.url.mindmapmode.IMapConverter;
 import org.freeplane.features.url.mindmapmode.MapConversionException;
 import org.freeplane.features.url.mindmapmode.MapVersionInterpreter;
 import org.freeplane.plugin.workspace.WorkspaceController;
-import org.freeplane.plugin.workspace.WorkspacePreferences;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 

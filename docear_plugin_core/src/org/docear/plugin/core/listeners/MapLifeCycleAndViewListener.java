@@ -10,8 +10,8 @@ import org.apache.commons.io.FileUtils;
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.features.DocearMapModelController;
 import org.docear.plugin.core.features.DocearMapModelExtension;
-import org.docear.plugin.core.features.DocearNodePrivacyExtensionController;
 import org.docear.plugin.core.features.DocearMapModelExtension.DocearMapType;
+import org.docear.plugin.core.features.DocearNodePrivacyExtensionController;
 import org.docear.plugin.core.features.DocearNodePrivacyExtensionController.DocearNodePrivacyExtension;
 import org.docear.plugin.core.features.DocearNodePrivacyExtensionController.DocearPrivacyLevel;
 import org.docear.plugin.core.logger.DocearLogEvent;
@@ -28,7 +28,7 @@ import org.freeplane.features.mapio.mindmapmode.MMapIO;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.ui.IMapViewChangeListener;
 import org.freeplane.features.url.UrlManager;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.plugin.workspace.WorkspaceController;
 
 public class MapLifeCycleAndViewListener implements IMapLifeCycleListener, IMapViewChangeListener {
 
@@ -119,7 +119,7 @@ public class MapLifeCycleAndViewListener implements IMapLifeCycleListener, IMapV
 		
 		//DOCEAR - hack to prevent old trash maps from not having the type "trash"
 		File f = map.getFile();
-		File libraryPath = WorkspaceUtils.resolveURI(DocearController.getController().getLibraryPath());
+		File libraryPath = WorkspaceController.resolveFile(DocearController.getController().getLibraryPath());
 		if (f != null) {
 			if ("trash.mm".equals(f.getName())) {				
 				if (f.getAbsolutePath().startsWith(libraryPath.getAbsolutePath())) {

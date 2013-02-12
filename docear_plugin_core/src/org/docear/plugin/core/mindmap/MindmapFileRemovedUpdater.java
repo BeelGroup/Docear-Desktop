@@ -6,6 +6,7 @@ import java.util.Set;
 import org.freeplane.features.link.NodeLinks;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
+import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.WorkspaceUtils;
 
 public class MindmapFileRemovedUpdater extends AMindmapUpdater {
@@ -32,7 +33,7 @@ public class MindmapFileRemovedUpdater extends AMindmapUpdater {
 		if (links != null) {
 			File link;
 			try {
-				link = WorkspaceUtils.resolveURI(links.getHyperLink(), parent.getMap());			
+				link = WorkspaceController.resolveFile(links.getHyperLink(), parent.getMap());			
 			}
 			catch(Exception e) {
 				link = null;

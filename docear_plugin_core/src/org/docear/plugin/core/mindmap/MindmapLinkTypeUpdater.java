@@ -7,7 +7,7 @@ import org.freeplane.features.link.LinkController;
 import org.freeplane.features.link.NodeLinks;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.plugin.workspace.WorkspaceController;
 
 public class MindmapLinkTypeUpdater extends AMindmapUpdater {
 
@@ -28,7 +28,7 @@ public class MindmapLinkTypeUpdater extends AMindmapUpdater {
 
 		URI uri = links.getHyperLink();
 
-		File file = WorkspaceUtils.resolveURI(uri, node.getMap());
+		File file = WorkspaceController.resolveFile(uri, node.getMap());
 		if (file != null) {
 			links.setHyperLink(LinkController.toLinkTypeDependantURI(node.getMap().getFile(), file));
 		}

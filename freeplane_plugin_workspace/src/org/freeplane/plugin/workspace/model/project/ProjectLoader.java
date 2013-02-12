@@ -31,8 +31,8 @@ import org.freeplane.plugin.workspace.model.IResultProcessor;
 import org.freeplane.plugin.workspace.nodes.FolderTypeProjectNode;
 
 public class ProjectLoader implements IProjectSettingsIOHandler {
-	final private ReadManager readManager;
-	final private WriteManager writeManager;
+	private final ReadManager readManager;
+	private final WriteManager writeManager;
 
 	public final static int WSNODE_FOLDER = 1;
 	public final static int WSNODE_LINK = 2;
@@ -84,7 +84,7 @@ public class ProjectLoader implements IProjectSettingsIOHandler {
 		writeManager.addAttributeWriter("action", writer);
 	}
 
-	private ProjectRootCreator getProjectRootCreator() {
+	protected ProjectRootCreator getProjectRootCreator() {
 		if (this.projectRootCreator == null) {
 			this.projectRootCreator = new ProjectRootCreator();
 		}

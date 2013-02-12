@@ -65,7 +65,7 @@ public class WorkspaceChangeListener implements IWorkspaceEventListener {
 
 	private void setSystemNodes() {
 		try{
-			File libPath = WorkspaceUtils.resolveURI(DocearController.getController().getLibraryPath());		
+			File libPath = WorkspaceController.resolveFile(DocearController.getController().getLibraryPath());		
 			URI _tempFile = Compat.fileToUrl(new File(libPath, "temp.mm")).toURI();	
 			URI _trashFile = Compat.fileToUrl(new File(libPath, "trash.mm")).toURI();
 			
@@ -94,8 +94,8 @@ public class WorkspaceChangeListener implements IWorkspaceEventListener {
 		linkWelcomeMindmapAfterWorkspaceCreation();
 		IDocearLibrary lib = DocearController.getController().getLibrary();
 		if(lib != null && lib instanceof FolderTypeLibraryNode) {
-			WorkspaceController.getController().getExpansionStateHandler().addPathKey(((AWorkspaceTreeNode)lib).getKey());
-			WorkspaceController.getController().refreshWorkspace();
+			WorkspaceController.getController().getExpansionStateHandler().addPathKey(((AWorkspaceTreeNode)lib).getKey());			
+			WorkspaceController.getCurrentModel().getRoot().refresh();
 		}
 			
 	}
@@ -178,7 +178,7 @@ public class WorkspaceChangeListener implements IWorkspaceEventListener {
 	}
 	
 	private void linkWelcomeMindmapAfterWorkspaceCreation() {		
-		AWorkspaceTreeNode parent = WorkspaceUtils.getNodeForPath(((WorkspaceRoot) WorkspaceUtils.getModel().getRoot()).getName()+"/Miscellaneous");
+		AWorkspaceTreeNode parent = WorkspaceUtils.getNodeForPath(((WorkspaceRoot) WorkspaceController.getCurrentModel().getRoot()).getName()+"/Miscellaneous");
 		if (parent == null) {
 			return;
 		}
