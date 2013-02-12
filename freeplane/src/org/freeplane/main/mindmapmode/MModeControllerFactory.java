@@ -209,6 +209,7 @@ public class MModeControllerFactory {
 		userInputListenerFactory.setMapMouseListener(new MMapMouseListener());
 		final MTextController textController = new MTextController(modeController);
 		TextController.install(textController);
+		//WORKSPACE todo: overwrite with WorkspaceMLinkController on WorkspaceModeExtension initiation
 		LinkController.install(new MLinkController());
 		NodeStyleController.install(new MNodeStyleController(modeController));
 		ClipboardController.install(new MClipboardController());

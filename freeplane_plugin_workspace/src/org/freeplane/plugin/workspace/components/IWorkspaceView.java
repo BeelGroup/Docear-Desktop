@@ -4,8 +4,9 @@ import java.awt.Component;
 
 import javax.swing.tree.TreePath;
 
-import org.freeplane.plugin.workspace.controller.INodeTypeIconManager;
 import org.freeplane.plugin.workspace.dnd.WorkspaceTransferHandler;
+import org.freeplane.plugin.workspace.handler.INodeTypeIconManager;
+import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 
 
 public interface IWorkspaceView {
@@ -23,4 +24,6 @@ public interface IWorkspaceView {
 	public TreePath getPathForLocation(int x, int y);
 
 	public INodeTypeIconManager getNodeTypeIconManager();
+
+	public AWorkspaceTreeNode getNodeForLocation(int x, int y);
 }

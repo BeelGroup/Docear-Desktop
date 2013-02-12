@@ -10,8 +10,8 @@ import org.apache.commons.io.FileUtils;
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.features.DocearMapModelController;
 import org.docear.plugin.core.features.DocearMapModelExtension;
-import org.docear.plugin.core.features.DocearNodePrivacyExtensionController;
 import org.docear.plugin.core.features.DocearMapModelExtension.DocearMapType;
+import org.docear.plugin.core.features.DocearNodePrivacyExtensionController;
 import org.docear.plugin.core.features.DocearNodePrivacyExtensionController.DocearNodePrivacyExtension;
 import org.docear.plugin.core.features.DocearNodePrivacyExtensionController.DocearPrivacyLevel;
 import org.docear.plugin.core.logger.DocearLogEvent;
@@ -28,7 +28,7 @@ import org.freeplane.features.mapio.mindmapmode.MMapIO;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.ui.IMapViewChangeListener;
 import org.freeplane.features.url.UrlManager;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.plugin.workspace.WorkspaceController;
 
 public class MapLifeCycleAndViewListener implements IMapLifeCycleListener, IMapViewChangeListener {
 
@@ -39,11 +39,12 @@ public class MapLifeCycleAndViewListener implements IMapLifeCycleListener, IMapV
 				showMapIdConflictingDialogIfNeeded(map);
 				
 				DocearController.getController().getDocearEventLogger().appendToLog(this, DocearLogEvent.MAP_OPENED, f);
-				File installWelcomeMap = new File(System.getProperty("user.dir"), "doc" + File.separator + "docear-welcome.mm");
-				File userdirWelcomeMap = new File(WorkspaceUtils.getDataDirectory(), "help" + File.separator + "docear-welcome.mm");				
-				if(f.equals(installWelcomeMap) || f.equals(userdirWelcomeMap)){
-					map.setReadOnly(true);
-				}
+				//WORKSPACE - todo: save welcome mind map only once for any project --> one location in workspace
+//				File installWelcomeMap = new File(System.getProperty("user.dir"), "doc" + File.separator + "docear-welcome.mm");
+//				File userdirWelcomeMap = new File(WorkspaceUtils.getDataDirectory(), "help" + File.separator + "docear-welcome.mm");				
+//				if(f.equals(installWelcomeMap) || f.equals(userdirWelcomeMap)){
+//					map.setReadOnly(true);
+//				}
 			}
 			else {				
 				DocearController.getController().getDocearEventLogger().appendToLog(this, DocearLogEvent.MAP_NEW);				
@@ -117,29 +118,30 @@ public class MapLifeCycleAndViewListener implements IMapLifeCycleListener, IMapV
 			dmme.setMapId(DocearMapModelController.createMapId());
 		}
 		
-		//DOCEAR - hack to prevent old trash maps from not having the type "trash"
-		File f = map.getFile();
-		File libraryPath = WorkspaceUtils.resolveURI(DocearController.getController().getLibraryPath());
-		if (f != null) {
-			if ("trash.mm".equals(f.getName())) {				
-				if (f.getAbsolutePath().startsWith(libraryPath.getAbsolutePath())) {
-					dmme.setType(DocearMapType.trash);
-					DocearNodePrivacyExtension ext = DocearNodePrivacyExtensionController.getExtension(map.getRootNode());
-					if(ext == null) {
-						DocearNodePrivacyExtensionController.getController().setPrivacyLevel(map.getRootNode(), DocearPrivacyLevel.DEMO);
-					}
-				}
-			}
-			else if ("temp.mm".equals(f.getName())) {				
-				if (f.getAbsolutePath().startsWith(libraryPath.getAbsolutePath())) {
-					dmme.setType(DocearMapType.temp);
-					DocearNodePrivacyExtension ext = DocearNodePrivacyExtensionController.getExtension(map.getRootNode());
-					if(ext == null) {
-						DocearNodePrivacyExtensionController.getController().setPrivacyLevel(map.getRootNode(), DocearPrivacyLevel.DEMO);
-					}
-				}
-			}
-		}
+		//WORKSPACE: implement in DocearProjectLoader
+//		//DOCEAR - hack to prevent old trash maps from not having the type "trash"
+//		File f = map.getFile();
+//		File libraryPath = WorkspaceController.resolveFile(DocearController.getController().getLibraryPath());
+//		if (f != null) {
+//			if ("trash.mm".equals(f.getName())) {				
+//				if (f.getAbsolutePath().startsWith(libraryPath.getAbsolutePath())) {
+//					dmme.setType(DocearMapType.trash);
+//					DocearNodePrivacyExtension ext = DocearNodePrivacyExtensionController.getExtension(map.getRootNode());
+//					if(ext == null) {
+//						DocearNodePrivacyExtensionController.getController().setPrivacyLevel(map.getRootNode(), DocearPrivacyLevel.DEMO);
+//					}
+//				}
+//			}
+//			else if ("temp.mm".equals(f.getName())) {				
+//				if (f.getAbsolutePath().startsWith(libraryPath.getAbsolutePath())) {
+//					dmme.setType(DocearMapType.temp);
+//					DocearNodePrivacyExtension ext = DocearNodePrivacyExtensionController.getExtension(map.getRootNode());
+//					if(ext == null) {
+//						DocearNodePrivacyExtensionController.getController().setPrivacyLevel(map.getRootNode(), DocearPrivacyLevel.DEMO);
+//					}
+//				}
+//			}
+//		}
 		
 	}
 	
@@ -149,7 +151,7 @@ public class MapLifeCycleAndViewListener implements IMapLifeCycleListener, IMapV
 			return;
 		}
 		
-		File pathInXml = UrlManager.getController().absoluteFile(map, dmme.getUri());
+		File pathInXml = UrlManager.getController().getAbsoluteFile(map, dmme.getUri());
 		File physicalPath = map.getFile();
 		
 		if (pathInXml == null || physicalPath==null) {

@@ -6,25 +6,27 @@ package org.docear.plugin.core.workspace.actions;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.net.URI;
 
 import javax.swing.Icon;
 import javax.swing.JOptionPane;
 
 import org.apache.commons.io.FilenameUtils;
 import org.docear.plugin.core.IDocearLibrary;
+import org.docear.plugin.core.actions.DocearNewMapAction;
 import org.docear.plugin.core.workspace.node.FolderTypeLibraryNode;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
-import org.freeplane.features.mapio.MapIO;
-import org.freeplane.features.mapio.mindmapmode.MMapIO;
+import org.freeplane.features.map.MapModel;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.plugin.workspace.WorkspaceController;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
 import org.freeplane.plugin.workspace.actions.AWorkspaceAction;
+import org.freeplane.plugin.workspace.mindmapmode.MModeWorkspaceLinkController;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
 
@@ -64,10 +66,11 @@ private static final long serialVersionUID = 1L;
 					fileName += ".mm";
 				}
 				try{
-					File parentFolder = WorkspaceUtils.resolveURI(((IDocearLibrary)targetNode).getLibraryPath());
+					File parentFolder = WorkspaceController.resolveFile(((IDocearLibrary)targetNode).getLibraryPath());
 					File file = new File(parentFolder, fileName);
 					try {
-						file = WorkspaceController.getController().getFileSystemMgr().createFile(fileName, parentFolder);
+						WorkspaceController.getController();
+						file = WorkspaceController.getFileSystemMgr().createFile(fileName, parentFolder);
 						
 //					if (file.exists()) {
 //						JOptionPane.showMessageDialog(Controller.getCurrentController().getViewController().getContentPane(),
@@ -75,11 +78,13 @@ private static final long serialVersionUID = 1L;
 //	                            JOptionPane.ERROR_MESSAGE);
 //					} 
 //					else 
-						if (createNewMindmap(file)) {
+						if (createNewMindmap(file.toURI()) != null) {
 							LinkTypeFileNode newNode = new LinkTypeFileNode();
-							newNode.setLinkPath(WorkspaceUtils.getWorkspaceRelativeURI(file));
+							//WORKSPACE - todo: get selected project
+							AWorkspaceProject project = WorkspaceController.getCurrentProject();
+							newNode.setLinkPath(MModeWorkspaceLinkController.getController().getProjectRelativeURI(project, file.toURI()));
 							newNode.setName(FilenameUtils.getBaseName(file.getName()));
-							WorkspaceUtils.getModel().addNodeTo(newNode, targetNode);
+							targetNode.getModel().addNodeTo(newNode, targetNode);
 							targetNode.refresh();
 						}
 					}
@@ -96,16 +101,9 @@ private static final long serialVersionUID = 1L;
     }
 	
 	
-	private boolean createNewMindmap(final File f) {
-		WorkspaceUtils.createNewMindmap(f, FilenameUtils.getBaseName(f.getName()));
-		final MMapIO mapIO = (MMapIO) Controller.getCurrentModeController().getExtension(MapIO.class);
-		try {
-			mapIO.newMap(f.toURI().toURL());
-		} catch (Exception e) {
-			LogUtils.severe(e);
-			return false;
-		} 		
-		return true;
+	private MapModel createNewMindmap(final URI uri) {
+		String name = FilenameUtils.getBaseName(WorkspaceController.resolveFile(uri).getName());
+		return DocearNewMapAction.createNewMap(uri, name, true);
 	}
 	
 

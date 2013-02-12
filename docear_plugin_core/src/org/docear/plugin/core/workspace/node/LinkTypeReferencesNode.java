@@ -25,13 +25,12 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
-import org.docear.plugin.core.CoreConfiguration;
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.IBibtexDatabase;
 import org.docear.plugin.core.event.DocearEvent;
 import org.docear.plugin.core.event.DocearEventType;
 import org.docear.plugin.core.workspace.node.config.NodeAttributeObserver;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
@@ -56,7 +55,8 @@ public class LinkTypeReferencesNode extends LinkTypeFileNode implements IBibtexD
 
 	public LinkTypeReferencesNode(String type) {
 		super(type);
-		CoreConfiguration.referencePathObserver.addChangeListener(this);
+		//WORKSPACE - todo implement observer structure
+//		CoreConfiguration.referencePathObserver.addChangeListener(this);
 	}
 	
 	/***********************************************************************************
@@ -85,14 +85,14 @@ public class LinkTypeReferencesNode extends LinkTypeFileNode implements IBibtexD
 	}
 	
 	public void disassociateReferences()  {
-		CoreConfiguration.referencePathObserver.removeChangeListener(this);
+//		CoreConfiguration.referencePathObserver.removeChangeListener(this);
 	}
 	
 	public void setLinkPath(URI uri) {
 		super.setLinkPath(uri);
 		if(!locked) {
 			locked = true;
-			CoreConfiguration.referencePathObserver.setUri(uri);
+//			CoreConfiguration.referencePathObserver.setUri(uri);
 			locked = false;
 		}
 		if (uri != null) {
@@ -140,7 +140,7 @@ public class LinkTypeReferencesNode extends LinkTypeFileNode implements IBibtexD
 		
 	private void createIfNeeded(URI uri) {
 		try {
-			File file = WorkspaceUtils.resolveURI(uri);
+			File file = WorkspaceController.resolveFile(uri);
 			if(file != null) {
 				if (!file.getParentFile().exists()) {
 					if(!file.getParentFile().mkdirs()) {

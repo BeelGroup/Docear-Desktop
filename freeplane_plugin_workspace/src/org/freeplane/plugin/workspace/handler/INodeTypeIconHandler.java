@@ -2,7 +2,7 @@
  * author: Marcel Genzmehr
  * 27.12.2011
  */
-package org.freeplane.plugin.workspace.controller;
+package org.freeplane.plugin.workspace.handler;
 
 import javax.swing.Icon;
 

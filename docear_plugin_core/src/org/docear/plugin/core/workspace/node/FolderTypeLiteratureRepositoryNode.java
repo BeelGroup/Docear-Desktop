@@ -1,7 +1,3 @@
-/**
- * author: Marcel Genzmehr
- * 18.08.2011
- */
 package org.docear.plugin.core.workspace.node;
 
 import java.io.File;
@@ -18,7 +14,7 @@ import org.docear.plugin.core.CoreConfiguration;
 import org.docear.plugin.core.workspace.node.config.NodeAttributeObserver;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
 import org.freeplane.plugin.workspace.io.IFileSystemRepresentation;
@@ -41,8 +37,9 @@ public class FolderTypeLiteratureRepositoryNode extends FolderLinkNode implement
 	 **********************************************************************************/
 
 	public FolderTypeLiteratureRepositoryNode(String type) {
-		super(type);		
-		CoreConfiguration.repositoryPathObserver.addChangeListener(this);
+		super(type);
+		//WORKSPACE - todo: implement observer structure
+//		CoreConfiguration.repositoryPathObserver.addChangeListener(this);
 	}
 
 	/***********************************************************************************
@@ -55,7 +52,7 @@ public class FolderTypeLiteratureRepositoryNode extends FolderLinkNode implement
 	}
 	
 	public void disassociateReferences()  {
-		CoreConfiguration.repositoryPathObserver.removeChangeListener(this);
+//		CoreConfiguration.repositoryPathObserver.removeChangeListener(this);
 	}
 	
 	public void setName(String name) {
@@ -65,7 +62,7 @@ public class FolderTypeLiteratureRepositoryNode extends FolderLinkNode implement
 	public void setPath(URI uri) {
 		super.setPath(uri);
 		locked = true;		
-		CoreConfiguration.repositoryPathObserver.setUri(uri);
+//		CoreConfiguration.repositoryPathObserver.setUri(uri);
 		if (uri != null) {
 			createPathIfNeeded(uri);
 		}
@@ -80,7 +77,7 @@ public class FolderTypeLiteratureRepositoryNode extends FolderLinkNode implement
 	}
 	
 	private void createPathIfNeeded(URI uri) {
-		File file = WorkspaceUtils.resolveURI(uri);
+		File file = WorkspaceController.resolveFile(uri);
 
 		if (file != null) {
 			if (!file.exists()) {
@@ -164,6 +161,6 @@ public class FolderTypeLiteratureRepositoryNode extends FolderLinkNode implement
 	}
 	
 	public File getFile() {
-		return WorkspaceUtils.resolveURI(this.getPath());
+		return WorkspaceController.resolveFile(this.getPath());
 	}
 }

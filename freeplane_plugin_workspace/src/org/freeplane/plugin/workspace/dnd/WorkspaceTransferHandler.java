@@ -21,9 +21,9 @@ import javax.swing.JTree;
 import javax.swing.TransferHandler;
 import javax.swing.tree.TreePath;
 
+import org.freeplane.plugin.workspace.AWorkspaceModeExtension;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.components.WorkspaceNodeRenderer;
-import org.freeplane.plugin.workspace.controller.AWorkspaceModeExtension;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.nodes.WorkspaceRoot;
 /**

@@ -60,4 +60,6 @@ public interface WorkspaceTreeModel {
 	
 	public AWorkspaceTreeNode getRoot();
 
+	public void requestSave();
+
 }

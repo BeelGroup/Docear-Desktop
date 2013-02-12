@@ -22,6 +22,8 @@ public abstract class AWorkspaceProject {
 	
 	public abstract URI getProjectDataPath();
 	
+	public abstract URI getRelativeURI(URI uri);
+	
 	protected abstract void setProjectHome(URI uri);
 
 	public ProjectModel getModel() {
@@ -69,6 +71,10 @@ public abstract class AWorkspaceProject {
 				this.home = home;
 				
 			}
+
+			public URI getRelativeURI(URI uri) {
+				return uri;
+			}
 		};
 	}
 	
@@ -94,6 +100,5 @@ public abstract class AWorkspaceProject {
 				
 			}
 		}
-	}
-		
+	}		
 }

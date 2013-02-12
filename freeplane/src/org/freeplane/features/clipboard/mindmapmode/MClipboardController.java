@@ -731,7 +731,7 @@ public class MClipboardController extends ClipboardController {
 				try {
 					URI linkUri = new URI(link);
 					uri = linkUri;
-					File absoluteFile = UrlManager.getController().absoluteFile(map, uri);
+					File absoluteFile = UrlManager.getController().getAbsoluteFile(map, uri);
 					
 					if (absoluteFile != null) {
 						final File mapFile = map.getFile();

@@ -24,9 +24,12 @@ import org.freeplane.core.ui.components.ResizeEvent;
 import org.freeplane.core.ui.components.ResizerListener;
 import org.freeplane.core.util.FileUtils;
 import org.freeplane.core.util.LogUtils;
+import org.freeplane.features.link.LinkController;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.ui.ViewController;
+import org.freeplane.features.url.UrlManager;
+import org.freeplane.plugin.workspace.AWorkspaceModeExtension;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.actions.NodeRefreshAction;
 import org.freeplane.plugin.workspace.actions.NodeRemoveAction;
@@ -35,10 +38,9 @@ import org.freeplane.plugin.workspace.actions.PhysicalFolderSortOrderAction;
 import org.freeplane.plugin.workspace.actions.WorkspaceNewProjectAction;
 import org.freeplane.plugin.workspace.components.IWorkspaceView;
 import org.freeplane.plugin.workspace.components.TreeView;
-import org.freeplane.plugin.workspace.controller.AWorkspaceModeExtension;
-import org.freeplane.plugin.workspace.controller.DefaultFileNodeIconHandler;
-import org.freeplane.plugin.workspace.controller.LinkTypeFileIconHandler;
 import org.freeplane.plugin.workspace.creator.DefaultFileNodeCreator;
+import org.freeplane.plugin.workspace.handler.DefaultFileNodeIconHandler;
+import org.freeplane.plugin.workspace.handler.LinkTypeFileIconHandler;
 import org.freeplane.plugin.workspace.io.AFileNodeCreator;
 import org.freeplane.plugin.workspace.io.FileReadManager;
 import org.freeplane.plugin.workspace.model.WorkspaceModel;
@@ -68,12 +70,21 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 	}
 	
 	public void start(ModeController modeController) {
+		setupController(modeController);
 		setupSettings(modeController);
 		setupActions(modeController);
 		setupModel(modeController);
 		setupView(modeController);
 	}
 	
+	private void setupController(ModeController modeController) {
+		modeController.removeExtension(UrlManager.class);
+		UrlManager.install(new MModeWorkspaceUrlManager());
+		
+		modeController.removeExtension(LinkController.class);
+		LinkController.install(new MModeWorkspaceLinkController());		
+	}
+
 	private void setupSettings(ModeController modeController) {
 		loadSettings(getSettingsPath());
 	}
@@ -322,6 +333,12 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 	
 	private String getSettingsPath() {
 		return WorkspaceController.resolveFile(WorkspaceController.getApplicationSettingsHome()).getPath() + File.separator + "users"+File.separator+"default";
+	}
+
+	@Override
+	public void getCurrentProject() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

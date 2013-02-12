@@ -1,4 +1,4 @@
-package org.freeplane.plugin.workspace.controller;
+package org.freeplane.plugin.workspace;
 
 import org.freeplane.features.mode.ModeController;
 

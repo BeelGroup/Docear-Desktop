@@ -723,4 +723,9 @@ public class ProjectModel implements WorkspaceTreeModel {
 
 	}
 
+	public void requestSave() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

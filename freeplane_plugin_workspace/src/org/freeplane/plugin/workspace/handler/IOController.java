@@ -2,7 +2,7 @@
  * author: Marcel Genzmehr
  * 26.01.2012
  */
-package org.freeplane.plugin.workspace.controller;
+package org.freeplane.plugin.workspace.handler;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -230,7 +230,7 @@ public class FolderLinkNode extends AFolderNode implements IWorkspaceNodeActionL
 					}
 				}
 			}
-			//TODO DOCEAR - do sth to save the expanded state
+			//WORKSPACE - todo: do sth to save the expanded state
 //			if(WorkspaceController.getCurrentModeExtension().getView() instanceof IExpansionStateHandler) {
 //				((IExpansionStateHandler) WorkspaceController.getCurrentModeExtension().getView()).addPathKey(this.getKey());
 //			}

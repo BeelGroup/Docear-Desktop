@@ -4,14 +4,12 @@
  */
 package org.docear.plugin.core.workspace.creator;
 
+import java.io.File;
 import java.net.URI;
 
-import org.docear.plugin.core.CoreConfiguration;
-import org.docear.plugin.core.ui.LocationDialog;
 import org.docear.plugin.core.workspace.node.FolderTypeLiteratureRepositoryNode;
 import org.freeplane.n3.nanoxml.XMLElement;
 import org.freeplane.plugin.workspace.WorkspaceController;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
 import org.freeplane.plugin.workspace.model.AWorkspaceNodeCreator;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 
@@ -43,15 +41,16 @@ public class FolderTypeLiteratureRepositoryCreator extends AWorkspaceNodeCreator
 		boolean descending = Boolean.parseBoolean(data.getAttribute("orderDescending", "false"));
 		node.orderDescending(descending);
 		
+		//WORKSPACE - info: old path dialog disabled --> ProjectLoader: "NewProjectDialog"
 		if (path == null || path.length()==0) {
-			URI uri = CoreConfiguration.repositoryPathObserver.getUri();
-			
-			if (uri == null) {
-				LocationDialog.showWorkspaceChooserDialog();	
-			}
-			else {
-				node.setPath(uri);
-			}
+//			URI uri = CoreConfiguration.repositoryPathObserver.getUri();
+//			
+//			if (uri == null) {
+//				LocationDialog.showWorkspaceChooserDialog();	
+//			}
+//			else {
+//				node.setPath(uri);
+//			}
 			return node;
 		}
 		
@@ -62,15 +61,15 @@ public class FolderTypeLiteratureRepositoryCreator extends AWorkspaceNodeCreator
 
 	public void endElement(final Object parent, final String tag, final Object node, final XMLElement lastBuiltElement) {
 		super.endElement(parent, tag, node, lastBuiltElement);
-		if (node == null || ((FolderTypeLiteratureRepositoryNode) node).getPath() == null) {
-			return;
+		
+		try {
+    		File file = WorkspaceController.resolveFile(((FolderTypeLiteratureRepositoryNode) node).getPath());    		    		
+    		if (node instanceof FolderTypeLiteratureRepositoryNode && ((FolderTypeLiteratureRepositoryNode) node).getChildCount() == 0) {
+    			WorkspaceController.getFileSystemMgr().scanFileSystem((AWorkspaceTreeNode) node, file);
+    		}
 		}
-		if (node instanceof FolderTypeLiteratureRepositoryNode && ((FolderTypeLiteratureRepositoryNode) node).getChildCount() == 0) {
-			WorkspaceController
-					.getController()
-					.getFileSystemMgr()
-					.scanFileSystem((AWorkspaceTreeNode) node,
-							WorkspaceUtils.resolveURI(((FolderTypeLiteratureRepositoryNode) node).getPath()));
+		catch(Exception e) {
+			System.err.println(this.getClass()+ ".endElement()"+e.getMessage());
 		}
 
 	}

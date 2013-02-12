@@ -1,7 +1,3 @@
-/**
- * author: Marcel Genzmehr
- * 19.08.2011
- */
 package org.docear.plugin.core;
 
 import java.io.IOException;
@@ -29,7 +25,6 @@ import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.plugin.workspace.WorkspaceController;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
 
 /**
  * 
@@ -199,11 +194,12 @@ public class DocearController implements IDocearEventListener {
 		return currentLibrary;
 	}
 	
-	public URI getLibraryPath() {		
-		Matcher mainMatcher = PATTERN.matcher(DEFAULT_LIBRARY_PATH);
-		String ret = mainMatcher.replaceAll(WorkspaceController.getController().getPreferences().getWorkspaceProfileHome());
-		return WorkspaceUtils.absoluteURI(URI.create(ret));
-	}
+	//WORKSPACE todo: look for a solution
+//	public URI getLibraryPath() {		
+//		Matcher mainMatcher = PATTERN.matcher(DEFAULT_LIBRARY_PATH);
+//		String ret = mainMatcher.replaceAll(WorkspaceController.getController().getPreferences().getWorkspaceProfileHome());
+//		return WorkspaceController.resolveURI(URI.create(ret));
+//	}
 	
 	public DocearEventLogger getDocearEventLogger() {
 		return this.docearEventLogger;
@@ -350,17 +346,15 @@ public class DocearController implements IDocearEventListener {
 	 * REQUIRED METHODS FOR INTERFACES
 	 **********************************************************************************/
 
-	public void handleEvent(DocearEvent event) {
-		if(event.getType() == DocearEventType.APPLICATION_CLOSING) {
-			WorkspaceUtils.saveCurrentConfiguration();
-		}
-		else if(event.getType() == DocearEventType.APPLICATION_CLOSING_ABORTED){
+	public void handleEvent(DocearEvent event) {		
+		if(event.getType() == DocearEventType.APPLICATION_CLOSING_ABORTED){
 			this.applicationShutdownAborted = true;
 		}
-		else if(event.getType() == DocearEventType.NEW_LIBRARY && event.getSource() instanceof IDocearLibrary) {
-			this.currentLibrary = (IDocearLibrary) event.getSource();
-			LogUtils.info("DOCEAR: new DocearLibrary set");
-		} 
+		//WORKSPACE implement a ProjectController for each project
+//		else if(event.getType() == DocearEventType.NEW_LIBRARY && event.getSource() instanceof IDocearLibrary) {
+//			this.currentLibrary = (IDocearLibrary) event.getSource();
+//			LogUtils.info("DOCEAR: new DocearLibrary set");
+//		} 
 			
 	}
 	public SemaphoreController getSemaphoreController() {

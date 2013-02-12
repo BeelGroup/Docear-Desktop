@@ -18,8 +18,6 @@ import org.freeplane.core.resources.components.IPropertyControl;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.mode.mindmapmode.MModeController;
-import org.freeplane.plugin.workspace.controller.AWorkspaceModeExtension;
-import org.freeplane.plugin.workspace.controller.ModeControlAlreadyRegisteredException;
 import org.freeplane.plugin.workspace.io.FileSystemManager;
 import org.freeplane.plugin.workspace.mindmapmode.MModeWorkspaceController;
 import org.freeplane.plugin.workspace.model.WorkspaceModel;
@@ -195,5 +193,10 @@ public final class WorkspaceController implements IExtension {
 		String appName = Controller.getCurrentController().getResourceController().getProperty("ApplicationName");
 		String homePath = System.getProperty("user.home")+ File.separator + "." + appName.toLowerCase(Locale.ENGLISH);
 		return new File(homePath).toURI();
+	}
+
+	public static AWorkspaceProject getCurrentProject() {
+		getCurrentModeExtension().getCurrentProject();
+		return null;
 	}
 }

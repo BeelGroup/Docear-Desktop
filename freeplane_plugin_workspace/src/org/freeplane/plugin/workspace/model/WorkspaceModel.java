@@ -217,7 +217,7 @@ public abstract class WorkspaceModel implements TreeModel {
 		}
 
 		public void nodeMoved(AWorkspaceTreeNode node, Object from, Object to) {
-			// TODO Auto-generated method stub
+			// WORKSPACE Auto-generated method stub
 			
 		}
 
@@ -269,5 +269,21 @@ public abstract class WorkspaceModel implements TreeModel {
 			// TODO Auto-generated method stub
 			return false;
 		}
+
+		public void requestSave() {
+			// TODO Auto-generated method stub
+			
+		}
+	}
+
+	public AWorkspaceProject getProject(WorkspaceTreeModel model) {
+		synchronized (this.projects) {
+    		for (AWorkspaceProject project : this.projects) {
+    			if(project.getModel().equals(model)) {
+    				return project;
+    			}
+    		}
+		}
+		return null;
 	}
 }

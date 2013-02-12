@@ -222,6 +222,10 @@ public class MFileManager extends UrlManager implements IMapViewChangeListener {
 
 	public MFileManager() {
 		super();
+	}
+	
+	protected void init() {
+		super.init();
 		createActions();
 		createPreferences();
 		if (ResourceController.getResourceController().getBooleanProperty("single_backup_directory")) {

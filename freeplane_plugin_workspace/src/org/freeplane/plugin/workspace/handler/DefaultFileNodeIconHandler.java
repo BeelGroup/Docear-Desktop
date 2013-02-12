@@ -2,7 +2,7 @@
  * author: Marcel Genzmehr
  * 28.12.2011
  */
-package org.freeplane.plugin.workspace.controller;
+package org.freeplane.plugin.workspace.handler;
 
 import java.io.File;
 import java.io.IOException;
