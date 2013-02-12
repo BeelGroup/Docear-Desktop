@@ -15,8 +15,8 @@ Export-Package: org.apache.commons.io;uses:="org.apache.commons.io.filefilter",
  org.apache.commons.io.input;uses:="org.apache.commons.io",
  org.apache.commons.io.monitor;uses:="org.apache.commons.io",
  org.apache.commons.io.output,
- org.docear.lang,
  org.freeplane.core.ui,
+ org.freeplane.lang,
  org.freeplane.plugin.workspace
 Bundle-ClassPath: lib/plugin.jar,
  lib/commons-io-2.0.1.jar

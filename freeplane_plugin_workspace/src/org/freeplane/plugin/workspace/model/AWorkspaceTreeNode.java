@@ -11,7 +11,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
-import org.docear.lang.Destructable;
+import org.freeplane.lang.Destructable;
 import org.freeplane.n3.nanoxml.XMLElement;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.io.annotation.ExportAsAttribute;

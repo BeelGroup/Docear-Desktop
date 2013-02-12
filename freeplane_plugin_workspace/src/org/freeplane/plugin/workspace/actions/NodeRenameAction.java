@@ -15,13 +15,11 @@ import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 @EnabledAction(checkOnPopup = true)
 public class NodeRenameAction extends AWorkspaceAction {
 
-	/**
-	 * 
-	 */
+	public static final String KEY = "workspace.action.node.rename";
 	private static final long serialVersionUID = 1L;
 
 	public NodeRenameAction() {
-		super("workspace.action.node.rename");
+		super(KEY);
 	}
 	
 	/***********************************************************************************

@@ -29,7 +29,7 @@ import org.freeplane.plugin.workspace.io.xml.ProjectSettingsWriter;
 import org.freeplane.plugin.workspace.model.AWorkspaceNodeCreator;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.IResultProcessor;
-import org.freeplane.plugin.workspace.nodes.FolderTypeProjectNode;
+import org.freeplane.plugin.workspace.nodes.ProjectRootNode;
 
 public class ProjectLoader implements IProjectSettingsIOHandler {
 	final private ReadManager readManager;
@@ -158,7 +158,6 @@ public class ProjectLoader implements IProjectSettingsIOHandler {
 				this.load(projectSettings.toURI());
 			}
 			else {
-				DefaultProject prj = new DefaultProject();
 				project.getModel().setRoot(prj);
 				prj.prepare(project);
 			}
@@ -207,12 +206,12 @@ public class ProjectLoader implements IProjectSettingsIOHandler {
 				LogUtils.warn("Missing project container! cannot add node to a model.");
 				return;
 			}
-			if(node instanceof FolderTypeProjectNode) {
+			if(node instanceof ProjectRootNode) {
 				getProject().getModel().setRoot(node);
-				if(((FolderTypeProjectNode) node).getProjectID() == null) {
-					((FolderTypeProjectNode) node).setProjectID(getProject().getProjectID());
+				if(((ProjectRootNode) node).getProjectID() == null) {
+					((ProjectRootNode) node).setProjectID(getProject().getProjectID());
 				}
-				((FolderTypeProjectNode) node).initiateMyFile(getProject());
+				((ProjectRootNode) node).initiateMyFile(getProject());
 			}
 			else {
 				if(parent == null) {

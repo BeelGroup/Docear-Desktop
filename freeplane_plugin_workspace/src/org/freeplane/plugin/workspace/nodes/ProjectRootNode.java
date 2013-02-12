@@ -37,24 +37,23 @@ import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.model.project.IProjectSettings;
 
 
-public class FolderTypeProjectNode extends AFolderNode implements IMutableLinkNode, IWorkspaceNodeActionListener, IDropAcceptor {
+public class ProjectRootNode extends AFolderNode implements IMutableLinkNode, IWorkspaceNodeActionListener, IDropAcceptor {
 
 	private static final long serialVersionUID = 1L;
 	private static final Icon DEFAULT_ICON = new ImageIcon(AFolderNode.class.getResource("/images/project-open-2.png"));
 	private static WorkspacePopupMenu popupMenu = null;
 	private String projectID;
 	private URI projectRoot = null;
-	private AWorkspaceProject projectContainer;
 	
 	/***********************************************************************************
 	 * CONSTRUCTORS
 	 **********************************************************************************/
 	
-	public FolderTypeProjectNode() {
+	public ProjectRootNode() {
 		this(null);
 	}
 	
-	public FolderTypeProjectNode(String type) {
+	public ProjectRootNode(String type) {
 		super(null);
 		setParent(WorkspaceController.getCurrentModel().getRoot());
 	}
@@ -80,6 +79,10 @@ public class FolderTypeProjectNode extends AFolderNode implements IMutableLinkNo
 		return null;
 	}
 	
+	public String getId() {
+		return getProjectID() == null ? Integer.toHexString("".hashCode()).toUpperCase() : getProjectID();
+	}
+	
 	public boolean setIcons(DefaultTreeCellRenderer renderer) {
 		renderer.setOpenIcon(DEFAULT_ICON);
 		renderer.setClosedIcon(DEFAULT_ICON);
@@ -87,7 +90,7 @@ public class FolderTypeProjectNode extends AFolderNode implements IMutableLinkNo
 		return true;
 	}
 
-	protected AWorkspaceTreeNode clone(FolderTypeProjectNode node) {
+	protected AWorkspaceTreeNode clone(ProjectRootNode node) {
 		return super.clone(node);
 	}
 	
@@ -195,7 +198,7 @@ public class FolderTypeProjectNode extends AFolderNode implements IMutableLinkNo
 	}
 
 	public AWorkspaceTreeNode clone() {
-		FolderTypeProjectNode node = new FolderTypeProjectNode(getType());
+		ProjectRootNode node = new ProjectRootNode(getType());
 		return clone(node);
 	}
 
@@ -297,7 +300,6 @@ public class FolderTypeProjectNode extends AFolderNode implements IMutableLinkNo
 	}
 
 	public void initiateMyFile(AWorkspaceProject project) {
-		projectContainer = project;
 		FolderTypeMyFilesNode myFilesNode = new FolderTypeMyFilesNode(project); 
 		getModel().addNodeTo(myFilesNode, this);
 		myFilesNode.refresh();
@@ -307,14 +309,10 @@ public class FolderTypeProjectNode extends AFolderNode implements IMutableLinkNo
 		try {
 			if(renameLink) {
 				this.getModel().changeNodeName(this, newName);
-				this.refresh();
 			}
 			else {
 				this.setName(newName);
-				this.getParent().refresh();
 			}
-			
-			
 		}
 		catch(Exception ex) {
 			JOptionPane.showMessageDialog(UITools.getFrame(), TextUtils.getText("error_rename_file") + " ("+ex.getMessage()+")", 

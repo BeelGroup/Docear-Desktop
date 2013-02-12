@@ -12,7 +12,7 @@ import javax.swing.tree.TreePath;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.model.project.IProjectModelListener;
 import org.freeplane.plugin.workspace.model.project.ProjectModelEvent;
-import org.freeplane.plugin.workspace.nodes.FolderTypeProjectNode;
+import org.freeplane.plugin.workspace.nodes.ProjectRootNode;
 import org.freeplane.plugin.workspace.nodes.WorkspaceRoot;
 
 public abstract class WorkspaceModel implements TreeModel {	
@@ -117,7 +117,7 @@ public abstract class WorkspaceModel implements TreeModel {
 			synchronized (projects) {
 				 AWorkspaceTreeNode node = projects.get(index).getModel().getRoot();
 				 if(node == null) {
-					 node = new FolderTypeProjectNode();
+					 node = new ProjectRootNode();
 					 node.setName("new project_"+projects.get(index).getProjectID()+"...");
 				 }
 				 return node;

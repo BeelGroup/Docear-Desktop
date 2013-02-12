@@ -24,9 +24,15 @@ import org.freeplane.core.ui.components.ResizeEvent;
 import org.freeplane.core.ui.components.ResizerListener;
 import org.freeplane.core.util.FileUtils;
 import org.freeplane.core.util.LogUtils;
+import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.ui.ViewController;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.actions.NodeRefreshAction;
+import org.freeplane.plugin.workspace.actions.NodeRemoveAction;
+import org.freeplane.plugin.workspace.actions.NodeRenameAction;
+import org.freeplane.plugin.workspace.actions.PhysicalFolderSortOrderAction;
+import org.freeplane.plugin.workspace.actions.WorkspaceNewProjectAction;
 import org.freeplane.plugin.workspace.components.IWorkspaceView;
 import org.freeplane.plugin.workspace.components.TreeView;
 import org.freeplane.plugin.workspace.controller.AWorkspaceModeExtension;
@@ -63,6 +69,7 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 	
 	public void start(ModeController modeController) {
 		setupSettings(modeController);
+		setupActions(modeController);
 		setupModel(modeController);
 		setupView(modeController);
 	}
@@ -142,6 +149,32 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 				
 	}
 		
+	private void setupActions(ModeController modeController) {
+		Controller controller = modeController.getController();
+//		controller.addAction(new WorkspaceExpandAction());
+//		controller.addAction(new WorkspaceCollapseAction());
+		controller.addAction(new WorkspaceNewProjectAction());
+//		controller.addAction(new WorkspaceHideAction());
+//		controller.addAction(new NodeNewFolderAction());
+//		controller.addAction(new NodeNewLinkAction());
+//		controller.addAction(new NodeEnableMonitoringAction());
+//		controller.addAction(new NodeOpenLocationAction());
+		
+		//FIXME: #332
+//		controller.addAction(new NodeCutAction());
+//		controller.addAction(new NodeCopyAction());
+//		controller.addAction(new NodePasteAction());
+		controller.addAction(new NodeRenameAction());
+		controller.addAction(new NodeRemoveAction());
+		controller.addAction(new NodeRefreshAction());
+//		
+//		controller.addAction(new FileNodeNewMindmapAction());
+//		controller.addAction(new FileNodeNewFileAction());
+//		controller.addAction(new FileNodeDeleteAction());
+		
+		controller.addAction(new PhysicalFolderSortOrderAction());
+	}
+
 	private void loadSettings(String settingsPath) {
 		final File userPropertiesFolder = new File(settingsPath);
 		final File settingsFile = new File(userPropertiesFolder, "workspace.settings");

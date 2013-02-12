@@ -11,12 +11,8 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeNode;
 
 import org.freeplane.core.util.TextUtils;
-import org.freeplane.features.mode.Controller;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.actions.NodeRefreshAction;
-import org.freeplane.plugin.workspace.actions.NodeRemoveAction;
-import org.freeplane.plugin.workspace.actions.NodeRenameAction;
-import org.freeplane.plugin.workspace.actions.PhysicalFolderSortOrderAction;
 import org.freeplane.plugin.workspace.actions.WorkspaceNewProjectAction;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
@@ -57,31 +53,7 @@ public final class WorkspaceRoot extends AFolderNode implements IWorkspaceNodeAc
 	}
 
 	public void initializePopup() {
-		if (popupMenu == null) {
-			Controller controller = Controller.getCurrentController();
-//			controller.addAction(new WorkspaceExpandAction());
-//			controller.addAction(new WorkspaceCollapseAction());
-			controller.addAction(new WorkspaceNewProjectAction());
-//			controller.addAction(new WorkspaceHideAction());
-//			controller.addAction(new NodeNewFolderAction());
-//			controller.addAction(new NodeNewLinkAction());
-//			controller.addAction(new NodeEnableMonitoringAction());
-//			controller.addAction(new NodeOpenLocationAction());
-			
-			//FIXME: #332
-//			controller.addAction(new NodeCutAction());
-//			controller.addAction(new NodeCopyAction());
-//			controller.addAction(new NodePasteAction());
-			controller.addAction(new NodeRenameAction());
-			controller.addAction(new NodeRemoveAction());
-			controller.addAction(new NodeRefreshAction());
-//			
-//			controller.addAction(new FileNodeNewMindmapAction());
-//			controller.addAction(new FileNodeNewFileAction());
-//			controller.addAction(new FileNodeDeleteAction());
-			
-			controller.addAction(new PhysicalFolderSortOrderAction());
-			
+		if (popupMenu == null) {			
 			popupMenu = new WorkspacePopupMenu();
 			WorkspacePopupMenuBuilder.addActions(popupMenu, new String[] {
 					WorkspacePopupMenuBuilder.createSubMenu(TextUtils.getRawText("workspace.action.new.label")),
