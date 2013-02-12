@@ -1,4 +1,4 @@
-package org.freeplane.plugin.workspace.controller;
+package org.freeplane.plugin.workspace;
 
 import java.net.URI;
 import java.util.LinkedHashSet;
@@ -9,6 +9,7 @@ import org.freeplane.features.mode.ModeController;
 import org.freeplane.plugin.workspace.components.IWorkspaceView;
 import org.freeplane.plugin.workspace.event.AWorkspaceEvent;
 import org.freeplane.plugin.workspace.event.IWorkspaceListener;
+import org.freeplane.plugin.workspace.handler.IOController;
 import org.freeplane.plugin.workspace.io.FileReadManager;
 import org.freeplane.plugin.workspace.model.WorkspaceModel;
 import org.freeplane.plugin.workspace.model.project.ProjectLoader;
@@ -26,6 +27,8 @@ public abstract class AWorkspaceModeExtension implements IExtension {
 	public abstract IWorkspaceView getView();
 	public abstract FileReadManager getFileTypeManager();
 	public abstract URI getDefaultProjectHome();
+	public abstract void getCurrentProject();
+	
 	public abstract void shutdown();
 	
 	public IOController getIOController() {

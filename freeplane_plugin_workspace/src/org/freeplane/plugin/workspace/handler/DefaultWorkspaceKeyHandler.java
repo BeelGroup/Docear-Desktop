@@ -2,7 +2,7 @@
  * author: Marcel Genzmehr
  * 10.08.2011
  */
-package org.freeplane.plugin.workspace.controller;
+package org.freeplane.plugin.workspace.handler;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;

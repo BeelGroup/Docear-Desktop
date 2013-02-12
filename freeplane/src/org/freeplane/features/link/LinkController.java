@@ -93,11 +93,13 @@ import sun.net.www.ParseUtil;
 public class LinkController extends SelectionController implements IExtension {
 	public final static int LINK_ABSOLUTE = 0;
 	public final static int LINK_RELATIVE_TO_MINDMAP = 1;
-	public final static int LINK_RELATIVE_TO_WORKSPACE = 2;
+	//WORKSPACE todo: move every modification to MLinkController
+	public final static int LINK_RELATIVE_TO_PROJECT = 2;
 
 //	private final static String LINK_ABSOLUTE_PROPERTY = "absolute";
 	private final static String LINK_RELATIVE_TO_MINDMAP_PROPERTY = "relative";
-	private final static String LINK_RELATIVE_TO_WORKSPACE_PROPERTY = "relative_to_workspace";
+	//WORKSPACE todo: settings might differ from project to project
+	private final static String LINK_RELATIVE_TO_PROJECT_PROPERTY = "relative_to_workspace";
 
 	public static final String MENUITEM_SCHEME = "menuitem";
 
@@ -118,6 +120,30 @@ public class LinkController extends SelectionController implements IExtension {
 	public static void install(final LinkController linkController) {
 		final ModeController modeController = Controller.getCurrentModeController();
 		modeController.addExtension(LinkController.class, linkController);
+		linkController.init();
+	}
+
+	public static final String LINK_ICON = ResourceController.getResourceController().getProperty("link_icon");
+	private static final String MAIL_ICON = ResourceController.getResourceController().getProperty("mail_icon");
+	public static final String LINK_LOCAL_ICON = ResourceController.getResourceController().getProperty("link_local_icon");
+
+	// final private ModeController modeController;
+
+	public LinkController() {
+		// this.modeController = modeController;
+	}
+	
+	protected void init() {
+		createActions();
+		final ModeController modeController = Controller.getCurrentModeController();
+		final MapController mapController = modeController.getMapController();
+		final ReadManager readManager = mapController.getReadManager();
+		final WriteManager writeManager = mapController.getWriteManager();
+		new LinkBuilder(this).registerBy(readManager, writeManager);
+		final LinkTransformer textTransformer = new LinkTransformer(modeController, 10);
+		TextController.getController(modeController).addTextTransformer(textTransformer);
+		textTransformer.registerListeners(modeController);
+		
 		final INodeSelectionListener listener = new INodeSelectionListener() {
 			public void onDeselect(final NodeModel node) {
 			}
@@ -131,25 +157,6 @@ public class LinkController extends SelectionController implements IExtension {
 			}
 		};
 		Controller.getCurrentModeController().getMapController().addNodeSelectionListener(listener);
-	}
-
-	public static final String LINK_ICON = ResourceController.getResourceController().getProperty("link_icon");
-	private static final String MAIL_ICON = ResourceController.getResourceController().getProperty("mail_icon");
-	public static final String LINK_LOCAL_ICON = ResourceController.getResourceController().getProperty("link_local_icon");
-
-	// final private ModeController modeController;
-
-	public LinkController() {
-		// this.modeController = modeController;
-		createActions();
-		final ModeController modeController = Controller.getCurrentModeController();
-		final MapController mapController = modeController.getMapController();
-		final ReadManager readManager = mapController.getReadManager();
-		final WriteManager writeManager = mapController.getWriteManager();
-		new LinkBuilder(this).registerBy(readManager, writeManager);
-		final LinkTransformer textTransformer = new LinkTransformer(modeController, 10);
-		TextController.getController(modeController).addTextTransformer(textTransformer);
-		textTransformer.registerListeners(modeController);
 	}
 
 	private void addLinks(final JComponent arrowLinkPopup, final NodeModel source) {
@@ -426,8 +433,8 @@ public class LinkController extends SelectionController implements IExtension {
 		if (linkTypeProperty.equals(LINK_RELATIVE_TO_MINDMAP_PROPERTY)) {
 			return LINK_RELATIVE_TO_MINDMAP;
 		}
-		else if (linkTypeProperty.equals(LINK_RELATIVE_TO_WORKSPACE_PROPERTY)) {
-			return LINK_RELATIVE_TO_WORKSPACE;
+		else if (linkTypeProperty.equals(LINK_RELATIVE_TO_PROJECT_PROPERTY)) {
+			return LINK_RELATIVE_TO_PROJECT;
 		}
 		return LINK_ABSOLUTE;
 	}
@@ -454,7 +461,7 @@ public class LinkController extends SelectionController implements IExtension {
 				mapUri = map.getAbsoluteFile().toURI();
 			} 
 
-			if (linkType == LINK_RELATIVE_TO_WORKSPACE) {
+			if (linkType == LINK_RELATIVE_TO_PROJECT) {
 				URI workspaceLocation;
 				workspaceLocation = new File(ResourceController.getResourceController().getProperty("workspace_location")
 						+ File.separator).getAbsoluteFile().toURI();				
@@ -491,7 +498,7 @@ public class LinkController extends SelectionController implements IExtension {
 			}
 			relativePath.append(filePathAsString.substring(lastCommonSeparatorPos + 1));
 
-			if (linkType == LINK_RELATIVE_TO_WORKSPACE) {
+			if (linkType == LINK_RELATIVE_TO_PROJECT) {
 				return new URI(ResourceController.FREEPLANE_WORKSPACE_URL_PROTOCOL+":/"+relativePath.toString());
 			}
 			return new URI(relativePath.toString());

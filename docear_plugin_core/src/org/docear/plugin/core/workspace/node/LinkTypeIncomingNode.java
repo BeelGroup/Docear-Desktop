@@ -13,6 +13,7 @@ import javax.swing.ImageIcon;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.docear.plugin.core.DocearController;
+import org.docear.plugin.core.actions.DocearNewMapAction;
 import org.docear.plugin.core.event.DocearEvent;
 import org.docear.plugin.core.event.DocearEventType;
 import org.freeplane.core.resources.ResourceController;
@@ -21,7 +22,7 @@ import org.freeplane.features.map.MapModel;
 import org.freeplane.features.mapio.MapIO;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.mindmapmode.MModeController;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
 import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
@@ -107,12 +108,12 @@ public class LinkTypeIncomingNode extends ALinkNode implements IWorkspaceNodeAct
 	public void handleAction(WorkspaceActionEvent event) {
 		if (event.getType() == WorkspaceActionEvent.MOUSE_LEFT_DBLCLICK) {
 			try {				
-				File f = WorkspaceUtils.resolveURI(getLinkPath());
+				File f = WorkspaceController.resolveFile(getLinkPath());
 				if(f == null) {
 					return;
 				}
 				if (!f.exists()) {
-					if(!WorkspaceUtils.createNewMindmap(f, getName())) {
+					if(DocearNewMapAction.createNewMap(f.toURI(), getName(), true) == null) {
 						LogUtils.warn("could not create " + getLinkPath());
 					}
 				}
@@ -159,7 +160,7 @@ public class LinkTypeIncomingNode extends ALinkNode implements IWorkspaceNodeAct
 		// simple set the node name
 		//this.setName(newName);
 		try {
-			WorkspaceUtils.getModel().changeNodeName(this, newName);
+			getModel().changeNodeName(this, newName);
 			return true;
 		}
 		catch(Exception ex) {

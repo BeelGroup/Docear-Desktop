@@ -12,10 +12,7 @@ import java.awt.dnd.DropTargetDropEvent;
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.Icon;
@@ -43,7 +40,9 @@ import org.freeplane.plugin.workspace.dnd.IWorkspaceTransferableCreator;
 import org.freeplane.plugin.workspace.dnd.WorkspaceTransferable;
 import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
+import org.freeplane.plugin.workspace.mindmapmode.MModeWorkspaceLinkController;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.nodes.AFolderNode;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 import org.freeplane.plugin.workspace.nodes.FolderLinkNode;
@@ -56,7 +55,6 @@ public class FolderTypeLibraryNode extends AFolderNode implements IDocearEventLi
 	
 	private final Vector<URI> mindmapIndex = new Vector<URI>();
 	private final Vector<IBibtexDatabase> referencesIndex = new Vector<IBibtexDatabase>();
-	private final Set<FolderTypeProjectsNode> projectIndex = new HashSet<FolderTypeProjectsNode>();
 
 	private static WorkspacePopupMenu popupMenu = null;
 	
@@ -69,7 +67,7 @@ public class FolderTypeLibraryNode extends AFolderNode implements IDocearEventLi
 		DocearEvent event = new DocearEvent(this, DocearEventType.NEW_LIBRARY);
 		DocearController.getController().dispatchDocearEvent(event);
 		DocearController.getController().addDocearEventListener(this);
-		WorkspaceUtils.getModel().addTreeModelListener(this);
+		WorkspaceController.getCurrentModel().addTreeModelListener(this);
 	}	
 	
 	/***********************************************************************************
@@ -80,8 +78,9 @@ public class FolderTypeLibraryNode extends AFolderNode implements IDocearEventLi
 		if (popupMenu  == null) {
 			Controller controller = Controller.getCurrentController();
 			controller.addAction(new DocearLibraryNewMindmap());
-			controller.removeAction(new DocearLibraryOpenLocation().getKey());
-			controller.addAction(new DocearLibraryOpenLocation());
+			//WORKSPACE - todo: implement
+//			controller.removeAction(new DocearLibraryOpenLocation().getKey());
+//			controller.addAction(new DocearLibraryOpenLocation());
 			
 			
 			popupMenu = new WorkspacePopupMenu();
@@ -144,28 +143,21 @@ public class FolderTypeLibraryNode extends AFolderNode implements IDocearEventLi
 		DocearController.getController().dispatchDocearEvent(event);
 	}
 	
-	protected void addProjectToIndex(FolderTypeProjectsNode project) {
-		projectIndex.clear();
-		if(project == null) {
-			return;
-		}
-		projectIndex.add(project);
-	}
-	
 	/**
 	 * @param file
 	 * @return
 	 */
 	private AWorkspaceTreeNode createFSNodeLinks(File file) {
 		AWorkspaceTreeNode node = null;
+		AWorkspaceProject project = WorkspaceController.getCurrentModel().getProject(getModel());
 		if(file.isDirectory()) {
-			FolderLinkNode pNode = new FolderLinkNode();
-			pNode.setPath(WorkspaceUtils.getWorkspaceRelativeURI(file));
+			FolderLinkNode pNode = new FolderLinkNode();			
+			pNode.setPath(project.getRelativeURI(file.toURI()));
 			node = pNode;
 		}
 		else {
 			LinkTypeFileNode lNode = new LinkTypeFileNode();
-			lNode.setLinkPath(WorkspaceUtils.getWorkspaceRelativeURI(file));
+			lNode.setLinkPath(project.getRelativeURI(file.toURI()));
 			node = lNode;
 		}
 		node.setName(file.getName());
@@ -186,7 +178,7 @@ public class FolderTypeLibraryNode extends AFolderNode implements IDocearEventLi
 					} 
 					else if (dropAction == DnDConstants.ACTION_MOVE) {
 						AWorkspaceTreeNode parent = node.getParent();
-						WorkspaceUtils.getModel().cutNodeFromParent(node);						
+						getModel().cutNodeFromParent(node);						
 						parent.refresh();
 						newNode = node;
 					}
@@ -194,10 +186,11 @@ public class FolderTypeLibraryNode extends AFolderNode implements IDocearEventLi
 				if(newNode == null) {
 					continue;
 				}
-				WorkspaceUtils.getModel().addNodeTo(newNode, this);
-				WorkspaceController.getController().getExpansionStateHandler().addPathKey(this.getKey());
+				getModel().addNodeTo(newNode, this);
+				getModel().requestSave();
+				//WORKSPACE - todo: handle node expands
+				//WorkspaceController.getController().getExpansionStateHandler().addPathKey(this.getKey());
 			}
-			WorkspaceUtils.saveCurrentConfiguration();
 			
 		}
 		catch (Exception e) {
@@ -209,9 +202,9 @@ public class FolderTypeLibraryNode extends AFolderNode implements IDocearEventLi
 	private void processFileListDrop(List<File> files, int dropAction) {
 		try {		
 			for(File srcFile : files) {
-				WorkspaceUtils.getModel().addNodeTo(createFSNodeLinks(srcFile), this);		
+				getModel().addNodeTo(createFSNodeLinks(srcFile), this);		
 			}
-			WorkspaceUtils.saveCurrentConfiguration();
+			getModel().requestSave();
 		}
 		catch (Exception e) {
 			LogUtils.warn(e);
@@ -226,9 +219,9 @@ public class FolderTypeLibraryNode extends AFolderNode implements IDocearEventLi
 				if(srcFile == null || !srcFile.exists()) {
 					continue;
 				}
-				WorkspaceUtils.getModel().addNodeTo(createFSNodeLinks(srcFile), this);
+				getModel().addNodeTo(createFSNodeLinks(srcFile), this);
 			};
-			WorkspaceUtils.saveCurrentConfiguration();
+			getModel().requestSave();
 		}
 		catch (Exception e) {
 			LogUtils.warn(e);
@@ -261,16 +254,7 @@ public class FolderTypeLibraryNode extends AFolderNode implements IDocearEventLi
 		}
 		else if(event.getType() == DocearEventType.LIBRARY_EMPTY_MINDMAP_INDEX_REQUEST) {
 			mindmapIndex.removeAllElements();			
-		} 
-		else if(event.getType() == DocearEventType.LIBRARY_NEW_PROJECT_INDEXING_REQUEST) {
-			if(event.getEventObject() instanceof FolderTypeProjectsNode) {
-				if(!projectIndex.contains((FolderTypeProjectsNode) event.getEventObject())) {
-					LogUtils.info("DOCEAR: adding project to library: "+ event.getEventObject());
-					addProjectToIndex((FolderTypeProjectsNode) event.getEventObject());
-				}
-			}			
 		}
-		
 	}
 	
 	public void handleAction(WorkspaceActionEvent event) {
@@ -284,19 +268,6 @@ public class FolderTypeLibraryNode extends AFolderNode implements IDocearEventLi
 		return mindmapIndex;
 	}
 	
-	public Set<FolderTypeProjectsNode> getProjects() {
-		return projectIndex;
-	}
-	
-	public List<URI> getProjectPaths() {
-		List<URI> uriList= new ArrayList<URI>();
-		Iterator<FolderTypeProjectsNode> iter= projectIndex.iterator();
-		while(iter.hasNext()) {
-			uriList.add(iter.next().getPath());
-		}
-		return uriList;
-	}
-
 	public URI getBibtexDatabase() {
 		URI uri = null;
 		if(referencesIndex.size() > 0) {
@@ -382,12 +353,16 @@ public class FolderTypeLibraryNode extends AFolderNode implements IDocearEventLi
 	}
 	
 	public URI getLibraryPath() {
-		return DocearController.getController().getLibraryPath();
+		AWorkspaceProject project = WorkspaceController.getCurrentModeExtension().getModel().getProject(getModel());
+		File path = WorkspaceController.resolveFile(project.getProjectDataPath());
+		path = new File(path, "default_files");
+		return MModeWorkspaceLinkController.getController().getProjectRelativeURI(project, path.toURI());
 	}
-
+	
 	public void treeNodesChanged(TreeModelEvent e) {		
 	}
 	
+	//WORKSPACE - info
 	public void treeNodesInserted(TreeModelEvent event) {
 		if(this.getTreePath().isDescendant(event.getTreePath())) {
 			for(Object newNode : event.getChildren()) {
@@ -397,7 +372,7 @@ public class FolderTypeLibraryNode extends AFolderNode implements IDocearEventLi
 				} 
 				else
 				if(newNode instanceof LinkTypeFileNode && ((LinkTypeFileNode)newNode).getLinkPath() != null) {
-					URI uri = WorkspaceUtils.absoluteURI(((LinkTypeFileNode)newNode).getLinkPath());
+					URI uri = WorkspaceController.resolveURI(((LinkTypeFileNode)newNode).getLinkPath());
 					addToIndex(uri);
 				}
 			}
@@ -421,7 +396,7 @@ public class FolderTypeLibraryNode extends AFolderNode implements IDocearEventLi
 				} 
 				else
 				if(newNode instanceof LinkTypeFileNode) {
-					URI uri = WorkspaceUtils.absoluteURI(((LinkTypeFileNode)newNode).getLinkPath());
+					URI uri = WorkspaceController.resolveURI(((LinkTypeFileNode)newNode).getLinkPath());
 					removeFromIndex(uri);
 				}
 			}

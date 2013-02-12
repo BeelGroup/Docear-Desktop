@@ -37,8 +37,9 @@ public class FolderTypeLiteratureRepositoryNode extends FolderLinkNode implement
 	 **********************************************************************************/
 
 	public FolderTypeLiteratureRepositoryNode(String type) {
-		super(type);		
-		CoreConfiguration.repositoryPathObserver.addChangeListener(this);
+		super(type);
+		//WORKSPACE - todo: implement observer structure
+//		CoreConfiguration.repositoryPathObserver.addChangeListener(this);
 	}
 
 	/***********************************************************************************
@@ -51,7 +52,7 @@ public class FolderTypeLiteratureRepositoryNode extends FolderLinkNode implement
 	}
 	
 	public void disassociateReferences()  {
-		CoreConfiguration.repositoryPathObserver.removeChangeListener(this);
+//		CoreConfiguration.repositoryPathObserver.removeChangeListener(this);
 	}
 	
 	public void setName(String name) {
@@ -61,7 +62,7 @@ public class FolderTypeLiteratureRepositoryNode extends FolderLinkNode implement
 	public void setPath(URI uri) {
 		super.setPath(uri);
 		locked = true;		
-		CoreConfiguration.repositoryPathObserver.setUri(uri);
+//		CoreConfiguration.repositoryPathObserver.setUri(uri);
 		if (uri != null) {
 			createPathIfNeeded(uri);
 		}

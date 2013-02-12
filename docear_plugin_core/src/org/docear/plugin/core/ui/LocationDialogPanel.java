@@ -19,23 +19,28 @@ import javax.swing.filechooser.FileFilter;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.url.UrlManager;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.plugin.workspace.mindmapmode.MModeWorkspaceLinkController;
+import org.freeplane.plugin.workspace.mindmapmode.MModeWorkspaceUrlManager;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
+//WORKSPACE - todo: refactor to OpenProjectDialog
 public class LocationDialogPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private JTextField txtLocationString;	
 	private JButton button;
+	private AWorkspaceProject project;
 
 	/***********************************************************************************
 	 * CONSTRUCTORS
 	 **********************************************************************************/
-	public LocationDialogPanel(URI oldLocation, final boolean directoryOnly, final FileFilter... fileFilters) {
+	public LocationDialogPanel(AWorkspaceProject project, URI oldLocation, final boolean directoryOnly, final FileFilter... fileFilters) {
+		this.project = project;
 		setLayout(new FormLayout(new ColumnSpec[] {
 				FormFactory.RELATED_GAP_COLSPEC,
 				FormFactory.DEFAULT_COLSPEC,
@@ -68,7 +73,7 @@ public class LocationDialogPanel extends JPanel {
 						fileChooser.setSelectedFile(file);
 					}
 					else {
-						fileChooser.setSelectedFile(WorkspaceUtils.getWorkspaceBaseFile());
+//						fileChooser.setSelectedFile(WorkspaceUtils.getWorkspaceBaseFile());
 					}
 				}
 
@@ -103,7 +108,8 @@ public class LocationDialogPanel extends JPanel {
 	}
 	
 	public URI getLocationUri() {
-		return WorkspaceUtils.getWorkspaceRelativeURI(new File(txtLocationString.getText()));
+		return MModeWorkspaceLinkController.getController().getProjectRelativeURI(project, new File(txtLocationString.getText()).toURI());
+//		return WorkspaceUtils.getWorkspaceRelativeURI(new File(txtLocationString.getText()));
 	}
 	
 	public void setText(String text) {
@@ -119,6 +125,6 @@ public class LocationDialogPanel extends JPanel {
 	 **********************************************************************************/
 	
 	public void setLocationUri(URI location) {
-		txtLocationString.setText(WorkspaceUtils.resolveURI(location).getPath());
+		txtLocationString.setText(MModeWorkspaceUrlManager.getController().getAbsoluteFile(null, location).getAbsolutePath());
 	}
 }

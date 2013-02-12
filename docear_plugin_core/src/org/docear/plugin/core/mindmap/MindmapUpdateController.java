@@ -25,7 +25,6 @@ import org.freeplane.features.map.MapModel;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.url.UrlManager;
 import org.freeplane.features.url.mindmapmode.MFileManager;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
 import org.freeplane.view.swing.map.MapView;
 import org.freeplane.view.swing.map.NodeView;
 import org.jdesktop.swingworker.SwingWorker;
@@ -49,13 +48,15 @@ public class MindmapUpdateController {
 		return this.updaters;
 	}
 
+	//WORKSPACE - todo: updateAllMindmapsInProject (current or with id)
 	public boolean updateAllMindmapsInWorkspace() {
-		List<MapItem> maps = new ArrayList<MapItem>();
-		for (URI uri : WorkspaceUtils.getModel().getAllNodesFiltered(".mm")) {
-			maps.add(new MapItem(uri));
-		}
-		
-		return updateMindmaps(maps);
+//		List<MapItem> maps = new ArrayList<MapItem>();
+//		for (URI uri : WorkspaceController.getModel().getAllNodesFiltered(".mm")) {
+//			maps.add(new MapItem(uri));
+//		}
+//		
+//		return updateMindmaps(maps);
+		return false;
 	}
 	
 	public boolean updateRegisteredMindmapsInWorkspace() {

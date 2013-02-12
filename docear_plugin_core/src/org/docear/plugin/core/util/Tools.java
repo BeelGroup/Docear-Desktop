@@ -1,41 +1,10 @@
 package org.docear.plugin.core.util;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.StringTokenizer;
-
-import org.freeplane.core.util.LogUtils;
-import org.freeplane.core.util.TextUtils;
-import org.freeplane.features.attribute.AttributeController;
-import org.freeplane.features.attribute.NodeAttributeTableModel;
-import org.freeplane.features.link.NodeLinks;
-import org.freeplane.features.map.MapModel;
-import org.freeplane.features.map.NodeModel;
-import org.freeplane.features.mode.Controller;
-import org.freeplane.features.mode.mindmapmode.MModeController;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
-import org.freeplane.view.swing.map.MapView;
-import org.freeplane.view.swing.map.attribute.AttributeView;
-
-import sun.net.www.ParseUtil;
-import sun.net.www.protocol.file.FileURLConnection;
 
 public class Tools {
 	
 	//TODO: check if URI refers to a local file !!
-	//DOCEAR: temporarily disabled, test if we really need this class
+	//WORKSPACE: temporarily disabled, test if we really need this class
 	
 //	public static File getFilefromUri(URI uri){		
 //		if(uri == null) return null;

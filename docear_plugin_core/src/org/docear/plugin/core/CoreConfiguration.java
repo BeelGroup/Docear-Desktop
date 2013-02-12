@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -32,15 +31,12 @@ import org.docear.plugin.core.listeners.DocearCoreOmniListenerAdapter;
 import org.docear.plugin.core.listeners.MapLifeCycleAndViewListener;
 import org.docear.plugin.core.listeners.PropertyListener;
 import org.docear.plugin.core.listeners.PropertyLoadListener;
-import org.docear.plugin.core.listeners.WorkspaceChangeListener;
 import org.docear.plugin.core.listeners.WorkspaceOpenDocumentListener;
-import org.docear.plugin.core.listeners.WorkspaceTreeModelListener;
 import org.docear.plugin.core.logger.DocearLogEvent;
 import org.docear.plugin.core.ui.NotificationBar;
 import org.docear.plugin.core.workspace.actions.DocearChangeLibraryPathAction;
 import org.docear.plugin.core.workspace.actions.DocearRenameAction;
-import org.docear.plugin.core.workspace.actions.WorkspaceChangeLocationsAction;
-import org.docear.plugin.core.workspace.node.config.NodeAttributeObserver;
+import org.docear.plugin.core.workspace.controller.DocearProjectLoader;
 import org.freeplane.core.resources.OptionPanelController;
 import org.freeplane.core.resources.ResourceBundles;
 import org.freeplane.core.resources.ResourceController;
@@ -67,6 +63,7 @@ import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 
+
 public class CoreConfiguration extends ALanguageController {
 
 	private static final String DOCEAR = "Docear";
@@ -90,13 +87,11 @@ public class CoreConfiguration extends ALanguageController {
 	public static final String DOCUMENT_REPOSITORY_PATH = "@@literature_repository@@";
 	public static final String LIBRARY_PATH = "@@library_mindmaps@@"; 
 //	public static final String BIBTEX_PATH = DocearController.BIBTEX_PATH_PROPERTY;
-	
-	private static final WorkspaceChangeListener WORKSPACE_CHANGE_LISTENER = new WorkspaceChangeListener();
 		
-	public static final NodeAttributeObserver projectPathObserver = new NodeAttributeObserver();
-	public static final NodeAttributeObserver referencePathObserver = new NodeAttributeObserver();
-	public static final NodeAttributeObserver repositoryPathObserver = new NodeAttributeObserver();
-	
+	//WORKSPACE - todo: think about a solution
+//	public static final NodeAttributeObserver projectPathObserver = new NodeAttributeObserver();
+//	public static final NodeAttributeObserver referencePathObserver = new NodeAttributeObserver();
+//	public static final NodeAttributeObserver repositoryPathObserver = new NodeAttributeObserver();	
 		
 	public CoreConfiguration() {			
 		LogUtils.info("org.docear.plugin.core.CoreConfiguration() initializing...");
@@ -115,6 +110,9 @@ public class CoreConfiguration extends ALanguageController {
 	}
 	
 	protected void initMode(ModeController modeController) {
+		DocearProjectLoader docearProjectLoader = new DocearProjectLoader();
+		WorkspaceController.getCurrentModeExtension().setProjectLoader(docearProjectLoader);
+		
 		DocearController.getController().getDocearEventLogger().appendToLog(this, DocearLogEvent.APPLICATION_STARTED);
 		Toolkit.getDefaultToolkit();		
 		DocearController.getController().getDocearEventLogger().appendToLog(this, DocearLogEvent.OS_OPERATING_SYSTEM, System.getProperty("os.name"));
@@ -134,9 +132,8 @@ public class CoreConfiguration extends ALanguageController {
 		}));
 		
 		// set up context menu for workspace
-		WorkspaceController.getController().addWorkspaceListener(WORKSPACE_CHANGE_LISTENER);
-		
-		
+		//WORKSPACE - info: test if this works without
+//		WorkspaceController.getController().addWorkspaceListener(WORKSPACE_CHANGE_LISTENER);
 		
 		addPluginDefaults(Controller.getCurrentController());
 		addMenus(modeController);
@@ -150,10 +147,7 @@ public class CoreConfiguration extends ALanguageController {
 		setDocearMapWriter(modeController);
 		
 		registerController(modeController);
-		URI uri = CoreConfiguration.projectPathObserver.getUri();
-		if (uri != null) {
-			UrlManager.getController().setLastCurrentDir(WorkspaceUtils.resolveURI(CoreConfiguration.projectPathObserver.getUri()));
-		}	
+		UrlManager.getController().setLastCurrentDir(WorkspaceController.resolveFile(WorkspaceController.getCurrentModeExtension().getDefaultProjectHome()));	
 	}
 	
 	private void loadAndStoreVersion(Controller controller) {
@@ -269,18 +263,7 @@ public class CoreConfiguration extends ALanguageController {
 		
 		
 		//remove sidepanel switcher
-		//Controller.getCurrentModeController().removeAction("ShowFormatPanel");
-		modeController.addMenuContributor(new IMenuContributor() {
-			public void updateMenus(ModeController modeController,final  MenuBuilder builder) {
-				SwingUtilities.invokeLater(new Runnable() {					
-					public void run() {
-						builder.removeElement("$" + WorkspacePreferences.SHOW_WORKSPACE_MENUITEM + "$0");
-					}
-				});
-													
-			}
-		});
-		
+		//Controller.getCurrentModeController().removeAction("ShowFormatPanel");		
 		ResourceController resourceController = ResourceController.getResourceController();		
 		
 		if (!resourceController.getProperty(APPLICATION_NAME, "").equals(DOCEAR)) {
@@ -357,8 +340,7 @@ public class CoreConfiguration extends ALanguageController {
 			resController.setProperty("leftToolbarVisible", "false");			
 			resController.setProperty("styleScrollPaneVisible", "true");
 			resController.setProperty(DocearController.DOCEAR_FIRST_RUN_PROPERTY, true);			
-		}
-		controller.addAction(new WorkspaceChangeLocationsAction());
+		}		
 		controller.addAction(new DocearChangeLibraryPathAction());
 		controller.addAction(new DocearRenameAction());
 	}
@@ -375,8 +357,9 @@ public class CoreConfiguration extends ALanguageController {
 		DocearController.getController().addDocearEventListener(adapter);
 		Controller.getCurrentController().getMapViewManager().addMapViewChangeListener(adapter);
 		Controller.getCurrentController().getMapViewManager().addMapViewChangeListener(new MapLifeCycleAndViewListener());
-		WorkspaceController.getIOController().registerNodeActionListener(AWorkspaceTreeNode.class, WorkspaceActionEvent.WSNODE_OPEN_DOCUMENT, new WorkspaceOpenDocumentListener());
-		WorkspaceUtils.getModel().addTreeModelListener(new WorkspaceTreeModelListener());
+		WorkspaceController.getCurrentModeExtension().getIOController().registerNodeActionListener(AWorkspaceTreeNode.class, WorkspaceActionEvent.WSNODE_OPEN_DOCUMENT, new WorkspaceOpenDocumentListener());
+		//WORKSPACE - info
+//		WorkspaceUtils.getModel().addTreeModelListener(new WorkspaceTreeModelListener());
 	}	
 	
 	class GettingStartedAction extends AFreeplaneAction {

@@ -28,7 +28,7 @@ public class Activator implements BundleActivator {
 		}, null);
 		
 		final Hashtable<String, String[]> props = new Hashtable<String, String[]>();
-		//TODO DOCEAR - list all modes from freeplane controller
+		//WORKSPACE - todo: list all modes from freeplane controller
 		props.put("mode", new String[] { MModeController.MODENAME });
 		
 		context.registerService(IModeControllerExtensionProvider.class.getName(),

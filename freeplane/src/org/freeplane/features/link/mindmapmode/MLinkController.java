@@ -381,7 +381,11 @@ public class MLinkController extends LinkController {
 	private ModeController modeController;
 	
 	public MLinkController() {
-		super();
+		super();		
+	}
+	
+	protected void init() {
+		super.init();
 		modeController = Controller.getCurrentModeController();
 		createActions();
 		anchorID = null;

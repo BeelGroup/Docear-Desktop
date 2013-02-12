@@ -165,6 +165,7 @@ public class UrlManager implements IExtension {
 	public static void install( final UrlManager urlManager) {
 		final ModeController modeController = Controller.getCurrentModeController();
 		modeController.addExtension(UrlManager.class, urlManager);
+		urlManager.init();
 	}
 
 // // 	final private Controller controller;
@@ -172,6 +173,9 @@ public class UrlManager implements IExtension {
 
 	public UrlManager() {
 		super();
+	}
+	
+	protected void init() {
 //		this.modeController = modeController;
 //		controller = modeController.getController();
 		createActions();
@@ -425,7 +429,7 @@ public class UrlManager implements IExtension {
 		}
 	}
 	
-	public File absoluteFile(final MapModel map, final URI uri) {
+	public File getAbsoluteFile(final MapModel map, final URI uri) {
 		if(uri == null) {
 			return null;
 		}

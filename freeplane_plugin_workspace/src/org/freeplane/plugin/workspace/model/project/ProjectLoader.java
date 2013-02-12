@@ -150,8 +150,7 @@ public class ProjectLoader implements IProjectSettingsIOHandler {
 	}
 
 	public synchronized void loadProject(AWorkspaceProject project) throws IOException {
-		try {		
-			
+		try {
 			File projectSettings = new File(WorkspaceController.resolveFile(project.getProjectDataPath()),"settings.xml");
 			if(projectSettings.exists()) {
 				getDefaultResultProcessor().setProject(project);

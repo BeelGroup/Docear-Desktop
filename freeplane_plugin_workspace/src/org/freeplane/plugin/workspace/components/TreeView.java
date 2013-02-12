@@ -20,22 +20,19 @@ import javax.swing.tree.TreeSelectionModel;
 
 import org.freeplane.core.ui.components.OneTouchCollapseResizer.ComponentCollapseListener;
 import org.freeplane.core.ui.components.ResizeEvent;
-import org.freeplane.plugin.workspace.controller.DefaultNodeTypeIconManager;
-import org.freeplane.plugin.workspace.controller.DefaultWorkspaceKeyHandler;
-import org.freeplane.plugin.workspace.controller.DefaultWorkspaceMouseHandler;
-import org.freeplane.plugin.workspace.controller.INodeTypeIconManager;
 import org.freeplane.plugin.workspace.dnd.WorkspaceTransferHandler;
 import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
+import org.freeplane.plugin.workspace.handler.DefaultNodeTypeIconManager;
+import org.freeplane.plugin.workspace.handler.DefaultWorkspaceKeyHandler;
+import org.freeplane.plugin.workspace.handler.DefaultWorkspaceMouseHandler;
+import org.freeplane.plugin.workspace.handler.INodeTypeIconManager;
 import org.freeplane.plugin.workspace.listener.DefaultTreeExpansionListener;
 import org.freeplane.plugin.workspace.listener.DefaultWorkspaceSelectionListener;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.WorkspaceModel;
 
 public class TreeView extends JPanel implements IWorkspaceView, ComponentCollapseListener {
-
-	
-
 	private static final long serialVersionUID = 1L;
 	private static final int view_margin = 3;
 	
@@ -205,8 +202,12 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 		}
 	}
 
-	
-
-	
+	public AWorkspaceTreeNode getNodeForLocation(int x, int y) {
+		TreePath path = mTree.getPathForLocation(x, y);
+		if(path == null) {
+			return null;
+		}
+		return (AWorkspaceTreeNode) path.getLastPathComponent();		
+	}	
 	
 }

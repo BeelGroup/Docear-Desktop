@@ -1,13 +1,13 @@
 package org.docear.plugin.core.mindmap;
 
 import java.io.File;
-import java.net.URI;
 
+import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.link.LinkController;
 import org.freeplane.features.link.NodeLinks;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
-import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.features.url.UrlManager;
 
 public class MindmapLinkTypeUpdater extends AMindmapUpdater {
 
@@ -20,20 +20,24 @@ public class MindmapLinkTypeUpdater extends AMindmapUpdater {
 	}
 	
 	private boolean updateMindmap(NodeModel node) {
-		NodeLinks links = NodeLinks.getLinkExtension(node);
-
-		if (links == null || links.getHyperLink() == null) {
-			return false;
+		try {
+    		NodeLinks links = NodeLinks.getLinkExtension(node);
+    
+    		if (links == null || links.getHyperLink() == null) {
+    			return false;
+    		}
+    
+    		File file = UrlManager.getController().getAbsoluteFile(node.getMap(), links.getHyperLink());
+    		if (file != null) {
+    			links.setHyperLink(LinkController.toLinkTypeDependantURI(node.getMap().getFile(), file));
+    		}
+    
+    		return true;
 		}
-
-		URI uri = links.getHyperLink();
-
-		File file = WorkspaceController.resolveFile(uri, node.getMap());
-		if (file != null) {
-			links.setHyperLink(LinkController.toLinkTypeDependantURI(node.getMap().getFile(), file));
+		catch(Exception e) {
+			LogUtils.warn(this.getClass().getName()+".updateMindmap(): "+ e.getMessage());
 		}
-
-		return true;
+		return false;
 	}
 	
 	/**

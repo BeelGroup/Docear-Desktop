@@ -7,8 +7,6 @@ package org.docear.plugin.core.workspace.creator;
 import java.io.File;
 import java.net.URI;
 
-import org.docear.plugin.core.CoreConfiguration;
-import org.docear.plugin.core.ui.LocationDialog;
 import org.docear.plugin.core.workspace.node.FolderTypeLiteratureRepositoryNode;
 import org.freeplane.n3.nanoxml.XMLElement;
 import org.freeplane.plugin.workspace.WorkspaceController;
@@ -43,15 +41,16 @@ public class FolderTypeLiteratureRepositoryCreator extends AWorkspaceNodeCreator
 		boolean descending = Boolean.parseBoolean(data.getAttribute("orderDescending", "false"));
 		node.orderDescending(descending);
 		
+		//WORKSPACE - info: old path dialog disabled --> ProjectLoader: "NewProjectDialog"
 		if (path == null || path.length()==0) {
-			URI uri = CoreConfiguration.repositoryPathObserver.getUri();
-			
-			if (uri == null) {
-				LocationDialog.showWorkspaceChooserDialog();	
-			}
-			else {
-				node.setPath(uri);
-			}
+//			URI uri = CoreConfiguration.repositoryPathObserver.getUri();
+//			
+//			if (uri == null) {
+//				LocationDialog.showWorkspaceChooserDialog();	
+//			}
+//			else {
+//				node.setPath(uri);
+//			}
 			return node;
 		}
 		

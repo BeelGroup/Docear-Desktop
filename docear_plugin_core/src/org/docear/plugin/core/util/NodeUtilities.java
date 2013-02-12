@@ -28,6 +28,7 @@ import org.freeplane.features.mapio.mindmapmode.MMapIO;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.mode.mindmapmode.MModeController;
+import org.freeplane.plugin.workspace.mindmapmode.MModeWorkspaceUrlManager;
 import org.freeplane.view.swing.map.MapView;
 import org.freeplane.view.swing.map.NodeView;
 import org.freeplane.view.swing.map.attribute.AttributeView;
@@ -93,7 +94,7 @@ public class NodeUtilities {
 			try {
 				MapModel map = new MMapModel();
 				AttributeRegistry.getRegistry(map);
-				URL url = Tools.getFilefromUri(uri).toURI().toURL();
+				URL url = MModeWorkspaceUrlManager.getController().getAbsoluteUrl(map, uri);
 				final MapIO mapIO = (MapIO) Controller.getCurrentModeController().getExtension(MapIO.class);
 				mapIO.load(url, map);
 				return map;

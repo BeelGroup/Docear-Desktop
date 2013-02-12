@@ -48,14 +48,15 @@ public class LinkTypeReferencesCreator extends AWorkspaceNodeCreator {
 		node.setName(name);
 		
 		String path = data.getAttribute("path", null);
+		//WORKSPACE - info: "NewProjectDialog"
 		if(path == null || path.trim().length() == 0) {
-			URI uri = CoreConfiguration.referencePathObserver.getUri();
-			if (uri == null) {
-				LocationDialog.showWorkspaceChooserDialog();		    	
-			}
-			else {
-				node.setLinkPath(uri);
-			}
+//			URI uri = CoreConfiguration.referencePathObserver.getUri();
+//			if (uri == null) {
+//				LocationDialog.showWorkspaceChooserDialog();		    	
+//			}
+//			else {
+//				node.setLinkPath(uri);
+//			}
 			return node;
 		}
 		
