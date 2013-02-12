@@ -24,7 +24,6 @@ import org.freeplane.core.ui.components.ResizeEvent;
 import org.freeplane.core.ui.components.ResizerListener;
 import org.freeplane.core.util.FileUtils;
 import org.freeplane.core.util.LogUtils;
-import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.ui.ViewController;
 import org.freeplane.plugin.workspace.WorkspaceController;
@@ -36,7 +35,6 @@ import org.freeplane.plugin.workspace.controller.LinkTypeFileIconHandler;
 import org.freeplane.plugin.workspace.creator.DefaultFileNodeCreator;
 import org.freeplane.plugin.workspace.io.AFileNodeCreator;
 import org.freeplane.plugin.workspace.io.FileReadManager;
-import org.freeplane.plugin.workspace.listener.DefaultWorkspaceComponentHandler;
 import org.freeplane.plugin.workspace.model.WorkspaceModel;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
@@ -60,15 +58,7 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 	private WorkspaceModel wsModel;
 
 	public MModeWorkspaceController(ModeController modeController) {
-		super(modeController);		
-		
-		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {			
-			public void run() {
-				String appName = Controller.getCurrentController().getResourceController().getProperty("ApplicationName").toLowerCase(Locale.ENGLISH);
-				String settingsPath = System.getProperty("user.home")+ File.separator + "." + appName + File.separator + "users"+File.separator+"default";
-				saveSettings(settingsPath);
-			}
-		}));
+		super(modeController);
 	}
 	
 	public void start(ModeController modeController) {
@@ -78,8 +68,7 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 	}
 	
 	private void setupSettings(ModeController modeController) {
-		String settingsPath = WorkspaceController.getApplicationHome().getPath() + File.separator + "users"+File.separator+"default";
-		loadSettings(settingsPath);
+		loadSettings(getSettingsPath());
 	}
 	
 	private void setupModel(ModeController modeController) {
@@ -227,14 +216,13 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 	private TreeView getWorkspaceView() {
 		if (this.view == null) {
 			this.view = new TreeView();
-			this.view.addComponentListener(new DefaultWorkspaceComponentHandler(this.view));
 			this.view.setMinimumSize(new Dimension(100, 40));
 			int width = 150;
 			try {
 				width = Integer.parseInt(settings.getProperty(WORKSPACE_VIEW_WIDTH, "150"));
 			}
 			catch (Exception e) {
-				// blind accept
+				// blindly accept
 			}
 			this.view.setPreferredSize(new Dimension(width, 40));
 		}
@@ -290,10 +278,17 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 	}
 
 	public URI getDefaultProjectHome() {
-		//example c:\Users\joeran\Docear\joeran2\myfirstproject
-		File home = new File(WorkspaceController.getApplicationHome());
-		home = new File(home, "default");
+		File home = WorkspaceController.resolveFile(WorkspaceController.getApplicationHome());
+		home = new File(home, "projects");
 		return  home.toURI();
+	}
+
+	public void shutdown() {
+		saveSettings(getSettingsPath());
+	}
+	
+	private String getSettingsPath() {
+		return WorkspaceController.resolveFile(WorkspaceController.getApplicationSettingsHome()).getPath() + File.separator + "users"+File.separator+"default";
 	}
 
 }

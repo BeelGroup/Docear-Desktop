@@ -16,8 +16,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JToolBar;
 
-import org.freeplane.plugin.workspace.WorkspaceController;
-
 /**
  * 
  */

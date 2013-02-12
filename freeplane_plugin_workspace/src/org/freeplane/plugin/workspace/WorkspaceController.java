@@ -12,8 +12,8 @@ import java.util.Map;
 import org.freeplane.core.extension.IExtension;
 import org.freeplane.core.resources.IFreeplanePropertyListener;
 import org.freeplane.core.resources.OptionPanelController;
-import org.freeplane.core.resources.ResourceBundles;
 import org.freeplane.core.resources.OptionPanelController.PropertyLoadListener;
+import org.freeplane.core.resources.ResourceBundles;
 import org.freeplane.core.resources.components.IPropertyControl;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
@@ -144,6 +144,18 @@ public final class WorkspaceController implements IExtension {
 		
 	}
 	
+	public void shutdown() {
+		for (String modeName : Controller.getCurrentController().getModes()) {
+			ModeController modeController = Controller.getCurrentController().getModeController(modeName);
+			AWorkspaceModeExtension modeExt = modeController.getExtension(AWorkspaceModeExtension.class);
+			if(modeExt == null) {
+				continue;
+			}
+			modeExt.shutdown();
+		}
+		
+	}
+	
 	public static WorkspaceModel getCurrentModel() {
 		return getCurrentModeExtension().getModel();
 	}
@@ -174,8 +186,14 @@ public final class WorkspaceController implements IExtension {
 	}
 
 	public static URI getApplicationHome() {
-		String appName = Controller.getCurrentController().getResourceController().getProperty("ApplicationName").toLowerCase(Locale.ENGLISH);
-		String homePath = System.getProperty("user.home")+ File.separator + "." + appName;
+		String appName = Controller.getCurrentController().getResourceController().getProperty("ApplicationName");
+		String homePath = System.getProperty("user.home")+ File.separator + appName;
+		return new File(homePath).toURI();
+	}
+	
+	public static URI getApplicationSettingsHome() {
+		String appName = Controller.getCurrentController().getResourceController().getProperty("ApplicationName");
+		String homePath = System.getProperty("user.home")+ File.separator + "." + appName.toLowerCase(Locale.ENGLISH);
 		return new File(homePath).toURI();
 	}
 }

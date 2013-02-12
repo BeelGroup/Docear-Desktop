@@ -16,9 +16,11 @@ import java.util.List;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.apache.commons.io.FileUtils;
+import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
@@ -30,17 +32,19 @@ import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.io.annotation.ExportAsAttribute;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
+import org.freeplane.plugin.workspace.model.IMutableLinkNode;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.model.project.IProjectSettings;
 
 
-public class FolderTypeProjectNode extends AFolderNode implements IWorkspaceNodeActionListener, IDropAcceptor {
+public class FolderTypeProjectNode extends AFolderNode implements IMutableLinkNode, IWorkspaceNodeActionListener, IDropAcceptor {
 
 	private static final long serialVersionUID = 1L;
 	private static final Icon DEFAULT_ICON = new ImageIcon(AFolderNode.class.getResource("/images/project-open-2.png"));
 	private static WorkspacePopupMenu popupMenu = null;
 	private String projectID;
 	private URI projectRoot = null;
+	private AWorkspaceProject projectContainer;
 	
 	/***********************************************************************************
 	 * CONSTRUCTORS
@@ -293,8 +297,30 @@ public class FolderTypeProjectNode extends AFolderNode implements IWorkspaceNode
 	}
 
 	public void initiateMyFile(AWorkspaceProject project) {
+		projectContainer = project;
 		FolderTypeMyFilesNode myFilesNode = new FolderTypeMyFilesNode(project); 
 		getModel().addNodeTo(myFilesNode, this);
 		myFilesNode.refresh();
+	}
+
+	public boolean changeName(String newName, boolean renameLink) {
+		try {
+			if(renameLink) {
+				this.getModel().changeNodeName(this, newName);
+				this.refresh();
+			}
+			else {
+				this.setName(newName);
+				this.getParent().refresh();
+			}
+			
+			
+		}
+		catch(Exception ex) {
+			JOptionPane.showMessageDialog(UITools.getFrame(), TextUtils.getText("error_rename_file") + " ("+ex.getMessage()+")", 
+					TextUtils.getText("error_rename_file_title"), JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+		return true;
 	}
 }

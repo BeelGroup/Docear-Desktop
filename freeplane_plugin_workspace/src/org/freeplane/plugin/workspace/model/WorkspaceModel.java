@@ -56,9 +56,6 @@ public abstract class WorkspaceModel implements TreeModel {
 				
 				public void treeStructureChanged(ProjectModelEvent event) {
 					synchronized (listeners) {
-						
-						TreeModelEvent evnt = new TreeModelEvent(event.getSource(), event.getTreePath(), event.getChildIndices(), event.getChildren());
-						
 						for (int i = listeners.size()-1; i >= 0; i--) {
 							listeners.get(i).treeStructureChanged(event);
 						}
