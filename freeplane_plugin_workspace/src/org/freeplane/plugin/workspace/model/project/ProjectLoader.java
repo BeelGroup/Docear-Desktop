@@ -8,12 +8,14 @@ import java.io.InputStreamReader;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.util.Locale;
 
 import org.apache.commons.io.IOExceptionWithCause;
 import org.freeplane.core.io.ReadManager;
 import org.freeplane.core.io.WriteManager;
 import org.freeplane.core.io.xml.TreeXmlReader;
 import org.freeplane.core.util.LogUtils;
+import org.freeplane.core.util.TextUtils;
 import org.freeplane.n3.nanoxml.XMLException;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.creator.ActionCreator;
@@ -29,6 +31,9 @@ import org.freeplane.plugin.workspace.io.xml.ProjectSettingsWriter;
 import org.freeplane.plugin.workspace.model.AWorkspaceNodeCreator;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.IResultProcessor;
+import org.freeplane.plugin.workspace.nodes.AFolderNode;
+import org.freeplane.plugin.workspace.nodes.FolderTypeMyFilesNode;
+import org.freeplane.plugin.workspace.nodes.FolderVirtualNode;
 import org.freeplane.plugin.workspace.nodes.ProjectRootNode;
 
 public class ProjectLoader implements IProjectSettingsIOHandler {
@@ -157,8 +162,20 @@ public class ProjectLoader implements IProjectSettingsIOHandler {
 				this.load(projectSettings.toURI());
 			}
 			else {
-				project.getModel().setRoot(prj);
-				prj.prepare(project);
+				ProjectRootNode root = new ProjectRootNode();
+				root.setProjectID(project.getProjectID());				
+				root.setModel(project.getModel());
+				root.setName(WorkspaceController.resolveFile(project.getProjectHome()).getName());
+				root.setProjectID(project.getProjectID());
+				project.getModel().setRoot(root);
+				// create and load all default nodes
+				root.initiateMyFile(project);
+				FolderVirtualNode misc = new FolderVirtualNode(AFolderNode.FOLDER_TYPE_VIRTUAL);
+				misc.setName(TextUtils.getText(FolderTypeMyFilesNode.class.getPackage().getName().toLowerCase(Locale.ENGLISH)+".miscnode.name"));
+				project.getModel().addNodeTo(misc, root);
+				//misc -> help.mm
+				root.refresh();
+				
 			}
 		}
 		catch (Exception e) {
