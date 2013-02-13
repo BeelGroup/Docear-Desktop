@@ -12,6 +12,7 @@ import org.freeplane.plugin.workspace.event.IWorkspaceListener;
 import org.freeplane.plugin.workspace.handler.IOController;
 import org.freeplane.plugin.workspace.io.FileReadManager;
 import org.freeplane.plugin.workspace.model.WorkspaceModel;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.model.project.ProjectLoader;
 
 public abstract class AWorkspaceModeExtension implements IExtension {
@@ -27,7 +28,7 @@ public abstract class AWorkspaceModeExtension implements IExtension {
 	public abstract IWorkspaceView getView();
 	public abstract FileReadManager getFileTypeManager();
 	public abstract URI getDefaultProjectHome();
-	public abstract void getCurrentProject();
+	public abstract AWorkspaceProject getCurrentProject();
 	
 	public abstract void shutdown();
 	

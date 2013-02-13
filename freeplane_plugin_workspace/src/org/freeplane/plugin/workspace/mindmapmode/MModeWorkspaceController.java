@@ -45,6 +45,8 @@ import org.freeplane.plugin.workspace.io.AFileNodeCreator;
 import org.freeplane.plugin.workspace.io.FileReadManager;
 import org.freeplane.plugin.workspace.model.WorkspaceModel;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
+import org.freeplane.plugin.workspace.model.project.IProjectSelectionListener;
+import org.freeplane.plugin.workspace.model.project.ProjectSelectionEvent;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
 
@@ -64,6 +66,8 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 	private TreeView view;
 	private Properties settings;
 	private WorkspaceModel wsModel;
+	private AWorkspaceProject currentSelectedProject = null;
+	private IProjectSelectionListener projectSelectionListener;
 
 	public MModeWorkspaceController(ModeController modeController) {
 		super(modeController);
@@ -269,10 +273,11 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 				// blindly accept
 			}
 			this.view.setPreferredSize(new Dimension(width, 40));
+			this.view.addProjectSelectionListener(getProjectSelectionListener());
 		}
 		return this.view;
 	}
-	
+
 	public WorkspaceModel getModel() {
 		if(wsModel == null) {
 			wsModel = WorkspaceModel.createDefaultModel();
@@ -335,10 +340,21 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 		return WorkspaceController.resolveFile(WorkspaceController.getApplicationSettingsHome()).getPath() + File.separator + "users"+File.separator+"default";
 	}
 
+	private IProjectSelectionListener getProjectSelectionListener() {
+		if(this.projectSelectionListener == null) {
+			this.projectSelectionListener = new IProjectSelectionListener() {
+				public void selectionChanged(ProjectSelectionEvent event) {
+					LogUtils.info("now selected project: "+ event.getSelectedProject());
+					currentSelectedProject = event.getSelectedProject();				
+				}
+			};
+		}
+		return this.projectSelectionListener;
+	}
+	
 	@Override
-	public void getCurrentProject() {
-		// TODO Auto-generated method stub
-		
+	public AWorkspaceProject getCurrentProject() {
+		return currentSelectedProject ;		
 	}
 
 }

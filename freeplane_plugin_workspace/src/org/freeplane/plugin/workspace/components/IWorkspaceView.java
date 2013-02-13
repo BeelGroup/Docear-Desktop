@@ -7,6 +7,7 @@ import javax.swing.tree.TreePath;
 import org.freeplane.plugin.workspace.dnd.WorkspaceTransferHandler;
 import org.freeplane.plugin.workspace.handler.INodeTypeIconManager;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
+import org.freeplane.plugin.workspace.model.project.IProjectSelectionListener;
 
 
 public interface IWorkspaceView {
@@ -26,4 +27,6 @@ public interface IWorkspaceView {
 	public INodeTypeIconManager getNodeTypeIconManager();
 
 	public AWorkspaceTreeNode getNodeForLocation(int x, int y);
+	
+	public void addProjectSelectionListener(IProjectSelectionListener projectSelectionListener);
 }
