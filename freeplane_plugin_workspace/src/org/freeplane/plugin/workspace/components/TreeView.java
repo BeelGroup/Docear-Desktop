@@ -49,7 +49,7 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 	private WorkspaceTransferHandler transferHandler;
 	private INodeTypeIconManager nodeTypeIconManager;
 	private List<IProjectSelectionListener> projectSelectionListeners = new ArrayList<IProjectSelectionListener>();
-	private AWorkspaceProject currentSelection;
+	private AWorkspaceProject lastSelectedProject;
 	
 	public TreeView() {
 		this.setLayout(new BorderLayout());
@@ -84,8 +84,8 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 	private TreeSelectionListener getProjectSelectionHandler() {
 		return new TreeSelectionListener() {			
 			public void valueChanged(TreeSelectionEvent e) {
-				AWorkspaceProject selected = WorkspaceController.getCurrentModel().getProject(((AWorkspaceTreeNode) e.getNewLeadSelectionPath().getLastPathComponent()).getModel());
-				if(!selected.equals(currentSelection)) {
+				AWorkspaceProject selected = WorkspaceController.getCurrentModel().getProject(((AWorkspaceTreeNode) e.getNewLeadSelectionPath().getLastPathComponent()).getModel());				
+				if(selected != null && !selected.equals(lastSelectedProject)) {
 					fireProjectSelectionChanged(selected);
 				}				
 			}
@@ -241,14 +241,20 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 		if(selected == null) {
 			return;
 		}
-		ProjectSelectionEvent event = new ProjectSelectionEvent(this, selected, this.currentSelection);
-		this.currentSelection = selected;
+		ProjectSelectionEvent event = new ProjectSelectionEvent(this, selected, this.lastSelectedProject);
+		this.lastSelectedProject = selected;
 		synchronized (projectSelectionListeners ) {
 			for (IProjectSelectionListener listener : projectSelectionListeners) {
 				listener.selectionChanged(event);
 			}
 		}
 		
+	}
+
+	public void expandAll(AWorkspaceTreeNode nodeFromActionEvent) {
+		for (int i = 1; i < mTree.getRowCount(); i++) {
+            mTree.expandRow(i);
+		}		
 	}
 	
 }

@@ -25,7 +25,7 @@ public abstract class AWorkspaceNodeCreator implements IElementDOMHandler {
 		}
 		node.setParent((AWorkspaceTreeNode) parent);
 		node.setMandatoryAttributes(attributes);
-		node.initializePopup();
+		//node.initializePopup();
 		processResult((AWorkspaceTreeNode) parent, node);
 		return node;
 	}

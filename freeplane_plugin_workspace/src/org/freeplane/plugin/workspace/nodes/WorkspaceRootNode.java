@@ -20,14 +20,14 @@ import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 
-public final class WorkspaceRoot extends AFolderNode implements IWorkspaceNodeActionListener {
+public final class WorkspaceRootNode extends AFolderNode implements IWorkspaceNodeActionListener {
 
 	private static final long serialVersionUID = 1L;
 	private static Icon DEFAULT_ICON = new ImageIcon(
 			FolderLinkNode.class.getResource("/images/16x16/preferences-desktop-filetype-association.png"));
 	private static WorkspacePopupMenu popupMenu;
 
-	public WorkspaceRoot() {
+	public WorkspaceRootNode() {
 		super(null);
 	}
 
@@ -58,14 +58,12 @@ public final class WorkspaceRoot extends AFolderNode implements IWorkspaceNodeAc
 			WorkspacePopupMenuBuilder.addActions(popupMenu, new String[] {
 					WorkspacePopupMenuBuilder.createSubMenu(TextUtils.getRawText("workspace.action.new.label")),
 					WorkspaceNewProjectAction.KEY,
-//					"workspace.action.node.new.folder",
-//					"workspace.action.node.new.link",
 					WorkspacePopupMenuBuilder.endSubMenu(),
 					WorkspacePopupMenuBuilder.SEPARATOR,
 //					"workspace.action.location.change",
-//					"workspace.action.node.open.location",
+					"workspace.action.node.open.location",
 //					//"workspace.action.hide",
-//					WorkspacePopupMenuBuilder.SEPARATOR,
+					WorkspacePopupMenuBuilder.SEPARATOR,
 //					"workspace.action.node.cut",
 //					"workspace.action.node.copy",						
 //					"workspace.action.node.paste",
@@ -78,12 +76,12 @@ public final class WorkspaceRoot extends AFolderNode implements IWorkspaceNodeAc
 		}
 	}
 
-	protected AWorkspaceTreeNode clone(WorkspaceRoot node) {
+	protected AWorkspaceTreeNode clone(WorkspaceRootNode node) {
 		return super.clone(node);
 	}
 
 	public AWorkspaceTreeNode clone() {
-		WorkspaceRoot node = new WorkspaceRoot();
+		WorkspaceRootNode node = new WorkspaceRootNode();
 		return clone(node);
 	}
 
@@ -103,7 +101,7 @@ public final class WorkspaceRoot extends AFolderNode implements IWorkspaceNodeAc
 	}
 	
 	public URI getPath() {
-		// not needed for workspace root
+		// not used for workspace root
 		return null;
 	}
 	

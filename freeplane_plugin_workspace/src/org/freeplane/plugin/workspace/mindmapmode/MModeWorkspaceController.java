@@ -31,10 +31,22 @@ import org.freeplane.features.ui.ViewController;
 import org.freeplane.features.url.UrlManager;
 import org.freeplane.plugin.workspace.AWorkspaceModeExtension;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.actions.FileNodeDeleteAction;
+import org.freeplane.plugin.workspace.actions.FileNodeNewFileAction;
+import org.freeplane.plugin.workspace.actions.FileNodeNewMindmapAction;
+import org.freeplane.plugin.workspace.actions.NodeCopyAction;
+import org.freeplane.plugin.workspace.actions.NodeCutAction;
+import org.freeplane.plugin.workspace.actions.NodeNewFolderAction;
+import org.freeplane.plugin.workspace.actions.NodeNewLinkAction;
+import org.freeplane.plugin.workspace.actions.NodeOpenLocationAction;
+import org.freeplane.plugin.workspace.actions.NodePasteAction;
 import org.freeplane.plugin.workspace.actions.NodeRefreshAction;
 import org.freeplane.plugin.workspace.actions.NodeRemoveAction;
 import org.freeplane.plugin.workspace.actions.NodeRenameAction;
 import org.freeplane.plugin.workspace.actions.PhysicalFolderSortOrderAction;
+import org.freeplane.plugin.workspace.actions.WorkspaceCollapseAction;
+import org.freeplane.plugin.workspace.actions.WorkspaceExpandAction;
+import org.freeplane.plugin.workspace.actions.WorkspaceNewMapAction;
 import org.freeplane.plugin.workspace.actions.WorkspaceNewProjectAction;
 import org.freeplane.plugin.workspace.components.IWorkspaceView;
 import org.freeplane.plugin.workspace.components.TreeView;
@@ -166,26 +178,25 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 		
 	private void setupActions(ModeController modeController) {
 		Controller controller = modeController.getController();
-//		controller.addAction(new WorkspaceExpandAction());
-//		controller.addAction(new WorkspaceCollapseAction());
+		controller.addAction(new WorkspaceExpandAction());
+		controller.addAction(new WorkspaceCollapseAction());
 		controller.addAction(new WorkspaceNewProjectAction());
-//		controller.addAction(new WorkspaceHideAction());
-//		controller.addAction(new NodeNewFolderAction());
-//		controller.addAction(new NodeNewLinkAction());
-//		controller.addAction(new NodeEnableMonitoringAction());
-//		controller.addAction(new NodeOpenLocationAction());
+		controller.addAction(new NodeNewFolderAction());
+		controller.addAction(new NodeNewLinkAction());
+		controller.addAction(new NodeOpenLocationAction());
 		
 		//FIXME: #332
-//		controller.addAction(new NodeCutAction());
-//		controller.addAction(new NodeCopyAction());
-//		controller.addAction(new NodePasteAction());
+		controller.addAction(new NodeCutAction());
+		controller.addAction(new NodeCopyAction());
+		controller.addAction(new NodePasteAction());
 		controller.addAction(new NodeRenameAction());
 		controller.addAction(new NodeRemoveAction());
 		controller.addAction(new NodeRefreshAction());
 //		
-//		controller.addAction(new FileNodeNewMindmapAction());
-//		controller.addAction(new FileNodeNewFileAction());
-//		controller.addAction(new FileNodeDeleteAction());
+		controller.addAction(new WorkspaceNewMapAction());
+		controller.addAction(new FileNodeNewMindmapAction());
+		controller.addAction(new FileNodeNewFileAction());
+		controller.addAction(new FileNodeDeleteAction());
 		
 		controller.addAction(new PhysicalFolderSortOrderAction());
 	}
