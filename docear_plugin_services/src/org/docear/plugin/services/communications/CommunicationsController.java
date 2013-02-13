@@ -48,9 +48,6 @@ import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.mode.mindmapmode.MModeController;
-import org.freeplane.plugin.workspace.WorkspaceController;
-import org.freeplane.plugin.workspace.event.IWorkspaceEventListener;
-import org.freeplane.plugin.workspace.event.WorkspaceEvent;
 import org.jdesktop.swingworker.SwingWorker;
 
 import com.sun.jersey.api.client.ClientHandlerException;
@@ -64,7 +61,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.jersey.core.util.StringKeyStringValueIgnoreCaseMultivaluedMap;
 import com.sun.jersey.multipart.impl.MultiPartWriter;
 
-public class CommunicationsController implements PropertyLoadListener, IWorkspaceEventListener, IFreeplanePropertyListener, IDocearEventListener {
+public class CommunicationsController implements PropertyLoadListener, IFreeplanePropertyListener, IDocearEventListener {
 	public static final int CONNECTION_TIMEOUT = 7000;
 	private static CommunicationsController communicationsController;
 	private static Boolean PROXY_CREDENTIALS_CANCELED = false;
@@ -106,11 +103,11 @@ public class CommunicationsController implements PropertyLoadListener, IWorkspac
 		addPropertiesToOptionPanel(modeController);
 
 		Controller.getCurrentController().getOptionPanelController().addPropertyLoadListener(this);
-		Controller.getCurrentController().getResourceController().addPropertyChangeListener(this);
-		WorkspaceController.getController().addWorkspaceListener(this);
+		Controller.getCurrentController().getResourceController().addPropertyChangeListener(this);		
 		DocearController.getController().addDocearEventListener(this);
 
-		WorkspaceController.getController().addToolBar(connectionBar);
+		//WORKSPACE info - test if ConnectionBar is present
+//		WorkspaceController.getController().addToolBar(connectionBar);
 		propertyChanged(DOCEAR_CONNECTION_TOKEN_PROPERTY, getRegisteredAccessToken(), null);
 	}
 
@@ -855,29 +852,7 @@ public class CommunicationsController implements PropertyLoadListener, IWorkspac
 	public boolean allowTransmission() {
 		return allowTransmission;
 	}
-
-	public void workspaceChanged(WorkspaceEvent event) {
-		WorkspaceController.getController().addToolBar(connectionBar);
-	}
-
-	public void openWorkspace(WorkspaceEvent event) {
-	}
-
-	public void closeWorkspace(WorkspaceEvent event) {
-	}
-
-	public void workspaceReady(WorkspaceEvent event) {
-	}
-
-	public void toolBarChanged(WorkspaceEvent event) {
-	}
-
-	public void configurationLoaded(WorkspaceEvent event) {
-	}
-
-	public void configurationBeforeLoading(WorkspaceEvent event) {
-	}
-
+	
 	public static void setPassword(char[] password) {
 		CommunicationsController.password = password;
 	}

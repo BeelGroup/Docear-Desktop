@@ -23,7 +23,7 @@ import org.docear.plugin.core.logging.DocearLogger;
 import org.docear.plugin.services.ServiceController;
 import org.docear.plugin.services.communications.CommunicationsController;
 import org.freeplane.features.map.MapModel;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.plugin.workspace.WorkspaceController;
 
 public abstract class UploadController {
 	private final File uploadBufferDirectory = new File(CommunicationsController.getController().getCommunicationsQueuePath(), "mindmaps");
@@ -249,7 +249,7 @@ public abstract class UploadController {
 		for (URI uri : DocearController.getController().getLibrary().getMindmaps()) { 
 			if (uri != null && map != null) {
 				String path = map.getFile().getAbsolutePath(); 
-				File f = WorkspaceUtils.resolveURI(uri);
+				File f = WorkspaceController.resolveFile(uri);
 				
 				if (f != null && f.getAbsolutePath().equals(path)) {
 					isLibraryMap = true;

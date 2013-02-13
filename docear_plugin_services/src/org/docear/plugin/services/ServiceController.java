@@ -20,23 +20,13 @@ import org.docear.plugin.services.recommendations.RecommendationEntry;
 import org.docear.plugin.services.recommendations.actions.ShowRecommendationsAction;
 import org.docear.plugin.services.recommendations.mode.DocearRecommendationsMapController;
 import org.docear.plugin.services.recommendations.mode.DocearRecommendationsModeController;
-import org.docear.plugin.services.recommendations.workspace.ShowRecommendationsCreator;
-import org.docear.plugin.services.recommendations.workspace.ShowRecommendationsNode;
 import org.docear.plugin.services.upload.UploadController;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;
-import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.map.IMapLifeCycleListener;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
-import org.freeplane.plugin.workspace.WorkspaceConfiguration;
-import org.freeplane.plugin.workspace.WorkspaceController;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
-import org.freeplane.plugin.workspace.event.IWorkspaceEventListener;
-import org.freeplane.plugin.workspace.event.WorkspaceEvent;
-import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
-import org.freeplane.plugin.workspace.nodes.WorkspaceRoot;
 
 public class ServiceController extends UploadController {
 	public static final String DOCEAR_INFORMATION_RETRIEVAL = "docear_information_retrieval";
@@ -116,53 +106,54 @@ public class ServiceController extends UploadController {
 
 		this.modeController = (DocearRecommendationsModeController) Controller.getCurrentController().getModeController(
 				DocearRecommendationsModeController.MODENAME);
-
-		WorkspaceController.getController().addWorkspaceListener(new IWorkspaceEventListener() {
-
-			private boolean workspacePrepared;
-
-			public void workspaceReady(WorkspaceEvent event) {}
-			
-			public void workspaceChanged(WorkspaceEvent event) {}
-			
-			public void toolBarChanged(WorkspaceEvent event) {}
-			
-			public void openWorkspace(WorkspaceEvent event) {}
-			
-			public void configurationLoaded(WorkspaceEvent event) {
-				AWorkspaceTreeNode parent = (AWorkspaceTreeNode) WorkspaceUtils.getModel().getRoot();
-				AWorkspaceTreeNode node = WorkspaceUtils.getNodeForPath(((WorkspaceRoot) parent).getName()+"/"+TextUtils.getText("recommendations.workspace.node"));
-				if(node == null) {
-					node = new ShowRecommendationsNode();
-					WorkspaceUtils.getModel().insertNodeTo(node, parent, 0, false);
-				}
-				else {					
-					int index = parent.getChildIndex(node);
-					if(index != 0) {
-						if(index > 0) { 
-							WorkspaceUtils.getModel().removeNodeFromParent(node);
-						}
-						WorkspaceUtils.getModel().insertNodeTo(node, parent, 0, false);
-						parent.refresh();
-					}
-					
-				}
-			}
-			
-			public void closeWorkspace(WorkspaceEvent event) {}
-			
-			public void configurationBeforeLoading(WorkspaceEvent event) {
-				if (!workspacePrepared) {
-					WorkspaceController controller = WorkspaceController.getController();
-					controller.getConfiguration().registerTypeCreator(WorkspaceConfiguration.WSNODE_ACTION, ShowRecommendationsCreator.NODE_TYPE,
-							new ShowRecommendationsCreator());
-					// modifyContextMenus();
-				}
-				workspacePrepared = true;
-
-			} 
-
-		});
+		
+		//WORKSPACE todo: show recommendations link
+//		WorkspaceController.getController().addWorkspaceListener(new IWorkspaceEventListener() {
+//
+//			private boolean workspacePrepared;
+//
+//			public void workspaceReady(WorkspaceEvent event) {}
+//			
+//			public void workspaceChanged(WorkspaceEvent event) {}
+//			
+//			public void toolBarChanged(WorkspaceEvent event) {}
+//			
+//			public void openWorkspace(WorkspaceEvent event) {}
+//			
+//			public void configurationLoaded(WorkspaceEvent event) {
+//				AWorkspaceTreeNode parent = (AWorkspaceTreeNode) WorkspaceUtils.getModel().getRoot();
+//				AWorkspaceTreeNode node = WorkspaceUtils.getNodeForPath(((WorkspaceRoot) parent).getName()+"/"+TextUtils.getText("recommendations.workspace.node"));
+//				if(node == null) {
+//					node = new ShowRecommendationsNode();
+//					WorkspaceUtils.getModel().insertNodeTo(node, parent, 0, false);
+//				}
+//				else {					
+//					int index = parent.getChildIndex(node);
+//					if(index != 0) {
+//						if(index > 0) { 
+//							WorkspaceUtils.getModel().removeNodeFromParent(node);
+//						}
+//						WorkspaceUtils.getModel().insertNodeTo(node, parent, 0, false);
+//						parent.refresh();
+//					}
+//					
+//				}
+//			}
+//			
+//			public void closeWorkspace(WorkspaceEvent event) {}
+//			
+//			public void configurationBeforeLoading(WorkspaceEvent event) {
+//				if (!workspacePrepared) {
+//					WorkspaceController controller = WorkspaceController.getController();
+//					controller.getConfiguration().registerTypeCreator(WorkspaceConfiguration.WSNODE_ACTION, ShowRecommendationsCreator.NODE_TYPE,
+//							new ShowRecommendationsCreator());
+//					// modifyContextMenus();
+//				}
+//				workspacePrepared = true;
+//
+//			} 
+//
+//		});
 		
 		
 	}
