@@ -723,7 +723,6 @@ public class ProjectModel implements WorkspaceTreeModel {
 		public void treeStructureChanged(ProjectModelEvent event) {
 			listener.treeStructureChanged(event);
 		}
-
 	}
 
 	public void requestSave() {

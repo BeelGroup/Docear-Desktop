@@ -10,6 +10,7 @@ import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.io.IFileSystemRepresentation;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.nodes.ProjectRootNode;
+import org.freeplane.plugin.workspace.nodes.WorkspaceRootNode;
 
 public class NodeOpenLocationAction extends AWorkspaceAction {
 
@@ -29,6 +30,10 @@ public class NodeOpenLocationAction extends AWorkspaceAction {
 		}
 		else if(targetNode instanceof ProjectRootNode) {
 			openFolder(WorkspaceController.resolveFile(WorkspaceController.getCurrentModel().getProject(targetNode.getModel()).getProjectHome()));
+		}
+
+		else if(targetNode instanceof WorkspaceRootNode) {
+			openFolder(WorkspaceController.resolveFile(WorkspaceController.getCurrentModeExtension().getDefaultProjectHome()));
 		}
 	}
 

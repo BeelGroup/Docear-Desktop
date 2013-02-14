@@ -84,10 +84,15 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 	private TreeSelectionListener getProjectSelectionHandler() {
 		return new TreeSelectionListener() {			
 			public void valueChanged(TreeSelectionEvent e) {
-				AWorkspaceProject selected = WorkspaceController.getCurrentModel().getProject(((AWorkspaceTreeNode) e.getNewLeadSelectionPath().getLastPathComponent()).getModel());				
-				if(selected != null && !selected.equals(lastSelectedProject)) {
-					fireProjectSelectionChanged(selected);
-				}				
+				try {
+					AWorkspaceProject selected = WorkspaceController.getCurrentModel().getProject(((AWorkspaceTreeNode) e.getNewLeadSelectionPath().getLastPathComponent()).getModel());				
+					if(selected != null && !selected.equals(lastSelectedProject)) {
+						fireProjectSelectionChanged(selected);
+					}
+				}
+				catch (Exception ex) {
+					// just for convenience, ignore everything 
+				}
 			}
 		};
 	}

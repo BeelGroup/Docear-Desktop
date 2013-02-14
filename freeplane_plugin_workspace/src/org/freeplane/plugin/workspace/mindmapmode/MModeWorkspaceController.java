@@ -44,6 +44,7 @@ import org.freeplane.plugin.workspace.actions.NodeRefreshAction;
 import org.freeplane.plugin.workspace.actions.NodeRemoveAction;
 import org.freeplane.plugin.workspace.actions.NodeRenameAction;
 import org.freeplane.plugin.workspace.actions.PhysicalFolderSortOrderAction;
+import org.freeplane.plugin.workspace.actions.ProjectRemoveAction;
 import org.freeplane.plugin.workspace.actions.WorkspaceCollapseAction;
 import org.freeplane.plugin.workspace.actions.WorkspaceExpandAction;
 import org.freeplane.plugin.workspace.actions.WorkspaceNewMapAction;
@@ -192,7 +193,9 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 		controller.addAction(new NodeRenameAction());
 		controller.addAction(new NodeRemoveAction());
 		controller.addAction(new NodeRefreshAction());
+		controller.addAction(new ProjectRemoveAction());
 //		
+		controller.removeAction(WorkspaceNewMapAction.KEY);
 		controller.addAction(new WorkspaceNewMapAction());
 		controller.addAction(new FileNodeNewMindmapAction());
 		controller.addAction(new FileNodeNewFileAction());
@@ -229,14 +232,22 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 	private void saveSettings(String settingsPath) {
 		final File userPropertiesFolder = new File(settingsPath);
 		final File settingsFile = new File(userPropertiesFolder, "workspace.settings");
+		// clear old settings
+		String[] projectsIds = settings.getProperty(WORKSPACE_MODEL_PROJECTS, "").split(WORKSPACE_MODEL_PROJECTS_SEPARATOR);
+		for (String projectID : projectsIds) {
+			settings.remove(projectID);
+		}
+		// build new project stack
 		List<String> projectIDs = new ArrayList<String>();
-		for(AWorkspaceProject project : getModel().getProjects()) {
-			saveProject(project);
-			if(projectIDs.contains(project.getProjectID())) {
-				continue;
+		synchronized (getModel().getProjects()) {
+			for(AWorkspaceProject project : getModel().getProjects()) {
+				saveProject(project);
+				if(projectIDs.contains(project.getProjectID())) {
+					continue;
+				}
+				projectIDs.add(project.getProjectID());
+				settings.setProperty(project.getProjectID(), project.getProjectHome().toString());			
 			}
-			projectIDs.add(project.getProjectID());
-			settings.setProperty(project.getProjectID(), project.getProjectHome().toString());			
 		}
 		StringBuilder sb = new StringBuilder();
 		for (String prjId : projectIDs) {
@@ -344,7 +355,7 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 	}
 
 	public void shutdown() {
-		saveSettings(getSettingsPath());
+		save();
 	}
 	
 	private String getSettingsPath() {
@@ -365,7 +376,12 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 	
 	@Override
 	public AWorkspaceProject getCurrentProject() {
-		return currentSelectedProject ;		
+		return currentSelectedProject;		
+	}
+
+	@Override
+	public void save() {
+		saveSettings(getSettingsPath());		
 	}
 
 }

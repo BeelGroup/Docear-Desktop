@@ -24,6 +24,7 @@ import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.actions.ProjectRemoveAction;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
 import org.freeplane.plugin.workspace.dnd.IDropAcceptor;
@@ -212,8 +213,8 @@ public class ProjectRootNode extends AFolderNode implements IMutableLinkNode, IW
 					//WorkspacePopupMenuBuilder.SEPARATOR,
 					//"workspace.action.file.new.file",
 					WorkspacePopupMenuBuilder.endSubMenu(),
+					ProjectRemoveAction.KEY,
 					WorkspacePopupMenuBuilder.SEPARATOR,
-					"workspace.action.docear.uri.change",
 					"workspace.action.node.open.location",
 					WorkspacePopupMenuBuilder.SEPARATOR,
 					"workspace.action.node.cut",
@@ -221,10 +222,6 @@ public class ProjectRootNode extends AFolderNode implements IMutableLinkNode, IW
 					"workspace.action.node.paste",
 					WorkspacePopupMenuBuilder.SEPARATOR,
 					"workspace.action.node.rename",
-					"workspace.action.node.remove",
-					"workspace.action.file.delete",
-					WorkspacePopupMenuBuilder.SEPARATOR,
-					"workspace.action.node.physical.sort",
 					WorkspacePopupMenuBuilder.SEPARATOR,
 					"workspace.action.node.refresh"	
 			});
