@@ -6,9 +6,13 @@ package org.freeplane.plugin.workspace.actions;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URI;
 
 import org.freeplane.core.ui.AFreeplaneAction;
+import org.freeplane.core.util.Compat;
+import org.freeplane.core.util.LogUtils;
+import org.freeplane.features.map.MapChangeEvent;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.mapio.MapIO;
 import org.freeplane.features.mapio.mindmapmode.MMapIO;
@@ -48,9 +52,8 @@ public class WorkspaceNewMapAction extends AFreeplaneAction {
 			save = false;
 		}
 
-		File f = null;
+		File f = WorkspaceController.resolveFile(uri);
 		if (save) {
-			f = WorkspaceController.resolveFile(uri);
 			if (!createFolderStructure(f)) {
 				return null;
 			}
@@ -63,13 +66,23 @@ public class WorkspaceNewMapAction extends AFreeplaneAction {
 		}
 
 		if (name != null) {
+			//WORKSPACE - fixme: does not show in mapview
+			String oldName = map.getRootNode().getText(); 
 			map.getRootNode().setText(name);
+			Controller.getCurrentController().getViewController().getMapView().repaint();
 		}
 		
 		if (save) {
 			mapIO.save(map, f);
 		}
-		else {			
+		else {
+			if(f != null) {
+				try {
+					map.setURL(Compat.fileToUrl(f));
+				} catch (MalformedURLException e) {
+					LogUtils.warn(WorkspaceNewMapAction.class + ": " + e.getMessage());
+				}
+			}
 			Controller.getCurrentModeController().getMapController().setSaved(map, false);			
 		}
 				

@@ -57,6 +57,7 @@ public class FileNodeNewMindmapAction extends AWorkspaceAction {
 				}
 				catch(Exception ex) {
 					JOptionPane.showMessageDialog(UITools.getFrame(), ex.getMessage(), "Error ... ", JOptionPane.ERROR_MESSAGE);
+					ex.printStackTrace();
 				}
 				
 				

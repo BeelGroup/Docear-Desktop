@@ -172,6 +172,9 @@ public final class WorkspaceController implements IExtension {
 	}
 
 	public static File resolveFile(URI path) {
+		if(path == null) {
+			return null;
+		}
 		return new File(resolveURI(path));
 	}
 
