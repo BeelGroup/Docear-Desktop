@@ -78,6 +78,10 @@ public abstract class AWorkspaceProject {
 		};
 	}
 	
+	public String toString() {
+		return getModel().getRoot().getName() +"[id="+getProjectID()+";home="+getProjectHome()+"]";
+	}
+	
 	private final class DefaultModelChangeListener implements IProjectModelListener {
 		
 		public void treeStructureChanged(ProjectModelEvent event) {

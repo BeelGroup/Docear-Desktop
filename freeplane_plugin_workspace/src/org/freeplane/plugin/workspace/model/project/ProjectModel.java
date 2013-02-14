@@ -5,6 +5,7 @@
 package org.freeplane.plugin.workspace.model.project;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,6 +21,8 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import org.freeplane.core.util.LogUtils;
+import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
@@ -720,11 +723,14 @@ public class ProjectModel implements WorkspaceTreeModel {
 		public void treeStructureChanged(ProjectModelEvent event) {
 			listener.treeStructureChanged(event);
 		}
-
 	}
 
 	public void requestSave() {
-		// TODO Auto-generated method stub
+		try {
+			WorkspaceController.getCurrentModeExtension().getProjectLoader().storeProject(WorkspaceController.getCurrentModel().getProject(this));
+		} catch (IOException e) {
+			LogUtils.severe(e);
+		}
 		
 	}
 

@@ -9,18 +9,22 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
+import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.model.project.IProjectModelListener;
+import org.freeplane.plugin.workspace.model.project.ProjectModel;
 import org.freeplane.plugin.workspace.model.project.ProjectModelEvent;
 import org.freeplane.plugin.workspace.nodes.ProjectRootNode;
-import org.freeplane.plugin.workspace.nodes.WorkspaceRoot;
+import org.freeplane.plugin.workspace.nodes.WorkspaceRootNode;
 
 public abstract class WorkspaceModel implements TreeModel {	
 	
 	private List<AWorkspaceProject> projects = new ArrayList<AWorkspaceProject>();
 	private final List<TreeModelListener> listeners = new ArrayList<TreeModelListener>();
 	
-	private WorkspaceRoot root;
+	private WorkspaceRootNode root;
 	private IProjectModelListener projectModelListener;
 	
 	public void addProject(AWorkspaceProject project) {
@@ -92,7 +96,12 @@ public abstract class WorkspaceModel implements TreeModel {
 
 	
 	private void fireProjectRemoved(AWorkspaceProject project, int index) {
-				
+		synchronized (listeners) {
+			TreeModelEvent event = new TreeModelEvent(this, new Object[]{getRoot()}, new int[]{index}, new Object[]{project.getModel().getRoot()});
+			for (int i = listeners.size()-1; i >= 0; i--) {
+				listeners.get(i).treeNodesRemoved(event);
+			}
+		}			
 	}
 
 	private void fireProjectInserted(AWorkspaceProject project, int index) {
@@ -103,10 +112,19 @@ public abstract class WorkspaceModel implements TreeModel {
 			}
 		}		
 	}
+	
+	private void fireWorkspaceRenamed(String oldName, String newName) {
+		synchronized (listeners) {
+			TreeModelEvent event = new TreeModelEvent(this, new Object[]{getRoot()}, new int[]{}, new Object[]{});
+			for (int i = listeners.size()-1; i >= 0; i--) {
+				listeners.get(i).treeNodesChanged(event);
+			}
+		}		
+	}
 
 	public AWorkspaceTreeNode getRoot() {
 		if(root == null) {
-			root = new WorkspaceRoot();
+			root = new WorkspaceRootNode();
 			root.setModel(new DefaultWorkspaceTreeModel());
 		}
 		return root;
@@ -149,7 +167,18 @@ public abstract class WorkspaceModel implements TreeModel {
 	}
 
 	public void valueForPathChanged(TreePath path, Object newValue) {
+		if(path == null || getRoot().equals(path.getLastPathComponent())) {
+			return;
+		}
 		
+		AWorkspaceTreeNode node = (AWorkspaceTreeNode) path.getLastPathComponent();
+		if (node instanceof IWorkspaceNodeActionListener) {
+			((IWorkspaceNodeActionListener) node).handleAction(new WorkspaceActionEvent(node, WorkspaceActionEvent.WSNODE_CHANGED, newValue));
+			((ProjectModel) node.getModel()).nodeChanged(node);
+		}
+		else {
+			node.setName(newValue.toString());
+		}
 	}
 
 	public int getIndexOfChild(Object parent, Object child) {
@@ -202,33 +231,67 @@ public abstract class WorkspaceModel implements TreeModel {
 	
 	private final class DefaultWorkspaceTreeModel implements WorkspaceTreeModel {
 		public void removeNodeFromParent(AWorkspaceTreeNode node) {
-			// TODO Auto-generated method stub
+			if(node == null) {
+				return;
+			}
 			
+			if(getRoot().equals(node.getParent())) {
+				//forbidden: use removeProject
+			}
+			else {
+				node.getModel().removeNodeFromParent(node);
+			}
 		}
 
 		public void removeAllElements(AWorkspaceTreeNode node) {
-			// TODO Auto-generated method stub
+			if(node == null) {
+				return;
+			}
 			
+			if(getRoot().equals(node)) {
+				//forbidden: use removeProject
+			}
+			else {
+				node.getModel().removeAllElements(node);
+			}
 		}
 
 		public void reload(AWorkspaceTreeNode node) {
-			// TODO Auto-generated method stub
+			if(node == null) {
+				return;
+			}
 			
+			if(getRoot().equals(node)) {
+				for (AWorkspaceProject project : getProjects()) {
+					project.getModel().reload();
+				}
+			}
+			else {
+				node.getModel().reload(node);
+			}			
 		}
 
 		public void nodeMoved(AWorkspaceTreeNode node, Object from, Object to) {
-			// WORKSPACE Auto-generated method stub
-			
+			if(getRoot().equals(node)) {
+				//forbidden for root node
+			}
+			else {
+				node.getModel().nodeMoved(node, from, to);
+			}
 		}
 
 		public boolean insertNodeTo(AWorkspaceTreeNode node, AWorkspaceTreeNode targetNode, int atPos, boolean allowRenaming) {
-			// TODO Auto-generated method stub
-			return false;
+			if(getRoot().equals(targetNode)) {
+				//forbidden: only allowed via addProject()
+				return false;
+			}
+			else {
+				return targetNode.getModel().insertNodeTo(node, targetNode, atPos, allowRenaming);
+			}
 		}
 
 		public AWorkspaceTreeNode getRoot() {
-			// TODO Auto-generated method stub
-			return null;
+			return WorkspaceModel.this.getRoot();
 		}
 
 		public boolean containsNode(String key) {
@@ -252,27 +315,36 @@ public abstract class WorkspaceModel implements TreeModel {
 		}
 
 		public void cutNodeFromParent(AWorkspaceTreeNode node) {
-			// TODO Auto-generated method stub
+			if(getRoot().equals(node.getParent())) {
+				//forbidden: use removeProject
+			}
+			else {
+				node.getModel().cutNodeFromParent(node);
+			}
 			
 		}
 
 		public void changeNodeName(AWorkspaceTreeNode node, String newName) throws WorkspaceModelException {
-			// do nth			
+			if(getRoot().equals(node)) {
+				String oldName = node.getName();
+				node.setName(newName);				
+				fireWorkspaceRenamed(oldName, newName);
+			}
+			else {
+				node.getModel().changeNodeName(node, newName);
+			}			
 		}
 
 		public boolean addNodeTo(AWorkspaceTreeNode node, AWorkspaceTreeNode targetNode, boolean allowRenaming) {
-			// TODO Auto-generated method stub
-			return false;
+			return insertNodeTo(node, targetNode, targetNode.getChildCount(), allowRenaming);
 		}
 
 		public boolean addNodeTo(AWorkspaceTreeNode node, AWorkspaceTreeNode targetNode) {
-			// TODO Auto-generated method stub
-			return false;
+			return addNodeTo(node, targetNode, true);
 		}
 
 		public void requestSave() {
-			// TODO Auto-generated method stub
-			
+			WorkspaceController.save();
 		}
 	}
 

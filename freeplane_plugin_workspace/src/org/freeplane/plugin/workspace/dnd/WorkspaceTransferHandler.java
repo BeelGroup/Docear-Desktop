@@ -25,7 +25,7 @@ import org.freeplane.plugin.workspace.AWorkspaceModeExtension;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.components.WorkspaceNodeRenderer;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
-import org.freeplane.plugin.workspace.nodes.WorkspaceRoot;
+import org.freeplane.plugin.workspace.nodes.WorkspaceRootNode;
 /**
  * 
  */
@@ -111,7 +111,7 @@ public class WorkspaceTransferHandler extends TransferHandler implements DropTar
 		if(ctrl.getView().containsComponent(comp)) {
 			TreePath selectionPath = ctrl.getView().getSelectionPath();
 			if(selectionPath != null) {
-				if(selectionPath.getLastPathComponent() instanceof WorkspaceRoot) {
+				if(selectionPath.getLastPathComponent() instanceof WorkspaceRootNode) {
 					return NONE;
 				}
 				//SYSTEM NODES are vulnerable for DnD move events (e.g. Copy a system file link and delete the copy hard afterwards, maybe the original will also be deleted.) 

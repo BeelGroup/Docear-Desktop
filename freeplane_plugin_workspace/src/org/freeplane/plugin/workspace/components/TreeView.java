@@ -5,6 +5,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -12,6 +14,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.event.TreeModelListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
@@ -20,6 +24,7 @@ import javax.swing.tree.TreeSelectionModel;
 
 import org.freeplane.core.ui.components.OneTouchCollapseResizer.ComponentCollapseListener;
 import org.freeplane.core.ui.components.ResizeEvent;
+import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.dnd.WorkspaceTransferHandler;
 import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
@@ -31,6 +36,9 @@ import org.freeplane.plugin.workspace.listener.DefaultTreeExpansionListener;
 import org.freeplane.plugin.workspace.listener.DefaultWorkspaceSelectionListener;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.WorkspaceModel;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
+import org.freeplane.plugin.workspace.model.project.IProjectSelectionListener;
+import org.freeplane.plugin.workspace.model.project.ProjectSelectionEvent;
 
 public class TreeView extends JPanel implements IWorkspaceView, ComponentCollapseListener {
 	private static final long serialVersionUID = 1L;
@@ -40,6 +48,8 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 	protected JTextField m_display;
 	private WorkspaceTransferHandler transferHandler;
 	private INodeTypeIconManager nodeTypeIconManager;
+	private List<IProjectSelectionListener> projectSelectionListeners = new ArrayList<IProjectSelectionListener>();
+	private AWorkspaceProject lastSelectedProject;
 	
 	public TreeView() {
 		this.setLayout(new BorderLayout());
@@ -51,6 +61,7 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 		mTree.setCellEditor(new WorkspaceCellEditor(mTree, (DefaultTreeCellRenderer) mTree.getCellRenderer()));
 		mTree.addTreeExpansionListener(new DefaultTreeExpansionListener());
         mTree.addTreeSelectionListener(new DefaultWorkspaceSelectionListener());
+        mTree.addTreeSelectionListener(getProjectSelectionHandler());
 		mTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		DefaultWorkspaceMouseHandler mouseHandler = new DefaultWorkspaceMouseHandler();
 		mTree.addMouseListener(mouseHandler);
@@ -65,11 +76,27 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 				
 		this.add(new JScrollPane(mTree), BorderLayout.CENTER);
 		
-		// TODO: DOCEAR - choose actions to use in Toolbar
+		//WORKSPACE - choose actions to use in Toolbar
 //		WorkspaceToolBar workspaceToolBar = new WorkspaceToolBar();
 //		add(workspaceToolBar, BorderLayout.NORTH);
 	}
 	
+	private TreeSelectionListener getProjectSelectionHandler() {
+		return new TreeSelectionListener() {			
+			public void valueChanged(TreeSelectionEvent e) {
+				try {
+					AWorkspaceProject selected = WorkspaceController.getCurrentModel().getProject(((AWorkspaceTreeNode) e.getNewLeadSelectionPath().getLastPathComponent()).getModel());				
+					if(selected != null && !selected.equals(lastSelectedProject)) {
+						fireProjectSelectionChanged(selected);
+					}
+				}
+				catch (Exception ex) {
+					// just for convenience, ignore everything 
+				}
+			}
+		};
+	}
+
 	public void addTreeMouseListener(MouseListener l) {
 		this.mTree.addMouseListener(l);
 	}
@@ -186,10 +213,6 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 		return nodeTypeIconManager;
 	}
 
-	public void addPathKey(String key) {
-		//DOCEAR - modify: use TreePath as key
-	}
-
 	public void componentCollapsed(ResizeEvent event) {
 		if(this.equals(event.getSource())) {
 			super.setPreferredSize(new Dimension(0, getPreferredSize().height));
@@ -208,6 +231,35 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 			return null;
 		}
 		return (AWorkspaceTreeNode) path.getLastPathComponent();		
-	}	
+	}
+
+	public void addProjectSelectionListener(IProjectSelectionListener listener) {
+		if(listener == null) {
+			return;
+		}
+		synchronized (projectSelectionListeners ) {
+			projectSelectionListeners.add(listener);
+		}		
+	}
+	
+	private void fireProjectSelectionChanged(AWorkspaceProject selected) {
+		if(selected == null) {
+			return;
+		}
+		ProjectSelectionEvent event = new ProjectSelectionEvent(this, selected, this.lastSelectedProject);
+		this.lastSelectedProject = selected;
+		synchronized (projectSelectionListeners ) {
+			for (IProjectSelectionListener listener : projectSelectionListeners) {
+				listener.selectionChanged(event);
+			}
+		}
+		
+	}
+
+	public void expandAll(AWorkspaceTreeNode nodeFromActionEvent) {
+		for (int i = 1; i < mTree.getRowCount(); i++) {
+            mTree.expandRow(i);
+		}		
+	}
 	
 }

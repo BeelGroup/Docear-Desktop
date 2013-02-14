@@ -13,7 +13,6 @@ import javax.swing.JOptionPane;
 
 import org.apache.commons.io.FilenameUtils;
 import org.docear.plugin.core.IDocearLibrary;
-import org.docear.plugin.core.actions.DocearNewMapAction;
 import org.docear.plugin.core.workspace.node.FolderTypeLibraryNode;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.components.UITools;
@@ -24,6 +23,7 @@ import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.actions.AWorkspaceAction;
+import org.freeplane.plugin.workspace.actions.WorkspaceNewMapAction;
 import org.freeplane.plugin.workspace.mindmapmode.MModeWorkspaceLinkController;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
@@ -103,7 +103,7 @@ private static final long serialVersionUID = 1L;
 	
 	private MapModel createNewMindmap(final URI uri) {
 		String name = FilenameUtils.getBaseName(WorkspaceController.resolveFile(uri).getName());
-		return DocearNewMapAction.createNewMap(uri, name, true);
+		return WorkspaceNewMapAction.createNewMap(uri, name, true);
 	}
 	
 

@@ -31,10 +31,23 @@ import org.freeplane.features.ui.ViewController;
 import org.freeplane.features.url.UrlManager;
 import org.freeplane.plugin.workspace.AWorkspaceModeExtension;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.actions.FileNodeDeleteAction;
+import org.freeplane.plugin.workspace.actions.FileNodeNewFileAction;
+import org.freeplane.plugin.workspace.actions.FileNodeNewMindmapAction;
+import org.freeplane.plugin.workspace.actions.NodeCopyAction;
+import org.freeplane.plugin.workspace.actions.NodeCutAction;
+import org.freeplane.plugin.workspace.actions.NodeNewFolderAction;
+import org.freeplane.plugin.workspace.actions.NodeNewLinkAction;
+import org.freeplane.plugin.workspace.actions.NodeOpenLocationAction;
+import org.freeplane.plugin.workspace.actions.NodePasteAction;
 import org.freeplane.plugin.workspace.actions.NodeRefreshAction;
 import org.freeplane.plugin.workspace.actions.NodeRemoveAction;
 import org.freeplane.plugin.workspace.actions.NodeRenameAction;
 import org.freeplane.plugin.workspace.actions.PhysicalFolderSortOrderAction;
+import org.freeplane.plugin.workspace.actions.ProjectRemoveAction;
+import org.freeplane.plugin.workspace.actions.WorkspaceCollapseAction;
+import org.freeplane.plugin.workspace.actions.WorkspaceExpandAction;
+import org.freeplane.plugin.workspace.actions.WorkspaceNewMapAction;
 import org.freeplane.plugin.workspace.actions.WorkspaceNewProjectAction;
 import org.freeplane.plugin.workspace.components.IWorkspaceView;
 import org.freeplane.plugin.workspace.components.TreeView;
@@ -45,6 +58,8 @@ import org.freeplane.plugin.workspace.io.AFileNodeCreator;
 import org.freeplane.plugin.workspace.io.FileReadManager;
 import org.freeplane.plugin.workspace.model.WorkspaceModel;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
+import org.freeplane.plugin.workspace.model.project.IProjectSelectionListener;
+import org.freeplane.plugin.workspace.model.project.ProjectSelectionEvent;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
 
@@ -64,6 +79,8 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 	private TreeView view;
 	private Properties settings;
 	private WorkspaceModel wsModel;
+	private AWorkspaceProject currentSelectedProject = null;
+	private IProjectSelectionListener projectSelectionListener;
 
 	public MModeWorkspaceController(ModeController modeController) {
 		super(modeController);
@@ -162,26 +179,27 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 		
 	private void setupActions(ModeController modeController) {
 		Controller controller = modeController.getController();
-//		controller.addAction(new WorkspaceExpandAction());
-//		controller.addAction(new WorkspaceCollapseAction());
+		controller.addAction(new WorkspaceExpandAction());
+		controller.addAction(new WorkspaceCollapseAction());
 		controller.addAction(new WorkspaceNewProjectAction());
-//		controller.addAction(new WorkspaceHideAction());
-//		controller.addAction(new NodeNewFolderAction());
-//		controller.addAction(new NodeNewLinkAction());
-//		controller.addAction(new NodeEnableMonitoringAction());
-//		controller.addAction(new NodeOpenLocationAction());
+		controller.addAction(new NodeNewFolderAction());
+		controller.addAction(new NodeNewLinkAction());
+		controller.addAction(new NodeOpenLocationAction());
 		
 		//FIXME: #332
-//		controller.addAction(new NodeCutAction());
-//		controller.addAction(new NodeCopyAction());
-//		controller.addAction(new NodePasteAction());
+		controller.addAction(new NodeCutAction());
+		controller.addAction(new NodeCopyAction());
+		controller.addAction(new NodePasteAction());
 		controller.addAction(new NodeRenameAction());
 		controller.addAction(new NodeRemoveAction());
 		controller.addAction(new NodeRefreshAction());
+		controller.addAction(new ProjectRemoveAction());
 //		
-//		controller.addAction(new FileNodeNewMindmapAction());
-//		controller.addAction(new FileNodeNewFileAction());
-//		controller.addAction(new FileNodeDeleteAction());
+		controller.removeAction(WorkspaceNewMapAction.KEY);
+		controller.addAction(new WorkspaceNewMapAction());
+		controller.addAction(new FileNodeNewMindmapAction());
+		controller.addAction(new FileNodeNewFileAction());
+		controller.addAction(new FileNodeDeleteAction());
 		
 		controller.addAction(new PhysicalFolderSortOrderAction());
 	}
@@ -214,14 +232,22 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 	private void saveSettings(String settingsPath) {
 		final File userPropertiesFolder = new File(settingsPath);
 		final File settingsFile = new File(userPropertiesFolder, "workspace.settings");
+		// clear old settings
+		String[] projectsIds = settings.getProperty(WORKSPACE_MODEL_PROJECTS, "").split(WORKSPACE_MODEL_PROJECTS_SEPARATOR);
+		for (String projectID : projectsIds) {
+			settings.remove(projectID);
+		}
+		// build new project stack
 		List<String> projectIDs = new ArrayList<String>();
-		for(AWorkspaceProject project : getModel().getProjects()) {
-			saveProject(project);
-			if(projectIDs.contains(project.getProjectID())) {
-				continue;
+		synchronized (getModel().getProjects()) {
+			for(AWorkspaceProject project : getModel().getProjects()) {
+				saveProject(project);
+				if(projectIDs.contains(project.getProjectID())) {
+					continue;
+				}
+				projectIDs.add(project.getProjectID());
+				settings.setProperty(project.getProjectID(), project.getProjectHome().toString());			
 			}
-			projectIDs.add(project.getProjectID());
-			settings.setProperty(project.getProjectID(), project.getProjectHome().toString());			
 		}
 		StringBuilder sb = new StringBuilder();
 		for (String prjId : projectIDs) {
@@ -269,10 +295,11 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 				// blindly accept
 			}
 			this.view.setPreferredSize(new Dimension(width, 40));
+			this.view.addProjectSelectionListener(getProjectSelectionListener());
 		}
 		return this.view;
 	}
-	
+
 	public WorkspaceModel getModel() {
 		if(wsModel == null) {
 			wsModel = WorkspaceModel.createDefaultModel();
@@ -328,17 +355,33 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 	}
 
 	public void shutdown() {
-		saveSettings(getSettingsPath());
+		save();
 	}
 	
 	private String getSettingsPath() {
 		return WorkspaceController.resolveFile(WorkspaceController.getApplicationSettingsHome()).getPath() + File.separator + "users"+File.separator+"default";
 	}
 
+	private IProjectSelectionListener getProjectSelectionListener() {
+		if(this.projectSelectionListener == null) {
+			this.projectSelectionListener = new IProjectSelectionListener() {
+				public void selectionChanged(ProjectSelectionEvent event) {
+					LogUtils.info("now selected project: "+ event.getSelectedProject());
+					currentSelectedProject = event.getSelectedProject();				
+				}
+			};
+		}
+		return this.projectSelectionListener;
+	}
+	
 	@Override
-	public void getCurrentProject() {
-		// TODO Auto-generated method stub
-		
+	public AWorkspaceProject getCurrentProject() {
+		return currentSelectedProject;		
+	}
+
+	@Override
+	public void save() {
+		saveSettings(getSettingsPath());		
 	}
 
 }

@@ -196,7 +196,10 @@ public final class WorkspaceController implements IExtension {
 	}
 
 	public static AWorkspaceProject getCurrentProject() {
-		getCurrentModeExtension().getCurrentProject();
-		return null;
+		return getCurrentModeExtension().getCurrentProject();
+	}
+
+	public static void save() {
+		getCurrentModeExtension().save();
 	}
 }
