@@ -15,7 +15,7 @@ import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
  * 
  */
 public class LinkTypeLiteratureAnnotationsCreator extends AWorkspaceNodeCreator {
-	public static final String LINK_TYPE_LITERATUREANNOTATIONS = "literature_annotations";
+	public static final String LINK_TYPE_LITERATUREANNOTATIONS = LinkTypeLiteratureAnnotationsNode.TYPE;
 	
 	/***********************************************************************************
 	 * CONSTRUCTORS

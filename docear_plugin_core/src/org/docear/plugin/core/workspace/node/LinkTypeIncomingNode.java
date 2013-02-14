@@ -39,6 +39,8 @@ public class LinkTypeIncomingNode extends ALinkNode implements IWorkspaceNodeAct
 	private static final Icon DEFAULT_ICON = new ImageIcon(ResourceController.class.getResource("/images/docear16.png"));
 
 	private static final long serialVersionUID = 1L;
+
+	public static final String TYPE = "incoming";
 	
 	private URI linkPath;
 	private WorkspacePopupMenu popupMenu = null;
@@ -48,6 +50,10 @@ public class LinkTypeIncomingNode extends ALinkNode implements IWorkspaceNodeAct
 	 * CONSTRUCTORS
 	 **********************************************************************************/
 
+	public LinkTypeIncomingNode() {
+		this(TYPE);
+	}
+	
 	public LinkTypeIncomingNode(String type) {
 		super(type);
 	}

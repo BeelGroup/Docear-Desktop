@@ -50,11 +50,8 @@ public class ProjectLoader implements IProjectSettingsIOHandler {
 	private ProjectRootCreator projectRootCreator = null;
 	
 	private ProjectSettingsWriter projectWriter;
-	private DefaultResultProcessor resultProcessor;
+	private IResultProcessor resultProcessor;
 		
-	//DOCEAR - required for backwards compatibility   
-//	private final static String CONFIG_FILE_NAME = "workspace.xml";
-
 	public ProjectLoader() {
 		this.readManager = new ReadManager();
 		this.writeManager = new WriteManager();
@@ -149,7 +146,7 @@ public class ProjectLoader implements IProjectSettingsIOHandler {
 
 	}
 
-	private void load(final URI xmlFile) throws MalformedURLException, XMLException, IOException {
+	protected void load(final URI xmlFile) throws MalformedURLException, XMLException, IOException {
 		final TreeXmlReader reader = new TreeXmlReader(readManager);
 		reader.load(new InputStreamReader(new BufferedInputStream(xmlFile.toURL().openStream())));
 	}
@@ -162,28 +159,31 @@ public class ProjectLoader implements IProjectSettingsIOHandler {
 				this.load(projectSettings.toURI());
 			}
 			else {
-				ProjectRootNode root = new ProjectRootNode();
-				root.setProjectID(project.getProjectID());				
-				root.setModel(project.getModel());
-				root.setName(WorkspaceController.resolveFile(project.getProjectHome()).getName());
-				root.setProjectID(project.getProjectID());
-				project.getModel().setRoot(root);
-				// create and load all default nodes
-				root.initiateMyFile(project);
-				FolderVirtualNode misc = new FolderVirtualNode(AFolderNode.FOLDER_TYPE_VIRTUAL);
-				misc.setName(TextUtils.getText(FolderTypeMyFilesNode.class.getPackage().getName().toLowerCase(Locale.ENGLISH)+".miscnode.name"));
-				project.getModel().addNodeTo(misc, root);
-				//misc -> help.mm
-				root.refresh();
-				
+				createDefaultProject(project);				
 			}
 		}
 		catch (Exception e) {
 			throw new IOExceptionWithCause(e);
 		}
 	}
+
+	private void createDefaultProject(AWorkspaceProject project) {
+		ProjectRootNode root = new ProjectRootNode();
+		root.setProjectID(project.getProjectID());				
+		root.setModel(project.getModel());
+		root.setName(WorkspaceController.resolveFile(project.getProjectHome()).getName());
+		root.setProjectID(project.getProjectID());
+		project.getModel().setRoot(root);
+		// create and load all default nodes
+		root.initiateMyFile(project);
+		FolderVirtualNode misc = new FolderVirtualNode(AFolderNode.FOLDER_TYPE_VIRTUAL);
+		misc.setName(TextUtils.getText(FolderTypeMyFilesNode.class.getPackage().getName().toLowerCase(Locale.ENGLISH)+".miscnode.name"));
+		project.getModel().addNodeTo(misc, root);
+		//misc -> help.mm
+		root.refresh();
+	}
 	
-	public DefaultResultProcessor getDefaultResultProcessor() {
+	public IResultProcessor getDefaultResultProcessor() {
 		if(this.resultProcessor == null) {
 			this.resultProcessor = new DefaultResultProcessor();
 		}
@@ -203,6 +203,10 @@ public class ProjectLoader implements IProjectSettingsIOHandler {
 		}
 		Writer writer = new FileWriter(outFile);
 		storeProject(writer, project);		
+	}
+	
+	protected ReadManager getReadManager() {
+		return readManager;
 	}
 	
 	private class DefaultResultProcessor implements IResultProcessor {

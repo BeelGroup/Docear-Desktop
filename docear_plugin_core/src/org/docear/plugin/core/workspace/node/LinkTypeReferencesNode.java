@@ -202,9 +202,9 @@ public class LinkTypeReferencesNode extends LinkTypeFileNode implements IBibtexD
 	}
 
 	public void stateChanged(ChangeEvent e) {
-		if(!locked && e.getSource() instanceof NodeAttributeObserver) {
+		if(!locked && e.getSource() instanceof NodeAttributeObserver<?>) {
 			locked = true;
-			URI uri = ((NodeAttributeObserver) e.getSource()).getUri();			
+			URI uri = ((NodeAttributeObserver<URI>) e.getSource()).getValue();			
 			this.setLinkPath(uri);
 			locked = false;
 		}

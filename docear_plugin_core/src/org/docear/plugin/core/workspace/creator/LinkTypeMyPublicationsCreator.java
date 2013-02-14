@@ -15,7 +15,7 @@ import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
  * 
  */
 public class LinkTypeMyPublicationsCreator extends AWorkspaceNodeCreator {	
-	public static final String LINK_TYPE_MYPUBLICATIONS = "my_publications";
+	public static final String LINK_TYPE_MYPUBLICATIONS = LinkTypeMyPublicationsNode.TYPE;
 
 	/***********************************************************************************
 	 * CONSTRUCTORS

@@ -1,14 +1,13 @@
 package org.docear.plugin.core.workspace.node.config;
 
-import java.net.URI;
 import java.util.HashSet;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-public class NodeAttributeObserver {
+public class NodeAttributeObserver <T>{
 	private final HashSet<ChangeListener> listeners = new HashSet<ChangeListener>();
-	private URI uri = null;
+	private T value = null;
 
 	public NodeAttributeObserver() {
 		
@@ -26,12 +25,12 @@ public class NodeAttributeObserver {
 		this.listeners.remove(listener);
 	}
 	
-	public URI getUri() {
-		return uri;
+	public T getValue() {
+		return value;
 	}
 
-	public void setUri(URI uri) {
-		this.uri = uri;
+	public void setValue(T value) {
+		this.value = value;
 		fireValueChanged();
 	}
 
@@ -43,7 +42,7 @@ public class NodeAttributeObserver {
 	}
 	
 	public void reset() {
-		this.uri = null;
+		this.value = null;
 	}
 	
 	

@@ -28,7 +28,7 @@ import org.docear.plugin.core.event.DocearEvent;
 import org.docear.plugin.core.event.DocearEventType;
 import org.docear.plugin.core.event.IDocearEventListener;
 import org.docear.plugin.core.workspace.actions.DocearLibraryNewMindmap;
-import org.docear.plugin.core.workspace.actions.DocearLibraryOpenLocation;
+import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.Controller;
@@ -50,8 +50,8 @@ import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
 
 public class FolderTypeLibraryNode extends AFolderNode implements IDocearEventListener, IDocearLibrary, IWorkspaceNodeActionListener, IWorkspaceTransferableCreator, IDropAcceptor, TreeModelListener {
 	private static final Icon DEFAULT_ICON = new ImageIcon(FolderTypeLibraryNode.class.getResource("/images/folder-database.png"));
-
-	private static final long serialVersionUID = 1L;	
+	private static final long serialVersionUID = 1L;
+	public static final String TYPE = "library";	
 	
 	private final Vector<URI> mindmapIndex = new Vector<URI>();
 	private final Vector<IBibtexDatabase> referencesIndex = new Vector<IBibtexDatabase>();
@@ -62,6 +62,10 @@ public class FolderTypeLibraryNode extends AFolderNode implements IDocearEventLi
 	 * CONSTRUCTORS
 	 **********************************************************************************/
 
+	public FolderTypeLibraryNode() {
+		this(TYPE);
+	}
+	
 	public FolderTypeLibraryNode(String type) {
 		super(type);
 		DocearEvent event = new DocearEvent(this, DocearEventType.NEW_LIBRARY);
@@ -353,10 +357,8 @@ public class FolderTypeLibraryNode extends AFolderNode implements IDocearEventLi
 	}
 	
 	public URI getLibraryPath() {
-		AWorkspaceProject project = WorkspaceController.getCurrentModeExtension().getModel().getProject(getModel());
-		File path = WorkspaceController.resolveFile(project.getProjectDataPath());
-		path = new File(path, "default_files");
-		return MModeWorkspaceLinkController.getController().getProjectRelativeURI(project, path.toURI());
+		DocearWorkspaceProject project = (DocearWorkspaceProject) WorkspaceController.getCurrentModeExtension().getModel().getProject(getModel());
+		return MModeWorkspaceLinkController.getController().getProjectRelativeURI(project, project.getProjectLibraryPath());
 	}
 	
 	public void treeNodesChanged(TreeModelEvent e) {		

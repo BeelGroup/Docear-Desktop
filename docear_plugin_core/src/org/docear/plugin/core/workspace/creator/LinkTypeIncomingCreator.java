@@ -15,7 +15,7 @@ import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
  * 
  */
 public class LinkTypeIncomingCreator extends AWorkspaceNodeCreator {
-	public static final String LINK_TYPE_INCOMING = "incoming";
+	public static final String LINK_TYPE_INCOMING = LinkTypeIncomingNode.TYPE;
 		
 	/***********************************************************************************
 	 * CONSTRUCTORS

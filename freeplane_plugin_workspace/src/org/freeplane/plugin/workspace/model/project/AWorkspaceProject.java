@@ -3,7 +3,6 @@ package org.freeplane.plugin.workspace.model.project;
 import java.io.File;
 import java.net.URI;
 
-import org.freeplane.core.util.UniqueIDCreator;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.model.project.ProjectModelEvent.ProjectModelEventType;
 
@@ -12,6 +11,8 @@ public abstract class AWorkspaceProject {
 	class DefaultProjectSettings implements IProjectSettings {
 
 	}
+	
+	private static IWorkspaceProjectCreater creator = null;
 
 	private ProjectModel model;
 	private IProjectSettings settings;
@@ -41,41 +42,20 @@ public abstract class AWorkspaceProject {
 		return this.settings;
 	}
 	
-	public static AWorkspaceProject create(final String projectID, final URI projectHome) {
+	public static void setCurrentProjectCreator(IWorkspaceProjectCreater pCreator) {
+		creator = pCreator;
+	}
+	
+	public static AWorkspaceProject create(String projectID, URI projectHome) {
 		if(projectHome == null) {
 			throw new IllegalArgumentException("projectHome(URI)");
 		}
-		return new AWorkspaceProject() {	
-			private String id = projectID;
-			private URI home = projectHome;
-			
-			@Override
-			public String getProjectID() {
-				if(this.id == null) {
-					this.id = UniqueIDCreator.getCreator().uniqueID();
-				}
-				return this.id;
-			}
-			
-			@Override
-			public URI getProjectHome() {
-				return this.home;
-			}
-
-			@Override
-			public URI getProjectDataPath() {
-				return URI.create(getProjectHome().toString()+"/_data/"+getProjectID());
-			}
-
-			protected void setProjectHome(URI home) {
-				this.home = home;
-				
-			}
-
-			public URI getRelativeURI(URI uri) {
-				return uri;
-			}
-		};
+		
+		if(creator == null) {
+			creator =  new DefaultWorkspaceProjectCreator();
+		}
+		
+		return creator.newProject(projectID, projectHome);
 	}
 	
 	public String toString() {

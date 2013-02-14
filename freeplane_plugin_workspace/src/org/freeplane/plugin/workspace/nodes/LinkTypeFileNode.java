@@ -23,6 +23,7 @@ import org.freeplane.features.mapio.MapIO;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.actions.WorkspaceNewMapAction;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
 import org.freeplane.plugin.workspace.dnd.IWorkspaceTransferableCreator;
@@ -75,11 +76,7 @@ public class LinkTypeFileNode extends ALinkNode implements IWorkspaceNodeActionL
 	
 	public void setLinkPath(URI linkPath) {
 		this.linkPath = linkPath;
-		if(linkPath != null) {			
-			fileIcon = WorkspaceController.getCurrentModeExtension().getView().getNodeTypeIconManager().getIconForNode(this);
-		} else {
-			fileIcon = null;
-		}
+		fileIcon = null;
 	}	
 
 	public void handleAction(WorkspaceActionEvent event) {
@@ -87,16 +84,21 @@ public class LinkTypeFileNode extends ALinkNode implements IWorkspaceNodeActionL
 			
 			File file = WorkspaceController.resolveFile(getLinkPath());
 			if(file != null) {
-				if(!file.exists() && this.isSystem()){
-//					if(!WorkspaceUtils.createNewMindmap(WorkspaceController.resolveFile(getLinkPath()), getName())) {
-//						LogUtils.warn("could not create " + getLinkPath());
-//					}
-				}
-				if(!file.exists() && !this.isSystem()) {
-					//WorkspaceUtils.showFileNotFoundMessage(file);
-					return;
-				}
+
 				if(file.getName().toLowerCase().endsWith(".mm") || file.getName().toLowerCase().endsWith(".dcr")) {
+				
+    				if(!file.exists() && this.isSystem()){
+    					if(WorkspaceNewMapAction.createNewMap(getLinkPath(), getName(), true) == null) {
+    						LogUtils.warn("could not create " + getLinkPath());
+    					}
+    					return;
+    				}
+    				if(!file.exists() && !this.isSystem()) {
+    					//WORKSPACE - todo: replace with some kind of view extension call
+    					//WorkspaceUtils.showFileNotFoundMessage(file);
+    					return;
+    				}
+    				
 					try {
 						final URL mapUrl = Compat.fileToUrl(file);
 						
@@ -179,8 +181,13 @@ public class LinkTypeFileNode extends ALinkNode implements IWorkspaceNodeActionL
 			renderer.setClosedIcon(NOT_EXISTING);
 			return true;
 		}
-		
 		if(fileIcon == null) {
+			if(linkPath != null) {			
+				fileIcon = WorkspaceController.getCurrentModeExtension().getView().getNodeTypeIconManager().getIconForNode(this);
+			}
+		}
+				
+		if(fileIcon == null) {	
 			fileIcon = FileSystemView.getFileSystemView().getSystemIcon(file);
 			if(fileIcon != null) {
 				renderer.setLeafIcon(fileIcon);

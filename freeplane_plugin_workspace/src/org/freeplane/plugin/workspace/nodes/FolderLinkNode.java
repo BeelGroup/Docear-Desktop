@@ -187,7 +187,7 @@ public class FolderLinkNode extends AFolderNode implements IWorkspaceNodeActionL
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			LogUtils.severe(e);
 		}		
 	}
 	

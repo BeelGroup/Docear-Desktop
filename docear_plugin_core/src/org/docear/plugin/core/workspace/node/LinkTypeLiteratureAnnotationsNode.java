@@ -38,6 +38,8 @@ public class LinkTypeLiteratureAnnotationsNode extends ALinkNode implements IWor
 	private static final Icon DEFAULT_ICON = new ImageIcon(ResourceController.class.getResource("/images/docear16.png"));
 
 	private static final long serialVersionUID = 1L;
+
+	public static final String TYPE = "literature_annotations";
 	
 	private URI linkPath;
 	private WorkspacePopupMenu popupMenu = null;
@@ -45,6 +47,10 @@ public class LinkTypeLiteratureAnnotationsNode extends ALinkNode implements IWor
 	/***********************************************************************************
 	 * CONSTRUCTORS
 	 **********************************************************************************/
+	public LinkTypeLiteratureAnnotationsNode() {
+		this(TYPE);
+	}
+	
 	public LinkTypeLiteratureAnnotationsNode(String type) {
 		super(type);
 	}

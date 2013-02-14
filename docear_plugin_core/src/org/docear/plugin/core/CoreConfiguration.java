@@ -37,6 +37,7 @@ import org.docear.plugin.core.ui.NotificationBar;
 import org.docear.plugin.core.workspace.actions.DocearChangeLibraryPathAction;
 import org.docear.plugin.core.workspace.actions.DocearRenameAction;
 import org.docear.plugin.core.workspace.controller.DocearProjectLoader;
+import org.docear.plugin.core.workspace.model.DocearWorspaceProjectCreator;
 import org.freeplane.core.resources.OptionPanelController;
 import org.freeplane.core.resources.ResourceBundles;
 import org.freeplane.core.resources.ResourceController;
@@ -62,6 +63,7 @@ import org.freeplane.features.url.mindmapmode.MapVersionInterpreter;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
 
 public class CoreConfiguration extends ALanguageController {
@@ -107,6 +109,8 @@ public class CoreConfiguration extends ALanguageController {
 		
 		action = new DocearQuitAction();
 		replaceAction("QuitAction", action);
+		
+		AWorkspaceProject.setCurrentProjectCreator(new DocearWorspaceProjectCreator());
 	}
 	
 	protected void initMode(ModeController modeController) {
