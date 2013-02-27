@@ -1,5 +1,9 @@
 package org.docear.plugin.pdfutilities.pdf;
 
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -27,6 +31,8 @@ import org.freeplane.features.mode.Controller;
 
 import de.intarsys.pdf.cds.CDSNameTreeEntry;
 import de.intarsys.pdf.cds.CDSNameTreeNode;
+import de.intarsys.pdf.content.CSDeviceBasedInterpreter;
+import de.intarsys.pdf.content.text.CSTextExtractor;
 import de.intarsys.pdf.cos.COSArray;
 import de.intarsys.pdf.cos.COSCatalog;
 import de.intarsys.pdf.cos.COSDictionary;
@@ -35,6 +41,8 @@ import de.intarsys.pdf.cos.COSNull;
 import de.intarsys.pdf.cos.COSObject;
 import de.intarsys.pdf.cos.COSRuntimeException;
 import de.intarsys.pdf.cos.COSString;
+import de.intarsys.pdf.font.PDFont;
+import de.intarsys.pdf.font.PDFontTools;
 import de.intarsys.pdf.parser.COSLoadException;
 import de.intarsys.pdf.pd.PDAnnotation;
 import de.intarsys.pdf.pd.PDAnyAnnotation;
@@ -45,8 +53,12 @@ import de.intarsys.pdf.pd.PDOutline;
 import de.intarsys.pdf.pd.PDOutlineItem;
 import de.intarsys.pdf.pd.PDOutlineNode;
 import de.intarsys.pdf.pd.PDPage;
+import de.intarsys.pdf.pd.PDSquigglyAnnotation;
+import de.intarsys.pdf.pd.PDStrikeOutAnnotation;
 import de.intarsys.pdf.pd.PDTextAnnotation;
 import de.intarsys.pdf.pd.PDTextMarkupAnnotation;
+import de.intarsys.pdf.pd.PDUnderlineAnnotation;
+import de.intarsys.pdf.tools.kernel.PDFGeometryTools;
 import de.intarsys.tools.locator.FileLocator;
 
 public class PdfAnnotationImporter implements IAnnotationImporter {
@@ -295,7 +307,11 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 								((PDHighlightAnnotation) annotation).getSubject().equals("Highlight") &&
 								annotation.getContents().equals("") )
 							continue;
-					} else {
+					}					
+					else if (   !(annotation.getClass() == PDSquigglyAnnotation.class)
+							 && !(annotation.getClass() == PDUnderlineAnnotation.class)
+							 && !(annotation.getClass() == PDStrikeOutAnnotation.class)
+							 && !(annotation.getClass() == PDTextMarkupAnnotation.class)){
 						// ignore annotations with Contents is ""
 						if (annotation.getContents().equals("")
 						/* && !annotation.isMarkupAnnotation() */
@@ -312,7 +328,7 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 																		 */)
 							continue;
 						lastString = annotation.getContents();
-					}
+					}					
 		            if((annotation.getClass() == PDAnyAnnotation.class ||annotation.getClass() == PDTextAnnotation.class) &&
 		            		importComments){
 		            	Integer objectNumber = annotation.cosGetObject().getIndirectObject().getObjectNumber();
@@ -326,14 +342,24 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		            	pdfAnnotation.setPage(pdPage.getNodeIndex()+1);
 		    			annotations.add(pdfAnnotation);
 		            }
-		            if((annotation.getClass() == PDTextMarkupAnnotation.class || annotation.getClass() == PDHighlightAnnotation.class) && importHighlightedTexts){
+		            if((annotation.getClass() == PDTextMarkupAnnotation.class 
+		            	|| annotation.getClass() == PDHighlightAnnotation.class
+		            	|| annotation.getClass() == PDStrikeOutAnnotation.class
+		            	|| annotation.getClass() == PDUnderlineAnnotation.class
+		            	|| annotation.getClass() == PDSquigglyAnnotation.class) && importHighlightedTexts){
 		            	Integer objectNumber = annotation.cosGetObject().getIndirectObject().getObjectNumber();
 		    			AnnotationModel pdfAnnotation = new AnnotationModel(new AnnotationID(this.currentFile, objectNumber));
-		    			// prefer Title from Contents (So updates work)
+		    			String text = extractAnnotationText(pdPage, (PDTextMarkupAnnotation)annotation);
+		    				//prefer Title from Contents (So updates work)
 						if (annotation.getContents() != null &&
 								annotation.getContents().length() > 0) {
 							pdfAnnotation.setTitle(annotation.getContents());
-						} else {
+						} 
+							//then try to extract the text from the bounding rectangle
+						else if(!text.isEmpty()){
+							pdfAnnotation.setTitle(text);
+						}					
+						else {
 			    			// support repligo highlights
 							// set Title to Subject per repligo
 							if (annotation.getClass() == PDHighlightAnnotation.class) {
@@ -361,6 +387,32 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		}
 		
 		return annotations;
+	}
+
+
+	private String extractAnnotationText(PDPage pdPage, PDTextMarkupAnnotation annotation) {
+		
+		StringBuilder sb = new StringBuilder();		
+		COSArray rect = (COSArray)annotation.cosGetField(PDTextMarkupAnnotation.DK_QuadPoints);	
+		for(int i = 0; i < (rect.size() / 8); i++){
+			TextExtractor extractor = new TextExtractor();			
+			Float lowerLeft_X = Math.min(Math.min(rect.get(0 + (8 * i)).getValueFloat(0), rect.get(2 + (8 * i)).getValueFloat(0)), Math.min(rect.get(4 + (8 * i)).getValueFloat(0), rect.get(6 + (8 * i)).getValueFloat(0)));
+			Float upperRight_X = Math.max(Math.max(rect.get(0 + (8 * i)).getValueFloat(0), rect.get(2 + (8 * i)).getValueFloat(0)), Math.max(rect.get(4 + (8 * i)).getValueFloat(0), rect.get(6 + (8 * i)).getValueFloat(0)));
+			Float lowerLeft_Y = Math.min(Math.min(rect.get(1 + (8 * i)).getValueFloat(0), rect.get(3 + (8 * i)).getValueFloat(0)), Math.min(rect.get(5 + (8 * i)).getValueFloat(0), rect.get(7 + (8 * i)).getValueFloat(0)));
+			Float upperRight_y = Math.max(Math.max(rect.get(1 + (8 * i)).getValueFloat(0), rect.get(3 + (8 * i)).getValueFloat(0)), Math.max(rect.get(5 + (8 * i)).getValueFloat(0), rect.get(7 + (8 * i)).getValueFloat(0)));
+			Shape shape = new Rectangle2D.Float(lowerLeft_X, lowerLeft_Y, upperRight_X - lowerLeft_X,  upperRight_y - lowerLeft_Y);
+			extractor.setBounds(shape);
+			AffineTransform pageTx = new AffineTransform();
+			PDFGeometryTools.adjustTransform(pageTx, pdPage);
+			extractor.setDeviceTransform(pageTx);
+			CSDeviceBasedInterpreter interpreter = new CSDeviceBasedInterpreter(null, extractor);
+			interpreter.process(pdPage.getContentStream(), pdPage.getResources());					
+			sb.append(extractor.getContent().trim());
+			if(i < ((rect.size() / 8) - 1)){
+				sb.append("\n");
+			}
+		}		
+		return sb.toString();
 	}	
 	
 	public Integer getAnnotationDestination(PDAnnotation pdAnnotation) {				
