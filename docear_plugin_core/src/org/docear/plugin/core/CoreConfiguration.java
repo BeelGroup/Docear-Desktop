@@ -243,9 +243,9 @@ public class CoreConfiguration extends ALanguageController {
 				}
 			}
 		});
-		modeController.getUserInputListenerFactory().addToolBar(NotificationBar.TOOLBAR_NAME, ViewController.TOP, new NotificationBar());
-		String propertyName = Controller.getCurrentController().getViewController().completeVisiblePropertyKey(NotificationBar.getNotificationBar());
-		ResourceController.getResourceController().setProperty(propertyName, false);
+		//modeController.getUserInputListenerFactory().addToolBar(NotificationBar.TOOLBAR_NAME, ViewController.TOP, new NotificationBar());
+		//String propertyName = Controller.getCurrentController().getViewController().completeVisiblePropertyKey(NotificationBar.getNotificationBar());
+		//ResourceController.getResourceController().setProperty(propertyName, false);
 	}
 
 
