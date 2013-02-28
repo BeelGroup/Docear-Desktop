@@ -102,7 +102,7 @@ public class Reference {
 		if (file != null) {
 			String name = file.getName();
     		for (URI uri : getUris()) {
-    			if (name.equals(new File(uri).getName())) {
+    			if (name.equalsIgnoreCase(new File(uri).getName())) {
     				return true;
     			}			
     		}

@@ -107,7 +107,7 @@ public class ReferenceUpdater extends AMindmapUpdater {
 			}
 
 			for (String path : jabRefAttributes.parsePathNames(entry, paths)) {
-				String name = new File(path).getName();
+				String name = new File(path).getName().toLowerCase();
 				if(((Set<String>) session.getSessionObject(MapModificationSession.FILE_IGNORE_LIST)).contains(name)) {
 					continue;
 				}
@@ -139,7 +139,7 @@ public class ReferenceUpdater extends AMindmapUpdater {
 			session.putSessionObject(MapModificationSession.URL_IGNORE_LIST, new HashSet<String>());
 		}
 		for (BibtexEntry entry : database.getEntries()) {
-			String url = entry.getField("url");
+			String url = entry.getField("url");			
 			if (url == null || url.trim().length() == 0 || ((Set<String>) session.getSessionObject(MapModificationSession.URL_IGNORE_LIST)).contains(url)) {
 				continue;
 			}
@@ -274,19 +274,19 @@ public class ReferenceUpdater extends AMindmapUpdater {
 			String key = jabRefAttributes.getBibtexKey(node);
 
 			URI uri = NodeLinks.getLink(node);
-			if (uri != null) {
+			if (uri != null && !uri.toString().startsWith("#")) {
 				File file;
 
 				file = WorkspaceUtils.resolveURI(uri, node.getMap());
 				if (file != null) {
-					String fileName = file.getName();
+					String fileName = file.getName().toLowerCase();
 					BibtexEntry entry = this.pdfReferences.get(fileName);
 					if (entry != null) {
 						addReferenceToIndex(node, entry);
 					}
 					return;
 				}
-
+				
 				BibtexEntry entry = this.urlReferences.get(uri.toURL().toExternalForm());
 				if (entry != null) {
 					addReferenceToIndex(node, entry);
