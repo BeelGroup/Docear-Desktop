@@ -272,6 +272,9 @@ public abstract class MonitoringUtils {
 		
 		if(type != null){
 			AnnotationModel model = new AnnotationModel();//new AnnotationID(file, -1), type);
+			if(type == AnnotationType.PDF_FILE){
+				model.setAnnotationID(new AnnotationID(WorkspaceUtils.absoluteURI(file), 0));
+			}
 			model.setAnnotationType(type);
 			model.setUri(file);
 			AnnotationController.setModel(node, model);
