@@ -554,12 +554,14 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 								if (oldAnnotation.getAnnotationType().equals(AnnotationType.PDF_FILE)) continue;
 								if (oldAnnotation.getAnnotationType().equals(AnnotationType.FILE)) continue;
 								String oldAnnotationWithoutHTML = HtmlUtils.extractText(oldAnnotation.getTitle());
+								String importedAnnotationWithoutHTML = HtmlUtils.extractText(importedAnnotation.getTitle());
 								String importedAnnotationTitle = importedAnnotation.getTitle().replace("\r", "").replace("\n", "").replace("\t", "")
 										.replace(" ", "");
+								importedAnnotationWithoutHTML = importedAnnotationWithoutHTML.replace("\r", "").replace("\n", "").replace("\t", "").replace(" ", "");
 								String oldAnnotationTitle = oldAnnotation.getTitle().replace("\r", "").replace("\n", "").replace("\t", "").replace(" ", "");
 								oldAnnotationWithoutHTML = oldAnnotationWithoutHTML.replace("\r", "").replace("\n", "").replace("\t", "").replace(" ", "");
 								if (!importedAnnotationTitle.trim().equals(oldAnnotationTitle.trim())
-										&& !importedAnnotationTitle.trim().equals(oldAnnotationWithoutHTML.trim())) {
+										&& !importedAnnotationTitle.trim().equals(oldAnnotationWithoutHTML.trim()) && !importedAnnotationWithoutHTML.trim().equals(oldAnnotationWithoutHTML.trim())) {
 									importedAnnotation.setConflicted(true);
 									AnnotationController.addConflictedAnnotation(importedAnnotation, conflicts);
 									for (NodeModel conflictedNode : nodeIndex.get(id)) {
