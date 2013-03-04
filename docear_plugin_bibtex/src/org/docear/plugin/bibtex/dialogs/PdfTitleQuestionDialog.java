@@ -14,8 +14,10 @@ import javax.swing.SwingConstants;
 import org.docear.plugin.core.ui.MultiLineActionLabel;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
 import org.freeplane.core.resources.ResourceController;
+import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
+import org.freeplane.features.mode.Controller;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -64,8 +66,11 @@ public class PdfTitleQuestionDialog extends JPanel {
 //						Controller.getCurrentController().getViewController().openDocument(uri);
 						boolean openOnPage = ResourceController.getResourceController().getBooleanProperty(PdfUtilitiesController.OPEN_PDF_VIEWER_ON_PAGE_KEY);		
 						
-						if (openOnPage) {
+						if (openOnPage) {						
 							PdfUtilitiesController.getController().openPdfOnPage(uri, 1);
+						}
+						else {
+							Controller.getCurrentController().getViewController().openDocument(uri);
 						}
 					} catch (Exception ex) {
 						LogUtils.warn("could not open link: "+ ex.getLocalizedMessage());

@@ -19,6 +19,7 @@ import org.docear.plugin.bibtex.jabref.JabRefCommons;
 import org.docear.plugin.bibtex.jabref.JabrefWrapper;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.components.UITools;
+import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.link.NodeLinks;
 import org.freeplane.features.map.MapModel;
@@ -137,7 +138,12 @@ public class AddNewReferenceAction extends AFreeplaneAction {
 		((JComponent) toolBar.getParent()).revalidate();
 
 		final String propertyName = Controller.getCurrentController().getViewController().completeVisiblePropertyKey(toolBar);
-		Controller.getCurrentController().getResourceController().setProperty(propertyName, true);
+		try {
+			Controller.getCurrentController().getResourceController().setProperty(propertyName, true);
+		}
+		catch(Exception e) {
+			LogUtils.warn(this.getClass().getName()+".showJabRefTab: "+e.getMessage());
+		}
 
 		JTabbedPane tabbedPane = (JTabbedPane) toolBar.getComponent(1);
 		tabbedPane.setSelectedComponent(ReferencesController.getController().getJabrefWrapper().getJabrefFrame());
