@@ -41,6 +41,8 @@ public class DocearAllowUploadChooserAction extends AFreeplaneAction {
 		chooser.integrateButtons(dialogButtons);
 		chooser.addActionListener(new DocearServiceSettingsDialogListener());
 		
+		UITools.backOtherWindows();
+		
 		int result = JOptionPane.showOptionDialog(UITools.getFrame(), chooser, TextUtils.getText("docear.uploadchooser.title"), JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, dialogButtons, 1);
 		if (result == 0) {			
 			ServiceController.getController().setBackupEnabled(chooser.allowBackup());
