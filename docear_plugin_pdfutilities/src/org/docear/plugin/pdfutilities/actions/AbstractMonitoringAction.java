@@ -556,10 +556,10 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 								String oldAnnotationWithoutHTML = HtmlUtils.extractText(oldAnnotation.getTitle());
 								String importedAnnotationWithoutHTML = HtmlUtils.extractText(importedAnnotation.getTitle());
 								String importedAnnotationTitle = importedAnnotation.getTitle().replace("\r", "").replace("\n", "").replace("\t", "")
-										.replace(" ", "");
-								importedAnnotationWithoutHTML = importedAnnotationWithoutHTML.replace("\r", "").replace("\n", "").replace("\t", "").replace(" ", "");
-								String oldAnnotationTitle = oldAnnotation.getTitle().replace("\r", "").replace("\n", "").replace("\t", "").replace(" ", "");
-								oldAnnotationWithoutHTML = oldAnnotationWithoutHTML.replace("\r", "").replace("\n", "").replace("\t", "").replace(" ", "");
+										/*.replace(" ", "")*/;
+								importedAnnotationWithoutHTML = importedAnnotationWithoutHTML.replace("\r", "").replace("\n", "").replace("\t", "")/*.replace(" ", "")*/;
+								String oldAnnotationTitle = oldAnnotation.getTitle().replace("\r", "").replace("\n", "").replace("\t", "")/*.replace(" ", "")*/;
+								oldAnnotationWithoutHTML = oldAnnotationWithoutHTML.replace("\r", "").replace("\n", "").replace("\t", "")/*.replace(" ", "")*/;
 								if (!importedAnnotationTitle.trim().equals(oldAnnotationTitle.trim())
 										&& !importedAnnotationTitle.trim().equals(oldAnnotationWithoutHTML.trim()) && !importedAnnotationWithoutHTML.trim().equals(oldAnnotationWithoutHTML.trim())) {
 									importedAnnotation.setConflicted(true);
