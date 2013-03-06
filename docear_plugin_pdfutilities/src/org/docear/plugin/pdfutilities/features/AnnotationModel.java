@@ -7,6 +7,8 @@ import java.util.List;
 
 import org.docear.plugin.core.features.AnnotationID;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
+import org.docear.plugin.pdfutilities.pdf.PdfAnnotationImporter;
+import org.freeplane.core.util.LogUtils;
 
 
 public class AnnotationModel implements IAnnotation{
@@ -61,6 +63,21 @@ public class AnnotationModel implements IAnnotation{
 	
 	public Integer getPage() {
 		return page;
+	}
+	
+	public void updatePage() {		
+		try {
+			IAnnotation annotation = new PdfAnnotationImporter().searchAnnotation(this);
+			if(annotation != null && annotation.getPage() != null){
+				this.page = annotation.getPage();				
+			}
+			else{
+				LogUtils.warn("Could not update Page!");				
+			}
+		}
+		catch (Exception e) {
+			LogUtils.warn("Could not update Page!", e);			
+		}
 	}
 	
 	public void setPage(Integer page) {

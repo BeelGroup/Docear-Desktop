@@ -532,7 +532,21 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		List<AnnotationModel> annotations = this.importAnnotations(uri);
 		this.setImportAll(false);
 		return searchAnnotation(annotations, node);        
-   }
+	}
+	
+	public AnnotationModel searchAnnotation(IAnnotation annotation) throws Exception {
+		if(annotation.getAnnotationID() != null && annotation.getAnnotationID().getUri() != null && annotation.getObjectNumber() != null){
+			this.currentFile = annotation.getAnnotationID().getUri();
+			if(!this.isImportAll()) this.setImportAll(true);
+			List<AnnotationModel> annotations = this.importAnnotations(annotation.getAnnotationID().getUri());
+			this.setImportAll(false);
+			return searchAnnotation(annotations, annotation); 
+		}
+		else{
+			return null;
+		}
+	}
+	
 	
 	public AnnotationModel searchAnnotation(List<AnnotationModel> annotations, NodeModel node) {
 		for(AnnotationModel annotation : annotations){           

@@ -1270,6 +1270,7 @@ public class PdfUtilitiesController extends ALanguageController {
 		int page = 1;
 		String title = null;
 		if (annotation != null) {
+			annotation.updatePage();
 			page = annotation.getPage() != null ? annotation.getPage() : 1;
 			title = annotation.getTitle();
 		}
@@ -1281,6 +1282,7 @@ public class PdfUtilitiesController extends ALanguageController {
 		int page = 1;
 		String title = null;
 		if (annotation != null) {
+			annotation.updatePage();
 			page = annotation.getPage() != null ? annotation.getPage() : 1;
 			title = annotation.getTitle();
 		}

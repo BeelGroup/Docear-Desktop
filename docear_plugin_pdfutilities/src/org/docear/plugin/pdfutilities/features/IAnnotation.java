@@ -22,6 +22,8 @@ public interface IAnnotation extends IExtension{
 	public Integer getPage();
 
 	public void setPage(Integer page);
+	
+	public void updatePage();
 
 	public Integer getObjectNumber();
 
