@@ -47,6 +47,7 @@ import org.docear.plugin.core.event.IDocearEventListener;
 import org.docear.plugin.core.features.DocearMapModelController;
 import org.docear.plugin.core.features.DocearMapModelExtension.DocearMapType;
 import org.docear.plugin.core.util.CompareVersion;
+import org.docear.plugin.core.util.DirectoryFileFilter;
 import org.docear.plugin.core.util.NodeUtilities;
 import org.docear.plugin.core.util.Tools;
 import org.docear.plugin.core.util.WinRegistry;
@@ -338,7 +339,7 @@ public class PdfUtilitiesController extends ALanguageController {
 		Map<String, PDFReaderHandle> viewers = new HashMap<String, PDFReaderHandle>();		
 
 		if(Compat.isMacOsX()) {
-			lookForReadersMacOs(viewers);
+			lookForReadersMacOs(viewers, new File("/Applications"));
 		}
 		else {
 			File winFile = new File(ResourceController.getResourceController().getFreeplaneUserDirectory(), "win_uninstall.reg");
@@ -436,6 +437,9 @@ public class PdfUtilitiesController extends ALanguageController {
 		if ((handle = viewers.get("Adobe Reader.app")) != null) {
 			handles.add(handle);
 		}
+		if ((handle = viewers.get("Adobe Acrobat Pro.app")) != null) {
+			handles.add(handle);
+		}
 		if ((handle = viewers.get("Skim.app")) != null) {
 			handles.add(handle);
 		}
@@ -500,11 +504,13 @@ public class PdfUtilitiesController extends ALanguageController {
 		}
 	}
 
-	private void lookForReadersMacOs(Map<String, PDFReaderHandle> viewers) {
-		File appDirectory = new File("/Applications");
+	private void lookForReadersMacOs(Map<String, PDFReaderHandle> viewers, File appDirectory) {	
 		for (File app : appDirectory.listFiles(appFilter)) {
 			if(app.getName().startsWith("Adobe Reader")) {
 				viewers.put("Adobe Reader.app", new PDFReaderHandle("Adobe Reader", app.getAbsolutePath(), null));
+			}
+			else if(app.getName().startsWith("Adobe Acrobat")) {
+				viewers.put("Adobe Acrobat Pro.app", new PDFReaderHandle("Adobe Acrobat Pro", app.getAbsolutePath(), null));
 			}
 			/*else if(app.getName().startsWith("Skim")) {
 				viewers.put("Skim.app", new PDFReaderHandle("Skim", app.getAbsolutePath(), null));
@@ -512,6 +518,11 @@ public class PdfUtilitiesController extends ALanguageController {
 			else if(app.getName().startsWith("Preview")) {
 				viewers.put("Preview.app", new PDFReaderHandle("Preview", app.getAbsolutePath(), null));
 			}*/
+		}
+		for(File subDir : appDirectory.listFiles(new DirectoryFileFilter())){
+			if(!subDir.getName().endsWith(".app")){
+				lookForReadersMacOs(viewers, subDir);
+			}
 		}
 	}
 

@@ -1,6 +1,7 @@
 *.diff
 */bin
 */build
+*/build4mac
 */dist
 backups
 .DS_Store
@@ -24,3 +25,7 @@ docear_plugin_bibtex/lib/JabRef-2.7.1.jar
 freeplane/lib/jortho.jar
 docear_plugin_core/src/TestMain.java
 
+
+freeplane_ant/.classpath
+
+freeplane_ant/.classpath
