@@ -2,7 +2,6 @@ package org.docear.plugin.pdfutilities.features;
 
 import java.io.IOException;
 
-import org.docear.plugin.core.util.Tools;
 import org.docear.plugin.pdfutilities.features.IAnnotation.AnnotationType;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
 import org.freeplane.core.extension.IExtension;
@@ -15,6 +14,7 @@ import org.freeplane.core.io.WriteManager;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.n3.nanoxml.XMLElement;
+import org.freeplane.plugin.workspace.URIUtils;
 
 public class AnnotationXmlBuilder implements IElementDOMHandler, IExtensionElementWriter {
 	
@@ -118,7 +118,7 @@ public class AnnotationXmlBuilder implements IElementDOMHandler, IExtensionEleme
 			}
 			else{
 				AnnotationModel model = new AnnotationModel();
-				model.setUri(Tools.getAbsoluteUri((NodeModel) parent));
+				model.setUri(URIUtils.getAbsoluteURI((NodeModel) parent));
 				return model;				
 			}
 		}

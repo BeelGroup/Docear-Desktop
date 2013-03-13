@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.net.URI;
 
-import org.docear.plugin.core.util.Tools;
+import org.freeplane.plugin.workspace.URIUtils;
 
 public class CustomFileFilter implements FileFilter {
 	
@@ -22,8 +22,9 @@ public class CustomFileFilter implements FileFilter {
         return file.exists() && accept(path);
     }
 	
-	public boolean accept(URI uri){		
-		if(uri == null || !Tools.exists(uri)){
+	public boolean accept(URI uri){
+		File file = URIUtils.getFile(uri);
+		if(uri == null || file == null || !file.exists()){
 			return false;
 		}
 		else{

@@ -34,7 +34,8 @@ import org.docear.plugin.core.listeners.PropertyLoadListener;
 import org.docear.plugin.core.listeners.WorkspaceOpenDocumentListener;
 import org.docear.plugin.core.logger.DocearLogEvent;
 import org.docear.plugin.core.ui.NotificationBar;
-import org.docear.plugin.core.workspace.actions.DocearChangeLibraryPathAction;
+import org.docear.plugin.core.workspace.actions.DocearLibraryNewMindmap;
+import org.docear.plugin.core.workspace.actions.DocearLibraryOpenLocation;
 import org.docear.plugin.core.workspace.actions.DocearRenameAction;
 import org.docear.plugin.core.workspace.controller.DocearProjectLoader;
 import org.docear.plugin.core.workspace.model.DocearWorspaceProjectCreator;
@@ -60,6 +61,7 @@ import org.freeplane.features.url.UrlManager;
 import org.freeplane.features.url.mindmapmode.IMapConverter;
 import org.freeplane.features.url.mindmapmode.MapConversionException;
 import org.freeplane.features.url.mindmapmode.MapVersionInterpreter;
+import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
@@ -104,18 +106,17 @@ public class CoreConfiguration extends ALanguageController {
 		
 		adjustProperties(controller);
 		
-		AFreeplaneAction action = new DocearAboutAction();
-		replaceAction(action.getKey(), action);
-		
-		action = new DocearQuitAction();
-		replaceAction("QuitAction", action);
+		WorkspaceController.replaceAction(new DocearAboutAction());
+		WorkspaceController.replaceAction(new DocearQuitAction());		
+		WorkspaceController.replaceAction(new DocearLibraryOpenLocation());		
+		WorkspaceController.addAction(new DocearLibraryNewMindmap());
 		
 		AWorkspaceProject.setCurrentProjectCreator(new DocearWorspaceProjectCreator());
 	}
 	
 	protected void initMode(ModeController modeController) {
 		DocearProjectLoader docearProjectLoader = new DocearProjectLoader();
-		WorkspaceController.getCurrentModeExtension().setProjectLoader(docearProjectLoader);
+		WorkspaceController.getModeExtension(modeController).setProjectLoader(docearProjectLoader);
 		
 		DocearController.getController().getDocearEventLogger().appendToLog(this, DocearLogEvent.APPLICATION_STARTED);
 		Toolkit.getDefaultToolkit();		
@@ -137,7 +138,7 @@ public class CoreConfiguration extends ALanguageController {
 		
 		// set up context menu for workspace
 		//WORKSPACE - info: test if this works without
-//		WorkspaceController.getController().addWorkspaceListener(WORKSPACE_CHANGE_LISTENER);
+//		WorkspaceController.getController().addWorkspaceListener(WORKSPACE_CHANGE_LISTENER);		
 		
 		addPluginDefaults(Controller.getCurrentController());
 		addMenus(modeController);
@@ -151,7 +152,7 @@ public class CoreConfiguration extends ALanguageController {
 		setDocearMapWriter(modeController);
 		
 		registerController(modeController);
-		UrlManager.getController().setLastCurrentDir(WorkspaceController.resolveFile(WorkspaceController.getCurrentModeExtension().getDefaultProjectHome()));	
+		UrlManager.getController().setLastCurrentDir(URIUtils.getAbsoluteFile(WorkspaceController.getModeExtension(modeController).getDefaultProjectHome()));	
 	}
 	
 	private void loadAndStoreVersion(Controller controller) {
@@ -290,18 +291,16 @@ public class CoreConfiguration extends ALanguageController {
 		});
 	}
 
-	private void replaceActions() {
+	private void replaceActions() {		
+		ResourceController resourceController = ResourceController.getResourceController();		
 		
-		ResourceController resourceController = ResourceController.getResourceController();
-		
-		
-		replaceAction(REQUEST_FEATURE_ACTION, new DocearOpenUrlAction(REQUEST_FEATURE_ACTION, resourceController.getProperty(FEATURE_TRACKER_LOCATION)));
-		replaceAction(ASK_FOR_HELP, new DocearOpenUrlAction(ASK_FOR_HELP, resourceController.getProperty(HELP_FORUM_LOCATION)));
-		replaceAction(REPORT_BUG_ACTION, new DocearOpenUrlAction(REPORT_BUG_ACTION, resourceController.getProperty(BUG_TRACKER_LOCATION)));
-		replaceAction(OPEN_FREEPLANE_SITE_ACTION, new DocearOpenUrlAction(OPEN_FREEPLANE_SITE_ACTION, resourceController.getProperty(WEB_FREEPLANE_LOCATION)));
-		replaceAction(DOCUMENTATION_ACTION, new DocearOpenUrlAction(DOCUMENTATION_ACTION, resourceController.getProperty(WEB_DOCU_LOCATION)));
-		replaceAction("GettingStartedAction", new GettingStartedAction());
-		replaceAction("OnlineReference", new OnlineDocumentationAction("OnlineReference", "docu-online"));		
+		WorkspaceController.replaceAction(new DocearOpenUrlAction(REQUEST_FEATURE_ACTION, resourceController.getProperty(FEATURE_TRACKER_LOCATION)));
+		WorkspaceController.replaceAction(new DocearOpenUrlAction(ASK_FOR_HELP, resourceController.getProperty(HELP_FORUM_LOCATION)));
+		WorkspaceController.replaceAction(new DocearOpenUrlAction(REPORT_BUG_ACTION, resourceController.getProperty(BUG_TRACKER_LOCATION)));
+		WorkspaceController.replaceAction(new DocearOpenUrlAction(OPEN_FREEPLANE_SITE_ACTION, resourceController.getProperty(WEB_FREEPLANE_LOCATION)));
+		WorkspaceController.replaceAction(new DocearOpenUrlAction(DOCUMENTATION_ACTION, resourceController.getProperty(WEB_DOCU_LOCATION)));
+		WorkspaceController.replaceAction(new GettingStartedAction());
+		WorkspaceController.replaceAction(new OnlineDocumentationAction("OnlineReference", "docu-online"));		
 	}
 
 	private void replaceResourceBundleStrings() {
@@ -326,15 +325,6 @@ public class CoreConfiguration extends ALanguageController {
 		}		
 	}
 
-	private void replaceAction(String actionKey, AFreeplaneAction action) {
-		Controller controller = Controller.getCurrentController();
-		AFreeplaneAction previousAction = controller.getAction(actionKey);
-		if(previousAction != null) {
-			controller.removeAction(actionKey);
-		}
-		controller.addAction(action);
-	}
-
 	private void addPluginDefaults(Controller controller) {		
 		ResourceController resController = controller.getResourceController();
 		if (resController.getProperty("ApplicationName").equals("Docear") && DocearController.getController().isDocearFirstStart()) {			
@@ -345,8 +335,7 @@ public class CoreConfiguration extends ALanguageController {
 			resController.setProperty("styleScrollPaneVisible", "true");
 			resController.setProperty(DocearController.DOCEAR_FIRST_RUN_PROPERTY, true);			
 		}		
-		controller.addAction(new DocearChangeLibraryPathAction());
-		controller.addAction(new DocearRenameAction());
+		WorkspaceController.addAction(new DocearRenameAction());
 	}
 	
 	private void registerListeners(ModeController modeController) {
@@ -361,7 +350,7 @@ public class CoreConfiguration extends ALanguageController {
 		DocearController.getController().addDocearEventListener(adapter);
 		Controller.getCurrentController().getMapViewManager().addMapViewChangeListener(adapter);
 		Controller.getCurrentController().getMapViewManager().addMapViewChangeListener(new MapLifeCycleAndViewListener());
-		WorkspaceController.getCurrentModeExtension().getIOController().registerNodeActionListener(AWorkspaceTreeNode.class, WorkspaceActionEvent.WSNODE_OPEN_DOCUMENT, new WorkspaceOpenDocumentListener());
+		WorkspaceController.getModeExtension(modeController).getIOController().registerNodeActionListener(AWorkspaceTreeNode.class, WorkspaceActionEvent.WSNODE_OPEN_DOCUMENT, new WorkspaceOpenDocumentListener());
 		//WORKSPACE - info
 //		WorkspaceUtils.getModel().addTreeModelListener(new WorkspaceTreeModelListener());
 	}	

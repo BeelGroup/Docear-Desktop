@@ -12,15 +12,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.FileFilter;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.JComponent;
@@ -31,10 +25,8 @@ import javax.swing.PopupFactory;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
-import org.docear.pdf.PdfDataExtractor;
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.logger.DocearLogEvent;
-import org.docear.plugin.core.util.Tools;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
 import org.docear.plugin.pdfutilities.actions.UpdateMonitoringFolderAction;
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
@@ -49,7 +41,7 @@ import org.freeplane.features.link.LinkController;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.view.swing.map.MainView;
 import org.freeplane.view.swing.map.ZoomableLabelUI;
 
@@ -173,7 +165,7 @@ public class DocearNodeMouseMotionListener implements IMouseListener {
 				return;
 			}
 			
-			URI uri = Tools.getAbsoluteUri(node);
+			URI uri = URIUtils.getAbsoluteURI(node);
 			if(uri == null) { 
 				this.mouseListener.mouseClicked(e);
 				return;
@@ -198,106 +190,15 @@ public class DocearNodeMouseMotionListener implements IMouseListener {
 		else {
 			this.mouseListener.mouseClicked(e);
 		}
-	}
-	
-	
-	private void pdfHeaderExtraction(MouseEvent e, StringBuilder sb) {
-		NodeModel mmNode = ((MainView) e.getSource()).getNodeView().getModel();
-		URI uri = Tools.getAbsoluteUri(mmNode);
-		if(uri == null) {
-			return;
-		}
-		try {
-			File csvFile = new File("C:\\Header_Extraction\\result.csv");
-			if(!csvFile.exists()) {
-				csvFile.getParentFile().mkdirs();	
-				csvFile.createNewFile();				
-			}
-			PrintStream printer = new PrintStream(new FileOutputStream(csvFile), true);
-			
-			try {
-				File[] fileList = new File("C:\\Header_Extraction\\testpdfs").listFiles(new FileFilter() {
-					public boolean accept(File pathname) {
-//						if(!"(164).pdf".equals(pathname.getName())) {
-//							return false;
-//						}
-						return pathname.getName().toLowerCase().endsWith(".pdf");
-					}
-				});
-				Arrays.sort(fileList, new Comparator<File>() {
-					public int compare(File self, File other) {
-						int f1 = extractNumber(self.getName());
-						int f2 = extractNumber(other.getName());
-						if(f1 > f2) {
-							return 1;
-						}
-						if(f1 < f2) {
-							return -1;
-						}
-						return 0;
-					}
-
-					private int extractNumber(String name) {
-						String token = name.toLowerCase().replace("(", "");
-						token = token.replace(").pdf", "");
-						try {
-							return Integer.parseInt(token);
-						}
-						catch (Exception e) {
-						}
-						return 100;
-					}
-				});
-				int failCount = 0;
-				int hashCount = 0;
-				int pdfFails = 0;
-				float avgSum = 0;
-				for (File file : fileList) {
-					String title = null;
-					String hash = null;
-					try {
-						long time = System.currentTimeMillis();
-						PdfDataExtractor pdfData = new PdfDataExtractor(file);
-						title = pdfData.extractTitle();
-						hash = pdfData.getUniqueHashCode();
-						avgSum += (System.currentTimeMillis()-time);
-					}
-					catch (Exception ex) {
-						pdfFails++;
-						LogUtils.warn(file.getName()+": "+ex.getMessage());
-					}
-					if(title == null) {
-						failCount++;
-					}
-					if(hash == null) {
-						hashCount++;
-					}
-					printer.println(file.getName()+";"+(title == null ? "NULL" : title));
-					System.out.println(file.getName()+";"+(hash == null ? "NULL" : hash)+";"+(title == null ? "NULL" : title));
-				}
-				
-				System.out.println("avg. item: "+(avgSum/fileList.length));
-				System.out.println("title fails: "+ failCount+"/"+fileList.length);
-				System.out.println("hash fails: "+ hashCount+"/"+fileList.length);
-				System.out.println("pdf read fails: "+ pdfFails+"/"+fileList.length);
-			}
-			finally {
-				printer.flush();
-				printer.close();
-			}
-		} catch (IOException ex) {
-			LogUtils.warn(ex);
-		}
-	}
-	
+	}	
 
 	private void writeToLog(NodeModel node) {
-		URI uri = Tools.getAbsoluteUri(node);
+		URI uri = URIUtils.getAbsoluteURI(node);
 		if(uri == null) {
 			return;
 		}
 		if ("file".equals(uri.getScheme())) {
-			File f = WorkspaceUtils.resolveURI(uri);
+			File f = URIUtils.getFile(uri);
 			//if map file is opened, then there is a MapLifeCycleListener Event
 			if (f != null && !f.getName().endsWith(".mm")) {
 				DocearController.getController().getDocearEventLogger().appendToLog(this, DocearLogEvent.FILE_OPENED,  f);
@@ -310,9 +211,7 @@ public class DocearNodeMouseMotionListener implements IMouseListener {
 				LogUtils.warn(ex);
 			}
 		}
-	}
-
-	
+	}	
 
 	public void mousePressed(MouseEvent e) {
 		final MainView component = (MainView) e.getComponent();

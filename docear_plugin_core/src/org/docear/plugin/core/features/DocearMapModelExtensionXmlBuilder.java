@@ -14,6 +14,7 @@ import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.n3.nanoxml.XMLElement;
+import org.freeplane.plugin.workspace.URIUtils;
 
 public class DocearMapModelExtensionXmlBuilder implements IElementDOMHandler, IExtensionAttributeWriter {
 	
@@ -116,7 +117,7 @@ public class DocearMapModelExtensionXmlBuilder implements IElementDOMHandler, IE
 					docearMapModel = new DocearMapModelExtension();
 					DocearMapModelController.setModel(mapModel, docearMapModel);
 				}			
-				docearMapModel.setUri(URI.create(value));
+				docearMapModel.setUri(URIUtils.createURI(value));
 			}
 			
 		});

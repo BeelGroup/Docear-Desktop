@@ -41,6 +41,8 @@ public interface WorkspaceTreeModel {
 	public void cutNodeFromParent(AWorkspaceTreeNode node);
 	
 	public void nodeMoved(AWorkspaceTreeNode node, Object from, Object to);
+	
+	public void nodeChanged(AWorkspaceTreeNode node, Object oldValue, Object newValue);
 		
 	public void changeNodeName(AWorkspaceTreeNode node, String newName) throws WorkspaceModelException;
 	

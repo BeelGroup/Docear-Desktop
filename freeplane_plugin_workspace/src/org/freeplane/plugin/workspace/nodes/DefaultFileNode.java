@@ -27,9 +27,12 @@ import org.apache.commons.io.FileUtils;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.LogUtils;
+import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mapio.MapIO;
 import org.freeplane.features.mode.Controller;
+import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.actions.WorkspaceNewProjectAction;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
 import org.freeplane.plugin.workspace.dnd.IDropAcceptor;
@@ -288,7 +291,7 @@ public class DefaultFileNode extends AWorkspaceTreeNode implements IWorkspaceNod
 	public Transferable getTransferable() {
 		WorkspaceTransferable transferable = new WorkspaceTransferable();
 		try {
-			URI uri = WorkspaceController.resolveURI(getFile().toURI());
+			URI uri = URIUtils.getAbsoluteURI(getFile().toURI());
 			transferable.addData(WorkspaceTransferable.WORKSPACE_URI_LIST_FLAVOR, uri.toString());
 			List<File> fileList = new Vector<File>();
 			fileList.add(new File(uri));
@@ -309,6 +312,9 @@ public class DefaultFileNode extends AWorkspaceTreeNode implements IWorkspaceNod
 		if (popupMenu == null) {			
 			popupMenu = new WorkspacePopupMenu();
 			WorkspacePopupMenuBuilder.addActions(popupMenu, new String[] {
+					WorkspacePopupMenuBuilder.createSubMenu(TextUtils.getRawText("workspace.action.new.label")),
+					WorkspaceNewProjectAction.KEY,
+					WorkspacePopupMenuBuilder.endSubMenu(),
 					"workspace.action.node.cut",
 					"workspace.action.node.copy",
 					"workspace.action.node.paste",

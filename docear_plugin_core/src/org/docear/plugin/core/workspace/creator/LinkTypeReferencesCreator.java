@@ -4,12 +4,10 @@
  */
 package org.docear.plugin.core.workspace.creator;
 
-import java.net.URI;
-
-import org.docear.plugin.core.CoreConfiguration;
-import org.docear.plugin.core.ui.LocationDialog;
 import org.docear.plugin.core.workspace.node.LinkTypeReferencesNode;
+import org.freeplane.core.util.TextUtils;
 import org.freeplane.n3.nanoxml.XMLElement;
+import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.model.AWorkspaceNodeCreator;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 
@@ -18,7 +16,7 @@ import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
  */
 public class LinkTypeReferencesCreator extends AWorkspaceNodeCreator {
 
-	public static final String LINK_TYPE_REFERENCES = "references";
+	public static final String LINK_TYPE_REFERENCES = LinkTypeReferencesNode.TYPE;
 	
 	
 
@@ -37,31 +35,15 @@ public class LinkTypeReferencesCreator extends AWorkspaceNodeCreator {
 	 **********************************************************************************/
 	
 	public AWorkspaceTreeNode getNode(XMLElement data) {
-		String type = data.getAttribute("type", LINK_TYPE_REFERENCES);
-		LinkTypeReferencesNode node = new LinkTypeReferencesNode(type);
-		//TODO: add missing attribute handling		
+		LinkTypeReferencesNode node = new LinkTypeReferencesNode();		
 		String name = data.getAttribute("name", null);
-		
 		if (name==null || name.trim().length()==0) {
-			name = "not yet set!";
+			name = TextUtils.getText(LinkTypeReferencesNode.class+".notyetset.text");
 		}
 		node.setName(name);
-		
 		String path = data.getAttribute("path", null);
-		//WORKSPACE - info: "NewProjectDialog"
-		if(path == null || path.trim().length() == 0) {
-//			URI uri = CoreConfiguration.referencePathObserver.getUri();
-//			if (uri == null) {
-//				LocationDialog.showWorkspaceChooserDialog();		    	
-//			}
-//			else {
-//				node.setLinkPath(uri);
-//			}
-			return node;
-		}
 		
-		node.setLinkPath(URI.create(path));
-			
+		node.setLinkURI(URIUtils.createURI(path));					
 		
 		return node;
 	}

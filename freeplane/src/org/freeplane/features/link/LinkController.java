@@ -89,18 +89,14 @@ import sun.net.www.ParseUtil;
 /**
  * @author Dimitry Polivaev
  */
-
+//WORKSPACE - todo: move every modification to MLinkController
 public class LinkController extends SelectionController implements IExtension {
 	public final static int LINK_ABSOLUTE = 0;
 	public final static int LINK_RELATIVE_TO_MINDMAP = 1;
-	//WORKSPACE todo: move every modification to MLinkController
-	public final static int LINK_RELATIVE_TO_PROJECT = 2;
-
+	
 //	private final static String LINK_ABSOLUTE_PROPERTY = "absolute";
 	private final static String LINK_RELATIVE_TO_MINDMAP_PROPERTY = "relative";
-	//WORKSPACE todo: settings might differ from project to project
-	private final static String LINK_RELATIVE_TO_PROJECT_PROPERTY = "relative_to_workspace";
-
+	
 	public static final String MENUITEM_SCHEME = "menuitem";
 
 	public static LinkController getController() {
@@ -429,12 +425,13 @@ public class LinkController extends SelectionController implements IExtension {
 	}
 
 	public static int getLinkType() {
+		return getController().linkType();
+	}
+	
+	public int linkType() {
 		String linkTypeProperty = ResourceController.getResourceController().getProperty("links");
 		if (linkTypeProperty.equals(LINK_RELATIVE_TO_MINDMAP_PROPERTY)) {
 			return LINK_RELATIVE_TO_MINDMAP;
-		}
-		else if (linkTypeProperty.equals(LINK_RELATIVE_TO_PROJECT_PROPERTY)) {
-			return LINK_RELATIVE_TO_PROJECT;
 		}
 		return LINK_ABSOLUTE;
 	}
@@ -452,6 +449,37 @@ public class LinkController extends SelectionController implements IExtension {
 	}
 	
 	public static URI toRelativeURI(final File map, final File input, final int linkType) {
+		return getController().createRelativeURI(map, input, linkType);
+	}
+	
+	public static URI normalizeURI(URI uri){
+		final String UNC_PREFIX = "//";
+		URI normalizedUri = uri.normalize();
+		//Fix UNC paths that are incorrectly normalized by URI#resolve (see Java bug 4723726)
+		String normalizedPath = normalizedUri.getPath();
+		if ("file".equalsIgnoreCase(uri.getScheme()) && uri.getPath() != null && uri.getPath().startsWith(UNC_PREFIX) && (normalizedPath == null || !normalizedPath.startsWith(UNC_PREFIX))){
+			try {
+				normalizedUri = new URI(normalizedUri.getScheme(), ensureUNCPath(normalizedUri.getSchemeSpecificPart()), normalizedUri.getFragment());
+			} catch (URISyntaxException e) {
+				LogUtils.warn(e);
+			}
+		}				
+		return normalizedUri;
+	}
+	
+	private static String ensureUNCPath(String path) {
+		int len = path.length();
+		StringBuffer result = new StringBuffer(len);
+		for (int i = 0; i < 4; i++) {
+			//    if we have hit the first non-slash character, add another leading slash
+			if (i >= len || result.length() > 0 || path.charAt(i) != '/')
+				result.append('/');
+		}
+		result.append(path);
+		return result.toString();
+	}
+	
+	public URI createRelativeURI(final File map, final File input, final int linkType) {
 		if (linkType == LINK_ABSOLUTE) {
 			return null;
 		}
@@ -459,13 +487,6 @@ public class LinkController extends SelectionController implements IExtension {
 			URI mapUri = null;
 			if (map != null) {
 				mapUri = map.getAbsoluteFile().toURI();
-			} 
-
-			if (linkType == LINK_RELATIVE_TO_PROJECT) {
-				URI workspaceLocation;
-				workspaceLocation = new File(ResourceController.getResourceController().getProperty("workspace_location")
-						+ File.separator).getAbsoluteFile().toURI();				
-				mapUri = workspaceLocation;
 			}
 			
 			final URI fileUri = input.getAbsoluteFile().toURI();
@@ -498,9 +519,6 @@ public class LinkController extends SelectionController implements IExtension {
 			}
 			relativePath.append(filePathAsString.substring(lastCommonSeparatorPos + 1));
 
-			if (linkType == LINK_RELATIVE_TO_PROJECT) {
-				return new URI(ResourceController.FREEPLANE_WORKSPACE_URL_PROTOCOL+":/"+relativePath.toString());
-			}
 			return new URI(relativePath.toString());
 		}
 		catch (final URISyntaxException e) {

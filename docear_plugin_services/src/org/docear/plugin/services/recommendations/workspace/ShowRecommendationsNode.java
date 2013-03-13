@@ -59,6 +59,10 @@ public class ShowRecommendationsNode extends AActionNode {
 	protected AWorkspaceTreeNode clone(ShowRecommendationsNode node) {
 		return super.clone(node);
 	}
+	
+	public final String getTagName() {
+		return null;
+	}
 
 	@Override
 	public AWorkspaceTreeNode clone() {

@@ -15,14 +15,18 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.event.DocearEvent;
 import org.docear.plugin.core.event.DocearEventType;
+import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.LogUtils;
+import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.mapio.MapIO;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.mindmapmode.MModeController;
+import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.actions.WorkspaceNewMapAction;
+import org.freeplane.plugin.workspace.actions.WorkspaceNewProjectAction;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
 import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
@@ -64,16 +68,12 @@ public class LinkTypeIncomingNode extends ALinkNode implements IWorkspaceNodeAct
 	 **********************************************************************************/
 	
 	@ExportAsAttribute(name="path")
-	public URI getLinkPath() {
+	public URI getLinkURI() {
 		return linkPath;
 	}
 	
 	public void setLinkPath(URI linkPath) {
 		this.linkPath = linkPath;
-		if(this.linkPath != null) {
-			DocearEvent event = new DocearEvent(this, DocearEventType.LIBRARY_NEW_MINDMAP_INDEXING_REQUEST, getLinkPath());
-			DocearController.getController().dispatchDocearEvent(event);
-		}
 	}
 	
 	public boolean setIcons(DefaultTreeCellRenderer renderer) {
@@ -88,6 +88,10 @@ public class LinkTypeIncomingNode extends ALinkNode implements IWorkspaceNodeAct
 						
 			popupMenu  = new WorkspacePopupMenu();
 			WorkspacePopupMenuBuilder.addActions(popupMenu, new String[] {
+					WorkspacePopupMenuBuilder.createSubMenu(TextUtils.getRawText("workspace.action.new.label")),
+					WorkspaceNewProjectAction.KEY,
+					WorkspacePopupMenuBuilder.endSubMenu(),
+					WorkspacePopupMenuBuilder.SEPARATOR,
 					"workspace.action.node.cut",
 					"workspace.action.node.copy",
 					"workspace.action.node.paste",
@@ -103,7 +107,7 @@ public class LinkTypeIncomingNode extends ALinkNode implements IWorkspaceNodeAct
 	}
 	
 	protected AWorkspaceTreeNode clone(LinkTypeIncomingNode node) {
-		node.setLinkPath(getLinkPath());
+		node.setLinkPath(getLinkURI());
 		return super.clone(node);
 	}
 	
@@ -114,13 +118,13 @@ public class LinkTypeIncomingNode extends ALinkNode implements IWorkspaceNodeAct
 	public void handleAction(WorkspaceActionEvent event) {
 		if (event.getType() == WorkspaceActionEvent.MOUSE_LEFT_DBLCLICK) {
 			try {				
-				File f = WorkspaceController.resolveFile(getLinkPath());
+				File f = URIUtils.getAbsoluteFile(getLinkURI());
 				if(f == null) {
 					return;
 				}
 				if (!f.exists()) {
 					if(WorkspaceNewMapAction.createNewMap(f.toURI(), getName(), true) == null) {
-						LogUtils.warn("could not create " + getLinkPath());
+						LogUtils.warn("could not create " + getLinkURI());
 					}
 				}
 				
@@ -130,7 +134,7 @@ public class LinkTypeIncomingNode extends ALinkNode implements IWorkspaceNodeAct
 				try {
 					if(mapIO.newMap(f.toURI().toURL())) {
 						MapModel map = Controller.getCurrentController().getMap();						
-						DocearEvent evnt = new DocearEvent(this, DocearEventType.NEW_INCOMING, map);
+						DocearEvent evnt = new DocearEvent(this, (DocearWorkspaceProject) WorkspaceController.getCurrentModel().getProject(getModel()), DocearEventType.NEW_INCOMING, map);
 						DocearController.getController().dispatchDocearEvent(evnt);
 					}
 				}
@@ -139,7 +143,7 @@ public class LinkTypeIncomingNode extends ALinkNode implements IWorkspaceNodeAct
 				}
 			}
 			catch (Exception e) {
-				LogUtils.warn("could not open document (" + getLinkPath() + ")", e);
+				LogUtils.warn("could not open document (" + getLinkURI() + ")", e);
 			}
 		}
 		else if (event.getType() == WorkspaceActionEvent.MOUSE_RIGHT_CLICK) {			

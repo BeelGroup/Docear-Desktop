@@ -7,7 +7,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
-import org.docear.plugin.core.util.Tools;
 import org.freeplane.core.util.TextUtils;
 
 import com.jgoodies.forms.factories.FormFactory;
@@ -67,7 +66,7 @@ public class AnnotationConflictPanel extends JPanel {
 	}
 	
 	public void setTitle(String annotationTitle){
-		label.setText(TextUtils.getText("AnnotationConflictPanel.13") + Tools.reshapeString(annotationTitle, 100) + "\""); //$NON-NLS-1$ //$NON-NLS-2$
+		label.setText(TextUtils.getText("AnnotationConflictPanel.13") + reshapeString(annotationTitle, 100) + "\""); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public void addDropdownBoxPanel(AnnotationConflictDropdownBoxPanel dropdownBoxPanel){
@@ -80,6 +79,15 @@ public class AnnotationConflictPanel extends JPanel {
 		this.panel.add(dropdownBoxPanel, "2, " + (formLayout.getRowCount() - 1) + ", fill, top"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
+	
+	private String reshapeString(String s, int i) {
+		s = s.trim();
+		if(s.length() > i){
+			s = s.substring(0, i - 4);
+			s = s + "...";
+		}
+		return s;
+	}
 	
 
 }

@@ -5,7 +5,6 @@ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.net.URI;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -23,7 +22,6 @@ import org.docear.plugin.core.logging.DocearLogger;
 import org.docear.plugin.services.ServiceController;
 import org.docear.plugin.services.communications.CommunicationsController;
 import org.freeplane.features.map.MapModel;
-import org.freeplane.plugin.workspace.WorkspaceController;
 
 public abstract class UploadController {
 	private final File uploadBufferDirectory = new File(CommunicationsController.getController().getCommunicationsQueuePath(), "mindmaps");
@@ -245,18 +243,8 @@ public abstract class UploadController {
 			return null;
 		}
 		
-		boolean isLibraryMap = false;
-		for (URI uri : DocearController.getController().getLibrary().getMindmaps()) { 
-			if (uri != null && map != null) {
-				String path = map.getFile().getAbsolutePath(); 
-				File f = WorkspaceController.resolveFile(uri);
+		boolean isLibraryMap = DocearController.getController().isLibraryMap(map);
 				
-				if (f != null && f.getAbsolutePath().equals(path)) {
-					isLibraryMap = true;
-				}
-			}
-		}
-		
 		String typeName = (dmme.getType() == null ? "" : dmme.getType().name());
 		
 		Properties properties = new Properties();

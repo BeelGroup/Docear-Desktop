@@ -2,30 +2,27 @@ package org.docear.plugin.core.workspace.actions;
 
 import java.awt.event.ActionEvent;
 
-import org.docear.plugin.core.IDocearLibrary;
-import org.freeplane.plugin.workspace.WorkspaceController;
-import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
+import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
+import org.freeplane.plugin.workspace.URIUtils;
+import org.freeplane.plugin.workspace.actions.NodeOpenLocationAction;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
-public class DocearLibraryOpenLocation /*extends NodeOpenLocationAction*/ {
+public class DocearLibraryOpenLocation extends NodeOpenLocationAction {
 	
-	//WORKSPACE - todo: implement
-	/**
-	 * 
-	 */
-//	private static final long serialVersionUID = 1L;
-//
-//	public DocearLibraryOpenLocation() {
-//		super();
-//	}
-//	
-//	public void actionPerformed(ActionEvent event) {
-//		AWorkspaceTreeNode targetNode = getNodeFromActionEvent(event);
-//		if(targetNode instanceof IDocearLibrary) {
-//			this.openFolder(WorkspaceController.resolveURI(((IDocearLibrary) targetNode).getLibraryPath()));
-//		}
-//		else {
-//			super.actionPerformed(event);
-//		}
-//	}
+	private static final long serialVersionUID = 1L;
+
+	public DocearLibraryOpenLocation() {
+		super();
+	}
+	
+	public void actionPerformed(ActionEvent event) {
+		AWorkspaceProject project = getProjectFromActionEvent(event);
+		if(project != null && project instanceof DocearWorkspaceProject) {
+			this.openFolder(URIUtils.getAbsoluteFile(((DocearWorkspaceProject)project).getProjectLibraryPath()));
+		}
+		else {
+			super.actionPerformed(event);
+		}
+	}
 
 }

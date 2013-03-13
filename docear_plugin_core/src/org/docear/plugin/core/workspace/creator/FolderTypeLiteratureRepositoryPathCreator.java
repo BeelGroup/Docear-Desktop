@@ -4,6 +4,7 @@ import java.net.URI;
 
 import org.docear.plugin.core.workspace.node.LiteratureRepositoryPathNode;
 import org.freeplane.n3.nanoxml.XMLElement;
+import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.model.AWorkspaceNodeCreator;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 
@@ -13,9 +14,10 @@ public class FolderTypeLiteratureRepositoryPathCreator extends AWorkspaceNodeCre
 
 	public AWorkspaceTreeNode getNode(XMLElement data) {
 		final String path = data.getAttribute("path", null);
+		final String name = data.getAttribute("name", null);
 		boolean descending = Boolean.parseBoolean(data.getAttribute("orderDescending", "false"));
 		try {
-			return newPathItem(URI.create(path), descending);
+			return newPathItem(name, URIUtils.createURI(path), descending);
     	}
     	catch (Exception ex) {
     		return null;
@@ -24,9 +26,10 @@ public class FolderTypeLiteratureRepositoryPathCreator extends AWorkspaceNodeCre
 
 
 
-	public static AWorkspaceTreeNode newPathItem(final URI path, boolean descending) {
+	public static AWorkspaceTreeNode newPathItem(String name, final URI path, boolean descending) {
 		LiteratureRepositoryPathNode node = new LiteratureRepositoryPathNode();
 		node.orderDescending(descending);
+		node.setName(name);
 		if(path == null) {
 			return null;
 		}

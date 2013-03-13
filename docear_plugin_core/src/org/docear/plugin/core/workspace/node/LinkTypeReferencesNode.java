@@ -21,16 +21,12 @@ import java.net.URI;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
-import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.IBibtexDatabase;
-import org.docear.plugin.core.event.DocearEvent;
-import org.docear.plugin.core.event.DocearEventType;
-import org.docear.plugin.core.workspace.node.config.NodeAttributeObserver;
-import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.core.util.TextUtils;
+import org.freeplane.plugin.workspace.URIUtils;
+import org.freeplane.plugin.workspace.actions.WorkspaceNewProjectAction;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
@@ -40,23 +36,21 @@ import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
 /**
  * 
  */
-public class LinkTypeReferencesNode extends LinkTypeFileNode implements IBibtexDatabase, ChangeListener {
+public class LinkTypeReferencesNode extends LinkTypeFileNode implements IBibtexDatabase {
+	public static final String TYPE = "references";
 	private static final String DEFAULT_REFERENCE_TEMPLATE = "/conf/reference_db.bib";
 	private static final Icon DEFAULT_ICON = new ImageIcon(LinkTypeReferencesNode.class.getResource("/images/text-x-bibtex.png"));
 
 	private static final long serialVersionUID = 1L;
-
-	private boolean locked = false;	
+	
 	private WorkspacePopupMenu popupMenu = null;
 	
 	/***********************************************************************************
 	 * CONSTRUCTORS
 	 **********************************************************************************/
 
-	public LinkTypeReferencesNode(String type) {
-		super(type);
-		//WORKSPACE - todo implement observer structure
-//		CoreConfiguration.referencePathObserver.addChangeListener(this);
+	public LinkTypeReferencesNode() {
+		super(TYPE);
 	}
 	
 	/***********************************************************************************
@@ -80,26 +74,15 @@ public class LinkTypeReferencesNode extends LinkTypeFileNode implements IBibtexD
 	}
 
 	public AWorkspaceTreeNode clone() {
-		LinkTypeReferencesNode node = new LinkTypeReferencesNode(this.getType());
+		LinkTypeReferencesNode node = new LinkTypeReferencesNode();
 		return clone(node);
 	}
 	
-	public void disassociateReferences()  {
-//		CoreConfiguration.referencePathObserver.removeChangeListener(this);
-	}
-	
-	public void setLinkPath(URI uri) {
-		super.setLinkPath(uri);
-		if(!locked) {
-			locked = true;
-//			CoreConfiguration.referencePathObserver.setUri(uri);
-			locked = false;
-		}
+	public void setLinkURI(URI uri) {
+		super.setLinkURI(uri);
 		if (uri != null) {
 			createIfNeeded(uri);
-		}		
-		DocearEvent event = new DocearEvent(this, DocearEventType.LIBRARY_NEW_REFERENCES_INDEXING_REQUEST, this);
-		DocearController.getController().dispatchDocearEvent(event);
+		}
 	}
 	
 	public void setName(String name) {
@@ -111,6 +94,10 @@ public class LinkTypeReferencesNode extends LinkTypeFileNode implements IBibtexD
 						
 			popupMenu = new WorkspacePopupMenu();
 			WorkspacePopupMenuBuilder.addActions(popupMenu, new String[] {
+					WorkspacePopupMenuBuilder.createSubMenu(TextUtils.getRawText("workspace.action.new.label")),
+					WorkspaceNewProjectAction.KEY,
+					WorkspacePopupMenuBuilder.endSubMenu(),
+					WorkspacePopupMenuBuilder.SEPARATOR,
 					"workspace.action.docear.uri.change",					
 					WorkspacePopupMenuBuilder.SEPARATOR,
 					"workspace.action.node.cut",
@@ -140,7 +127,7 @@ public class LinkTypeReferencesNode extends LinkTypeFileNode implements IBibtexD
 		
 	private void createIfNeeded(URI uri) {
 		try {
-			File file = WorkspaceController.resolveFile(uri);
+			File file = URIUtils.getAbsoluteFile(uri);
 			if(file != null) {
 				if (!file.getParentFile().exists()) {
 					if(!file.getParentFile().mkdirs()) {
@@ -198,15 +185,6 @@ public class LinkTypeReferencesNode extends LinkTypeFileNode implements IBibtexD
 	 * REQUIRED METHODS FOR INTERFACES
 	 **********************************************************************************/
 	public URI getUri() {
-		return this.getLinkPath();
-	}
-
-	public void stateChanged(ChangeEvent e) {
-		if(!locked && e.getSource() instanceof NodeAttributeObserver<?>) {
-			locked = true;
-			URI uri = ((NodeAttributeObserver<URI>) e.getSource()).getValue();			
-			this.setLinkPath(uri);
-			locked = false;
-		}
+		return this.getLinkURI();
 	}
 }

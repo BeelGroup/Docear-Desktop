@@ -7,12 +7,14 @@ import java.awt.dnd.DropTargetDropEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import javax.swing.SwingUtilities;
 
@@ -22,7 +24,7 @@ import org.docear.plugin.core.event.DocearEventType;
 import org.docear.plugin.core.features.DocearMapModelExtension;
 import org.docear.plugin.core.features.MapModificationSession;
 import org.docear.plugin.core.ui.SwingWorkerDialog;
-import org.docear.plugin.core.util.Tools;
+import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
 import org.docear.plugin.pdfutilities.pdf.PdfAnnotationImporter;
@@ -35,6 +37,7 @@ import org.freeplane.features.clipboard.MindMapNodesSelection;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
+import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.view.swing.features.filepreview.ViewerController;
 import org.freeplane.view.swing.map.MainView;
 import org.freeplane.view.swing.map.NodeView;
@@ -96,7 +99,7 @@ public class DocearNodeDropListener extends MNodeDropListener {
 	    		}
 	    		else if(transferable.isDataFlavorSupported(uriListFlavor)){
 	    			dtde.acceptDrop(dtde.getDropAction());
-	    		    fileList = Tools.textURIListToFileList((String) transferable.getTransferData(uriListFlavor));
+	    		    fileList = textURIListToFileList((String) transferable.getTransferData(uriListFlavor));
 	    		}
 	            
 	            Iterator<NodeModel> iter = nodes.iterator();
@@ -116,6 +119,27 @@ public class DocearNodeDropListener extends MNodeDropListener {
 			modelExtension.resetModificationSession();
 		}
 		 super.drop(dtde);
+	}
+	
+	public static List<File> textURIListToFileList(String data) {
+	    List<File> list = new ArrayList<File>();
+	    StringTokenizer stringTokenizer = new StringTokenizer(data, "\r\n");
+	    while(stringTokenizer.hasMoreTokens()) {
+	    	String string = stringTokenizer.nextToken();
+	    	// the line is a comment (as per the RFC 2483)
+	    	if (string.startsWith("#")) continue;
+		    		    
+			try {
+				URI uri = new URI(string);
+				File file = new File(uri);
+			    list.add(file);
+			} catch (URISyntaxException e) {
+				LogUtils.warn("DocearNodeDropListener could not parse uri to file because an URISyntaxException occured. URI: " + string);
+			} catch (IllegalArgumentException e) {
+				LogUtils.warn("DocearNodeDropListener could not parse uri to file because an IllegalArgumentException occured. URI: " + string);
+		    }	    
+	    }	     
+	    return list;
 	}
 
 	public static void pasteFileList(final List<File> fileList, final NodeModel targetNode, final boolean isLeft)
@@ -168,7 +192,8 @@ public class DocearNodeDropListener extends MNodeDropListener {
 							            	for(AnnotationModel annotation : getInsertedNodes(finalAnnotations)){
 												firePropertyChange(SwingWorkerDialog.DETAILS_LOG_TEXT, null, TextUtils.getText("DocearNodeDropListener.4") + annotation.getTitle() +TextUtils.getText("DocearNodeDropListener.5"));												 //$NON-NLS-1$ //$NON-NLS-2$
 											}	
-							            	DocearEvent event = new DocearEvent(newNode, DocearEventType.MINDMAP_ADD_PDF_TO_NODE, true);
+							            	
+							            	DocearEvent event = new DocearEvent(newNode, (DocearWorkspaceProject) WorkspaceController.getProject(newNode.getMap()), DocearEventType.MINDMAP_ADD_PDF_TO_NODE, true);
 							            	DocearController.getController().dispatchDocearEvent(event);
 						            	}
 						            	catch (Exception e) {

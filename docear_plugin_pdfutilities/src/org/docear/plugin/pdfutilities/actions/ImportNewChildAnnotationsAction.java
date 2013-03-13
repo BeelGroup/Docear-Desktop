@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.docear.plugin.core.features.AnnotationID;
-import org.docear.plugin.core.util.Tools;
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
 import org.docear.plugin.pdfutilities.features.AnnotationNodeModel;
 import org.docear.plugin.pdfutilities.features.IAnnotation;
@@ -20,6 +19,7 @@ import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
+import org.freeplane.plugin.workspace.URIUtils;
 
 @EnabledAction( checkOnPopup = true, checkOnNodeChange = true )
 public class ImportNewChildAnnotationsAction extends ImportAnnotationsAction {
@@ -46,7 +46,7 @@ public class ImportNewChildAnnotationsAction extends ImportAnnotationsAction {
 		
 		else{			
 			PdfAnnotationImporter importer = new PdfAnnotationImporter();    
-			URI uri = Tools.getAbsoluteUri(selected);
+			URI uri = URIUtils.getAbsoluteURI(selected);
 			try {
 				AnnotationModel annotation = importer.searchAnnotation(uri, selected);			
 				Map<AnnotationID, Collection<AnnotationNodeModel>> oldAnnotations = MonitoringUtils.getOldAnnotationsFromCurrentMap();				

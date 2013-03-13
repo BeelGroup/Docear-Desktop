@@ -10,7 +10,7 @@ import org.docear.plugin.pdfutilities.util.MonitoringUtils;
 import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.plugin.workspace.URIUtils;
 
 @EnabledAction( checkOnPopup = true )
 public class DeleteMonitoringFolderAction extends AbstractMonitoringAction {
@@ -29,7 +29,7 @@ public class DeleteMonitoringFolderAction extends AbstractMonitoringAction {
 		URI uri = MonitoringUtils.getPdfDirFromMonitoringNode(selected);
 		File folder = null;
 		if (uri != null) {
-			folder = WorkspaceUtils.resolveURI(uri);
+			folder = URIUtils.getAbsoluteFile(uri);
 		}
 		
 		MonitoringUtils.removeMonitoringEntries(selected);

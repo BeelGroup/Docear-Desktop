@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.docear.plugin.core.features.AnnotationID;
-import org.docear.plugin.core.util.Tools;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
 import org.docear.plugin.pdfutilities.features.IAnnotation;
@@ -24,6 +23,7 @@ import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
+import org.freeplane.plugin.workspace.URIUtils;
 
 import de.intarsys.pdf.cds.CDSNameTreeEntry;
 import de.intarsys.pdf.cds.CDSNameTreeNode;
@@ -117,8 +117,9 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		} catch(COSLoadException e){
 			LogUtils.info("COSLoadException during update file: "+ uri); //$NON-NLS-1$
 		}
-		AnnotationModel root = new AnnotationModel(new AnnotationID(Tools.getAbsoluteUri(uri), 0), AnnotationType.PDF_FILE);
-		root.setTitle(Tools.getFilefromUri(Tools.getAbsoluteUri(uri)).getName());
+		URI absoluteUri = URIUtils.getAbsoluteURI(uri);
+		AnnotationModel root = new AnnotationModel(new AnnotationID(absoluteUri, 0), AnnotationType.PDF_FILE);
+		root.setTitle(URIUtils.getFile(absoluteUri).getName());
 		root.getChildren().addAll(importedAnnotations);	
 		return root;
 	}
@@ -180,10 +181,12 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 
 	public PDDocument getPDDocument(URI uri) throws IOException,	COSLoadException, COSRuntimeException {
 		MapModel map = Controller.getCurrentController().getMap();
-		if(uri == null || Tools.getFilefromUri(Tools.getAbsoluteUri(uri, map)) == null || !Tools.exists(uri, map) || !new PdfFileFilter().accept(uri)){
+		URI absoluteUri = URIUtils.resolveURI(URIUtils.getAbsoluteURI(map), uri);
+		File file = URIUtils.getFile(absoluteUri);
+		if(uri == null || file == null || !file.exists() || !new PdfFileFilter().accept(uri)){
 			return null;
 		}
-		File file = Tools.getFilefromUri(Tools.getAbsoluteUri(uri, map));
+		
 		
 		FileLocator locator = new FileLocator(file);		
 		PDDocument document = PDDocument.createFromLocator(locator);

@@ -8,7 +8,7 @@ import javax.swing.JOptionPane;
 import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.TextUtils;
-import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
@@ -58,7 +58,7 @@ public class FileNodeDeleteAction extends AWorkspaceAction {
 			((DefaultFileNode) node).delete();
 		} 
 		else if (node instanceof LinkTypeFileNode) {						
-			File file = WorkspaceController.resolveFile(((LinkTypeFileNode) node).getLinkPath());
+			File file = URIUtils.getAbsoluteFile(((LinkTypeFileNode) node).getLinkURI());
 			if(file != null) {
 				if(!file.delete()) {
 					//show message?

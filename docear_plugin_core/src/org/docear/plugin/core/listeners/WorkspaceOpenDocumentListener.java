@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.logger.DocearLogEvent;
+import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
@@ -21,7 +22,7 @@ public class WorkspaceOpenDocumentListener implements IWorkspaceNodeActionListen
 				f = ((IFileSystemRepresentation) targetNode).getFile();
 			} 
 			else if(targetNode instanceof ALinkNode) {				
-				f = WorkspaceController.resolveFile(((ALinkNode) targetNode).getLinkPath());
+				f = URIUtils.getAbsoluteFile(((ALinkNode) targetNode).getLinkURI());
 			}
 			if (f != null && !f.getName().toLowerCase().endsWith(".mm")) {
 				DocearController.getController().getDocearEventLogger().appendToLog(this, DocearLogEvent.FILE_OPENED, f);

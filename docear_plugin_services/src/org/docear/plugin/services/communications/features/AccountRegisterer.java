@@ -1,6 +1,5 @@
 package org.docear.plugin.services.communications.features;
 
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;

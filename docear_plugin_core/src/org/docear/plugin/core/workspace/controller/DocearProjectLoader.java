@@ -1,7 +1,9 @@
 package org.docear.plugin.core.workspace.controller;
 
+import java.awt.datatransfer.DataFlavor;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.Locale;
 
 import org.apache.commons.io.IOExceptionWithCause;
@@ -14,18 +16,21 @@ import org.docear.plugin.core.workspace.creator.LinkTypeMyPublicationsCreator;
 import org.docear.plugin.core.workspace.creator.LinkTypeReferencesCreator;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.docear.plugin.core.workspace.node.FolderTypeLibraryNode;
+import org.docear.plugin.core.workspace.node.FolderTypeLiteratureRepositoryNode;
 import org.docear.plugin.core.workspace.node.LinkTypeIncomingNode;
 import org.docear.plugin.core.workspace.node.LinkTypeLiteratureAnnotationsNode;
 import org.docear.plugin.core.workspace.node.LinkTypeMyPublicationsNode;
+import org.docear.plugin.core.workspace.node.LinkTypeReferencesNode;
+import org.docear.plugin.core.workspace.node.LiteratureRepositoryPathNode;
+import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
-import org.freeplane.features.mode.Controller;
-import org.freeplane.plugin.workspace.WorkspaceController;
-import org.freeplane.plugin.workspace.actions.WorkspaceNewMapAction;
-import org.freeplane.plugin.workspace.mindmapmode.MModeWorkspaceLinkController;
+import org.freeplane.plugin.workspace.URIUtils;
+import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.model.AWorkspaceNodeCreator;
+import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
+import org.freeplane.plugin.workspace.model.IResultProcessor;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.model.project.ProjectLoader;
-import org.freeplane.plugin.workspace.nodes.AFolderNode;
 import org.freeplane.plugin.workspace.nodes.FolderTypeMyFilesNode;
 import org.freeplane.plugin.workspace.nodes.FolderVirtualNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
@@ -40,6 +45,7 @@ public class DocearProjectLoader extends ProjectLoader {
 	private LinkTypeLiteratureAnnotationsCreator linkTypeLiteratureAnnotationsCreator;
 	private LinkTypeMyPublicationsCreator linkTypeMyPublicationsCreator;
 	private LinkTypeReferencesCreator linkTypeReferencesCreator;
+	private IResultProcessor resultProcessor;
 	
 	
 	//DOCEAR - required for backwards compatibility   
@@ -119,15 +125,17 @@ public class DocearProjectLoader extends ProjectLoader {
 		return linkTypeReferencesCreator;
 	}
 	
-	public synchronized void loadProject(AWorkspaceProject project) throws IOException {
+	public synchronized LOAD_RETURN_TYPE loadProject(AWorkspaceProject project) throws IOException {
 		try {
-			File projectSettings = new File(WorkspaceController.resolveFile(project.getProjectDataPath()),"settings.xml");
+			File projectSettings = new File(URIUtils.getAbsoluteFile(project.getProjectDataPath()),"settings.xml");
 			if(projectSettings.exists()) {
 				getDefaultResultProcessor().setProject(project);
 				load(projectSettings.toURI());
+				return LOAD_RETURN_TYPE.EXISTING_PROJECT;
 			}
 			else {
-				createDefaultProject((DocearWorkspaceProject)project);				
+				createDefaultProject((DocearWorkspaceProject)project);
+				return LOAD_RETURN_TYPE.NEW_PROJECT;
 			}
 		}
 		catch (Exception e) {
@@ -135,49 +143,93 @@ public class DocearProjectLoader extends ProjectLoader {
 		}
 	}
 	
+	public IResultProcessor getDefaultResultProcessor() {
+		if(this.resultProcessor == null) {
+			this.resultProcessor = new DocearResultProcessor();
+		}
+		return this.resultProcessor;
+	}
+	
 	private void createDefaultProject(DocearWorkspaceProject project) {
+		File home = URIUtils.getFile(project.getProjectHome());
+		if(!home.exists()) {
+			home.mkdirs();
+		}
 		ProjectRootNode root = new ProjectRootNode();
 		root.setProjectID(project.getProjectID());				
 		root.setModel(project.getModel());
-		root.setName(WorkspaceController.resolveFile(project.getProjectHome()).getName());
-		root.setProjectID(project.getProjectID());
+		root.setName(home.getName());
+		
 		project.getModel().setRoot(root);
+		
 		
 		// create and load all default nodes
 		FolderTypeLibraryNode libNode = new FolderTypeLibraryNode();
 		libNode.setName(TextUtils.getText(libNode.getClass().getName().toLowerCase(Locale.ENGLISH)+".label" ));
 		project.getModel().addNodeTo(libNode, root);
 		
+		URI libPath = project.getRelativeURI(project.getProjectLibraryPath());
+		
 		LinkTypeIncomingNode incomNode = new LinkTypeIncomingNode();
-		incomNode.setLinkPath(MModeWorkspaceLinkController.extendPath(libNode.getLibraryPath(), "incoming.mm"));
+		incomNode.setLinkPath(URIUtils.createURI(libPath.toString()+"/incoming.mm"));
 		incomNode.setName(TextUtils.getText(incomNode.getClass().getName().toLowerCase(Locale.ENGLISH)+".label" ));
 		project.getModel().addNodeTo(incomNode, libNode);
 		
 		LinkTypeLiteratureAnnotationsNode litNode = new LinkTypeLiteratureAnnotationsNode();
-		litNode.setLinkPath(MModeWorkspaceLinkController.extendPath(libNode.getLibraryPath(), "literature_and_annotations.mm"));
+		litNode.setLinkPath(URIUtils.createURI(libPath.toString()+"/literature_and_annotations.mm"));
 		litNode.setName(TextUtils.getText(litNode.getClass().getName().toLowerCase(Locale.ENGLISH)+".label" ));
 		project.getModel().addNodeTo(litNode, libNode);
 		
 		LinkTypeMyPublicationsNode pubNode = new LinkTypeMyPublicationsNode();
-		pubNode.setLinkPath(MModeWorkspaceLinkController.extendPath(libNode.getLibraryPath(), "my_publications.mm"));
+		pubNode.setLinkPath(URIUtils.createURI(libPath.toString()+"/my_publications.mm"));
 		pubNode.setName(TextUtils.getText(pubNode.getClass().getName().toLowerCase(Locale.ENGLISH)+".label" ));
 		project.getModel().addNodeTo(pubNode, libNode);
 		
 		LinkTypeFileNode tempNode = new LinkTypeFileNode();
-		tempNode.setLinkPath(MModeWorkspaceLinkController.extendPath(libNode.getLibraryPath(), "temp.mm"));
+		tempNode.setLinkURI(URIUtils.createURI(libPath.toString()+"/temp.mm"));
 		tempNode.setName(TextUtils.getText(tempNode.getClass().getName().toLowerCase(Locale.ENGLISH)+".temp.label" ));
 		tempNode.setSystem(true);
 		project.getModel().addNodeTo(tempNode, libNode);
 		
 		LinkTypeFileNode trashNode = new LinkTypeFileNode();
-		trashNode.setLinkPath(MModeWorkspaceLinkController.extendPath(libNode.getLibraryPath(), "trash.mm"));
+		trashNode.setLinkURI(URIUtils.createURI(libPath.toString()+"/trash.mm"));
 		trashNode.setName(TextUtils.getText(trashNode.getClass().getName().toLowerCase(Locale.ENGLISH)+".trash.label" ));
 		trashNode.setSystem(true);
 		project.getModel().addNodeTo(trashNode, libNode);
+				
+		FolderVirtualNode refs = new FolderVirtualNode() {
+			private static final long serialVersionUID = 1L;
+
+			public WorkspacePopupMenu getContextMenu() {
+				return null;
+			}
+			
+			public boolean acceptDrop(DataFlavor[] flavors) {
+				return false;
+			}
+		};
+		refs.setName(TextUtils.getText(FolderTypeMyFilesNode.class.getPackage().getName().toLowerCase(Locale.ENGLISH)+".refnode.name"));
+		refs.setSystem(true);
+		project.getModel().addNodeTo(refs, root);
+		
+		LinkTypeReferencesNode defaultRef = new LinkTypeReferencesNode();
+		defaultRef.setName(TextUtils.getText(FolderTypeMyFilesNode.class.getPackage().getName().toLowerCase(Locale.ENGLISH)+".refnode.name"));
+		defaultRef.setLinkURI(URIUtils.createURI(libPath.toString()+"/default.bib"));
+		project.getModel().addNodeTo(defaultRef, refs);
+				
+		FolderTypeLiteratureRepositoryNode litRepoNode = new FolderTypeLiteratureRepositoryNode();
+		litRepoNode.setSystem(true);		
+		project.getModel().addNodeTo(litRepoNode, root);
+		
+		LiteratureRepositoryPathNode pathNode = new LiteratureRepositoryPathNode();
+		pathNode.setPath(URIUtils.createURI(libPath.toString()+"/literature_repositiory"));
+		pathNode.setName(TextUtils.getText(pathNode.getClass().getName().toLowerCase(Locale.ENGLISH)+".default.label" ));
+		pathNode.setSystem(true);
+		project.getModel().addNodeTo(pathNode, litRepoNode);		
 		
 		root.initiateMyFile(project);
 		
-		FolderVirtualNode misc = new FolderVirtualNode(AFolderNode.FOLDER_TYPE_VIRTUAL);
+		FolderVirtualNode misc = new FolderVirtualNode();
 		misc.setName(TextUtils.getText(FolderTypeMyFilesNode.class.getPackage().getName().toLowerCase(Locale.ENGLISH)+".miscnode.name"));
 		project.getModel().addNodeTo(misc, root);
 		//misc -> help.mm
@@ -185,6 +237,52 @@ public class DocearProjectLoader extends ProjectLoader {
 	}
 	
 	/***********************************************************************************
-	 * REQUIRED METHODS FOR INTERFACES
+	 * NESTED CLASSES
 	 **********************************************************************************/
+	
+	private class DocearResultProcessor implements IResultProcessor {
+
+		private AWorkspaceProject project;
+
+		public AWorkspaceProject getProject() {
+			return project;
+		}
+
+		public void setProject(AWorkspaceProject project) {
+			this.project = project;
+		}
+
+		public void process(AWorkspaceTreeNode parent, AWorkspaceTreeNode node) {
+			if(getProject() == null) {
+				LogUtils.warn("Missing project container! cannot add node to a model.");
+				return;
+			}
+			if(node instanceof ProjectRootNode) {
+				getProject().getModel().setRoot(node);
+				if(((ProjectRootNode) node).getProjectID() == null) {
+					((ProjectRootNode) node).setProjectID(getProject().getProjectID());
+				}
+				
+			}
+			else {
+				if(parent == null) {
+					if (!getProject().getModel().containsNode(node.getKey())) {
+						getProject().getModel().addNodeTo(node, parent);			
+					}
+				}
+				else {
+					if (!parent.getModel().containsNode(node.getKey())) {
+						parent.getModel().addNodeTo(node, parent);			
+					}
+				}
+				//add myFiles after a certain node type
+//				if(node instanceof FolderTypeLibraryNode)
+				if(node instanceof FolderTypeLiteratureRepositoryNode)
+				{
+					((ProjectRootNode) parent.getModel().getRoot()).initiateMyFile(getProject());
+				}
+			}
+		}
+
+	}
 }

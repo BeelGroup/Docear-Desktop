@@ -1,5 +1,15 @@
 package org.docear.plugin.core.util;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
+import org.freeplane.plugin.workspace.URIUtils;
+
 
 public class Tools {
 	
@@ -140,44 +150,7 @@ public class Tools {
 //		}
 //		return false;
 //	}
-//
-//	public static List<URI> getFilteredFileList(URI absoluteURI, FileFilter fileFilter, boolean readSubDirectories) {
-//		List<URI> result = new ArrayList<URI>();
-//		Collection<File> tempResult = new ArrayList<File>();
-//		if(!absoluteURI.isAbsolute()) return result;
-//		
-//		File monitoringDir = Tools.getFilefromUri(absoluteURI);
-//		File[] monitorFiles = monitoringDir.listFiles(fileFilter);
-//		if(monitorFiles != null && monitorFiles.length > 0){
-//			tempResult.addAll(Arrays.asList(monitorFiles));
-//		}	
-//		for(File file : tempResult){
-//			result.add(file.toURI());
-//		}
-//		if(readSubDirectories){
-//			File[] subDirs = monitoringDir.listFiles(new DirectoryFileFilter());
-//			if(subDirs != null && subDirs.length > 0){
-//				for(File subDir : subDirs){
-//					result.addAll(Tools.getFilteredFileList(subDir.toURI(), fileFilter, readSubDirectories));
-//				}
-//			}			
-//		}		
-//		return result;
-//	}
-//
-//	public static List<String> getStringList(String property) {
-//		List<String> result = new ArrayList<String>();
-//		
-//		if(property == null || property.length() <= 0) return result;
-//		property = property.trim();		
-//		String[] list = property.split("\\|");
-//		for(String s : list){
-//			if(s != null && s.length() > 0){
-//				result.add(s);
-//			}
-//		}
-//		return result;
-//	}
+//	
 //	
 //	public static boolean setAttributeValue(NodeModel target, String attributeKey, Object value){
 //		if(target == null || attributeKey == null || value == null) return false;

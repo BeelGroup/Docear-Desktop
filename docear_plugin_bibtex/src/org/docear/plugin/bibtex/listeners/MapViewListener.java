@@ -52,11 +52,12 @@ public class MapViewListener implements MouseListener, INodeSelectionListener {
 						ReferencesController.getController().getJabrefWrapper().getBasePanel().runCommand("save");
 					}
 				}
-
-				BibtexEntry[] selectedEntries = ReferencesController.getController().getJabrefWrapper().getBasePanel().getSelectedEntries();
-				if (selectedEntries != null && selectedEntries.length == 1) {
-					BibtexEntry entry = selectedEntries[0];
-					generateKeyIfNeeded(entry);
+				if(ReferencesController.getController().getJabrefWrapper().getBasePanel() != null) {
+					BibtexEntry[] selectedEntries = ReferencesController.getController().getJabrefWrapper().getBasePanel().getSelectedEntries();
+					if (selectedEntries != null && selectedEntries.length == 1) {
+						BibtexEntry entry = selectedEntries[0];
+						generateKeyIfNeeded(entry);
+					}
 				}
 			}
 		});

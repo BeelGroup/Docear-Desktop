@@ -4,11 +4,9 @@ import java.awt.event.ActionEvent;
 
 import org.docear.plugin.services.ServiceController;
 import org.docear.plugin.services.communications.CommunicationsController;
-import org.docear.plugin.services.recommendations.mode.DocearRecommendationsModeController;
+import org.docear.plugin.services.recommendations.RecommendationsController;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.EnabledAction;
-import org.freeplane.features.mode.Controller;
-import org.freeplane.features.mode.ModeController;
 
 @EnabledAction(checkOnPopup = true)
 public class ShowRecommendationsAction extends AFreeplaneAction {
@@ -30,8 +28,9 @@ public class ShowRecommendationsAction extends AFreeplaneAction {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		ModeController modeController = Controller.getCurrentController().getModeController(DocearRecommendationsModeController.MODENAME);
-		Controller.getCurrentController().selectMode(modeController);
+//		ModeController modeController = Controller.getCurrentController().getModeController(DocearRecommendationsModeController.MODENAME);
+//		Controller.getCurrentController().selectMode(modeController);
+		RecommendationsController.refreshRecommendations();
 
 	}
 

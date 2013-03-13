@@ -25,6 +25,7 @@ import org.freeplane.features.map.MapModel;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.url.UrlManager;
 import org.freeplane.features.url.mindmapmode.MFileManager;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.view.swing.map.MapView;
 import org.freeplane.view.swing.map.NodeView;
 import org.jdesktop.swingworker.SwingWorker;
@@ -50,13 +51,12 @@ public class MindmapUpdateController {
 
 	//WORKSPACE - todo: updateAllMindmapsInProject (current or with id)
 	public boolean updateAllMindmapsInWorkspace() {
-//		List<MapItem> maps = new ArrayList<MapItem>();
+		List<MapItem> maps = new ArrayList<MapItem>();
 //		for (URI uri : WorkspaceController.getModel().getAllNodesFiltered(".mm")) {
 //			maps.add(new MapItem(uri));
 //		}
 //		
-//		return updateMindmaps(maps);
-		return false;
+		return updateMindmaps(maps);
 	}
 	
 	public boolean updateRegisteredMindmapsInWorkspace() {
@@ -66,9 +66,7 @@ public class MindmapUpdateController {
 	public boolean updateRegisteredMindmapsInWorkspace(boolean openMindmapsToo) {
 		List<MapItem> maps = new ArrayList<MapItem>(); 
 		
-		for (URI uri : DocearController.getController().getLibrary().getMindmaps()) {
-			maps.add(new MapItem(uri));
-		}
+		//WORKSPACE - DOCEAR todo: get all library maps from project/workspace
 		
 		if (openMindmapsToo) {
 			for (MapItem item : getAllOpenMaps()) {

@@ -19,7 +19,6 @@ import javax.swing.filechooser.FileFilter;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.url.UrlManager;
-import org.freeplane.plugin.workspace.mindmapmode.MModeWorkspaceLinkController;
 import org.freeplane.plugin.workspace.mindmapmode.MModeWorkspaceUrlManager;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
@@ -108,7 +107,7 @@ public class LocationDialogPanel extends JPanel {
 	}
 	
 	public URI getLocationUri() {
-		return MModeWorkspaceLinkController.getController().getProjectRelativeURI(project, new File(txtLocationString.getText()).toURI());
+		return project.getRelativeURI(new File(txtLocationString.getText()).toURI());
 //		return WorkspaceUtils.getWorkspaceRelativeURI(new File(txtLocationString.getText()));
 	}
 	

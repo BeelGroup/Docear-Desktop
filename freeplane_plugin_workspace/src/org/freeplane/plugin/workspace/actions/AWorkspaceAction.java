@@ -17,6 +17,7 @@ import org.freeplane.core.util.TextUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
 public abstract class AWorkspaceAction extends AFreeplaneAction {
 
@@ -88,6 +89,14 @@ public abstract class AWorkspaceAction extends AFreeplaneAction {
 			return null;
 		}
 		return (AWorkspaceTreeNode) path.getLastPathComponent();
+	}
+	
+	protected AWorkspaceProject getProjectFromActionEvent(ActionEvent e) {
+		AWorkspaceTreeNode node = getNodeFromActionEvent(e);
+		if(node == null) {
+			return null;
+		}
+		return WorkspaceController.getProject(node);
 	}
 	
 	public WorkspacePopupMenu getRootPopupMenu(Component component) {

@@ -17,15 +17,12 @@ import javax.swing.SwingUtilities;
 
 import name.pachler.nio.file.WatchKey;
 
-import org.docear.plugin.pdfutilities.actions.UpdateMonitoringFolderAction;
 import org.docear.plugin.pdfutilities.map.MapConverter;
 import org.docear.plugin.pdfutilities.util.MonitoringUtils;
 import org.freeplane.core.util.LogUtils;
-import org.freeplane.features.icon.IconController;
 import org.freeplane.features.map.IMapLifeCycleListener;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
 
 public class DocearAutoMonitoringListener implements IMapLifeCycleListener,  WindowFocusListener{
 	
@@ -108,6 +105,9 @@ public class DocearAutoMonitoringListener implements IMapLifeCycleListener,  Win
 	public void onCreate(final MapModel map) {
 		if(map == null || map.getFile() == null) return;
 		List<? extends NodeModel> monitoringNodes = (List<? extends NodeModel>) getAutoMonitorNodes(map.getRootNode());
+		if(monitoringNodes == null || monitoringNodes.size() <= 0) {
+			return;
+		}
 		autoMonitorNodes.addAll(monitoringNodes);
 		//TODO: enable automatic file monitoring
 //		registerMonitoredDirectories(map, monitoringNodes);
@@ -164,24 +164,30 @@ public class DocearAutoMonitoringListener implements IMapLifeCycleListener,  Win
 		
 	}
 
-	private synchronized void startMonitoring() {
-		if(autoMonitorNodes.size() > 0){
-			UpdateMonitoringFolderAction.updateNodesAgainstMonitoringDir(autoMonitorNodes, !startup);
-			autoMonitorNodes.clear();
-		}		
-	}
-	
-	private void registerMonitoredDirectories(MapModel map, List<? extends NodeModel> monitoringNodes) {
-		List<WatchKey> keys = mapKeysMap.get(map);
-		if(keys == null) {
-			keys = new ArrayList<WatchKey>();
-			mapKeysMap.put(map, keys);
-		}
-		for(NodeModel model : monitoringNodes) {
-			File dir = WorkspaceUtils.resolveURI(MonitoringUtils.getPdfDirFromMonitoringNode(model), map);
-			addMonitoringDirectory(map, dir);
-		}
-	}
+//	private synchronized void startMonitoring() {
+//		if(autoMonitorNodes.size() > 0){
+//			UpdateMonitoringFolderAction.updateNodesAgainstMonitoringDir(autoMonitorNodes, !startup);
+//			autoMonitorNodes.clear();
+//		}		
+//	}
+//	
+//	private void registerMonitoredDirectories(MapModel map, List<? extends NodeModel> monitoringNodes) {
+//		List<WatchKey> keys = mapKeysMap.get(map);
+//		if(keys == null) {
+//			keys = new ArrayList<WatchKey>();
+//			mapKeysMap.put(map, keys);
+//		}
+//		for(NodeModel model : monitoringNodes) {
+//			
+//			try {
+//				File dir = UriController.resolveFile(MModeWorkspaceUrlManager.getController().getAbsoluteUri(map, MonitoringUtils.getPdfDirFromMonitoringNode(model)));
+//				addMonitoringDirectory(map, dir);
+//			} catch (MalformedURLException e) {
+//				LogUtils.severe(e);
+//			}
+//			
+//		}
+//	}
 
 
 	private void addMonitoringDirectory(MapModel map, File dir) {

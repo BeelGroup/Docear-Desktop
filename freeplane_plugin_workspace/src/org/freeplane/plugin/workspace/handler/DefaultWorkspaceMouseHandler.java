@@ -63,6 +63,10 @@ public class DefaultWorkspaceMouseHandler implements MouseListener, MouseMotionL
 				eventType += WorkspaceActionEvent.MOUSE_CLICK;
 			}
 			
+			if(e.isPopupTrigger()) {
+				eventType += WorkspaceActionEvent.POPUP_TRIGGER;
+			}
+			
 			WorkspaceActionEvent event = new WorkspaceActionEvent(node, eventType, e.getX(), e.getY(), e.getComponent());
 			
 			List<IWorkspaceNodeActionListener> nodeEventListeners = WorkspaceController.getCurrentModeExtension().getIOController().getNodeActionListeners(node.getClass(), eventType);
@@ -91,7 +95,7 @@ public class DefaultWorkspaceMouseHandler implements MouseListener, MouseMotionL
 	public void mousePressed(MouseEvent e) {
 	}
 
-	public void mouseReleased(MouseEvent e) {
+	public void mouseReleased(MouseEvent e) {		
 	}
 
 	public void mouseEntered(MouseEvent e) {

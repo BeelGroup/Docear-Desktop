@@ -7,7 +7,6 @@ import java.net.URI;
 import javax.swing.JOptionPane;
 
 import org.docear.plugin.core.features.AnnotationID;
-import org.docear.plugin.core.util.Tools;
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
 import org.docear.plugin.pdfutilities.features.AnnotationNodeModel;
 import org.docear.plugin.pdfutilities.features.IAnnotation.AnnotationType;
@@ -19,6 +18,7 @@ import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.map.INodeChangeListener;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
+import org.freeplane.plugin.workspace.URIUtils;
 
 import de.intarsys.pdf.cos.COSRuntimeException;
 import de.intarsys.pdf.parser.COSLoadException;
@@ -30,8 +30,11 @@ public class PdfNodeChangeListener implements INodeChangeListener {
 			URI newUri = (URI) event.getNewValue();
 			if (newUri != null) {
 				try{
-					URI newAbsoluteUri = Tools.getAbsoluteUri(newUri, event.getNode().getMap());
-					File file = Tools.getFilefromUri(newAbsoluteUri);
+					URI newAbsoluteUri = URIUtils.resolveURI(URIUtils.getAbsoluteURI(event.getNode().getMap()), newUri);
+					if(newAbsoluteUri == null) {
+						return;
+					}
+					File file = URIUtils.getFile(newAbsoluteUri);
 					if(new PdfFileFilter().accept(file)) {
 						AnnotationModel model = AnnotationController.getModel(event.getNode(), false);
 						if(model == null){

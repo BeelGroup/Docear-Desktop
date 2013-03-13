@@ -7,8 +7,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.TitledBorder;
 
-import org.docear.plugin.core.util.Tools;
+import org.apache.commons.lang.StringUtils;
 import org.freeplane.core.util.TextUtils;
+import org.freeplane.plugin.workspace.URIUtils;
 
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
@@ -31,7 +32,7 @@ public class PdfConflictPanel extends JPanel {
 	
 	public PdfConflictPanel(URI uri) {
 		init();	
-		String fileName = Tools.getFilefromUri(uri).getName();
+		String fileName = URIUtils.getFile(uri).getName();
 		this.setTitle(fileName);
 	}	
 
@@ -54,7 +55,8 @@ public class PdfConflictPanel extends JPanel {
 	}
 
 	public void setTitle(String fileName){
-		fileName = Tools.reshapeString(fileName, 200);
+		fileName = //Tools.reshapeString(fileName, 200);
+				StringUtils.abbreviate(fileName, 200);
 		this.setBorder(new TitledBorder(null, fileName, TitledBorder.LEADING, TitledBorder.TOP, null, null));
 	}
 	

@@ -21,7 +21,9 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import org.apache.commons.io.FileUtils;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
+import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.actions.WorkspaceNewProjectAction;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
 import org.freeplane.plugin.workspace.dnd.WorkspaceTransferable;
@@ -106,6 +108,8 @@ public class FolderFileNode extends DefaultFileNode {
 				popupMenu = new WorkspacePopupMenu();
 				WorkspacePopupMenuBuilder.addActions(popupMenu, new String[] {
 						WorkspacePopupMenuBuilder.createSubMenu(TextUtils.getRawText("workspace.action.new.label")),
+						WorkspaceNewProjectAction.KEY,
+						WorkspacePopupMenuBuilder.SEPARATOR,
 						"workspace.action.node.new.folder",
 						"workspace.action.file.new.mindmap",
 						//WorkspacePopupMenuBuilder.SEPARATOR,
@@ -157,7 +161,7 @@ public class FolderFileNode extends DefaultFileNode {
 					}
 				}
 				else if(node instanceof LinkTypeFileNode) {
-					File srcFile = WorkspaceController.resolveFile(((LinkTypeFileNode) node).getLinkPath());
+					File srcFile = URIUtils.getAbsoluteFile(((LinkTypeFileNode) node).getLinkURI());
 					if(targetDir != null && targetDir.isDirectory()) {
 						FileUtils.copyFileToDirectory(srcFile, targetDir);
 						if(dropAction == DnDConstants.ACTION_MOVE) {
@@ -263,7 +267,7 @@ public class FolderFileNode extends DefaultFileNode {
 				String[] uriArray = uriString.split("\r\n");
 				for(String singleUri : uriArray) {
 					try {
-						uriList.add(URI.create(singleUri));
+						uriList.add(URIUtils.createURI(singleUri));
 					}
 					catch (Exception e) {
 						LogUtils.info("DOCEAR - "+ e.getMessage());

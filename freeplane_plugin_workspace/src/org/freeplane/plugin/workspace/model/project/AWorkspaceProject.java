@@ -2,20 +2,20 @@ package org.freeplane.plugin.workspace.model.project;
 
 import java.io.File;
 import java.net.URI;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-import org.freeplane.plugin.workspace.WorkspaceController;
-import org.freeplane.plugin.workspace.model.project.ProjectModelEvent.ProjectModelEventType;
+import org.freeplane.plugin.workspace.URIUtils;
+import org.freeplane.plugin.workspace.model.WorkspaceModelEvent;
+import org.freeplane.plugin.workspace.model.WorkspaceModelEvent.ProjectModelEventType;
 
 public abstract class AWorkspaceProject {	
 	
-	class DefaultProjectSettings implements IProjectSettings {
-
-	}
+	private Map<Class<? extends IWorkspaceProjectExtension>, IWorkspaceProjectExtension> extensions = new LinkedHashMap<Class<? extends IWorkspaceProjectExtension>, IWorkspaceProjectExtension>();
 	
 	private static IWorkspaceProjectCreater creator = null;
 
 	private ProjectModel model;
-	private IProjectSettings settings;
 	
 	public abstract URI getProjectHome();
 	
@@ -25,8 +25,6 @@ public abstract class AWorkspaceProject {
 	
 	public abstract URI getRelativeURI(URI uri);
 	
-	protected abstract void setProjectHome(URI uri);
-
 	public ProjectModel getModel() {
 		if(this.model == null) {
 			this.model = new ProjectModel(this);
@@ -35,13 +33,39 @@ public abstract class AWorkspaceProject {
 		return this.model;
 	}
 	
-	public IProjectSettings getSettings() {
-		if(this.settings == null) {
-			this.settings = new DefaultProjectSettings();
+	public IWorkspaceProjectExtension getExtensions(Class<? extends IWorkspaceProjectExtension> key) {
+		synchronized (extensions) {
+			return extensions.get(key);
 		}
-		return this.settings;
+	}
+
+	public IWorkspaceProjectExtension addExtension(IWorkspaceProjectExtension extension) {
+		synchronized (extensions) {
+			return addExtension(extension.getClass(), extension);
+		}
 	}
 	
+	public IWorkspaceProjectExtension addExtension(Class<? extends IWorkspaceProjectExtension> key, IWorkspaceProjectExtension extension) {
+		if(extension == null) {
+			return null;
+		}
+		if(key == null) {
+			key = extension.getClass();
+		}
+		synchronized (extensions) {
+			return this.extensions.put(key, extension);
+		}
+	}
+
+	public IWorkspaceProjectExtension removeExtension(Class<? extends IWorkspaceProjectExtension> key) {
+		if(key == null) {
+			return null;
+		}
+		synchronized (extensions) {
+			return this.extensions.remove(key);
+		}
+	}	
+		
 	public static void setCurrentProjectCreator(IWorkspaceProjectCreater pCreator) {
 		creator = pCreator;
 	}
@@ -61,26 +85,26 @@ public abstract class AWorkspaceProject {
 	public String toString() {
 		return getModel().getRoot().getName() +"[id="+getProjectID()+";home="+getProjectHome()+"]";
 	}
-	
+
 	private final class DefaultModelChangeListener implements IProjectModelListener {
 		
-		public void treeStructureChanged(ProjectModelEvent event) {
+		public void treeStructureChanged(WorkspaceModelEvent event) {
 		}
 
-		public void treeNodesRemoved(ProjectModelEvent event) {
+		public void treeNodesRemoved(WorkspaceModelEvent event) {
 		}
 
-		public void treeNodesInserted(ProjectModelEvent event) {
+		public void treeNodesInserted(WorkspaceModelEvent event) {
 		}
 
-		public void treeNodesChanged(ProjectModelEvent event) {
+		public void treeNodesChanged(WorkspaceModelEvent event) {
 			if(event.getType() == ProjectModelEventType.RENAMED && getModel().getRoot().equals(event.getTreePath().getLastPathComponent())) {
-				File file = WorkspaceController.resolveFile(getProjectHome());
+				File file = URIUtils.getAbsoluteFile(getProjectHome());
 				File targetFile = new File(file.getParentFile(), getModel().getRoot().getName());
 				if(file.exists()) {
 					file.renameTo(targetFile);
 				}
-				setProjectHome(targetFile.toURI());
+				//setProjectHome(targetFile.toURI());
 				
 			}
 		}

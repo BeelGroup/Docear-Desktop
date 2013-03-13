@@ -22,17 +22,15 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.docear.plugin.core.DocearController;
-import org.docear.plugin.core.IBibtexDatabase;
-import org.docear.plugin.core.IDocearLibrary;
+import org.docear.plugin.core.ILibraryRepository;
 import org.docear.plugin.core.event.DocearEvent;
 import org.docear.plugin.core.event.DocearEventType;
 import org.docear.plugin.core.event.IDocearEventListener;
-import org.docear.plugin.core.workspace.actions.DocearLibraryNewMindmap;
-import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
-import org.freeplane.features.mode.Controller;
+import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.actions.WorkspaceNewProjectAction;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
 import org.freeplane.plugin.workspace.dnd.IDropAcceptor;
@@ -40,7 +38,6 @@ import org.freeplane.plugin.workspace.dnd.IWorkspaceTransferableCreator;
 import org.freeplane.plugin.workspace.dnd.WorkspaceTransferable;
 import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
-import org.freeplane.plugin.workspace.mindmapmode.MModeWorkspaceLinkController;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.nodes.AFolderNode;
@@ -48,14 +45,12 @@ import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 import org.freeplane.plugin.workspace.nodes.FolderLinkNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
 
-public class FolderTypeLibraryNode extends AFolderNode implements IDocearEventListener, IDocearLibrary, IWorkspaceNodeActionListener, IWorkspaceTransferableCreator, IDropAcceptor, TreeModelListener {
+public class FolderTypeLibraryNode extends AFolderNode implements ILibraryRepository, IDocearEventListener, IWorkspaceNodeActionListener, IWorkspaceTransferableCreator, IDropAcceptor, TreeModelListener {
 	private static final Icon DEFAULT_ICON = new ImageIcon(FolderTypeLibraryNode.class.getResource("/images/folder-database.png"));
 	private static final long serialVersionUID = 1L;
 	public static final String TYPE = "library";	
 	
 	private final Vector<URI> mindmapIndex = new Vector<URI>();
-	private final Vector<IBibtexDatabase> referencesIndex = new Vector<IBibtexDatabase>();
-
 	private static WorkspacePopupMenu popupMenu = null;
 	
 	/***********************************************************************************
@@ -68,8 +63,6 @@ public class FolderTypeLibraryNode extends AFolderNode implements IDocearEventLi
 	
 	public FolderTypeLibraryNode(String type) {
 		super(type);
-		DocearEvent event = new DocearEvent(this, DocearEventType.NEW_LIBRARY);
-		DocearController.getController().dispatchDocearEvent(event);
 		DocearController.getController().addDocearEventListener(this);
 		WorkspaceController.getCurrentModel().addTreeModelListener(this);
 	}	
@@ -80,16 +73,12 @@ public class FolderTypeLibraryNode extends AFolderNode implements IDocearEventLi
 	
 	public void initializePopup() {
 		if (popupMenu  == null) {
-			Controller controller = Controller.getCurrentController();
-			controller.addAction(new DocearLibraryNewMindmap());
-			//WORKSPACE - todo: implement
-//			controller.removeAction(new DocearLibraryOpenLocation().getKey());
-//			controller.addAction(new DocearLibraryOpenLocation());
-			
-			
 			popupMenu = new WorkspacePopupMenu();
 			
-			WorkspacePopupMenuBuilder.addActions(popupMenu, new String[] {WorkspacePopupMenuBuilder.createSubMenu(TextUtils.getRawText("workspace.action.new.label")),
+			WorkspacePopupMenuBuilder.addActions(popupMenu, new String[] {
+					WorkspacePopupMenuBuilder.createSubMenu(TextUtils.getRawText("workspace.action.new.label")),
+					WorkspaceNewProjectAction.KEY,
+					WorkspacePopupMenuBuilder.SEPARATOR,
 					"workspace.action.node.new.folder",
 					"workspace.action.node.new.link",
 					WorkspacePopupMenuBuilder.SEPARATOR,
@@ -118,10 +107,7 @@ public class FolderTypeLibraryNode extends AFolderNode implements IDocearEventLi
 	}
 	
 		
-	protected AWorkspaceTreeNode clone(FolderTypeLibraryNode node) {		
-		for(IBibtexDatabase ref : referencesIndex) {
-			node.addReferenceToIndex(ref);
-		}
+	protected AWorkspaceTreeNode clone(FolderTypeLibraryNode node) {
 		for(URI uri : mindmapIndex) {
 			node.addMindmapToIndex(uri);
 		}
@@ -134,26 +120,18 @@ public class FolderTypeLibraryNode extends AFolderNode implements IDocearEventLi
 	}
 	
 	protected void addMindmapToIndex(URI uri) {
+		LogUtils.info("DOCEAR: adding mindmap to library: "+ uri);
 		mindmapIndex.add(uri);
 	}
 	
-	protected void addReferenceToIndex(IBibtexDatabase ref) {
-		referencesIndex.clear();
-		if(ref == null) {
-			return;
-		}
-		referencesIndex.add(ref);
-		DocearEvent event = new DocearEvent(this, DocearEventType.LIBRARY_CHANGED, ref);
-		DocearController.getController().dispatchDocearEvent(event);
-	}
-	
+		
 	/**
 	 * @param file
 	 * @return
 	 */
 	private AWorkspaceTreeNode createFSNodeLinks(File file) {
 		AWorkspaceTreeNode node = null;
-		AWorkspaceProject project = WorkspaceController.getCurrentModel().getProject(getModel());
+		AWorkspaceProject project = WorkspaceController.getProject(this);
 		if(file.isDirectory()) {
 			FolderLinkNode pNode = new FolderLinkNode();			
 			pNode.setPath(project.getRelativeURI(file.toURI()));
@@ -161,7 +139,7 @@ public class FolderTypeLibraryNode extends AFolderNode implements IDocearEventLi
 		}
 		else {
 			LinkTypeFileNode lNode = new LinkTypeFileNode();
-			lNode.setLinkPath(project.getRelativeURI(file.toURI()));
+			lNode.setLinkURI(project.getRelativeURI(file.toURI()));
 			node = lNode;
 		}
 		node.setName(file.getName());
@@ -243,16 +221,7 @@ public class FolderTypeLibraryNode extends AFolderNode implements IDocearEventLi
 			if(event.getEventObject() instanceof URI) {
 				URI uri = (URI) event.getEventObject();
 				if(!mindmapIndex.contains(uri)) {
-					LogUtils.info("DOCEAR: adding mindmap to library: "+ uri);
 					addMindmapToIndex(uri);
-				}
-			}			
-		} 
-		else if(event.getType() == DocearEventType.LIBRARY_NEW_REFERENCES_INDEXING_REQUEST) {
-			if(event.getEventObject() instanceof IBibtexDatabase) {
-				if(!referencesIndex.contains((IBibtexDatabase) event.getEventObject())) {
-					LogUtils.info("DOCEAR: adding reference database to library: "+ event.getEventObject());
-					addReferenceToIndex((IBibtexDatabase) event.getEventObject());
 				}
 			}			
 		}
@@ -266,18 +235,6 @@ public class FolderTypeLibraryNode extends AFolderNode implements IDocearEventLi
 			showPopup( (Component) event.getBaggage(), event.getX(), event.getY());
 		}
 		
-	}
-	
-	public List<URI> getMindmaps() {
-		return mindmapIndex;
-	}
-	
-	public URI getBibtexDatabase() {
-		URI uri = null;
-		if(referencesIndex.size() > 0) {
-			return referencesIndex.get(0).getUri();
-		}
-		return uri;
 	}
 	
 	public boolean acceptDrop(DataFlavor[] flavors) {
@@ -310,7 +267,7 @@ public class FolderTypeLibraryNode extends AFolderNode implements IDocearEventLi
 				String[] uriArray = uriString.split("\r\n");
 				for(String singleUri : uriArray) {
 					try {
-						uriList.add(URI.create(singleUri));
+						uriList.add(URIUtils.createURI(singleUri));
 					}
 					catch (Exception e) {
 						LogUtils.info("DOCEAR - "+ e.getMessage());
@@ -356,11 +313,6 @@ public class FolderTypeLibraryNode extends AFolderNode implements IDocearEventLi
 		return null;
 	}
 	
-	public URI getLibraryPath() {
-		DocearWorkspaceProject project = (DocearWorkspaceProject) WorkspaceController.getCurrentModeExtension().getModel().getProject(getModel());
-		return MModeWorkspaceLinkController.getController().getProjectRelativeURI(project, project.getProjectLibraryPath());
-	}
-	
 	public void treeNodesChanged(TreeModelEvent e) {		
 	}
 	
@@ -368,13 +320,32 @@ public class FolderTypeLibraryNode extends AFolderNode implements IDocearEventLi
 	public void treeNodesInserted(TreeModelEvent event) {
 		if(this.getTreePath().isDescendant(event.getTreePath())) {
 			for(Object newNode : event.getChildren()) {
-				if(newNode instanceof DefaultFileNode) {
-					URI uri = ((DefaultFileNode)newNode).getFile().toURI();
-					addToIndex(uri);
-				} 
-				else
-				if(newNode instanceof LinkTypeFileNode && ((LinkTypeFileNode)newNode).getLinkPath() != null) {
-					URI uri = WorkspaceController.resolveURI(((LinkTypeFileNode)newNode).getLinkPath());
+				URI uri = null;
+				try {
+					if(newNode instanceof LinkTypeIncomingNode) {
+						uri = URIUtils.getAbsoluteURI(((LinkTypeIncomingNode)newNode).getLinkURI());
+					}
+					else
+					if(newNode instanceof LinkTypeLiteratureAnnotationsNode) {
+						uri = URIUtils.getAbsoluteURI(((LinkTypeLiteratureAnnotationsNode)newNode).getLinkURI());
+					}
+					else
+					if(newNode instanceof LinkTypeMyPublicationsNode) {
+						uri = URIUtils.getAbsoluteURI(((LinkTypeMyPublicationsNode)newNode).getLinkURI());
+					}
+					else
+					if(newNode instanceof DefaultFileNode) {
+						uri = ((DefaultFileNode)newNode).getFile().toURI();
+					} 
+					else
+					if(newNode instanceof LinkTypeFileNode && ((LinkTypeFileNode)newNode).getLinkURI() != null) {
+						uri = URIUtils.getAbsoluteURI(((LinkTypeFileNode)newNode).getLinkURI());
+					}
+				}
+				catch (Exception e) {
+					LogUtils.warn("Exception in "+ this.getClass() +".treeNodesInserted(): "+ e.getMessage() );
+				}
+				if(uri != null) {
 					addToIndex(uri);
 				}
 			}
@@ -398,7 +369,7 @@ public class FolderTypeLibraryNode extends AFolderNode implements IDocearEventLi
 				} 
 				else
 				if(newNode instanceof LinkTypeFileNode) {
-					URI uri = WorkspaceController.resolveURI(((LinkTypeFileNode)newNode).getLinkPath());
+					URI uri = URIUtils.getAbsoluteURI(((LinkTypeFileNode)newNode).getLinkURI());
 					removeFromIndex(uri);
 				}
 			}
@@ -416,6 +387,11 @@ public class FolderTypeLibraryNode extends AFolderNode implements IDocearEventLi
 	public void treeStructureChanged(TreeModelEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public List<URI> getMaps() {
+		return mindmapIndex;
 	}
 
 	

@@ -16,6 +16,8 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
+import org.freeplane.plugin.workspace.URIUtils;
+import org.freeplane.plugin.workspace.actions.WorkspaceNewProjectAction;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
 import org.freeplane.plugin.workspace.dnd.IDropAcceptor;
@@ -45,6 +47,8 @@ public class FolderVirtualNode extends AFolderNode implements IWorkspaceNodeActi
 			popupMenu = new WorkspacePopupMenu();
 			WorkspacePopupMenuBuilder.addActions(popupMenu, new String[] {
 					WorkspacePopupMenuBuilder.createSubMenu(TextUtils.getRawText("workspace.action.new.label")),
+					WorkspaceNewProjectAction.KEY,
+					WorkspacePopupMenuBuilder.SEPARATOR,
 					"workspace.action.node.new.folder",
 					"workspace.action.node.new.link",
 					WorkspacePopupMenuBuilder.endSubMenu(),
@@ -122,7 +126,7 @@ public class FolderVirtualNode extends AFolderNode implements IWorkspaceNodeActi
 				String[] uriArray = uriString.split("\r\n");
 				for(String singleUri : uriArray) {
 					try {
-						uriList.add(URI.create(singleUri));
+						uriList.add(URIUtils.createURI(singleUri));
 					}
 					catch (Exception e) {
 						LogUtils.info("DOCEAR - "+ e.getMessage());

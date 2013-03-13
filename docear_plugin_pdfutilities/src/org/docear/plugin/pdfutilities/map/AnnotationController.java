@@ -14,7 +14,6 @@ import java.util.concurrent.Executors;
 import org.docear.pdf.PdfDataExtractor;
 import org.docear.plugin.core.features.AnnotationID;
 import org.docear.plugin.core.util.HtmlUtils;
-import org.docear.plugin.core.util.Tools;
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
 import org.docear.plugin.pdfutilities.features.AnnotationNodeModel;
 import org.docear.plugin.pdfutilities.features.AnnotationXmlBuilder;
@@ -25,12 +24,11 @@ import org.freeplane.core.extension.IExtension;
 import org.freeplane.core.io.ReadManager;
 import org.freeplane.core.io.WriteManager;
 import org.freeplane.core.util.LogUtils;
-import org.freeplane.features.link.NodeLinks;
 import org.freeplane.features.map.MapController;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.plugin.workspace.URIUtils;
 
 public class AnnotationController implements IExtension{
 	
@@ -146,22 +144,23 @@ public class AnnotationController implements IExtension{
 	
 	public static AnnotationNodeModel getAnnotationNodeModel(final NodeModel node){
 		IAnnotation annotation = AnnotationController.getModel(node, true);
-		File file = WorkspaceUtils.resolveURI(NodeLinks.getValidLink(node), node.getMap());
+		URI uri = URIUtils.getAbsoluteURI(node);
+		File file = URIUtils.getFile(uri);
 		if(annotation != null && file == null){
 			setModel(node, null);
 			return null;
 		}
 		if(annotation != null && annotation.getAnnotationType() != null && !annotation.getAnnotationType().equals(AnnotationType.PDF_FILE)){
-			return new AnnotationNodeModel(node, new AnnotationID(Tools.getAbsoluteUri(node), annotation.getObjectNumber()), annotation.getAnnotationType());
+			return new AnnotationNodeModel(node, new AnnotationID(uri, annotation.getObjectNumber()), annotation.getAnnotationType());
 		}		
 		if(annotation != null && file != null && annotation.getAnnotationType().equals(AnnotationType.PDF_FILE)){
-			return new AnnotationNodeModel(node, new AnnotationID(Tools.getAbsoluteUri(node), 0), AnnotationType.PDF_FILE); 
+			return new AnnotationNodeModel(node, new AnnotationID(uri, 0), AnnotationType.PDF_FILE); 
 		}		
 		if(annotation == null && file != null && file.getName().equals(node.getText()) && isPdfFile(file)){
-			return new AnnotationNodeModel(node, new AnnotationID(Tools.getAbsoluteUri(node), 0), AnnotationType.PDF_FILE); 
+			return new AnnotationNodeModel(node, new AnnotationID(uri, 0), AnnotationType.PDF_FILE); 
 		}
 		if(annotation == null && file != null && file.getName().equals(node.getText()) && !isPdfFile(file)){
-			return new AnnotationNodeModel(node, new AnnotationID(Tools.getAbsoluteUri(node), 0), AnnotationType.FILE); 
+			return new AnnotationNodeModel(node, new AnnotationID(uri, 0), AnnotationType.FILE); 
 		}
 		return null;
 	}
@@ -190,11 +189,11 @@ public class AnnotationController implements IExtension{
 	}
 	
 	private static void setModel(final NodeModel node){
-		File file = WorkspaceUtils.resolveURI(NodeLinks.getValidLink(node), node.getMap());
+		URI uri = URIUtils.getAbsoluteURI(node);
+		File file = URIUtils.getFile(uri);
 		if(!isPdfFile(file)){
 			return;
-		}
-		URI uri = Tools.getAbsoluteUri(node);
+		}		
 		for(IAnnotationImporter importer : annotationImporters) {
 			try {			
 				importer.searchAnnotation(uri, node);

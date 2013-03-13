@@ -18,7 +18,7 @@ import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
  * 
  */
 public class DefaultWorkspaceKeyHandler implements KeyListener {
-
+	//WORKSPACE - todo: implement hot-key handling
 	
 	/***********************************************************************************
 	 * CONSTRUCTORS

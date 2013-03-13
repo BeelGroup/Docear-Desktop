@@ -17,7 +17,7 @@ import org.freeplane.core.io.xml.TreeXmlReader;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.n3.nanoxml.XMLException;
-import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.creator.ActionCreator;
 import org.freeplane.plugin.workspace.creator.FolderCreator;
 import org.freeplane.plugin.workspace.creator.FolderTypePhysicalCreator;
@@ -150,16 +150,18 @@ public class ProjectLoader implements IProjectSettingsIOHandler {
 		final TreeXmlReader reader = new TreeXmlReader(readManager);
 		reader.load(new InputStreamReader(new BufferedInputStream(xmlFile.toURL().openStream())));
 	}
-
-	public synchronized void loadProject(AWorkspaceProject project) throws IOException {
+	
+	public synchronized LOAD_RETURN_TYPE loadProject(AWorkspaceProject project) throws IOException {
 		try {
-			File projectSettings = new File(WorkspaceController.resolveFile(project.getProjectDataPath()),"settings.xml");
+			File projectSettings = new File(URIUtils.getAbsoluteFile(project.getProjectDataPath()),"settings.xml");
 			if(projectSettings.exists()) {
 				getDefaultResultProcessor().setProject(project);
 				this.load(projectSettings.toURI());
+				return LOAD_RETURN_TYPE.EXISTING_PROJECT;
 			}
 			else {
-				createDefaultProject(project);				
+				createDefaultProject(project);
+				return LOAD_RETURN_TYPE.NEW_PROJECT;
 			}
 		}
 		catch (Exception e) {
@@ -171,8 +173,7 @@ public class ProjectLoader implements IProjectSettingsIOHandler {
 		ProjectRootNode root = new ProjectRootNode();
 		root.setProjectID(project.getProjectID());				
 		root.setModel(project.getModel());
-		root.setName(WorkspaceController.resolveFile(project.getProjectHome()).getName());
-		root.setProjectID(project.getProjectID());
+		root.setName(URIUtils.getAbsoluteFile(project.getProjectHome()).getName());
 		project.getModel().setRoot(root);
 		// create and load all default nodes
 		root.initiateMyFile(project);
@@ -190,12 +191,12 @@ public class ProjectLoader implements IProjectSettingsIOHandler {
 		return this.resultProcessor;
 	}
 
-	public void storeProject(Writer writer, AWorkspaceProject project) throws IOException {
+	private void storeProject(Writer writer, AWorkspaceProject project) throws IOException {
 		this.projectWriter.storeProject(writer, project);		
 	}
 
 	public void storeProject(AWorkspaceProject project) throws IOException {
-		File outFile = WorkspaceController.resolveFile(project.getProjectDataPath());
+		File outFile = URIUtils.getAbsoluteFile(project.getProjectDataPath());
 		outFile = new File(outFile, "settings.xml");
 		if(!outFile.exists()) {
 			outFile.getParentFile().mkdirs();

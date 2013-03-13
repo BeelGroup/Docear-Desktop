@@ -6,7 +6,6 @@ import java.net.URI;
 import org.docear.plugin.core.util.CoreUtils;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
 import org.freeplane.core.resources.ResourceController;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
 import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.nodes.ALinkNode;
@@ -21,7 +20,7 @@ public class WorkspaceNodeOpenDocumentListener implements IWorkspaceNodeActionLi
 			uri = ((DefaultFileNode) event.getSource()).getFile().toURI();
 		}
 		else if(event.getSource() instanceof ALinkNode) {
-			uri = ((ALinkNode) event.getSource()).getLinkPath();
+			uri = ((ALinkNode) event.getSource()).getLinkURI();
 		}
 
 		if(uri == null || !CoreUtils.resolveURI(uri).getName().toLowerCase().endsWith(".pdf")) {
@@ -29,7 +28,8 @@ public class WorkspaceNodeOpenDocumentListener implements IWorkspaceNodeActionLi
 		}
 		File file = CoreUtils.resolveURI(uri);
 		if(file!=null  && !file.exists()) {
-			WorkspaceUtils.showFileNotFoundMessage(file);
+			//WORKSPACE - todo: implement workspace view utils, e.g. with different types of default dialogs
+			//WorkspaceUtils.showFileNotFoundMessage(file);
 			event.consume();
 			return;
 		}

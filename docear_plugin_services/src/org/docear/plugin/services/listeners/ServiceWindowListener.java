@@ -6,11 +6,8 @@ import java.awt.event.WindowListener;
 import javax.swing.SwingUtilities;
 
 import org.docear.plugin.services.ServiceController;
-import org.docear.plugin.services.recommendations.mode.DocearRecommendationsMapController;
-import org.docear.plugin.services.recommendations.mode.DocearRecommendationsModeController;
+import org.docear.plugin.services.recommendations.RecommendationsController;
 import org.freeplane.core.ui.components.UITools;
-import org.freeplane.features.mode.Controller;
-import org.freeplane.features.mode.ModeController;
 
 public class ServiceWindowListener implements WindowListener {
 
@@ -47,12 +44,10 @@ public class ServiceWindowListener implements WindowListener {
 
 	}
 
-	private void getRecommendations(final WindowListener wl) {
-		
+	private void getRecommendations(final WindowListener wl) {		
 		if (ServiceController.getController().getAutoRecommendations() != null) {
 			UITools.getFrame().removeWindowListener(wl);
-			ModeController modeController = Controller.getCurrentController().getModeController(DocearRecommendationsModeController.MODENAME);
-			((DocearRecommendationsMapController) modeController.getMapController()).newMap(ServiceController.getController().getAutoRecommendations());
+			RecommendationsController.refreshRecommendations(ServiceController.getController().getAutoRecommendations());
 			ServiceController.getController().setAutoRecommendations(null);
 		}
 	}

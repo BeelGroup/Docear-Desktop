@@ -7,7 +7,7 @@ import org.docear.plugin.bibtex.ReferencesController;
 import org.docear.plugin.bibtex.jabref.JabRefCommons;
 import org.docear.plugin.bibtex.jabref.JabrefWrapper;
 import org.freeplane.core.ui.EnabledAction;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.actions.AWorkspaceAction;
 import org.freeplane.plugin.workspace.io.IFileSystemRepresentation;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
@@ -29,7 +29,7 @@ public class AddOrUpdateReferenceEntryWorkspaceAction extends AWorkspaceAction {
 		}
 		else {
 			if(node instanceof LinkTypeFileNode) {				
-				file = WorkspaceUtils.resolveURI(((LinkTypeFileNode) node).getLinkPath());
+				file = URIUtils.getAbsoluteFile(((LinkTypeFileNode) node).getLinkURI());
 			}
 		}
 		
@@ -50,7 +50,7 @@ public class AddOrUpdateReferenceEntryWorkspaceAction extends AWorkspaceAction {
 		}
 		else {
 			if(node instanceof LinkTypeFileNode) {				
-				file = WorkspaceUtils.resolveURI(((LinkTypeFileNode) node).getLinkPath());
+				file = URIUtils.getAbsoluteFile(((LinkTypeFileNode) node).getLinkURI());
 			}
 		}
 		

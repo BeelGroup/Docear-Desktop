@@ -35,7 +35,7 @@ import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
 import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
+import javax.swing.event.TreeModelEvent;
 
 import org.apache.commons.io.FilenameUtils;
 import org.docear.plugin.core.ALanguageController;
@@ -44,11 +44,8 @@ import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.event.DocearEvent;
 import org.docear.plugin.core.event.DocearEventType;
 import org.docear.plugin.core.event.IDocearEventListener;
-import org.docear.plugin.core.features.DocearMapModelController;
-import org.docear.plugin.core.features.DocearMapModelExtension.DocearMapType;
 import org.docear.plugin.core.util.CompareVersion;
 import org.docear.plugin.core.util.NodeUtilities;
-import org.docear.plugin.core.util.Tools;
 import org.docear.plugin.core.util.WinRegistry;
 import org.docear.plugin.pdfutilities.actions.AbstractMonitoringAction;
 import org.docear.plugin.pdfutilities.actions.AddMonitoringFolderAction;
@@ -71,11 +68,11 @@ import org.docear.plugin.pdfutilities.features.DocearNodeMonitoringExtensionCont
 import org.docear.plugin.pdfutilities.features.IAnnotation;
 import org.docear.plugin.pdfutilities.features.PDFReaderHandle;
 import org.docear.plugin.pdfutilities.features.PDFReaderHandle.RegistryBranch;
-import org.docear.plugin.pdfutilities.listener.DefaultWorkspaceEventListener;
 import org.docear.plugin.pdfutilities.listener.DocearAutoMonitoringListener;
 import org.docear.plugin.pdfutilities.listener.DocearNodeDropListener;
 import org.docear.plugin.pdfutilities.listener.DocearNodeMouseMotionListener;
 import org.docear.plugin.pdfutilities.listener.DocearNodeSelectionListener;
+import org.docear.plugin.pdfutilities.listener.DocearProjectModelListener;
 import org.docear.plugin.pdfutilities.listener.MonitorungNodeUpdater;
 import org.docear.plugin.pdfutilities.listener.PdfNodeChangeListener;
 import org.docear.plugin.pdfutilities.listener.WorkspaceNodeOpenDocumentListener;
@@ -115,9 +112,11 @@ import org.freeplane.features.url.UrlManager;
 import org.freeplane.features.url.mindmapmode.MFileManager;
 import org.freeplane.features.url.mindmapmode.MapVersionInterpreter;
 import org.freeplane.plugin.workspace.WorkspaceController;
-import org.freeplane.plugin.workspace.event.IWorkspaceEventListener;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
-import org.freeplane.plugin.workspace.event.WorkspaceEvent;
+import org.freeplane.plugin.workspace.mindmapmode.MModeWorkspaceUrlManager;
+import org.freeplane.plugin.workspace.model.WorkspaceModelEvent;
+import org.freeplane.plugin.workspace.model.WorkspaceModelListener;
+import org.freeplane.plugin.workspace.model.project.IProjectModelListener;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
 import org.freeplane.view.swing.map.NodeView;
@@ -188,6 +187,7 @@ public class PdfUtilitiesController extends ALanguageController {
 		}
 	};
 	private UIIcon refreshMonitoringIcon ;
+	private IProjectModelListener projectModelListener;
 	
 	private static PdfUtilitiesController controller;
 	public static final Icon REFRESH_MONITORING_ICON = new ImageIcon(PdfUtilitiesController.class.getResource("/icons/view-refresh-3.png"));
@@ -656,9 +656,9 @@ public class PdfUtilitiesController extends ALanguageController {
 		this.modecontroller.removeAction("PasteAction"); //$NON-NLS-1$
 		this.modecontroller.addAction(new DocearPasteAction());
 
-		WorkspaceController.getIOController().registerNodeActionListener(DefaultFileNode.class, WorkspaceActionEvent.WSNODE_OPEN_DOCUMENT,
+		WorkspaceController.getCurrentModeExtension().getIOController().registerNodeActionListener(DefaultFileNode.class, WorkspaceActionEvent.WSNODE_OPEN_DOCUMENT,
 				new WorkspaceNodeOpenDocumentListener());
-		WorkspaceController.getIOController().registerNodeActionListener(LinkTypeFileNode.class, WorkspaceActionEvent.WSNODE_OPEN_DOCUMENT,
+		WorkspaceController.getCurrentModeExtension().getIOController().registerNodeActionListener(LinkTypeFileNode.class, WorkspaceActionEvent.WSNODE_OPEN_DOCUMENT,
 				new WorkspaceNodeOpenDocumentListener());
 	}
 
@@ -978,38 +978,26 @@ public class PdfUtilitiesController extends ALanguageController {
 //				}
 			}
 		});
-		WorkspaceController.getController().addWorkspaceListener(new DefaultWorkspaceEventListener());
-		WorkspaceController.getController().addWorkspaceListener(new IWorkspaceEventListener() {
+		//WORKSPACE - todo: adjust to new initiation process
+		showViewerSelectionIfNecessary();
+		
+		WorkspaceController.getCurrentModel().addWorldModelListener(new WorkspaceModelListener() {
 			
-			public void workspaceReady(WorkspaceEvent event) {
-				showViewerSelectionIfNecessary();				
-				
-				final IWorkspaceEventListener self = this;
-				SwingUtilities.invokeLater(new Runnable() {
-					
-					public void run() {
-						WorkspaceController.getController().removeWorkspaceListener(self);
-					}
-				});
+			public void projectRemoved(WorkspaceModelEvent event) {
+				event.getProject().getModel().removeProjectModelListener(getProjectModelListener());
 			}
 			
-			public void workspaceChanged(WorkspaceEvent event) {
-			}
+			public void projectAdded(WorkspaceModelEvent event) {
+				event.getProject().getModel().addProjectModelListener(getProjectModelListener());
+			}		
 			
-			public void toolBarChanged(WorkspaceEvent event) {
-			}
+			public void treeStructureChanged(TreeModelEvent e) {}
 			
-			public void openWorkspace(WorkspaceEvent event) {
-			}
+			public void treeNodesRemoved(TreeModelEvent e) {}
 			
-			public void configurationLoaded(WorkspaceEvent event) {
-			}
+			public void treeNodesInserted(TreeModelEvent e) {}
 			
-			public void configurationBeforeLoading(WorkspaceEvent event) {
-			}
-			
-			public void closeWorkspace(WorkspaceEvent event) {
-			}
+			public void treeNodesChanged(TreeModelEvent e) {}
 		});
 
 		this.modecontroller.getMapController().addNodeChangeListener(new PdfNodeChangeListener());		
@@ -1017,6 +1005,13 @@ public class PdfUtilitiesController extends ALanguageController {
 		DocearAutoMonitoringListener autoMonitoringListener = new DocearAutoMonitoringListener();
 		this.modecontroller.getMapController().addMapLifeCycleListener(autoMonitoringListener);
 		Controller.getCurrentController().getViewController().getJFrame().addWindowFocusListener(autoMonitoringListener);
+	}
+
+	private IProjectModelListener getProjectModelListener() {
+		if(this.projectModelListener == null) {
+			this.projectModelListener = new DocearProjectModelListener();
+		}
+		return this.projectModelListener;
 	}
 
 	private void addPluginDefaults() {
@@ -1066,7 +1061,7 @@ public class PdfUtilitiesController extends ALanguageController {
 		MModeController modeController = (MModeController) this.modecontroller;
 
 		modeController.getOptionPanelBuilder().load(preferences);
-		//TODO: Does not work, because the properties are set in an extra dialog with the validator still using the old values
+		//DOCEAR - todo: Does not work, because the properties are set in an extra dialog with the validator still using the old values
 //		Controller.getCurrentController().addOptionValidator(new IValidator() {
 //			
 //			public ValidationResult validate(Properties properties) {
@@ -1228,7 +1223,12 @@ public class PdfUtilitiesController extends ALanguageController {
 	
 	
 	public String[] getPdfReaderExecCommand(URI uriToFile, int page, String title) {
-		File file = Tools.getFilefromUri(Tools.getAbsoluteUri(uriToFile, Controller.getCurrentController().getMap()));
+		File file = null;
+		try {
+			file = new File(MModeWorkspaceUrlManager.getController().getAbsoluteUri(Controller.getCurrentController().getMap(), uriToFile));
+		} catch (Exception e) {
+			LogUtils.warn(e);
+		}
 		if (file == null) {
 			return null;
 		}
@@ -1320,11 +1320,11 @@ public class PdfUtilitiesController extends ALanguageController {
 					setReaderPreferences(filePath);
 				}
 			} catch (ScriptException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//DOCEAR - todo: show error message dialog
+				LogUtils.warn(e);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//DOCEAR - todo: show error message dialog
+				LogUtils.warn(e);
 			}
 		}
 		else {

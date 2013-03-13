@@ -56,7 +56,8 @@ public class UploadThread extends DocearThread implements DirectoryObserver {
 							}
 							boolean success = false;
 							try {
-								success = client.sendFile(file, true);
+								//DOCEAR - debug: 
+								success = true; fileRemoved(file);//client.sendFile(file, true);
 							}
 							catch(Exception e) {
 								DocearLogger.warn("org.docear.plugin.services.upload.UploadThread.execute() -> sendFile: "+e.getMessage());

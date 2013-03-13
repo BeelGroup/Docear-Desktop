@@ -6,6 +6,7 @@ import javax.swing.ImageIcon;
 
 import org.docear.plugin.services.ServiceController;
 import org.docear.plugin.services.communications.CommunicationsController;
+import org.docear.plugin.services.recommendations.RecommendationsController;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.util.TextUtils;
@@ -34,7 +35,7 @@ public class RecommendationsRefreshAction extends AFreeplaneAction {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		ServiceController.getController().getRecommenationMode().getMapController().refreshRecommendations();
+		RecommendationsController.refreshRecommendations();
 	}
 
 }

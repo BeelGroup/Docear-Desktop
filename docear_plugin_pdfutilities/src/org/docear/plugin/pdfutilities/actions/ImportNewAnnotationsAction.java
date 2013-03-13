@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.docear.plugin.core.features.AnnotationID;
-import org.docear.plugin.core.util.Tools;
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
 import org.docear.plugin.pdfutilities.features.AnnotationNodeModel;
 import org.docear.plugin.pdfutilities.features.IAnnotation;
@@ -21,6 +20,7 @@ import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
+import org.freeplane.plugin.workspace.URIUtils;
 
 import de.intarsys.pdf.parser.COSLoadException;
 
@@ -46,7 +46,7 @@ public class ImportNewAnnotationsAction extends ImportAnnotationsAction {
 		}
 		
 		else{
-			URI uri = Tools.getAbsoluteUri(selected);
+			URI uri = URIUtils.getAbsoluteURI(selected);
             try {
             	PdfAnnotationImporter importer = new PdfAnnotationImporter();            	
 				Collection<AnnotationModel> annotations = importer.importAnnotations(uri);				

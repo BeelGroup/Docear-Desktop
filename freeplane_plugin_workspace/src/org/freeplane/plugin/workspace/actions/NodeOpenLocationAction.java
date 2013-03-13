@@ -6,6 +6,7 @@ import java.io.File;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.mode.Controller;
+import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.io.IFileSystemRepresentation;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
@@ -14,13 +15,12 @@ import org.freeplane.plugin.workspace.nodes.WorkspaceRootNode;
 
 public class NodeOpenLocationAction extends AWorkspaceAction {
 
-	/**
-	 * 
-	 */
+	public static final String KEY = "workspace.action.node.open.location";
+	
 	private static final long serialVersionUID = 1L;
 
 	public NodeOpenLocationAction() {
-		super("workspace.action.node.open.location");
+		super(KEY);
 	}
 	
 	public void actionPerformed(ActionEvent event) {
@@ -29,11 +29,11 @@ public class NodeOpenLocationAction extends AWorkspaceAction {
 			openFolder(((IFileSystemRepresentation) targetNode).getFile());
 		}
 		else if(targetNode instanceof ProjectRootNode) {
-			openFolder(WorkspaceController.resolveFile(WorkspaceController.getCurrentModel().getProject(targetNode.getModel()).getProjectHome()));
+			openFolder(URIUtils.getAbsoluteFile(WorkspaceController.getProject(targetNode).getProjectHome()));
 		}
 
 		else if(targetNode instanceof WorkspaceRootNode) {
-			openFolder(WorkspaceController.resolveFile(WorkspaceController.getCurrentModeExtension().getDefaultProjectHome()));
+			openFolder(URIUtils.getAbsoluteFile(WorkspaceController.getCurrentModeExtension().getDefaultProjectHome()));
 		}
 	}
 

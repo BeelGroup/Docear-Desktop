@@ -16,8 +16,7 @@ import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.attribute.AttributeController;
 import org.freeplane.features.attribute.AttributeRegistry;
 import org.freeplane.features.attribute.NodeAttributeTableModel;
-import org.freeplane.features.link.LinkController;
-import org.freeplane.features.link.mindmapmode.MLinkController;
+import org.freeplane.features.link.NodeLinks;
 import org.freeplane.features.map.INodeView;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
@@ -28,6 +27,8 @@ import org.freeplane.features.mapio.mindmapmode.MMapIO;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.mode.mindmapmode.MModeController;
+import org.freeplane.plugin.workspace.URIUtils;
+import org.freeplane.plugin.workspace.mindmapmode.MModeWorkspaceLinkController;
 import org.freeplane.plugin.workspace.mindmapmode.MModeWorkspaceUrlManager;
 import org.freeplane.view.swing.map.MapView;
 import org.freeplane.view.swing.map.NodeView;
@@ -113,9 +114,17 @@ public class NodeUtilities {
 	}
 
 	public static NodeModel setLinkFrom(URI file, NodeModel node) {
-		((MLinkController) LinkController.getController()).setLinkTypeDependantLink(node, file);
+		MModeWorkspaceLinkController.getController().setLinkTypeDependantLink(node, file);
 
 		return node;
+	}
+	
+	public static URI getURI(NodeModel node) {
+		return URIUtils.getAbsoluteURI(node);
+	}
+	
+	public static URI getLink(NodeModel node) {
+		return NodeLinks.getLink(node);
 	}
 
 	public static NodeModel insertChildNodeFrom(NodeModel node, boolean isLeft, NodeModel target) {

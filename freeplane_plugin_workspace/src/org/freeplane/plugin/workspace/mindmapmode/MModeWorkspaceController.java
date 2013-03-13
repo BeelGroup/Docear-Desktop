@@ -25,11 +25,10 @@ import org.freeplane.core.ui.components.ResizerListener;
 import org.freeplane.core.util.FileUtils;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.link.LinkController;
-import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.ui.ViewController;
 import org.freeplane.features.url.UrlManager;
-import org.freeplane.plugin.workspace.AWorkspaceModeExtension;
+import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.actions.FileNodeDeleteAction;
 import org.freeplane.plugin.workspace.actions.FileNodeNewFileAction;
@@ -52,6 +51,7 @@ import org.freeplane.plugin.workspace.actions.WorkspaceNewProjectAction;
 import org.freeplane.plugin.workspace.components.IWorkspaceView;
 import org.freeplane.plugin.workspace.components.TreeView;
 import org.freeplane.plugin.workspace.creator.DefaultFileNodeCreator;
+import org.freeplane.plugin.workspace.features.AWorkspaceModeExtension;
 import org.freeplane.plugin.workspace.handler.DefaultFileNodeIconHandler;
 import org.freeplane.plugin.workspace.handler.LinkTypeFileIconHandler;
 import org.freeplane.plugin.workspace.io.AFileNodeCreator;
@@ -84,10 +84,10 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 
 	public MModeWorkspaceController(ModeController modeController) {
 		super(modeController);
+		setupController(modeController);
 	}
 	
 	public void start(ModeController modeController) {
-		setupController(modeController);
 		setupSettings(modeController);
 		setupActions(modeController);
 		setupModel(modeController);
@@ -115,7 +115,7 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 			}
 			AWorkspaceProject project = null;
 			try {
-				project = AWorkspaceProject.create(projectID, URI.create(projectHome));
+				project = AWorkspaceProject.create(projectID, URIUtils.createURI(projectHome));
 				getModel().addProject(project);
 				getProjectLoader().loadProject(project);
 			}
@@ -164,6 +164,13 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 		otcr.addCollapseListener(adapter);
 		
 		Box resizableTools = Box.createHorizontalBox();
+		try {
+			int width = Integer.parseInt(settings.getProperty(WORKSPACE_VIEW_WIDTH, "150"));
+			getWorkspaceView().setPreferredSize(new Dimension(width, 40));
+		}
+		catch (Exception e) {
+			// blindly accept
+		}
 		resizableTools.add(getWorkspaceView());			
 		resizableTools.add(otcr);
 		otcr.setExpanded(expanded);
@@ -178,30 +185,28 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 	}
 		
 	private void setupActions(ModeController modeController) {
-		Controller controller = modeController.getController();
-		controller.addAction(new WorkspaceExpandAction());
-		controller.addAction(new WorkspaceCollapseAction());
-		controller.addAction(new WorkspaceNewProjectAction());
-		controller.addAction(new NodeNewFolderAction());
-		controller.addAction(new NodeNewLinkAction());
-		controller.addAction(new NodeOpenLocationAction());
+		WorkspaceController.addAction(new WorkspaceExpandAction());
+		WorkspaceController.addAction(new WorkspaceCollapseAction());
+		WorkspaceController.addAction(new WorkspaceNewProjectAction());
+		WorkspaceController.addAction(new NodeNewFolderAction());
+		WorkspaceController.addAction(new NodeNewLinkAction());
+		WorkspaceController.addAction(new NodeOpenLocationAction());
 		
 		//FIXME: #332
-		controller.addAction(new NodeCutAction());
-		controller.addAction(new NodeCopyAction());
-		controller.addAction(new NodePasteAction());
-		controller.addAction(new NodeRenameAction());
-		controller.addAction(new NodeRemoveAction());
-		controller.addAction(new NodeRefreshAction());
-		controller.addAction(new ProjectRemoveAction());
-//		
-		controller.removeAction(WorkspaceNewMapAction.KEY);
-		controller.addAction(new WorkspaceNewMapAction());
-		controller.addAction(new FileNodeNewMindmapAction());
-		controller.addAction(new FileNodeNewFileAction());
-		controller.addAction(new FileNodeDeleteAction());
+		WorkspaceController.addAction(new NodeCutAction());
+		WorkspaceController.addAction(new NodeCopyAction());
+		WorkspaceController.addAction(new NodePasteAction());
+		WorkspaceController.addAction(new NodeRenameAction());
+		WorkspaceController.addAction(new NodeRemoveAction());
+		WorkspaceController.addAction(new NodeRefreshAction());
+		WorkspaceController.addAction(new ProjectRemoveAction());
 		
-		controller.addAction(new PhysicalFolderSortOrderAction());
+		WorkspaceController.replaceAction(new WorkspaceNewMapAction());
+		WorkspaceController.addAction(new FileNodeNewMindmapAction());
+		WorkspaceController.addAction(new FileNodeNewFileAction());
+		WorkspaceController.addAction(new FileNodeDeleteAction());
+		
+		WorkspaceController.addAction(new PhysicalFolderSortOrderAction());
 	}
 
 	private void loadSettings(String settingsPath) {
@@ -287,14 +292,7 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 		if (this.view == null) {
 			this.view = new TreeView();
 			this.view.setMinimumSize(new Dimension(100, 40));
-			int width = 150;
-			try {
-				width = Integer.parseInt(settings.getProperty(WORKSPACE_VIEW_WIDTH, "150"));
-			}
-			catch (Exception e) {
-				// blindly accept
-			}
-			this.view.setPreferredSize(new Dimension(width, 40));
+			this.view.setPreferredSize(new Dimension(150, 40));
 			this.view.addProjectSelectionListener(getProjectSelectionListener());
 		}
 		return this.view;
@@ -305,6 +303,10 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 			wsModel = WorkspaceModel.createDefaultModel();
 		}
 		return wsModel;
+	}
+	
+	public void setModel(WorkspaceModel model) {
+		wsModel = model;
 	}
 
 	@Override
@@ -349,7 +351,7 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 	}
 
 	public URI getDefaultProjectHome() {
-		File home = WorkspaceController.resolveFile(WorkspaceController.getApplicationHome());
+		File home = URIUtils.getAbsoluteFile(WorkspaceController.getApplicationHome());
 		home = new File(home, "projects");
 		return  home.toURI();
 	}
@@ -359,7 +361,7 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 	}
 	
 	private String getSettingsPath() {
-		return WorkspaceController.resolveFile(WorkspaceController.getApplicationSettingsHome()).getPath() + File.separator + "users"+File.separator+"default";
+		return URIUtils.getAbsoluteFile(WorkspaceController.getApplicationSettingsHome()).getPath() + File.separator + "users"+File.separator+"default";
 	}
 
 	private IProjectSelectionListener getProjectSelectionListener() {

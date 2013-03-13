@@ -22,12 +22,12 @@ import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.features.DocearMapModelExtension;
 import org.docear.plugin.core.features.MapModificationSession;
 import org.docear.plugin.core.mindmap.AMindmapUpdater;
-import org.docear.plugin.core.util.Tools;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.link.NodeLinks;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.features.url.UrlManager;
+import org.freeplane.plugin.workspace.URIUtils;
 
 public class ReferenceUpdater extends AMindmapUpdater {
 
@@ -172,7 +172,7 @@ public class ReferenceUpdater extends AMindmapUpdater {
 	
 	private boolean isIgnored(Reference reference, NodeModel node) {
 		if (reference.getUris().size() > 0) {
-			File file = WorkspaceUtils.resolveURI(reference.getUris().iterator().next(), node.getMap());
+			File file = UrlManager.getController().getAbsoluteFile(node.getMap(), reference.getUris().iterator().next());
 			if (file != null) {
 				if (((Set<String>) session.getSessionObject(MapModificationSession.FILE_IGNORE_LIST)).contains(file.getName())) {
 					return true;
@@ -187,9 +187,9 @@ public class ReferenceUpdater extends AMindmapUpdater {
 			}
 		}
 		
-		URI uri = Tools.getAbsoluteUri(node);
+		URI uri = URIUtils.getAbsoluteURI(node);
 		if (uri != null) {
-    		File file = WorkspaceUtils.resolveURI(uri, node.getMap());				
+    		File file = UrlManager.getController().getAbsoluteFile(node.getMap(), uri);				
     		if (file != null) {
     			if (!reference.containsLink(uri)) {
     				return true;
@@ -277,7 +277,7 @@ public class ReferenceUpdater extends AMindmapUpdater {
 			if (uri != null) {
 				File file;
 
-				file = WorkspaceUtils.resolveURI(uri, node.getMap());
+				file = UrlManager.getController().getAbsoluteFile(node.getMap(), uri);
 				if (file != null) {
 					String fileName = file.getName();
 					BibtexEntry entry = this.pdfReferences.get(fileName);

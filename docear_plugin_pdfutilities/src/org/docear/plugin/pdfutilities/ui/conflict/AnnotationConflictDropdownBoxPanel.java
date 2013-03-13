@@ -1,5 +1,7 @@
 package org.docear.plugin.pdfutilities.ui.conflict;
 
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -8,19 +10,17 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.docear.plugin.core.util.Tools;
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
 import org.docear.plugin.pdfutilities.features.AnnotationNodeModel;
 import org.docear.plugin.pdfutilities.features.IAnnotation;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.map.NodeModel;
+import org.freeplane.plugin.workspace.URIUtils;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
-import java.awt.event.ItemListener;
-import java.awt.event.ItemEvent;
 
 public class AnnotationConflictDropdownBoxPanel extends JPanel {
 
@@ -109,7 +109,7 @@ public class AnnotationConflictDropdownBoxPanel extends JPanel {
 			}
 		}
 		else{
-			return Tools.getFilefromUri(selected.getUri()).getName();
+			return URIUtils.getFile(selected.getUri()).getName();
 		}
 	}
 

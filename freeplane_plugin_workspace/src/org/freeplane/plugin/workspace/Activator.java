@@ -10,6 +10,9 @@ import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.main.osgi.IControllerExtensionProvider;
 import org.freeplane.main.osgi.IModeControllerExtensionProvider;
 import org.freeplane.plugin.workspace.actions.WorkspaceQuitAction;
+import org.freeplane.plugin.workspace.features.ProjectURLHandler;
+import org.freeplane.plugin.workspace.features.PropertyUrlHandler;
+import org.freeplane.plugin.workspace.features.WorkspaceUrlHandler;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -28,7 +31,7 @@ public class Activator implements BundleActivator {
 		}, null);
 		
 		final Hashtable<String, String[]> props = new Hashtable<String, String[]>();
-		//WORKSPACE - todo: list all modes from freeplane controller
+		//WORKSPACE - todo(low): list all modes from freeplane controller		
 		props.put("mode", new String[] { MModeController.MODENAME });
 		
 		context.registerService(IModeControllerExtensionProvider.class.getName(),
@@ -46,10 +49,15 @@ public class Activator implements BundleActivator {
 		FreeplaneActionCascade.addAction(new WorkspaceQuitAction());
 	}
 
+	@SuppressWarnings("deprecation")
 	private void registerClasspathUrlHandler(final BundleContext context) {
 		Hashtable<String, String[]> properties = new Hashtable<String, String[]>();
         properties.put(URLConstants.URL_HANDLER_PROTOCOL, new String[] { WorkspaceController.WORKSPACE_RESOURCE_URL_PROTOCOL });
         context.registerService(URLStreamHandlerService.class.getName(), new WorkspaceUrlHandler(), properties);
+        
+        properties = new Hashtable<String, String[]>();
+        properties.put(URLConstants.URL_HANDLER_PROTOCOL, new String[] { WorkspaceController.PROJECT_RESOURCE_URL_PROTOCOL });
+        context.registerService(URLStreamHandlerService.class.getName(), new ProjectURLHandler(), properties);
         
         properties = new Hashtable<String, String[]>();
         properties.put(URLConstants.URL_HANDLER_PROTOCOL, new String[] { WorkspaceController.PROPERTY_RESOURCE_URL_PROTOCOL });

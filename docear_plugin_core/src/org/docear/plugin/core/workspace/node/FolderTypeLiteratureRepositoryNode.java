@@ -1,22 +1,35 @@
 package org.docear.plugin.core.workspace.node;
 
+import java.awt.Component;
+import java.io.File;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Locale;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
+import org.docear.plugin.core.workspace.AVirtualDirectory;
 import org.docear.plugin.core.workspace.creator.FolderTypeLiteratureRepositoryPathCreator;
 import org.freeplane.core.util.TextUtils;
+import org.freeplane.plugin.workspace.URIUtils;
+import org.freeplane.plugin.workspace.actions.WorkspaceNewProjectAction;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
+import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
+import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
+import org.freeplane.plugin.workspace.io.IFileSystemRepresentation;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.nodes.AFolderNode;
 
 /**
  * 
  */
-public class FolderTypeLiteratureRepositoryNode extends AFolderNode {
+public class FolderTypeLiteratureRepositoryNode extends AFolderNode implements IWorkspaceNodeActionListener,
+																				IFileSystemRepresentation {
 	//WORKSPACE - todo: implement dnd handling
 	private static final long serialVersionUID = 1L;
 	private WorkspacePopupMenu popupMenu = null;
@@ -34,6 +47,7 @@ public class FolderTypeLiteratureRepositoryNode extends AFolderNode {
 	
 	public FolderTypeLiteratureRepositoryNode(String type) {
 		super(type);
+		setName(null);
 		//WORKSPACE - todo: implement observer structure
 //		CoreConfiguration.repositoryPathObserver.addChangeListener(this);
 	}
@@ -52,14 +66,14 @@ public class FolderTypeLiteratureRepositoryNode extends AFolderNode {
 	}
 	
 	public void setName(String name) {
-		super.setName("Literature Repository");
+		super.setName(TextUtils.getText(this.getClass().getName().toLowerCase(Locale.ENGLISH)+".label" ));
 	}
 	
 	public void addPath(URI uri) {
 		if(uri == null) {
 			return;
 		}
-		AWorkspaceTreeNode newPathItem = FolderTypeLiteratureRepositoryPathCreator.newPathItem(uri, false);
+		AWorkspaceTreeNode newPathItem = FolderTypeLiteratureRepositoryPathCreator.newPathItem(null, uri, false);
 		this.getModel().addNodeTo(newPathItem, this);
 		this.refresh();
 		newPathItem.refresh();
@@ -79,10 +93,9 @@ public class FolderTypeLiteratureRepositoryNode extends AFolderNode {
 			popupMenu = new WorkspacePopupMenu();
 			WorkspacePopupMenuBuilder.addActions(popupMenu, new String[] {
 					WorkspacePopupMenuBuilder.createSubMenu(TextUtils.getRawText("workspace.action.new.label")),
-//					"workspace.action.node.new.folder",
-//					"workspace.action.file.new.mindmap",
-					//WorkspacePopupMenuBuilder.SEPARATOR,
-					//"workspace.action.file.new.file",
+					WorkspaceNewProjectAction.KEY,
+					WorkspacePopupMenuBuilder.SEPARATOR,
+					"workspace.action.node.add.repository",
 					WorkspacePopupMenuBuilder.endSubMenu(),
 					WorkspacePopupMenuBuilder.SEPARATOR,
 					"workspace.action.node.paste",
@@ -108,5 +121,37 @@ public class FolderTypeLiteratureRepositoryNode extends AFolderNode {
 	public URI getPath() {
 		// not used here
 		return null;
+	}
+
+	public File getFile() {
+		return new AVirtualDirectory("LiteratureRepository") {
+			private static final long serialVersionUID = 1L;
+
+			protected Collection<File> getChildren() {
+				ArrayList<File> list = new ArrayList<File>();
+				Enumeration<AWorkspaceTreeNode> paths = children();
+				while(paths.hasMoreElements()) {
+					LiteratureRepositoryPathNode node = (LiteratureRepositoryPathNode) paths.nextElement();
+					list.add(URIUtils.getAbsoluteFile(node.getPath()));
+				}
+				return list;
+			}
+		};
+	}
+	
+	public void orderDescending(boolean enable) {
+		//not used
+	}
+
+	public boolean orderDescending() {
+		return false;
+	}
+
+	@Override
+	public void handleAction(WorkspaceActionEvent event) {
+		if (event.getType() == WorkspaceActionEvent.MOUSE_RIGHT_CLICK) {
+			showPopup( (Component) event.getBaggage(), event.getX(), event.getY());
+			event.consume();
+		}
 	}
 }

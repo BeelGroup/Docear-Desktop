@@ -81,7 +81,7 @@ public abstract class AActionNode extends AWorkspaceTreeNode implements IWorkspa
 	 * REQUIRED METHODS FOR INTERFACES
 	 **********************************************************************************/
 	
-	public final String getTagName() {
+	public String getTagName() {
 		return "action";
 	}
 

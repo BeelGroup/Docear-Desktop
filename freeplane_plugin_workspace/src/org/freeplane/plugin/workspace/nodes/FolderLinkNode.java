@@ -20,7 +20,9 @@ import org.apache.commons.io.monitor.FileAlterationListener;
 import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
+import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.actions.WorkspaceNewProjectAction;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
 import org.freeplane.plugin.workspace.dnd.IDropAcceptor;
@@ -78,7 +80,7 @@ public class FolderLinkNode extends AFolderNode implements IWorkspaceNodeActionL
 	}
 	
 	private void createIfNeeded(URI uri) {
-		File file = WorkspaceController.resolveFile(uri);
+		File file = URIUtils.getAbsoluteFile(uri);
 		if (file != null && !file.exists()) {
 			file.mkdirs();			
 		}
@@ -91,6 +93,8 @@ public class FolderLinkNode extends AFolderNode implements IWorkspaceNodeActionL
 				popupMenu = new WorkspacePopupMenu();
 				WorkspacePopupMenuBuilder.addActions(popupMenu, new String[] {
 						WorkspacePopupMenuBuilder.createSubMenu(TextUtils.getRawText("workspace.action.new.label")),
+						WorkspaceNewProjectAction.KEY,
+						WorkspacePopupMenuBuilder.SEPARATOR,
 						"workspace.action.node.new.folder",
 						"workspace.action.file.new.mindmap",
 						//WorkspacePopupMenuBuilder.SEPARATOR,
@@ -121,7 +125,7 @@ public class FolderLinkNode extends AFolderNode implements IWorkspaceNodeActionL
 			this.doMonitoring = enable;
 		} 
 		else {
-			File file = WorkspaceController.resolveFile(getPath());
+			File file = URIUtils.getAbsoluteFile(getPath());
 			if(enable != this.doMonitoring) {
 				this.doMonitoring = enable;
 				first = true;
@@ -179,7 +183,7 @@ public class FolderLinkNode extends AFolderNode implements IWorkspaceNodeActionL
 	public void refresh() {
 		File folder;
 		try {
-			folder = WorkspaceController.resolveFile(getPath());
+			folder = URIUtils.getAbsoluteFile(getPath());
 			if (folder.isDirectory()) {
 				getModel().removeAllElements(this);
 				WorkspaceController.getFileSystemMgr().scanFileSystem(this, folder);
@@ -198,7 +202,7 @@ public class FolderLinkNode extends AFolderNode implements IWorkspaceNodeActionL
 	
 	private void processWorkspaceNodeDrop(List<AWorkspaceTreeNode> nodes, int dropAction) {
 		try {	
-			File targetDir = WorkspaceController.resolveFile(getPath());
+			File targetDir = URIUtils.getAbsoluteFile(getPath());
 			for(AWorkspaceTreeNode node : nodes) {
 				if(node instanceof DefaultFileNode) {					
 					if(targetDir != null && targetDir.isDirectory()) {
@@ -218,7 +222,7 @@ public class FolderLinkNode extends AFolderNode implements IWorkspaceNodeActionL
 					}
 				}
 				else if(node instanceof LinkTypeFileNode) {
-					File srcFile = WorkspaceController.resolveFile(((LinkTypeFileNode) node).getLinkPath());
+					File srcFile = URIUtils.getAbsoluteFile(((LinkTypeFileNode) node).getLinkURI());
 					if(targetDir != null && targetDir.isDirectory()) {
 						FileUtils.copyFileToDirectory(srcFile, targetDir);
 						if(dropAction == DnDConstants.ACTION_MOVE) {
@@ -243,7 +247,7 @@ public class FolderLinkNode extends AFolderNode implements IWorkspaceNodeActionL
 	
 	private void processFileListDrop(List<File> files, int dropAction) {
 		try {
-			File targetDir = WorkspaceController.resolveFile(getPath());			
+			File targetDir = URIUtils.getAbsoluteFile(getPath());			
 			for(File srcFile : files) {
 				if(srcFile.isDirectory()) {
 					FileUtils.copyDirectoryToDirectory(srcFile, targetDir);
@@ -262,7 +266,7 @@ public class FolderLinkNode extends AFolderNode implements IWorkspaceNodeActionL
 	
 	private void processUriListDrop(List<URI> uris, int dropAction) {
 		try {
-			File targetDir = WorkspaceController.resolveFile(getPath());			
+			File targetDir = URIUtils.getAbsoluteFile(getPath());			
 			for(URI uri : uris) {
 				File srcFile = new File(uri);
 				if(srcFile == null || !srcFile.exists()) {
@@ -375,7 +379,7 @@ public class FolderLinkNode extends AFolderNode implements IWorkspaceNodeActionL
 				String[] uriArray = uriString.split("\r\n");
 				for(String singleUri : uriArray) {
 					try {
-						uriList.add(URI.create(singleUri));
+						uriList.add(URIUtils.createURI(singleUri));
 					}
 					catch (Exception e) {
 						LogUtils.info("DOCEAR@FolderLinkNode.processDrop.1: "+ e.getMessage());
@@ -404,7 +408,7 @@ public class FolderLinkNode extends AFolderNode implements IWorkspaceNodeActionL
 	public Transferable getTransferable() {
 		WorkspaceTransferable transferable = new WorkspaceTransferable();
 		try {
-			URI uri = WorkspaceController.resolveURI(getPath());
+			URI uri = URIUtils.getAbsoluteURI(getPath());
 			transferable.addData(WorkspaceTransferable.WORKSPACE_URI_LIST_FLAVOR, uri.toString());
 			List<File> fileList = new Vector<File>();
 			fileList.add(new File(uri));
@@ -423,7 +427,7 @@ public class FolderLinkNode extends AFolderNode implements IWorkspaceNodeActionL
 	}
 
 	public File getFile() {
-		return WorkspaceController.resolveFile(this.getPath());
+		return URIUtils.getAbsoluteFile(this.getPath());
 	}
 	
 	public boolean changeName(String newName, boolean renameLink) {
@@ -431,7 +435,7 @@ public class FolderLinkNode extends AFolderNode implements IWorkspaceNodeActionL
 		assert(newName.trim().length() > 0);
 		
 		if(renameLink) {
-			File oldFile = WorkspaceController.resolveFile(getPath());
+			File oldFile = URIUtils.getAbsoluteFile(getPath());
 			try{
 				if(oldFile == null) {
 					throw new Exception("failed to resolve the file for"+getName());

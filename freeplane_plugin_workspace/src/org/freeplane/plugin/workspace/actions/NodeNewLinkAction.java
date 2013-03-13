@@ -11,6 +11,7 @@ import java.net.URI;
 import javax.swing.JFileChooser;
 
 import org.freeplane.core.ui.components.UITools;
+import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.nodes.AFolderNode;
@@ -45,7 +46,7 @@ public class NodeNewLinkAction extends AWorkspaceAction {
 			return;
 		}
 		if(targetNode instanceof AFolderNode) {
-			JFileChooser chooser = new JFileChooser(WorkspaceController.resolveFile(((AFolderNode) targetNode).getPath() == null ? WorkspaceController.getCurrentProject().getProjectHome() : ((AFolderNode) targetNode).getPath()));
+			JFileChooser chooser = new JFileChooser(URIUtils.getAbsoluteFile(((AFolderNode) targetNode).getPath() == null ? WorkspaceController.getCurrentProject().getProjectHome() : ((AFolderNode) targetNode).getPath()));
 			chooser.setMultiSelectionEnabled(false);
 			int response = chooser.showOpenDialog(UITools.getFrame());
 			if(response == JFileChooser.APPROVE_OPTION) {
@@ -58,7 +59,7 @@ public class NodeNewLinkAction extends AWorkspaceAction {
 					if (path == null) {
 						return;
 					}	
-					node.setLinkPath(path);
+					node.setLinkURI(path);
 					targetNode.getModel().addNodeTo(node, targetNode);
 					targetNode.refresh();
 					targetNode.getModel().requestSave();

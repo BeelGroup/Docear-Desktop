@@ -10,11 +10,10 @@ import org.docear.plugin.core.DocearService;
 import org.docear.plugin.services.communications.CommunicationsController;
 import org.docear.plugin.services.communications.DocearAuthenticator;
 import org.docear.plugin.services.communications.components.dialog.ProxyAuthenticationDialog;
-import org.docear.plugin.services.recommendations.mode.DocearRecommendationsModeController;
 import org.freeplane.core.resources.IFreeplanePropertyListener;
 import org.freeplane.core.resources.OptionPanelController;
-import org.freeplane.core.resources.ResourceBundles;
 import org.freeplane.core.resources.OptionPanelController.PropertyLoadListener;
+import org.freeplane.core.resources.ResourceBundles;
 import org.freeplane.core.resources.components.IPropertyControl;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
@@ -38,7 +37,6 @@ public class Activator extends DocearService {
 		controllerExtensions.add(new IControllerExtensionProvider() {
 			
 			public void installExtension(Controller controller) {
-				DocearRecommendationsModeController.createController(controller);
 				setLanguage();
 				
 				final OptionPanelController optionController = controller.getOptionPanelController();

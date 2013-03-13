@@ -12,13 +12,12 @@ import java.net.URI;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.LogUtils;
-import org.freeplane.features.map.MapChangeEvent;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.mapio.MapIO;
 import org.freeplane.features.mapio.mindmapmode.MMapIO;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.mindmapmode.MModeController;
-import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.URIUtils;
 
 /**
  * FIX for issue that a new mindmap is always set to <code>saved</code> by
@@ -52,7 +51,7 @@ public class WorkspaceNewMapAction extends AFreeplaneAction {
 			save = false;
 		}
 
-		File f = WorkspaceController.resolveFile(uri);
+		File f = URIUtils.getAbsoluteFile(uri);
 		if (save) {
 			if (!createFolderStructure(f)) {
 				return null;
@@ -67,7 +66,7 @@ public class WorkspaceNewMapAction extends AFreeplaneAction {
 
 		if (name != null) {
 			//WORKSPACE - fixme: does not show in mapview
-			String oldName = map.getRootNode().getText(); 
+			//String oldName = map.getRootNode().getText(); 
 			map.getRootNode().setText(name);
 			Controller.getCurrentController().getViewController().getMapView().repaint();
 		}

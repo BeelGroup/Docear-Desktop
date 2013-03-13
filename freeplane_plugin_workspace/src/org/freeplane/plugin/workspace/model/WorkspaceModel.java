@@ -15,17 +15,15 @@ import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.model.project.IProjectModelListener;
 import org.freeplane.plugin.workspace.model.project.ProjectModel;
-import org.freeplane.plugin.workspace.model.project.ProjectModelEvent;
-import org.freeplane.plugin.workspace.nodes.ProjectRootNode;
 import org.freeplane.plugin.workspace.nodes.WorkspaceRootNode;
 
 public abstract class WorkspaceModel implements TreeModel {	
 	
-	private List<AWorkspaceProject> projects = new ArrayList<AWorkspaceProject>();
-	private final List<TreeModelListener> listeners = new ArrayList<TreeModelListener>();
+	protected List<AWorkspaceProject> projects = new ArrayList<AWorkspaceProject>();
+	protected final List<WorkspaceModelListener> listeners = new ArrayList<WorkspaceModelListener>();
 	
-	private WorkspaceRootNode root;
-	private IProjectModelListener projectModelListener;
+	protected WorkspaceRootNode root;
+	protected IProjectModelListener projectModelListener;
 	
 	public void addProject(AWorkspaceProject project) {
 		if(project == null) {
@@ -35,7 +33,7 @@ public abstract class WorkspaceModel implements TreeModel {
 			if(!projects.contains(project)) {
 				projects.add(project);
 				project.getModel().addProjectModelListener(getProjectModelListener());
-				fireProjectInserted(project, projects.size()-1);				
+				fireProjectInserted(project);				
 			}
 		}
 	}
@@ -45,20 +43,51 @@ public abstract class WorkspaceModel implements TreeModel {
 			return;
 		}
 		synchronized (projects) {
-			int index = projects.indexOf(project);
-			if(index > -1) {				
+			int index = getProjectIndex(project);
+			if(index > -1) {
 				projects.remove(project);
 				project.getModel().removeProjectModelListener(getProjectModelListener());
 				fireProjectRemoved(project, index);
+				
 			}
 		}
 	}
 	
-	private IProjectModelListener getProjectModelListener() {
+	private WorkspaceModelEvent validatedModelEvent(WorkspaceModelEvent event) {
+		WorkspaceModelEvent evt = event; 
+		if(event.getTreePath() == null) {
+			int[] indices;
+			int index = getProjectIndex(event.getProject());
+			if(index < 0) {
+				indices = new int[]{};
+			}
+			else {
+				indices = new int[]{index};
+			}
+			evt = new WorkspaceModelEvent(event.getProject(), event.getSource(), getRoot().getTreePath(), indices, event.getChildren());
+		}
+		return evt;
+	}
+	
+	public int getProjectIndex(AWorkspaceProject project) {
+		synchronized (projects) {
+			int index = 0;
+			for (AWorkspaceProject prj : projects) {
+				if(prj.equals(project)) {
+					return index;
+				}
+				index++;
+			}
+		}
+		return -1;
+	}
+
+	protected IProjectModelListener getProjectModelListener() {
 		if(projectModelListener == null) {
 			projectModelListener = new IProjectModelListener() {
 				
-				public void treeStructureChanged(ProjectModelEvent event) {
+				public void treeStructureChanged(WorkspaceModelEvent event) {
+					event = validatedModelEvent(event);
 					synchronized (listeners) {
 						for (int i = listeners.size()-1; i >= 0; i--) {
 							listeners.get(i).treeStructureChanged(event);
@@ -66,7 +95,8 @@ public abstract class WorkspaceModel implements TreeModel {
 					}
 				}
 				
-				public void treeNodesRemoved(ProjectModelEvent event) {
+				public void treeNodesRemoved(WorkspaceModelEvent event) {
+					event = validatedModelEvent(event);
 					synchronized (listeners) {
 						for (int i = listeners.size()-1; i >= 0; i--) {
 							listeners.get(i).treeNodesRemoved(event);
@@ -74,15 +104,17 @@ public abstract class WorkspaceModel implements TreeModel {
 					}
 				}
 				
-				public void treeNodesInserted(ProjectModelEvent event) {
-					synchronized (listeners) {
+				public void treeNodesInserted(WorkspaceModelEvent event) {
+					event = validatedModelEvent(event);
+					synchronized (listeners) {						
 						for (int i = listeners.size()-1; i >= 0; i--) {
 							listeners.get(i).treeNodesInserted(event);
 						}
 					}
 				}
 				
-				public void treeNodesChanged(ProjectModelEvent event) {
+				public void treeNodesChanged(WorkspaceModelEvent event) {
+					event = validatedModelEvent(event);
 					synchronized (listeners) {
 						for (int i = listeners.size()-1; i >= 0; i--) {
 							listeners.get(i).treeNodesChanged(event);
@@ -95,27 +127,29 @@ public abstract class WorkspaceModel implements TreeModel {
 	}
 
 	
-	private void fireProjectRemoved(AWorkspaceProject project, int index) {
+	protected void fireProjectRemoved(AWorkspaceProject project, int index) {
 		synchronized (listeners) {
-			TreeModelEvent event = new TreeModelEvent(this, new Object[]{getRoot()}, new int[]{index}, new Object[]{project.getModel().getRoot()});
+			WorkspaceModelEvent event = new WorkspaceModelEvent(project, this, new Object[]{getRoot()}, new int[]{index}, new Object[]{project.getModel().getRoot()}); 
+					//new ProjectRemovedEvent(project, this, );
 			for (int i = listeners.size()-1; i >= 0; i--) {
-				listeners.get(i).treeNodesRemoved(event);
+				WorkspaceModelListener listener = listeners.get(i); 
+				listener.projectRemoved(event);
 			}
 		}			
 	}
 
-	private void fireProjectInserted(AWorkspaceProject project, int index) {
+	protected void fireProjectInserted(AWorkspaceProject project) {
 		synchronized (listeners) {
-			TreeModelEvent event = new TreeModelEvent(this, new Object[]{getRoot()}, new int[]{index}, new Object[]{project.getModel().getRoot()});
+			WorkspaceModelEvent event = new WorkspaceModelEvent(project, this, new Object[]{getRoot()}, new int[]{getProjectIndex(project)}, new Object[]{project.getModel().getRoot()});;
 			for (int i = listeners.size()-1; i >= 0; i--) {
-				listeners.get(i).treeNodesInserted(event);
+				listeners.get(i).projectAdded(event);
 			}
 		}		
 	}
 	
-	private void fireWorkspaceRenamed(String oldName, String newName) {
+	protected void fireWorkspaceRenamed(String oldName, String newName) {
 		synchronized (listeners) {
-			TreeModelEvent event = new TreeModelEvent(this, new Object[]{getRoot()}, new int[]{}, new Object[]{});
+			TreeModelEvent event = new WorkspaceModelEvent(null, this, new Object[]{getRoot()}, new int[]{}, new Object[]{});
 			for (int i = listeners.size()-1; i >= 0; i--) {
 				listeners.get(i).treeNodesChanged(event);
 			}
@@ -132,13 +166,21 @@ public abstract class WorkspaceModel implements TreeModel {
 
 	public Object getChild(Object parent, int index) {
 		if(parent == getRoot()) {
-			synchronized (projects) {
-				 AWorkspaceTreeNode node = projects.get(index).getModel().getRoot();
-				 if(node == null) {
-					 node = new ProjectRootNode();
-					 node.setName("new project_"+projects.get(index).getProjectID()+"...");
-				 }
-				 return node;
+			int offset = getRoot().getChildCount()-projects.size();
+			if(index < offset) {
+				return getRoot().getChildAt(index);
+			} 
+			else {
+				synchronized (projects) {				
+					AWorkspaceTreeNode node = projects.get(index-offset).getModel().getRoot();
+					//WORKSPACE - info: test if this'll work
+//					if(node == null) {
+//						node = new ProjectRootNode();
+//						node.setName("new project_"+projects.get(index-offset).getProjectID()+"...");
+//						projects.get(index-offset).getModel().setRoot(node);
+//					}
+					return node;
+				}
 			}
 		}
 		else {
@@ -148,9 +190,7 @@ public abstract class WorkspaceModel implements TreeModel {
 
 	public int getChildCount(Object parent) {
 		if(parent == getRoot()) {
-			synchronized (projects) {
-				return projects.size();
-			}
+			return getRoot().getChildCount();
 		}
 		else {
 			return ((AWorkspaceTreeNode) parent).getChildCount();
@@ -183,11 +223,18 @@ public abstract class WorkspaceModel implements TreeModel {
 
 	public int getIndexOfChild(Object parent, Object child) {
 		if(parent == getRoot()) {
+			int offset = getRoot().getChildCount();
+			if(offset > 0) {
+				int index = getRoot().getChildIndex((AWorkspaceTreeNode) child);
+				if( index > -1) {
+					return index;
+				}
+			}
 			synchronized (projects) {
 				int index = 0;
 				for (AWorkspaceProject project : projects) {
 					if(child.equals(project.getModel().getRoot())) {
-						return index;
+						return index+offset;
 					}
 					index++;
 				}
@@ -203,6 +250,19 @@ public abstract class WorkspaceModel implements TreeModel {
 		if(l == null) {
 			return;
 		}
+		WorkspaceModelListener listener = new WrappedTreeModelListener(l);
+		synchronized (listeners) {
+			if(listeners.contains(listener)) {
+				return;
+			}
+			listeners.add(listener);
+		}
+	}
+	
+	public void addWorldModelListener(WorkspaceModelListener l) {
+		if(l == null) {
+			return;
+		}
 		synchronized (listeners) {
 			if(listeners.contains(l)) {
 				return;
@@ -215,8 +275,9 @@ public abstract class WorkspaceModel implements TreeModel {
 		if(l == null) {
 			return;
 		}
+		WorkspaceModelListener listener = new WrappedTreeModelListener(l);
 		synchronized (listeners) {
-			listeners.remove(l);
+			listeners.remove(listener);
 		}
 	}
 	
@@ -228,7 +289,37 @@ public abstract class WorkspaceModel implements TreeModel {
 		return new WorkspaceModel() {
 		};
 	}
+
+	public AWorkspaceProject getProject(WorkspaceTreeModel model) {
+		synchronized (this.projects) {
+    		for (AWorkspaceProject project : this.projects) {
+    			if(project.getModel().equals(model)) {
+    				return project;
+    			}
+    		}
+		}
+		return null;
+	}
+
+	public AWorkspaceProject getProject(String projectID) {
+		synchronized (this.projects) {
+    		for (AWorkspaceProject project : this.projects) {
+    			if(project.getProjectID().equals(projectID)) {
+    				return project;
+    			}
+    		}
+		}
+		return null;
+	}
+	/**********************************************************************
+	 * NESTED CLASSES
+	 **********************************************************************/
 	
+	/**
+	 * 
+	 * @author mag
+	 *
+	 */
 	private final class DefaultWorkspaceTreeModel implements WorkspaceTreeModel {
 		public void removeNodeFromParent(AWorkspaceTreeNode node) {
 			if(node == null) {
@@ -346,16 +437,59 @@ public abstract class WorkspaceModel implements TreeModel {
 		public void requestSave() {
 			WorkspaceController.save();
 		}
-	}
 
-	public AWorkspaceProject getProject(WorkspaceTreeModel model) {
-		synchronized (this.projects) {
-    		for (AWorkspaceProject project : this.projects) {
-    			if(project.getModel().equals(model)) {
-    				return project;
-    			}
-    		}
+		public void nodeChanged(AWorkspaceTreeNode node, Object oldValue, Object newValue) {
+			if(getRoot().equals(node)) {
+				//should not happen
+			}
+			else {
+				node.getModel().nodeChanged(node, oldValue, newValue);
+			}			
 		}
-		return null;
+	}
+	
+	/**
+	 * 
+	 * @author mag
+	 *
+	 */	
+	public class WrappedTreeModelListener implements WorkspaceModelListener {
+		private final TreeModelListener wrappedListener;
+
+		public WrappedTreeModelListener(TreeModelListener l) {
+			if(l == null) {
+				throw new IllegalArgumentException();
+			}
+			this.wrappedListener = l;
+		}
+
+		public void treeNodesChanged(TreeModelEvent e) {
+			wrappedListener.treeNodesChanged(e);
+		}
+
+		public void treeNodesInserted(TreeModelEvent e) {
+			wrappedListener.treeNodesInserted(e);
+		}
+
+		public void treeNodesRemoved(TreeModelEvent e) {
+			wrappedListener.treeNodesRemoved(e);
+		}
+
+		public void treeStructureChanged(TreeModelEvent e) {
+			wrappedListener.treeStructureChanged(e);
+		}
+
+		public void projectAdded(WorkspaceModelEvent event) {
+			//do nth.
+		}
+
+		public void projectRemoved(WorkspaceModelEvent event) {
+			treeNodesRemoved(event);
+		}
+		
+		public boolean equals(Object obj) {
+			return super.equals(obj);
+		}
+
 	}
 }

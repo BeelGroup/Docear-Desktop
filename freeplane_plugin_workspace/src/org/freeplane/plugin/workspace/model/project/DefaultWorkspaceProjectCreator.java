@@ -1,8 +1,13 @@
 package org.freeplane.plugin.workspace.model.project;
 
+import java.io.File;
 import java.net.URI;
 
+import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.UniqueIDCreator;
+import org.freeplane.features.link.LinkController;
+import org.freeplane.plugin.workspace.URIUtils;
+import org.freeplane.plugin.workspace.WorkspaceController;
 
 public class DefaultWorkspaceProjectCreator implements IWorkspaceProjectCreater {
 
@@ -27,16 +32,19 @@ public class DefaultWorkspaceProjectCreator implements IWorkspaceProjectCreater 
 
 			@Override
 			public URI getProjectDataPath() {
-				return URI.create(getProjectHome().toString()+"/_data/"+getProjectID());
-			}
-
-			protected void setProjectHome(URI home) {
-				this.home = home;
-				
+				return URIUtils.createURI(getProjectHome().toString()+"/_data/"+getProjectID());
 			}
 
 			public URI getRelativeURI(URI uri) {
-				return uri;
+				//WORKSPACE - todo: check new implementation 
+				try {
+					URI relativeUri = LinkController.getController().createRelativeURI(new File(getProjectHome()), new File(uri), LinkController.LINK_RELATIVE_TO_MINDMAP);
+					return new URI(WorkspaceController.PROJECT_RESOURCE_URL_PROTOCOL + "://"+ getProjectID() +"/"+relativeUri.getPath());
+				}
+				catch (Exception e) {
+					LogUtils.warn(e);
+				}
+				return null;
 			}
 		};
 	}

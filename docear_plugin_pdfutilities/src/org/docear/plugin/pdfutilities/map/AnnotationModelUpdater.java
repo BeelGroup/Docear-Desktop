@@ -9,13 +9,11 @@ import java.util.Map;
 
 import org.docear.plugin.core.mindmap.AMindmapUpdater;
 import org.docear.plugin.core.util.HtmlUtils;
-import org.docear.plugin.core.util.Tools;
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
 import org.freeplane.core.util.LogUtils;
-import org.freeplane.features.link.NodeLinks;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.plugin.workspace.URIUtils;
 
 public class AnnotationModelUpdater extends AMindmapUpdater {
 	
@@ -27,19 +25,20 @@ public class AnnotationModelUpdater extends AMindmapUpdater {
 
 	private boolean updateNode(NodeModel node) {
 		boolean changed = false;
-		File file = WorkspaceUtils.resolveURI(NodeLinks.getValidLink(node), node.getMap());
+		URI uri = URIUtils.getAbsoluteURI(node);
+		File file = URIUtils.getFile(uri);
 		if(file != null && file.getName().toLowerCase().endsWith(".pdf") && AnnotationController.getModel(node, false) == null){
 			try {
-				if(!importedPdfs.containsKey(Tools.getAbsoluteUri(node))) {
+				if(!importedPdfs.containsKey(uri)) {
 					for(IAnnotationImporter importer : AnnotationController.getAnnotationImporters()) {
-						AnnotationModel pdf = importer.importPdf(Tools.getAbsoluteUri(node));
-						importedPdfs.put(Tools.getAbsoluteUri(node), this.getPlainAnnotationList(pdf));
+						AnnotationModel pdf = importer.importPdf(uri);
+						importedPdfs.put(uri, this.getPlainAnnotationList(pdf));
 					}
 				}	
 				String nodeTextWithoutHTML = HtmlUtils.extractText(node.getText());
 				String nodeText = node.getText().replace("\r", "").replace("\n", "").replace("\t", "").replace(" ", "");
 				nodeTextWithoutHTML = nodeTextWithoutHTML.replace("\r", "").replace("\n", "").replace("\t", "").replace(" ", "");
-				for(AnnotationModel annotation : importedPdfs.get(Tools.getAbsoluteUri(node))){					
+				for(AnnotationModel annotation : importedPdfs.get(uri)){					
 					String importedAnnotationTitle = annotation.getTitle().replace("\r", "").replace("\n", "").replace("\t", "").replace(" ", "");
 					
 					if(importedAnnotationTitle.equals(nodeText) || importedAnnotationTitle.equals(nodeTextWithoutHTML)){

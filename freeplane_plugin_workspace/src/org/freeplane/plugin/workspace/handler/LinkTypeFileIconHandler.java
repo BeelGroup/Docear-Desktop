@@ -18,7 +18,7 @@ import javax.swing.ImageIcon;
 import org.apache.commons.io.FilenameUtils;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.LogUtils;
-import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
 
@@ -98,7 +98,7 @@ public class LinkTypeFileIconHandler implements INodeTypeIconHandler {
 	
 	public Icon getIconForNode(AWorkspaceTreeNode node) {
 		assert(node instanceof LinkTypeFileNode);
-		File file = WorkspaceController.resolveFile(((LinkTypeFileNode) node).getLinkPath());
+		File file = URIUtils.getAbsoluteFile(((LinkTypeFileNode) node).getLinkURI());
 		if(file != null) {
 			String ext = FilenameUtils.getExtension(file.getName());
 			return selectIconForExtension(ext);

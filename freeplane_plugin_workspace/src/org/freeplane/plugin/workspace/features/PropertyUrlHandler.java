@@ -1,4 +1,4 @@
-package org.freeplane.plugin.workspace;
+package org.freeplane.plugin.workspace.features;
 
 import java.io.File;
 import java.io.IOException;

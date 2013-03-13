@@ -24,7 +24,7 @@ import org.freeplane.features.link.NodeLinks;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.features.url.UrlManager;
 
 public class AddNewReferenceAction extends AFreeplaneAction {
 
@@ -59,7 +59,7 @@ public class AddNewReferenceAction extends AFreeplaneAction {
 		for (NodeModel node : nodes) {
 			try {
 				URI tempLink = NodeLinks.getLink(node);
-				String tempName = WorkspaceUtils.resolveURI(tempLink, node.getMap()).getName();
+				String tempName = UrlManager.getController().getAbsoluteFile(node.getMap(), tempLink).getName();
 
 				if (link == null) {
 					link = tempLink;
@@ -80,7 +80,7 @@ public class AddNewReferenceAction extends AFreeplaneAction {
 		
 		MapModel map = Controller.getCurrentController().getMap();
 		if (link != null && link.getPath().toLowerCase().endsWith(".pdf")) {				
-			String path = WorkspaceUtils.resolveURI(link, map).getAbsolutePath();
+			String path = UrlManager.getController().getAbsoluteFile(map, link).getAbsolutePath();
 			JabRefCommons.addNewRefenceEntry(new String[] { path }, jabrefWrapper.getJabrefFrame(), jabrefWrapper.getJabrefFrame().basePanel());
 //			PdfImporter pdfImporter = new PdfImporter(jabrefWrapper.getJabrefFrame(), jabrefWrapper.getJabrefFrame().basePanel(), null, 0);
 //			pdfImporter.importPdfFiles(new String[] { path }, Controller.getCurrentController().getViewController().getFrame(), true);

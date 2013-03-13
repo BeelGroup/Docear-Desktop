@@ -94,20 +94,29 @@ public class Activator extends WorkspaceDependentService {
 					
 				}
 			}			
-			if(!requiredFor.containsValue(service)) {
+			if(!hasDependencies(service, requiredFor.values())) {
 				if(!list.contains(service)) {
 					list.add(service);
 				}
 				continue;
 			}
 			
-			resolveDependencies(list, requiredFor);			
+//			resolveDependencies(list, requiredFor);			
 		}
 		while( requiredFor.size() > 0) {
 			resolveDependencies(list, requiredFor);
 		}
 		
 		return list;
+	}
+
+	private boolean hasDependencies(DocearService service, Collection<Set<DocearService>> collection) {
+		for(Set<DocearService> set : collection) {
+			if(set.contains(service)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**

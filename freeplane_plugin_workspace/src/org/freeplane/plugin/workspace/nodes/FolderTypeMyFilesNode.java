@@ -15,7 +15,9 @@ import java.util.Locale;
 import org.apache.commons.io.FileUtils;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
+import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.actions.WorkspaceNewProjectAction;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
 import org.freeplane.plugin.workspace.dnd.IDropAcceptor;
@@ -73,6 +75,8 @@ public class FolderTypeMyFilesNode extends AFolderNode implements IWorkspaceNode
 			popupMenu = new WorkspacePopupMenu();
 			WorkspacePopupMenuBuilder.addActions(popupMenu, new String[] {
 					WorkspacePopupMenuBuilder.createSubMenu(TextUtils.getRawText("workspace.action.new.label")),
+					WorkspaceNewProjectAction.KEY,
+					WorkspacePopupMenuBuilder.SEPARATOR,
 					"workspace.action.node.new.folder",
 					"workspace.action.file.new.mindmap",
 					//WorkspacePopupMenuBuilder.SEPARATOR,
@@ -104,7 +108,7 @@ public class FolderTypeMyFilesNode extends AFolderNode implements IWorkspaceNode
 	
 	public void refresh() {
 		try {
-			File file = WorkspaceController.resolveFile(getPath());
+			File file = URIUtils.getAbsoluteFile(getPath());
 			if (file != null) {
 				getModel().removeAllElements(this);
 				WorkspaceController.getFileSystemMgr().scanFileSystem(this, file, new FileFilter() {
@@ -168,7 +172,7 @@ public class FolderTypeMyFilesNode extends AFolderNode implements IWorkspaceNode
 				String[] uriArray = uriString.split("\r\n");
 				for(String singleUri : uriArray) {
 					try {
-						uriList.add(URI.create(singleUri));
+						uriList.add(URIUtils.createURI(singleUri));
 					}
 					catch (Exception e) {
 						LogUtils.info("DOCEAR - "+ e.getMessage());
@@ -185,7 +189,7 @@ public class FolderTypeMyFilesNode extends AFolderNode implements IWorkspaceNode
 	
 	private void processWorkspaceNodeDrop(List<AWorkspaceTreeNode> nodes, int dropAction) {
 		try {	
-			File targetDir = WorkspaceController.resolveFile(getPath());
+			File targetDir = URIUtils.getAbsoluteFile(getPath());
 			for(AWorkspaceTreeNode node : nodes) {
 				if(node instanceof DefaultFileNode) {					
 					if(targetDir != null && targetDir.isDirectory()) {
@@ -204,7 +208,7 @@ public class FolderTypeMyFilesNode extends AFolderNode implements IWorkspaceNode
 				}
 				}
 				else if(node instanceof LinkTypeFileNode) {
-					File srcFile = WorkspaceController.resolveFile(((LinkTypeFileNode) node).getLinkPath());
+					File srcFile = URIUtils.getAbsoluteFile(((LinkTypeFileNode) node).getLinkURI());
 					if(targetDir != null && targetDir.isDirectory()) {
 						FileUtils.copyFileToDirectory(srcFile, targetDir);
 						if(dropAction == DnDConstants.ACTION_MOVE) {
@@ -226,7 +230,7 @@ public class FolderTypeMyFilesNode extends AFolderNode implements IWorkspaceNode
 	
 	private void processFileListDrop(List<File> files, int dropAction) {
 		try {
-			File targetDir = WorkspaceController.resolveFile(getPath());			
+			File targetDir = URIUtils.getAbsoluteFile(getPath());			
 			for(File srcFile : files) {
 				if(srcFile.isDirectory()) {
 					FileUtils.copyDirectoryToDirectory(srcFile, targetDir);
@@ -245,7 +249,7 @@ public class FolderTypeMyFilesNode extends AFolderNode implements IWorkspaceNode
 	
 	private void processUriListDrop(List<URI> uris, int dropAction) {
 	try {
-			File targetDir = WorkspaceController.resolveFile(getPath());			
+			File targetDir = URIUtils.getAbsoluteFile(getPath());			
 			for(URI uri : uris) {
 				File srcFile = new File(uri);
 				if(srcFile == null || !srcFile.exists()) {
@@ -268,7 +272,7 @@ public class FolderTypeMyFilesNode extends AFolderNode implements IWorkspaceNode
 	}
 
 	public File getFile() {
-		return WorkspaceController.resolveFile(getPath());
+		return URIUtils.getAbsoluteFile(getPath());
 	}
 
 	public void orderDescending(boolean enable) {

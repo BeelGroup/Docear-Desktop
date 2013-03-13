@@ -15,7 +15,7 @@ import net.sf.jabref.gui.FileListTableModel;
 
 import org.docear.plugin.bibtex.jabref.JabRefAttributes;
 import org.freeplane.core.util.LogUtils;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.plugin.workspace.URIUtils;
 
 public class Reference {
 	public class Item {
@@ -97,7 +97,7 @@ public class Reference {
 	}
 	
 	public boolean containsLink(URI nodeLink) {
-		File file = WorkspaceUtils.resolveURI(nodeLink);
+		File file = URIUtils.getAbsoluteFile(nodeLink);
 		
 		if (file != null) {
 			String name = file.getName();

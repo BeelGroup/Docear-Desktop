@@ -110,11 +110,20 @@ public final class WorkspaceRootNode extends AFolderNode implements IWorkspaceNo
 	}
 
 	public AWorkspaceTreeNode getChildAt(int childIndex) {
-		return (AWorkspaceTreeNode) WorkspaceController.getCurrentModel().getChild(this, childIndex);
+		AWorkspaceTreeNode node = null;
+		int offset = super.getChildCount();
+		if(offset > 0) {
+			node = super.getChildAt(childIndex);
+		}
+		if(node == null) {
+			node = (AWorkspaceTreeNode) WorkspaceController.getCurrentModel().getChild(this, childIndex);
+		}
+		return node;
 	}
 
-	public int getChildCount() {		
-		return WorkspaceController.getCurrentModel().getProjects().size();
+	public int getChildCount() {
+		int offset = super.getChildCount(); 
+		return WorkspaceController.getCurrentModel().getProjects().size()+offset;
 	}
 
 	public int getIndex(TreeNode node) {

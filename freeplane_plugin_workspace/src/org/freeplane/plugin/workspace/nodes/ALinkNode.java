@@ -33,7 +33,7 @@ public abstract class ALinkNode extends AWorkspaceTreeNode {
 	 * METHODS
 	 **********************************************************************************/
 
-	public abstract URI getLinkPath();
+	public abstract URI getLinkURI();
 	
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES

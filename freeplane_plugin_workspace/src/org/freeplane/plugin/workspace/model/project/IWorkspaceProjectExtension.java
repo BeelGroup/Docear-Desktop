@@ -1,5 +1,5 @@
 package org.freeplane.plugin.workspace.model.project;
 
-public interface IProjectSettings {
+public interface IWorkspaceProjectExtension {
 
 }

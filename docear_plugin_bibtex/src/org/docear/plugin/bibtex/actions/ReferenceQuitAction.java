@@ -51,7 +51,7 @@ public class ReferenceQuitAction extends QuitAction {
 					SaveDatabaseAction saveAction = new SaveDatabaseAction(ReferencesController.getController().getJabrefWrapper().getBasePanel());
 					saveAction.runCommand();
 					if (saveAction.isCancelled() || !saveAction.isSuccess()) {						
-						DocearController.getController().dispatchDocearEvent(new DocearEvent(this, DocearEventType.APPLICATION_CLOSING_ABORTED));
+						DocearController.getController().dispatchDocearEvent(new DocearEvent(this, null, DocearEventType.APPLICATION_CLOSING_ABORTED));
 					}
 					DocearController.getController().removeWorkingThreadHandle("ReferenceQuitAction");
 				}

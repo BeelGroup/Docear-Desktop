@@ -48,6 +48,8 @@ import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.mode.mindmapmode.MModeController;
+import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.components.TreeView;
 import org.jdesktop.swingworker.SwingWorker;
 
 import com.sun.jersey.api.client.ClientHandlerException;
@@ -106,8 +108,7 @@ public class CommunicationsController implements PropertyLoadListener, IFreeplan
 		Controller.getCurrentController().getResourceController().addPropertyChangeListener(this);		
 		DocearController.getController().addDocearEventListener(this);
 
-		//WORKSPACE info - test if ConnectionBar is present
-//		WorkspaceController.getController().addToolBar(connectionBar);
+		((TreeView)WorkspaceController.getModeExtension(modeController).getView()).addToolBar(connectionBar, TreeView.BOTTOM_TOOLBAR_STACK);
 		propertyChanged(DOCEAR_CONNECTION_TOKEN_PROPERTY, getRegisteredAccessToken(), null);
 	}
 
@@ -319,12 +320,12 @@ public class CommunicationsController implements PropertyLoadListener, IFreeplan
 				&& useProxyServer()) {
 			proxyDialogOkSelected = false;
 			try {
-				DocearController.getController().dispatchDocearEvent(new DocearEvent(this, DocearEventType.SHOW_DIALOG, dialog));
+				DocearController.getController().dispatchDocearEvent(new DocearEvent(this, null, DocearEventType.SHOW_DIALOG, dialog));
 				SwingUtilities.invokeAndWait(new Runnable() {
 					public void run() {
 						dialog.showDialog();
 						proxyDialogOkSelected = dialog.isOKselected();
-						DocearController.getController().dispatchDocearEvent(new DocearEvent(this, DocearEventType.CLOSE_DIALOG, dialog));
+						DocearController.getController().dispatchDocearEvent(new DocearEvent(this, null, DocearEventType.CLOSE_DIALOG, dialog));
 					}
 				});
 			}

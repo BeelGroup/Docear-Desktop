@@ -1,25 +1,26 @@
 package org.docear.plugin.pdfutilities.map;
 
 import java.io.File;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.docear.plugin.core.mindmap.AMindmapUpdater;
-import org.docear.plugin.core.util.Tools;
 import org.docear.plugin.pdfutilities.features.IAnnotation;
 import org.freeplane.features.link.LinkController;
 import org.freeplane.features.link.mindmapmode.MLinkController;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
-import org.freeplane.plugin.workspace.model.WorkspaceTreeModelEvent;
-import org.freeplane.plugin.workspace.model.WorkspaceTreeModelEvent.WorkspaceTreeModelEventType;
+import org.freeplane.plugin.workspace.URIUtils;
+import org.freeplane.plugin.workspace.model.WorkspaceModelEvent;
+import org.freeplane.plugin.workspace.model.WorkspaceModelEvent.ProjectModelEventType;
 
 public class MindmapFileLinkUpdater extends AMindmapUpdater {
 	
-	WorkspaceTreeModelEvent event;
+	WorkspaceModelEvent event;
 	Map<File, File> fileMap = new HashMap<File, File>();
 
-	public MindmapFileLinkUpdater(String title, WorkspaceTreeModelEvent event,	Map<File, File> fileMap) {
+	public MindmapFileLinkUpdater(String title, WorkspaceModelEvent event,	Map<File, File> fileMap) {
 		super(title);		
 		this.event = event;
 		this.fileMap = fileMap;
@@ -33,16 +34,17 @@ public class MindmapFileLinkUpdater extends AMindmapUpdater {
 
 	private boolean updateLinks(NodeModel node) {
 		if(node == null) return false;
-		File link = Tools.getFilefromUri(Tools.getAbsoluteUri(node));
+		URI uri = URIUtils.getAbsoluteURI(node);
+		File link = URIUtils.getFile(uri);
 		if(link != null){
 			if(fileMap.containsKey(link)){
 				((MLinkController) LinkController.getController()).setLinkTypeDependantLink(node, fileMap.get(link));
-				if(event != null && event.getType() == WorkspaceTreeModelEventType.rename && node.getText().equals(link.getName())){
+				if(event != null && event.getType() == ProjectModelEventType.RENAMED && node.getText().equals(link.getName())){
 					node.setText(fileMap.get(link).getName());
 				}
 				IAnnotation annotation = AnnotationController.getModel(node, false);
-				if(annotation != null && annotation.getAnnotationID() != null && fileMap.containsKey(Tools.getFilefromUri(annotation.getAnnotationID().getUri()))){
-					annotation.getAnnotationID().setId(fileMap.get(Tools.getFilefromUri(annotation.getAnnotationID().getUri())).toURI(), annotation.getAnnotationID().getObjectNumber());
+				if(annotation != null && annotation.getAnnotationID() != null && fileMap.containsKey(URIUtils.getFile(annotation.getAnnotationID().getUri()))){
+					annotation.getAnnotationID().setId(fileMap.get(URIUtils.getFile(annotation.getAnnotationID().getUri())).toURI(), annotation.getAnnotationID().getObjectNumber());
 				}
 			}
 		}
