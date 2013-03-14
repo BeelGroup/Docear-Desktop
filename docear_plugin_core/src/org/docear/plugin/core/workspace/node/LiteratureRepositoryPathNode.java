@@ -3,6 +3,9 @@ package org.docear.plugin.core.workspace.node;
 import java.io.File;
 import java.io.FileFilter;
 
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeExpansionListener;
+
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.plugin.workspace.URIUtils;
@@ -13,7 +16,7 @@ import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.nodes.FolderLinkNode;
 
-public class LiteratureRepositoryPathNode extends FolderLinkNode {
+public class LiteratureRepositoryPathNode extends FolderLinkNode implements TreeExpansionListener {
 	private static final long serialVersionUID = 1L;
 	public static final String TYPE = "repository_path";
 	
@@ -95,5 +98,16 @@ public class LiteratureRepositoryPathNode extends FolderLinkNode {
 		catch (Exception e) {
 			LogUtils.severe(e);
 		}		
+	}
+
+	@Override
+	public void treeExpanded(TreeExpansionEvent event) {
+		if(getChildCount() <= 0) {
+			refresh();
+		}
+	}
+
+	@Override
+	public void treeCollapsed(TreeExpansionEvent event) {		
 	}
 }

@@ -31,7 +31,6 @@ Export-Package: name.pachler.nio.file,
  org.docear.plugin.core.workspace.actions,
  org.docear.plugin.core.workspace.model,
  org.docear.plugin.core.workspace.node,
- org.docear.plugin.core.workspace.node.config,
  org.jdesktop.swingworker,
  org.swingplus
 Bundle-ClassPath: lib/plugin.jar,

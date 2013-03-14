@@ -36,6 +36,7 @@ import org.docear.plugin.core.logger.DocearLogEvent;
 import org.docear.plugin.core.ui.NotificationBar;
 import org.docear.plugin.core.workspace.actions.DocearLibraryNewMindmap;
 import org.docear.plugin.core.workspace.actions.DocearLibraryOpenLocation;
+import org.docear.plugin.core.workspace.actions.DocearNewProjectAction;
 import org.docear.plugin.core.workspace.actions.DocearRenameAction;
 import org.docear.plugin.core.workspace.controller.DocearProjectLoader;
 import org.docear.plugin.core.workspace.model.DocearWorspaceProjectCreator;
@@ -108,7 +109,8 @@ public class CoreConfiguration extends ALanguageController {
 		
 		WorkspaceController.replaceAction(new DocearAboutAction());
 		WorkspaceController.replaceAction(new DocearQuitAction());		
-		WorkspaceController.replaceAction(new DocearLibraryOpenLocation());		
+		WorkspaceController.replaceAction(new DocearLibraryOpenLocation());
+		WorkspaceController.replaceAction(new DocearNewProjectAction());
 		WorkspaceController.addAction(new DocearLibraryNewMindmap());
 		
 		AWorkspaceProject.setCurrentProjectCreator(new DocearWorspaceProjectCreator());

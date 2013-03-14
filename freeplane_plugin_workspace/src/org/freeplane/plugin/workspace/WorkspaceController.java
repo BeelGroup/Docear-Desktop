@@ -55,7 +55,7 @@ public final class WorkspaceController implements IExtension {
 		try {
 			Controller.getCurrentController().addAction(action);
 		} catch (Exception e) {
-			LogUtils.info(WorkspaceController.class + ".addAction(): action "+ action.getKey() +" not added!");
+			LogUtils.info(WorkspaceController.class + ".addAction(): action "+ action.getKey() +" not added! ("+e.getMessage()+")");
 		}	
 	}
 
