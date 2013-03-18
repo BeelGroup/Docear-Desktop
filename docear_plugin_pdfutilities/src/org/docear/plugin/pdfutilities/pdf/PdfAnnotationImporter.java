@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.docear.plugin.core.features.AnnotationID;
+import org.docear.plugin.core.util.HtmlUtils;
 import org.docear.plugin.core.util.Tools;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
@@ -136,6 +137,7 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 	}
 	
 	public boolean renameAnnotation(IAnnotation annotation, String newTitle) throws COSRuntimeException, IOException, COSLoadException{
+		newTitle = HtmlUtils.extractText(newTitle);
 		List<AnnotationModel> annotations = new ArrayList<AnnotationModel>();
 		boolean ret = false;
 		this.currentFile = annotation.getUri();

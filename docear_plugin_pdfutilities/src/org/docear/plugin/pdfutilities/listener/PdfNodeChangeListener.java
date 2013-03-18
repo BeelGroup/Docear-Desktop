@@ -55,7 +55,7 @@ public class PdfNodeChangeListener implements INodeChangeListener {
 			}
 		}
 		else if(event.getProperty().equals(NodeModel.NODE_TEXT)){
-			NodeModel node = event.getNode();
+			NodeModel node = event.getNode();			
 			AnnotationNodeModel annotation = AnnotationController.getAnnotationNodeModel(node);
 			if(annotation != null && annotation.getAnnotationType() != null && !annotation.getAnnotationType().equals(AnnotationType.PDF_FILE)){
 				try {
