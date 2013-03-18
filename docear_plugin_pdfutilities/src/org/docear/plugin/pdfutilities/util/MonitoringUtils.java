@@ -1,6 +1,7 @@
 package org.docear.plugin.pdfutilities.util;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.Stack;
 import org.docear.plugin.core.CoreConfiguration;
 import org.docear.plugin.core.features.AnnotationID;
 import org.docear.plugin.core.util.NodeUtilities;
+import org.docear.plugin.core.workspace.AVirtualDirectory;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
@@ -32,8 +34,10 @@ import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.map.mindmapmode.MMapController;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.mindmapmode.MModeController;
+import org.freeplane.features.url.UrlManager;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.features.WorkspaceMapModelExtension;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
 public abstract class MonitoringUtils {
@@ -43,7 +47,7 @@ public abstract class MonitoringUtils {
 		return (attributeModel != null && attributeModel.getAttributeKeyList().contains(PdfUtilitiesController.MON_INCOMING_FOLDER));
 	}
 
-	public static URI getPdfDirFromMonitoringNode(NodeModel node) {
+	public static File getPdfDirFromMonitoringNode(NodeModel node) {
 		if(!isMonitoringNode(node)) return null;
 		NodeAttributeTableModel attributeModel = (NodeAttributeTableModel) node.getExtension(NodeAttributeTableModel.class);
 		if(attributeModel == null || !attributeModel.getAttributeKeyList().contains(PdfUtilitiesController.MON_INCOMING_FOLDER)){
@@ -59,14 +63,20 @@ public abstract class MonitoringUtils {
 				e.printStackTrace();
 			}
 		}
-		
+		WorkspaceMapModelExtension ext = WorkspaceController.getMapModelExtension(node.getMap());
+		if(ext == null || ext.getProject() == null) {
+			return null;
+		}
 		if(value.toString().equals(CoreConfiguration.DOCUMENT_REPOSITORY_PATH)){
-			//WORKSPACE - todo: getProjectDocumentRepository(); 
-			return null;//CoreConfiguration.repositoryPathObserver.getUri();
+			return ((DocearWorkspaceProject)ext.getProject()).getProjectLiteratureRepository();
 			
 		}
 		else{			
-			return URIUtils.getAbsoluteURI((URI)value);
+			try {
+				return URIUtils.getAbsoluteFile(UrlManager.getController().getAbsoluteUri(node.getMap(), (URI)value));
+			} catch (MalformedURLException e) {
+				return null;
+			}
 		}
 	}
 	
@@ -141,14 +151,12 @@ public abstract class MonitoringUtils {
 	
 	public static Stack<File> getFolderStructureStack(NodeModel monitoringNode, URI pdfFile){
 		Stack<File> folderStack = new Stack<File>();		
-		URI pdfDirURI = getPdfDirFromMonitoringNode(monitoringNode);
-		pdfDirURI =  URIUtils.getAbsoluteURI(pdfDirURI);
-		File pdfDirFile =  URIUtils.getAbsoluteFile(pdfDirURI);
-		if(pdfDirURI == null || pdfDirFile == null || !pdfDirFile.exists() || !pdfDirFile.isDirectory()){
+		File pdfDirFile = getPdfDirFromMonitoringNode(monitoringNode);
+		if(pdfDirFile == null || !pdfDirFile.exists() || !pdfDirFile.isDirectory()){
 			return folderStack;
 		}
 		File parent = URIUtils.getAbsoluteFile(pdfFile).getParentFile();
-		while(parent != null && !parent.equals(pdfDirFile)){
+		while(parent != null && !isParent(pdfDirFile, parent)){
 			folderStack.push(parent);
 			parent = parent.getParentFile();
 			if(parent == null){
@@ -156,6 +164,22 @@ public abstract class MonitoringUtils {
 			}
 		}
 		return folderStack;
+	}
+
+	public static boolean isParent(File parent, File f) {
+		File file = new File(f.toURI().normalize());
+		if(parent instanceof AVirtualDirectory) {
+			for(File fi : parent.listFiles()) {
+				File parentFile = new File(fi.toURI().normalize());
+				if(file.equals(parentFile)) {
+					return true;
+				}
+			}
+		}
+		else {
+			return file.equals(parent);
+		}
+		return false;
 	}
 	
 	public static boolean isPdfLinkedNode(NodeModel node){

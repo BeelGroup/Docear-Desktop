@@ -3,6 +3,7 @@ package org.freeplane.plugin.workspace;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.link.LinkController;
@@ -35,9 +36,21 @@ public abstract class URIUtils {
 				return getAbsoluteURI(uri);
 			}
 			else {
-				return UrlManager.getController().getAbsoluteUrl(base, uri).toURI();
+				URL url = null;
+				try {
+					url = UrlManager.getController().getAbsoluteUrl(base, uri);
+					return url.toURI();
+				}
+				catch (Exception e) {
+					try {
+						return new URI(url.getProtocol(), url.getHost(), url.getPath(), url.getQuery(), uri.getFragment());
+					}
+					catch (Exception ex) {
+						LogUtils.warn("could not resolve URI: "+ ex.getMessage());
+					}
+				}
 			}
-		} catch (Exception e) {
+		} catch (Exception e) {			
 			LogUtils.warn("could not resolve URI: "+ e.getMessage());
 		}
 		return null;
@@ -69,6 +82,9 @@ public abstract class URIUtils {
 
 	public static File getFile(URI absoluteURI) {
 		if(absoluteURI != null) {
+			if(!"file".equals(absoluteURI.getScheme())) {
+				return null;
+			}
 			try {
 				return new File(absoluteURI);
 			}

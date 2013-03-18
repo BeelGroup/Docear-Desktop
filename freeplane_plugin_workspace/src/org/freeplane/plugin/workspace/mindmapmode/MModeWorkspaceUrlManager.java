@@ -32,14 +32,20 @@ public class MModeWorkspaceUrlManager extends MFileManager {
     	if(uri == null) {
 			return null;
 		}
+    	URL url = null;
     	try {
-    		URL url = getAbsoluteUrl(map, uri);
+    		url = getAbsoluteUrl(map, uri);
     		if(url == null) {
     			return null;
     		}
-			return getAbsoluteUrl(map, uri).toURI();
+			return url.toURI();
 		} catch (URISyntaxException e) {
-			throw new MalformedURLException(e.getMessage());
+			try {
+				return new URI(url.getProtocol(), url.getHost(), url.getPath(), url.getQuery(), null);
+			}
+			catch (Exception ex) {
+				throw new MalformedURLException(e.getMessage());
+			}			
 		}
 	}
 	
@@ -54,11 +60,11 @@ public class MModeWorkspaceUrlManager extends MFileManager {
 				urlConnection = (new File(uri.toString())).toURI().toURL().openConnection();
 			} 
 			else if(uri.getScheme() == null && !uri.getPath().startsWith(File.separator)) {
-				if(map != null) {
+				if(map == null) {
 					urlConnection = (new File(uri.toString())).toURI().toURL().openConnection();
 				} 
 				else {
-					urlConnection = UrlManager.getController().getAbsoluteUri(map, uri).toURL().openConnection();
+					urlConnection = getAbsoluteUri(map, uri).toURL().openConnection();
 				}
 			}
 			else {
@@ -120,6 +126,9 @@ public class MModeWorkspaceUrlManager extends MFileManager {
 	
 	public URI getAbsoluteURI(final URI uri) {
     	try {
+    		if(uri.getScheme() == null) {
+    			return uri;
+    		}
     		return uri.toURL().openConnection().getURL().toURI();
     	} catch (IOException ex) {
     		LogUtils.warn(ex);

@@ -162,7 +162,7 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 				// Controller.getCurrentController().getViewController().getMapView().setVisible(false);
 				for (final NodeModel target : targets) {
 					currentTarget = target;
-					URI uri = MonitoringUtils.getPdfDirFromMonitoringNode(target);
+					URI uri = MonitoringUtils.getPdfDirFromMonitoringNode(target).toURI();
 					if (uri != null) {
 						DocearController.getController().getDocearEventLogger()
 								.appendToLog(this, DocearLogEvent.MONITORING_FOLDER_READ, URIUtils.getAbsoluteURI(uri));
@@ -250,7 +250,7 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 								continue;
 							}
 							else if (file != null) {
-								File monitoringDirectory = URIUtils.getAbsoluteFile(UrlManager.getController().getAbsoluteUri(target.getMap(), MonitoringUtils.getPdfDirFromMonitoringNode(target)));
+								File monitoringDirectory = MonitoringUtils.getPdfDirFromMonitoringNode(target);
 								if (file.getPath().startsWith(monitoringDirectory.getPath())) {
 									AnnotationModel annoation = new PdfAnnotationImporter().searchAnnotation(URIUtils.getAbsoluteURI(node), node);
 									if (annoation == null) {
@@ -456,10 +456,17 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 				if (!node1.getText().equals(node2.getText())) {
 					return false;
 				}
-				if (getAbsoluteURIFromNode(node1, node1.getMap()) != null && getAbsoluteURIFromNode(node2, node2.getMap()) == null) {
+				URI uri1 = getAbsoluteURIFromNode(node1, node1.getMap());
+				URI uri2 = getAbsoluteURIFromNode(node2, node2.getMap());
+				if (uri1 != null && uri2 != null) {
+					if (!uri1.equals(uri2)) {
+						return false;
+					}
+				}
+				if (uri1 != null && uri2 == null) {
 					return false;
 				}
-				if (getAbsoluteURIFromNode(node1, node1.getMap()) == null && getAbsoluteURIFromNode(node2, node2.getMap()) != null) {
+				if (uri1 == null && uri2 != null) {
 					return false;
 				}
 				if (node1.containsExtension(DocearNodeMonitoringExtension.class) && !node2.containsExtension(DocearNodeMonitoringExtension.class)) {
@@ -503,11 +510,6 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 						return false;
 					}
 				}
-				if (getAbsoluteURIFromNode(node1, node1.getMap()) != null && getAbsoluteURIFromNode(node2, node2.getMap()) != null) {
-					if (getAbsoluteURIFromNode(node1, node1.getMap()).equals(getAbsoluteURIFromNode(node2, node2.getMap()))) {
-						return false;
-					}
-				}
 				return true;
 			}
 
@@ -529,11 +531,11 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 					tempAnnotation = tempAnnotation.getParent();
 				} while (tempAnnotation != null);
 				if (!isFlattenSubfolders(target)) {
-					File pdfDirFile = URIUtils.getAbsoluteFile(MonitoringUtils.getPdfDirFromMonitoringNode(target));
+					File pdfDirFile = MonitoringUtils.getPdfDirFromMonitoringNode(target);
 					File annoFile = URIUtils.getAbsoluteFile(annotation.getUri());
 					if (annoFile != null) {
 						File parent = annoFile.getParentFile();
-						while (parent != null && !parent.equals(pdfDirFile)) {
+						while (parent != null && !MonitoringUtils.isParent(pdfDirFile, parent)/*parent.equals(pdfDirFile)*/) {
 							if (canceled()) return result;
 							NodeModel node = ((MMapController) Controller.getCurrentModeController().getMapController()).newNode(parent.getName(),
 									target.getMap());
@@ -685,9 +687,8 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 
 				fireStatusUpdate(SwingWorkerDialog.PROGRESS_BAR_TEXT, null, TextUtils.getText("AbstractMonitoringAction.28")); //$NON-NLS-1$
 				if (canceled()) return false;
-				URI monitoringDirectory = URIUtils.resolveURI(URIUtils.getAbsoluteURI(target.getMap()), MonitoringUtils.getPdfDirFromMonitoringNode(target));
-				File file = URIUtils.getAbsoluteFile(monitoringDirectory);
-				if (monitoringDirectory == null || file == null || !file.exists()) {
+				File monitoringDirectory = MonitoringUtils.getPdfDirFromMonitoringNode(target);
+				if (monitoringDirectory == null) {
 					UITools.informationMessage(TextUtils.getText("AbstractMonitoringAction.29")); //$NON-NLS-1$
 					return false;
 				}
@@ -704,7 +705,7 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 					File dirFile = URIUtils.getFile(uri);
 					if (dirFile == null || !dirFile.exists()) continue;
 					if (dirFile.isDirectory()) {
-						mindmapFiles.addAll(getFilteredFileList(uri, new CustomFileFilter(".*[.][mM][mM]"), isMonitorSubDirectories(target))); //$NON-NLS-1$
+						mindmapFiles.addAll(getFilteredFileList(dirFile, new CustomFileFilter(".*[.][mM][mM]"), isMonitorSubDirectories(target))); //$NON-NLS-1$
 					}
 					else {
 						mindmapFiles.add(uri);
@@ -820,12 +821,11 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 				});
 			}
 			
-			private List<URI> getFilteredFileList(URI absoluteURI, FileFilter fileFilter, boolean readSubDirectories) {
+			private List<URI> getFilteredFileList(File monitoringDir, FileFilter fileFilter, boolean readSubDirectories) {
 				List<URI> result = new ArrayList<URI>();
 				Collection<File> tempResult = new ArrayList<File>();
-				if(!absoluteURI.isAbsolute()) return result;
+				if(monitoringDir == null || !monitoringDir.isDirectory()) return result;
 				
-				File monitoringDir = URIUtils.getFile(absoluteURI);
 				File[] monitorFiles = monitoringDir.listFiles(fileFilter);
 				if(monitorFiles != null && monitorFiles.length > 0){
 					tempResult.addAll(Arrays.asList(monitorFiles));
@@ -837,7 +837,7 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 					File[] subDirs = monitoringDir.listFiles(new DirectoryFileFilter());
 					if(subDirs != null && subDirs.length > 0){
 						for(File subDir : subDirs){
-							result.addAll(getFilteredFileList(subDir.toURI(), fileFilter, readSubDirectories));
+							result.addAll(getFilteredFileList(subDir, fileFilter, readSubDirectories));
 						}
 					}			
 				}		

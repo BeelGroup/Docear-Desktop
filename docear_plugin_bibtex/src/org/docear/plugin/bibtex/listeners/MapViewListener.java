@@ -10,11 +10,14 @@ import net.sf.jabref.BibtexDatabase;
 import net.sf.jabref.BibtexEntry;
 import net.sf.jabref.export.DocearReferenceUpdateController;
 
+import org.docear.plugin.bibtex.JabRefProjectExtension;
 import org.docear.plugin.bibtex.ReferencesController;
 import org.docear.plugin.bibtex.jabref.ResolveDuplicateEntryAbortedException;
 import org.freeplane.features.map.INodeSelectionListener;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
+import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.features.WorkspaceMapModelExtension;
 
 public class MapViewListener implements MouseListener, INodeSelectionListener {
 
@@ -77,7 +80,14 @@ public class MapViewListener implements MouseListener, INodeSelectionListener {
 		
 		DocearReferenceUpdateController.lock();
 		try {
-
+			WorkspaceMapModelExtension mapExt = WorkspaceController.getMapModelExtension(mapModel);
+    		if(mapExt == null) {
+    			//DOCEAR - todo: what to do?
+    		}
+    		else {    			
+    			JabRefProjectExtension prjExt = (JabRefProjectExtension) mapExt.getProject().getExtensions(JabRefProjectExtension.class);
+    			ReferencesController.getController().getJabrefWrapper().getJabrefFrame().showBasePanel(prjExt.getBaseHandle().getBasePanel());
+    		}
 			BibtexDatabase database = ReferencesController.getController().getJabrefWrapper().getDatabase();
 
 			TreeMap<String, BibtexEntry> entryNodeTuples = new TreeMap<String, BibtexEntry>();

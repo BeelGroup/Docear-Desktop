@@ -28,6 +28,8 @@ import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.url.UrlManager;
 import org.freeplane.plugin.workspace.URIUtils;
+import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.features.WorkspaceMapModelExtension;
 
 public class ReferenceUpdater extends AMindmapUpdater {
 
@@ -62,6 +64,15 @@ public class ReferenceUpdater extends AMindmapUpdater {
 		try {
     		DocearReferenceUpdateController.lock();    		
     		DocearController.getController().getSemaphoreController().lock("MindmapUpdate");
+    		
+    		WorkspaceMapModelExtension mapExt = WorkspaceController.getMapModelExtension(map);
+    		if(mapExt == null) {
+    			//DOCEAR - todo: what to do?
+    		}
+    		else {    			
+    			JabRefProjectExtension prjExt = (JabRefProjectExtension) mapExt.getProject().getExtensions(JabRefProjectExtension.class);
+    			ReferencesController.getController().getJabrefWrapper().getJabrefFrame().showBasePanel(prjExt.getBaseHandle().getBasePanel());
+    		}
     		
     		jabRefAttributes = ReferencesController.getController().getJabRefAttributes();
     		database = ReferencesController.getController().getJabrefWrapper().getDatabase();

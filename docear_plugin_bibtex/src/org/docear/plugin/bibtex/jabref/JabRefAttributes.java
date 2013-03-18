@@ -25,6 +25,7 @@ import net.sf.jabref.gui.FileListTableModel;
 import net.sf.jabref.labelPattern.LabelPatternUtil;
 
 import org.apache.commons.io.FilenameUtils;
+import org.docear.plugin.bibtex.JabRefProjectExtension;
 import org.docear.plugin.bibtex.Reference;
 import org.docear.plugin.bibtex.Reference.Item;
 import org.docear.plugin.bibtex.ReferencesController;
@@ -52,6 +53,8 @@ import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.features.url.UrlManager;
 import org.freeplane.plugin.workspace.URIUtils;
+import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.features.WorkspaceMapModelExtension;
 import org.freeplane.view.swing.map.NodeView;
 
 public class JabRefAttributes {
@@ -492,6 +495,16 @@ public class JabRefAttributes {
 	// FIXME: not used yet --> implement functionality into
 	// findBibtexEntryForPDF
 	public BibtexEntry findBibtexEntryForURL(URI nodeUri, MapModel map, boolean ignoreDuplicates) throws ResolveDuplicateEntryAbortedException {
+		WorkspaceMapModelExtension mapExt = WorkspaceController.getMapModelExtension(map);
+		if(mapExt == null) {
+			//DOCEAR - todo: what to do?
+			return null;
+		}
+		else {    			
+			JabRefProjectExtension prjExt = (JabRefProjectExtension) mapExt.getProject().getExtensions(JabRefProjectExtension.class);
+			ReferencesController.getController().getJabrefWrapper().getJabrefFrame().showBasePanel(prjExt.getBaseHandle().getBasePanel());
+		}
+		
 		BibtexDatabase database = ReferencesController.getController().getJabrefWrapper().getDatabase();
 		if (database == null || nodeUri == null) {
 			return null;
@@ -579,12 +592,23 @@ public class JabRefAttributes {
 	}
 
 	public BibtexEntry findBibtexEntryForPDF(URI uri, MapModel map, boolean ignoreDuplicates) throws ResolveDuplicateEntryAbortedException {
+		WorkspaceMapModelExtension mapExt = WorkspaceController.getMapModelExtension(map);
+		if(mapExt == null) {
+			//DOCEAR - todo: what to do?
+			return null;
+		}
+		else {    			
+			JabRefProjectExtension prjExt = (JabRefProjectExtension) mapExt.getProject().getExtensions(JabRefProjectExtension.class);
+			ReferencesController.getController().getJabrefWrapper().getJabrefFrame().showBasePanel(prjExt.getBaseHandle().getBasePanel());
+		}
+		
 		BibtexDatabase database = ReferencesController.getController().getJabrefWrapper().getDatabase();
 		if (database == null) {
 			return null;
 		}
 		// file name linked in a node
 		File nodeFile = UrlManager.getController().getAbsoluteFile(map, uri);
+		System.out.println(" ");
 		if (nodeFile == null) {
 			return null;
 		}

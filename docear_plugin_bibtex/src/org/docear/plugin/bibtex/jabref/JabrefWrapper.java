@@ -21,11 +21,13 @@ import javax.swing.border.LineBorder;
 
 import net.sf.jabref.BasePanel;
 import net.sf.jabref.BibtexDatabase;
+import net.sf.jabref.BibtexEntry;
 import net.sf.jabref.BibtexFields;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRef;
 import net.sf.jabref.JabRefFrame;
 import net.sf.jabref.Util;
+import net.sf.jabref.export.SaveDatabaseAction;
 import net.sf.jabref.export.SaveSession;
 import net.sf.jabref.external.FileLinksUpgradeWarning;
 import net.sf.jabref.imports.CheckForNewEntryTypesAction;
@@ -40,6 +42,8 @@ import org.docear.plugin.bibtex.actions.FilePathValidatorAction;
 import org.docear.plugin.bibtex.actions.HandleDuplicateKeys;
 import org.docear.plugin.bibtex.listeners.MapViewListener;
 import org.docear.plugin.core.DocearController;
+import org.docear.plugin.core.event.DocearEvent;
+import org.docear.plugin.core.event.DocearEventType;
 import org.docear.plugin.core.logger.DocearLogEvent;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.components.UITools;
@@ -461,6 +465,37 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 	}
 
 	public void beforeViewChange(Component oldView, Component newView) {
+	}
+
+	public void shutdown() {
+		for (JabRefBaseHandle handle : baseHandles.values()) {
+			try {
+				BibtexDatabase database = handle.getBasePanel().getDatabase();
+				if(database == null) {
+					return;
+				}
+				for (BibtexEntry entry : database.getEntries()) {
+					if (entry.getField("docear_add_to_node") != null) {
+						entry.setField("docear_add_to_node", null);
+					}
+				}
+				if(ReferencesController.getController().getJabrefWrapper().getBasePanel().isUpdatedExternally()){
+					DocearController.getController().addWorkingThreadHandle("ReferenceQuitAction");
+					SaveDatabaseAction saveAction = new SaveDatabaseAction(handle.getBasePanel());
+					saveAction.runCommand();
+					if (saveAction.isCancelled() || !saveAction.isSuccess()) {						
+						DocearController.getController().dispatchDocearEvent(new DocearEvent(this, null, DocearEventType.APPLICATION_CLOSING_ABORTED));
+					}
+					DocearController.getController().removeWorkingThreadHandle("ReferenceQuitAction");
+				}
+				else{
+					handle.getBasePanel().runCommand("save");
+				}
+			}
+			catch (Throwable t) {
+				LogUtils.warn(t);
+			}
+		}		
 	}
 
 //	public void addBaseHandleForFile(File baseFile, IJabrefChangeListener listener) {
