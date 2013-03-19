@@ -32,7 +32,11 @@ public class ProjectURLHandler extends AbstractURLStreamHandlerService {
 		
 		URL absolutePath = url;
 		try {
-			absolutePath = new URL(project.getProjectHome().toURL(), url.getFile().startsWith("/") ? url.getFile().substring(1): url.getFile());
+			String urlFile = url.getFile();
+			urlFile = urlFile.startsWith("/") ? urlFile.substring(1): urlFile;
+			String projectUrl = project.getProjectHome().toURL().toExternalForm();
+			projectUrl = projectUrl.endsWith("/") ? projectUrl.substring(0, projectUrl.length()-1): projectUrl;
+			absolutePath = new URL(projectUrl+"/"+urlFile);
 		} catch (Exception e) {
 			throw new IOExceptionWithCause(e);
 		}
