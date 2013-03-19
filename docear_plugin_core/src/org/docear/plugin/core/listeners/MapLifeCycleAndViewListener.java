@@ -56,7 +56,7 @@ public class MapLifeCycleAndViewListener implements IMapLifeCycleListener, IMapV
 	public void onRemove(MapModel map) {
 		if (map instanceof MMapModel) {
 			File f = map.getFile();
-			if (f!=null) {
+			if (f != null && f.isFile()) {
 				DocearController.getController().getDocearEventLogger().appendToLog(this, DocearLogEvent.MAP_CLOSED, f);
 				touchFileForAutoSaveBug(f);
 			}
