@@ -8,11 +8,16 @@ public class RecommendationEntry {
 	private final String title;
 	private final URL link;
 	private final URL clickUrl;
+	private final String prefix;
+	private final boolean highlighted;
 	
-	public RecommendationEntry(String title, String url, String clickUrl) throws MalformedURLException {
+	
+	public RecommendationEntry(String prefix, String title, String url, String clickUrl, boolean highlighted) throws MalformedURLException {
+		this.prefix = prefix;
 		this.title = normalize(title);
 		this.link = (url==null ? null:new URL(url));
 		this.clickUrl = (clickUrl==null ? null:new URL(clickUrl));
+		this.highlighted = highlighted;
 	}
 
 	private String normalize(String str) {
@@ -25,6 +30,10 @@ public class RecommendationEntry {
 			sb.append(" ");
 		}
 		return sb.toString().trim();
+	}
+	
+	public String getPrefix() {
+		return prefix;
 	}
 
 	public String getTitle() {
@@ -39,7 +48,11 @@ public class RecommendationEntry {
 		return clickUrl;
 	}
 	
-	public String toString() {
+	public boolean isHighlighted() {
+		return highlighted;
+	}
+	
+	public String toString() {		
 		return title;
 	}
 

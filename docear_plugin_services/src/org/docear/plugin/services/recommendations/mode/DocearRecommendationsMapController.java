@@ -202,16 +202,28 @@ public class DocearRecommendationsMapController extends MapController {
 					parser.setReader(reader);
 					parser.parse();
 					DocearXmlRootElement result = (DocearXmlRootElement) xmlBuilder.getRoot();
+					
 					Collection<DocearXmlElement> documents = result.findAll("document");
 					List<RecommendationEntry> recommendations = new ArrayList<RecommendationEntry>();
+							
+					java.util.Iterator<DocearXmlElement> iterator = documents.iterator();
+					if (iterator.hasNext()) {
+						DocearXmlElement document = iterator.next();
+						//"recommendations" element
+						DocearXmlElement recommendationsElement = document.getParent().getParent();
+						recommendations.add(new RecommendationEntry(null, recommendationsElement.getAttributeValue("descriptor"), null, null, false));
+					}
 					for (DocearXmlElement document : documents) {
 						try {
 							// exclude reference documents -> may not have a sourceid and the parent does not have a fulltext attribute
 							if(!document.hasParent("document")) {
 								String title = document.find("title").getContent();
 								String url = document.find("sourceid").getContent();
-								String click = document.getParent().getAttributeValue("fulltext");
-								recommendations.add(new RecommendationEntry(title, url, click));
+								DocearXmlElement recommendationElement = document.getParent();
+								String prefix = recommendationElement.getAttributeValue("prefix");
+								String click = recommendationElement.getAttributeValue("fulltext");
+								boolean highlighted = ("true".equals(recommendationElement.getAttributeValue("highlighted")) ? true:false);
+								recommendations.add(new RecommendationEntry(prefix, title, url, click, highlighted));
 							}
 						}
 						catch (Exception e) {

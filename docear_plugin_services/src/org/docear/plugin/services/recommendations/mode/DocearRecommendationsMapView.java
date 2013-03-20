@@ -6,6 +6,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.LayoutManager;
@@ -17,13 +18,17 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
 import org.docear.plugin.core.DocearController;
@@ -119,12 +124,12 @@ public class DocearRecommendationsMapView extends MapView {
 			} else {
 				if(obj instanceof RecommendationContainer) {
 					container = getNewRecommandationContainerComponent(obj.toString());
-					this.add(container);
+					//this.add(container);
 				}
 				else {
 					if(container == null) {
 						container = getNewEmptyContainerComponent();
-						this.add(container);
+						//this.add(container);
 					}
 					if(obj instanceof Component) {
 						container.add((Component) obj);
@@ -219,12 +224,25 @@ public class DocearRecommendationsMapView extends MapView {
 	}
 
 	private Container getNewRecommandationContainerComponent(String title) {
+		JPanel containerPanel = new JPanel();
+		containerPanel.setLayout(new BorderLayout());
+		containerPanel.setBackground(this.getBackground());
+		containerPanel.setBorder(new EmptyBorder(0, 10, 0, 0));
 		JPanel panel = new JPanel();
+				
+		JLabel containerTitle = new JLabel("<html><b>"+title+"</b></html>");
+		containerTitle.setFont(containerTitle.getFont().deriveFont(Font.BOLD, 18));
+		
+		containerPanel.add(containerTitle, BorderLayout.NORTH);
+		
 		panel.setBackground(Color.white);
-		panel.setBorder(new TitledBorder(title));
-		panel.setLayout(new ListLayoutManager());
+		panel.setBorder(new LineBorder(Color.LIGHT_GRAY, 1, true));
+		panel.setLayout(new ListLayoutManager());		
+		containerPanel.add(panel, BorderLayout.CENTER);
+		
 		this.add(getNewButtonBar(), BorderLayout.NORTH);
-		this.add(panel, BorderLayout.CENTER);
+		this.add(containerPanel, BorderLayout.CENTER);
+		
 		return panel;
 	}
 	
