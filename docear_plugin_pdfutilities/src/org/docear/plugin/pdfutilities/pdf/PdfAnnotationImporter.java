@@ -1,6 +1,5 @@
 package org.docear.plugin.pdfutilities.pdf;
 
-import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
@@ -15,6 +14,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JOptionPane;
+
 import org.docear.plugin.core.features.AnnotationID;
 import org.docear.plugin.core.util.HtmlUtils;
 import org.docear.plugin.core.util.Tools;
@@ -26,6 +27,7 @@ import org.docear.plugin.pdfutilities.map.AnnotationController;
 import org.docear.plugin.pdfutilities.map.IAnnotationImporter;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.LogUtils;
+import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
@@ -33,7 +35,6 @@ import org.freeplane.features.mode.Controller;
 import de.intarsys.pdf.cds.CDSNameTreeEntry;
 import de.intarsys.pdf.cds.CDSNameTreeNode;
 import de.intarsys.pdf.content.CSDeviceBasedInterpreter;
-import de.intarsys.pdf.content.text.CSTextExtractor;
 import de.intarsys.pdf.cos.COSArray;
 import de.intarsys.pdf.cos.COSCatalog;
 import de.intarsys.pdf.cos.COSDictionary;
@@ -42,8 +43,6 @@ import de.intarsys.pdf.cos.COSNull;
 import de.intarsys.pdf.cos.COSObject;
 import de.intarsys.pdf.cos.COSRuntimeException;
 import de.intarsys.pdf.cos.COSString;
-import de.intarsys.pdf.font.PDFont;
-import de.intarsys.pdf.font.PDFontTools;
 import de.intarsys.pdf.parser.COSLoadException;
 import de.intarsys.pdf.pd.PDAnnotation;
 import de.intarsys.pdf.pd.PDAnyAnnotation;
@@ -67,6 +66,7 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 	private URI currentFile;
 	private boolean importAll = false;
 	private boolean setPDObject = false;
+	private int removeLinebreaksDialogResult = JOptionPane.OK_OPTION;
 	
 	public PdfAnnotationImporter(){
 		//AnnotationController.addAnnotationImporter(this);
@@ -207,7 +207,7 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 	
 	private List<AnnotationModel> importBookmarks(PDOutlineNode parent) throws IOException, COSLoadException, COSRuntimeException{
 		List<AnnotationModel> annotations = new ArrayList<AnnotationModel>();
-		
+		boolean removeLinebreaksBookmarks = ResourceController.getResourceController().getBooleanProperty(PdfUtilitiesController.REMOVE_LINEBREAKS_BOOKMARKS_KEY);
 		if(!this.importAll && !ResourceController.getResourceController().getBooleanProperty(PdfUtilitiesController.IMPORT_BOOKMARKS_KEY)){
 			return annotations;
 		}	
@@ -232,7 +232,9 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 			if(annotation.getAnnotationType() == AnnotationType.BOOKMARK){
 				annotation.setPage(this.getAnnotationDestinationPage(child));
 			}			
-			
+			if(removeLinebreaksBookmarks){
+        		this.removeLinebreaks(annotation, child, child.getDoc());
+        	}
 			annotations.add(annotation);
 		}
 		
@@ -281,6 +283,9 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		List<AnnotationModel> annotations = new ArrayList<AnnotationModel>();
 		boolean importComments = false;
 		boolean importHighlightedTexts = false;
+		boolean removeLinebreaksComments = ResourceController.getResourceController().getBooleanProperty(PdfUtilitiesController.REMOVE_LINEBREAKS_COMMENTS_KEY);
+		boolean removeLinebreaksHighlighted = ResourceController.getResourceController().getBooleanProperty(PdfUtilitiesController.REMOVE_LINEBREAKS_HIGHLIGHTED_KEY);
+		
 		if(this.importAll){
 			importComments = true;
 			importHighlightedTexts = true;
@@ -342,6 +347,9 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		            	pdfAnnotation.setAnnotationType(AnnotationType.COMMENT);            	
 		            	pdfAnnotation.setGenerationNumber(annotation.cosGetObject().getIndirectObject().getGenerationNumber());
 		            	pdfAnnotation.setPage(pdPage.getNodeIndex()+1);
+		            	if(removeLinebreaksComments){
+		            		this.removeLinebreaks(pdfAnnotation, annotation, document);
+		            	}
 		    			annotations.add(pdfAnnotation);
 		            }
 		            if((annotation.getClass() == PDTextMarkupAnnotation.class 
@@ -351,16 +359,17 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		            	|| annotation.getClass() == PDSquigglyAnnotation.class) && importHighlightedTexts){
 		            	Integer objectNumber = annotation.cosGetObject().getIndirectObject().getObjectNumber();
 		    			AnnotationModel pdfAnnotation = new AnnotationModel(new AnnotationID(this.currentFile, objectNumber));
-		    			String text = extractAnnotationText(pdPage, (PDTextMarkupAnnotation)annotation);
+		    			//String text = extractAnnotationText(pdPage, (PDTextMarkupAnnotation)annotation);
 		    				//prefer Title from Contents (So updates work)
+		    			String test = annotation.getContents();
 						if (annotation.getContents() != null &&
 								annotation.getContents().length() > 0) {
 							pdfAnnotation.setTitle(annotation.getContents());
 						} 
 							//then try to extract the text from the bounding rectangle
-						else if(!text.isEmpty()){
+						/*else if(!text.isEmpty()){
 							pdfAnnotation.setTitle(text);
-						}					
+						}*/					
 						else {
 			    			// support repligo highlights
 							// set Title to Subject per repligo
@@ -382,6 +391,10 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		            	pdfAnnotation.setAnnotationType(AnnotationType.HIGHLIGHTED_TEXT);             	
 		            	pdfAnnotation.setGenerationNumber(annotation.cosGetObject().getIndirectObject().getGenerationNumber());
 		            	pdfAnnotation.setPage(pdPage.getNodeIndex()+1);
+		            	if(pdfAnnotation.getTitle() == null) continue;
+		            	if(removeLinebreaksHighlighted){
+		            		this.removeLinebreaks(pdfAnnotation, annotation, document);
+		            	}
 		    			annotations.add(pdfAnnotation);
 		            }
 				}
@@ -391,7 +404,106 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		return annotations;
 	}
 
-
+	public void removeLinebreaks(IAnnotation annotation, Object annotationObject, PDDocument document) {
+		if(this.removeLinebreaksDialogResult == JOptionPane.CANCEL_OPTION) return;
+		String oldText = annotation.getTitle();
+		String text = removeLinebreaks(annotation.getTitle());
+		if(text.equals(annotation.getTitle())) return;
+		if(annotationObject != null && annotationObject instanceof PDOutlineItem){
+			((PDOutlineItem)annotationObject).setTitle(text);
+			annotation.setTitle(text);
+		}
+		if(annotationObject != null && annotationObject instanceof PDAnnotation){
+			((PDAnnotation)annotationObject).setContents(text);
+			annotation.setTitle(text);
+		}
+		try{
+			document.save();
+		}catch (IOException e) {
+			if(e.getMessage().equals("destination is read only")){ //$NON-NLS-1$
+				Object[] options = { TextUtils.getText("DocearRenameAnnotationListener.1"), TextUtils.getText("DocearRenameAnnotationListener.8"),TextUtils.getText("DocearRenameAnnotationListener.3") }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				int result = this.removeLinebreaksDialogResult;
+				if(result == JOptionPane.OK_OPTION){
+					result = JOptionPane.showOptionDialog(Controller.getCurrentController().getViewController().getSelectedComponent(), TextUtils.getText("DocearRenameAnnotationListener.6")+document.getName()+TextUtils.getText("DocearRenameAnnotationListener.7"), TextUtils.getText("DocearRenameAnnotationListener.5"), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]); //$NON-NLS-1$ //$NON-NLS-2$
+				}				
+				if( result == JOptionPane.OK_OPTION){
+					if(annotationObject != null && annotationObject instanceof PDOutlineItem){
+						((PDOutlineItem)annotationObject).setTitle(oldText);
+						annotation.setTitle(oldText);
+					}
+					if(annotationObject != null && annotationObject instanceof PDAnnotation){
+						((PDAnnotation)annotationObject).setContents(oldText);
+						annotation.setTitle(oldText);
+					}
+					removeLinebreaks(annotation, annotationObject, document);			
+				}
+				else if( result == JOptionPane.CANCEL_OPTION ){	
+					this.removeLinebreaksDialogResult = JOptionPane.CANCEL_OPTION;
+					if(annotationObject != null && annotationObject instanceof PDOutlineItem){
+						((PDOutlineItem)annotationObject).setTitle(oldText);
+						annotation.setTitle(oldText);
+					}
+					if(annotationObject != null && annotationObject instanceof PDAnnotation){
+						((PDAnnotation)annotationObject).setContents(oldText);
+						annotation.setTitle(oldText);
+					}
+				}
+				else if( result == JOptionPane.NO_OPTION ){
+					this.removeLinebreaksDialogResult = JOptionPane.NO_OPTION;
+					if(annotationObject != null && annotationObject instanceof PDOutlineItem){
+						((PDOutlineItem)annotationObject).setTitle(oldText);
+						annotation.setTitle(text);
+					}
+					if(annotationObject != null && annotationObject instanceof PDAnnotation){
+						((PDAnnotation)annotationObject).setContents(oldText);
+						annotation.setTitle(text);
+					}
+				}
+			}
+			else{
+				LogUtils.severe("RemoveLinebreaksImport IOException at Target("+oldText+"): ", e); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+		} catch (COSRuntimeException e) {
+			LogUtils.severe("RemoveLinebreaksImport COSRuntimeException at Target("+oldText+"): ", e); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+	}
+	
+	public String removeLinebreaks(String text) {
+		boolean keepDoubleLinebreaks = ResourceController.getResourceController().getBooleanProperty(PdfUtilitiesController.KEEP_DOUBLE_LINEBREAKS_KEY);
+		boolean addSpaces = ResourceController.getResourceController().getBooleanProperty(PdfUtilitiesController.ADD_SPACES_KEY);
+		boolean removeDashes = ResourceController.getResourceController().getBooleanProperty(PdfUtilitiesController.REMOVE_DASHES_KEY);
+		
+		String lines[] = text.split("\\r?\\n");
+		if(lines.length < 2) return text;
+		StringBuilder sb = new StringBuilder();			
+		for(int i = 0; i < lines.length; i++){
+			if(keepDoubleLinebreaks && (i + 1 < lines.length) && lines[i + 1].isEmpty()){
+				lines[i] = lines[i] + "\n\n";
+				sb.append(lines[i]);
+				i = i + 1;
+				continue;
+			}
+			if(removeDashes && lines[i].endsWith("-")){
+				lines[i] = lines[i].substring(0, lines[i].length() - 1);
+				if(i + 1 < lines.length && lines[i + 1].startsWith(" ")){
+					lines[i + 1].trim();
+				}
+				sb.append(lines[i]);
+				continue;
+			}
+			if(addSpaces){
+				if((i + 1 < lines.length) && (!lines[i].endsWith(" ") && !lines[i + 1].startsWith(" "))){
+					lines[i] = lines[i] + " ";
+					sb.append(lines[i]);
+					continue;
+				}
+			}
+			sb.append(lines[i]);				
+		}
+		return sb.toString();
+	}
+	
+	
 	private String extractAnnotationText(PDPage pdPage, PDTextMarkupAnnotation annotation) {
 		
 		StringBuilder sb = new StringBuilder();		

@@ -65,6 +65,7 @@ import org.docear.plugin.pdfutilities.actions.ImportNewChildAnnotationsAction;
 import org.docear.plugin.pdfutilities.actions.MonitoringFlattenSubfoldersAction;
 import org.docear.plugin.pdfutilities.actions.MonitoringGroupRadioButtonAction;
 import org.docear.plugin.pdfutilities.actions.RadioButtonAction;
+import org.docear.plugin.pdfutilities.actions.RemoveLinebreaksAction;
 import org.docear.plugin.pdfutilities.actions.ShowInstalledPdfReadersDialogAction;
 import org.docear.plugin.pdfutilities.actions.ShowPdfReaderDefinitionDialogAction;
 import org.docear.plugin.pdfutilities.actions.UpdateMonitoringFolderAction;
@@ -141,6 +142,12 @@ public class PdfUtilitiesController extends ALanguageController {
 	public static final String AUTO_IMPORT_ANNOTATIONS_KEY = "docear_automatic_annotation_import"; //$NON-NLS-1$
 	public static final String IMPORT_BOOKMARKS_KEY = "docear_import_bookmarks"; //$NON-NLS-1$
 	public static final String IMPORT_COMMENTS_KEY = "docear_import_comments"; //$NON-NLS-1$
+	public static final String REMOVE_LINEBREAKS_BOOKMARKS_KEY = "docear_remove_linebreaks_bookmarks"; //$NON-NLS-1$
+	public static final String REMOVE_LINEBREAKS_COMMENTS_KEY = "docear_remove_linebreaks_comments"; //$NON-NLS-1$
+	public static final String REMOVE_LINEBREAKS_HIGHLIGHTED_KEY = "docear_remove_linebreaks_highlighted_text"; //$NON-NLS-1$
+	public static final String KEEP_DOUBLE_LINEBREAKS_KEY = "docear_keep_double_linebreaks"; //$NON-NLS-1$
+	public static final String ADD_SPACES_KEY = "docear_add_spaces"; //$NON-NLS-1$
+	public static final String REMOVE_DASHES_KEY = "docear_remove_dashes"; //$NON-NLS-1$
 	public static final String IMPORT_HIGHLIGHTED_TEXTS_KEY = "docear_import_highlighted_text"; //$NON-NLS-1$
 	public static final String OPEN_ON_PAGE_WARNING_KEY = "OptionPanel.docear_open_on_page_reader_path_warning"; //$NON-NLS-1$
 	public static final String OPEN_ON_PAGE_ERROR_KEY = "OptionPanel.docear_open_on_page_reader_path_error"; //$NON-NLS-1$<https://sourceforge.net/apps/trac/docear/ticket/659
@@ -161,6 +168,7 @@ public class PdfUtilitiesController extends ALanguageController {
 	
 	public static final String IMPORT_ALL_CHILD_ANNOTATIONS_LANG_KEY = "menu_import_all_child_annotations"; //$NON-NLS-1$
 	public static final String IMPORT_NEW_CHILD_ANNOTATIONS_LANG_KEY = "menu_import_new_child_annotations"; //$NON-NLS-1$
+	public static final String REMOVE_LINEBREAKS_LANG_KEY = "menu_remove_linebreaks"; //$NON-NLS-1$
 	public static final String ADD_MONITORING_FOLDER_LANG_KEY = "menu_import_add_monitoring_folder"; //$NON-NLS-1$
 	public static final String UPDATE_MONITORING_FOLDER_LANG_KEY = "menu_import_update_monitoring_folder"; //$NON-NLS-1$
 	public static final String DELETE_MONITORING_FOLDER_LANG_KEY = "menu_import_delete_monitoring_folder"; //$NON-NLS-1$
@@ -177,6 +185,7 @@ public class PdfUtilitiesController extends ALanguageController {
 	private DeleteMonitoringFolderAction deleteMonitoringFolderAction;
 	private ImportAllChildAnnotationsAction importAllChildAnnotationsAction;
 	private ImportNewChildAnnotationsAction importNewChildAnnotationsAction;
+	private RemoveLinebreaksAction removeLinebreaksAction;
 	private MonitoringFlattenSubfoldersAction monitoringFlattenSubfoldersAction;
 	private List<PDFReaderHandle> pdfViewerList = null;
 	private PdfReaderFileFilter readerFilter = new PdfReaderFileFilter();
@@ -652,6 +661,8 @@ public class PdfUtilitiesController extends ALanguageController {
 		this.modecontroller.getMapController().addListenerForAction(importAllChildAnnotationsAction);
 		this.importNewChildAnnotationsAction = new ImportNewChildAnnotationsAction(IMPORT_NEW_CHILD_ANNOTATIONS_LANG_KEY);
 		this.modecontroller.getMapController().addListenerForAction(importNewChildAnnotationsAction);
+		this.removeLinebreaksAction = new RemoveLinebreaksAction(REMOVE_LINEBREAKS_LANG_KEY);
+		this.modecontroller.getMapController().addListenerForAction(removeLinebreaksAction);
 		this.deleteMonitoringFolderAction = new DeleteMonitoringFolderAction(DELETE_MONITORING_FOLDER_LANG_KEY);
 		this.modecontroller.getMapController().addListenerForAction(deleteMonitoringFolderAction);
 		this.editMonitoringFolderAction = new EditMonitoringFolderAction(EDIT_MONITORING_FOLDER_LANG_KEY);
@@ -695,6 +706,7 @@ public class PdfUtilitiesController extends ALanguageController {
 				builder.addAction(MENU_BAR + PDF_MANAGEMENT_MENU, importNewAnnotationsAction, MenuBuilder.AS_CHILD);				
 				builder.addAction(MENU_BAR + PDF_MANAGEMENT_MENU, importAllChildAnnotationsAction, MenuBuilder.AS_CHILD);
 				builder.addAction(MENU_BAR + PDF_MANAGEMENT_MENU, importNewChildAnnotationsAction, MenuBuilder.AS_CHILD);
+				builder.addAction(MENU_BAR + PDF_MANAGEMENT_MENU, removeLinebreaksAction, MenuBuilder.AS_CHILD);
 				builder.addAction(MENU_BAR + PDF_MANAGEMENT_MENU, deleteFileAction, MenuBuilder.AS_CHILD);
 
 				builder.addMenuItem(MENU_BAR + PDF_MANAGEMENT_MENU, new JMenu(TextUtils.getText(MONITORING_MENU_LANG_KEY)), MENU_BAR + MONITORING_MENU,
@@ -800,6 +812,7 @@ public class PdfUtilitiesController extends ALanguageController {
 				builder.addAction(pdfCategory + PDF_MANAGEMENT_MENU, importNewAnnotationsAction, MenuBuilder.AS_CHILD);				
 				builder.addAction(pdfCategory + PDF_MANAGEMENT_MENU, importAllChildAnnotationsAction, MenuBuilder.AS_CHILD);
 				builder.addAction(pdfCategory + PDF_MANAGEMENT_MENU, importNewChildAnnotationsAction, MenuBuilder.AS_CHILD);
+				builder.addAction(pdfCategory + PDF_MANAGEMENT_MENU, removeLinebreaksAction, MenuBuilder.AS_CHILD);
 				builder.addAction(pdfCategory + PDF_MANAGEMENT_MENU, deleteFileAction, MenuBuilder.AS_CHILD);
 
 				importAllAnnotationsAction.initView(builder);
@@ -810,6 +823,8 @@ public class PdfUtilitiesController extends ALanguageController {
 				importAllChildAnnotationsAction.addPropertyChangeListener(pdfManagementPopupMenu);
 				importNewChildAnnotationsAction.initView(builder);
 				importNewChildAnnotationsAction.addPropertyChangeListener(pdfManagementPopupMenu);
+				removeLinebreaksAction.initView(builder);
+				removeLinebreaksAction.addPropertyChangeListener(pdfManagementPopupMenu);
 				deleteFileAction.initView(builder);
 				deleteFileAction.addPropertyChangeListener(pdfManagementPopupMenu);
 			}
