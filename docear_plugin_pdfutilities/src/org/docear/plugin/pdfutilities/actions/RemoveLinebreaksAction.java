@@ -2,22 +2,14 @@ package org.docear.plugin.pdfutilities.actions;
 
 import java.awt.event.ActionEvent;
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
-import org.docear.plugin.core.util.Tools;
-import org.docear.plugin.pdfutilities.PdfUtilitiesController;
-import org.docear.plugin.pdfutilities.features.AnnotationModel;
 import org.docear.plugin.pdfutilities.features.AnnotationNodeModel;
-import org.docear.plugin.pdfutilities.features.IAnnotation;
 import org.docear.plugin.pdfutilities.features.IAnnotation.AnnotationType;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
 import org.docear.plugin.pdfutilities.pdf.PdfAnnotationImporter;
-import org.docear.plugin.pdfutilities.util.MonitoringUtils;
-import org.freeplane.core.resources.ResourceController;
-import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
@@ -27,8 +19,6 @@ import org.freeplane.features.mode.Controller;
 
 import de.intarsys.pdf.cos.COSRuntimeException;
 import de.intarsys.pdf.parser.COSLoadException;
-import de.intarsys.pdf.pd.PDAnnotation;
-import de.intarsys.pdf.pd.PDOutlineItem;
 
 @EnabledAction( checkOnPopup = true, checkOnNodeChange = true )
 public class RemoveLinebreaksAction extends ImportAnnotationsAction {
