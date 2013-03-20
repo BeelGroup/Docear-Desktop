@@ -36,7 +36,7 @@ public class PdfNodeChangeListener implements INodeChangeListener {
 						AnnotationModel model = AnnotationController.getModel(event.getNode(), false);
 						if(model == null){
 							model = new AnnotationModel();
-							model.setAnnotationID(new AnnotationID(newAbsoluteUri, null));
+							model.setAnnotationID(new AnnotationID(newAbsoluteUri, 0));
 							model.setAnnotationType(AnnotationType.PDF_FILE);							
 							AnnotationController.setModel(event.getNode(), model);
 						}
