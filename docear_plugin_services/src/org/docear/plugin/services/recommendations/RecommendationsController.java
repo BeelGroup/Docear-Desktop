@@ -14,6 +14,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.ProgressMonitor;
 import javax.ws.rs.core.MultivaluedMap;
@@ -49,6 +50,11 @@ public abstract class RecommendationsController {
 	}
 	
 	public static void refreshRecommendations(Collection<RecommendationEntry> recommendations) {
+		//DOCEAR - todo: debug
+		if(true) {
+			UITools.showMessage("not available", JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
 		RecommendationsModel model;
 		if(recommendations == null) {
 			try {

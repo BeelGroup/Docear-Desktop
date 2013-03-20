@@ -9,9 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
-import org.freeplane.main.osgi.IControllerExtensionProvider;
+import org.freeplane.plugin.workspace.IWorkspaceDependentControllerExtension;
 import org.freeplane.plugin.workspace.WorkspaceDependentService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -25,11 +26,13 @@ public class Activator extends WorkspaceDependentService {
 		startPluginServices(context, modeController);
 	}
 	
-	protected Collection<IControllerExtensionProvider> getControllerExtensions() {
-		List<IControllerExtensionProvider> controllerExtensions = new ArrayList<IControllerExtensionProvider>();
-		controllerExtensions.add(new IControllerExtensionProvider() {
-			public void installExtension(Controller controller) {			
+	protected Collection<IWorkspaceDependentControllerExtension> getControllerExtensions() {
+		List<IWorkspaceDependentControllerExtension> controllerExtensions = new ArrayList<IWorkspaceDependentControllerExtension>();
+		controllerExtensions.add(new IWorkspaceDependentControllerExtension() {
+			public void installExtension(BundleContext context, Controller controller) {
 				getConfig().initController(controller);
+				LogUtils.info("Docear Core controller extension initiated.");
+				startControllerExtensions(context, controller);
 			}
 		});
 		return controllerExtensions;
@@ -61,16 +64,39 @@ public class Activator extends WorkspaceDependentService {
 			e.printStackTrace();
 		}
 	}
-
+	
+	protected final void startControllerExtensions(BundleContext context, Controller controller) {		
+		try {
+			final ServiceReference[] extensions = context.getServiceReferences(IDocearControllerExtension.class.getName(), "(dependsOn="+DocearService.DEPENDS_ON+")");
+//			if (extensions != null) {
+//				List<?> extensions = sortOnDependencies(extensions, context);
+//				for(Object extension : extensions) {
+//					((IControllerExtensionProvider) extension).installExtension(controller);					
+//				}
+//				
+//			}
+			if (extensions != null) {
+				for (ServiceReference serviceReference : extensions) {
+					final IDocearControllerExtension extension = (IDocearControllerExtension) context.getService(serviceReference);
+					extension.installExtension(context, controller);
+					context.ungetService(serviceReference);
+				}
+			}
+		}
+		catch (final InvalidSyntaxException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private boolean isValid(DocearService service) {
-		if(isBlacklisted(service)) {
+		if(isBlacklisted(service.getBundleInfo().getBundleName())) {
 			return false;
 		}
 		return true;
 	}
-
-	private boolean isBlacklisted(DocearService service) {
-		if("org.docear.plugin.backup".equals(service.getBundleInfo().getBundleName())) {
+	
+	private boolean isBlacklisted(String packageName) {
+		if("org.docear.plugin.backup".equals(packageName)) {
 			return true;
 		}
 		return false;

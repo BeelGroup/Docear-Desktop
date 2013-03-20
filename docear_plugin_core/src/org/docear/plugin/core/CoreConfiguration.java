@@ -13,6 +13,7 @@ import java.util.Properties;
 
 import javax.swing.SwingUtilities;
 
+import org.apache.commons.io.FileUtils;
 import org.docear.plugin.core.actions.DocearAboutAction;
 import org.docear.plugin.core.actions.DocearOpenUrlAction;
 import org.docear.plugin.core.actions.DocearQuitAction;
@@ -103,20 +104,63 @@ public class CoreConfiguration extends ALanguageController {
 	}
 	
 	protected void initController(Controller controller) {
-		loadAndStoreVersion(controller);
-		
-		adjustProperties(controller);
-		
-		WorkspaceController.replaceAction(new DocearAboutAction());
-		WorkspaceController.replaceAction(new DocearQuitAction());		
-		WorkspaceController.replaceAction(new DocearLibraryOpenLocation());
-		WorkspaceController.replaceAction(new DocearNewProjectAction());
-		WorkspaceController.addAction(new DocearLibraryNewMindmap());
+		loadAndStoreVersion(controller);		
+		adjustProperties(controller);				
 		
 		AWorkspaceProject.setCurrentProjectCreator(new DocearWorspaceProjectCreator());
+		
+		WorkspaceController.replaceAction(new DocearAboutAction());
+		WorkspaceController.replaceAction(new DocearQuitAction());
+		
+		copyInfoIfNecessary();		
 	}
 	
-	protected void initMode(ModeController modeController) {
+
+	private void copyInfoIfNecessary() {	
+		File _welcomeFile = new File(URIUtils.getFile(WorkspaceController.getApplicationHome()), "docear-welcome.mm");
+		if(!_welcomeFile.exists()) {
+			createAndCopy(_welcomeFile, "/conf/docear-welcome.mm");			
+		}
+		
+		File _docearLogo = new File(URIUtils.getFile(WorkspaceController.getApplicationHome()), "docear-logo.png");
+		if(!_docearLogo.exists()) {
+			createAndCopy(_docearLogo, "/images/docear_logo.png");			
+		}
+		
+		ResourceController resController = Controller.getCurrentController().getResourceController();
+		if (resController.getProperty("ApplicationName").equals("Docear")) {
+			String mapPath = _welcomeFile.toURI().getPath();
+			resController.setProperty("first_start_map", mapPath);
+			resController.setProperty("tutorial_map", mapPath);
+		}
+	}
+	
+	private void createAndCopy(File file, String resourcePath) {
+		try {
+			createFile(file);
+			FileUtils.copyInputStreamToFile(CoreConfiguration.class.getResourceAsStream(resourcePath), file);
+		}
+		catch (IOException e) {
+			LogUtils.warn(e);
+		}	
+	}
+
+	/**
+	 * @param file
+	 * @throws IOException
+	 */
+	private void createFile(File file) throws IOException {
+		if(!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
+			return;
+		}
+		file.createNewFile();
+	}
+	
+	protected void initMode(ModeController modeController) {				
+		WorkspaceController.replaceAction(new DocearLibraryOpenLocation());
+		WorkspaceController.replaceAction(new DocearNewProjectAction());
+		WorkspaceController.replaceAction(new DocearLibraryNewMindmap());
+		
 		DocearProjectLoader docearProjectLoader = new DocearProjectLoader();
 		WorkspaceController.getModeExtension(modeController).setProjectLoader(docearProjectLoader);
 		
@@ -331,7 +375,7 @@ public class CoreConfiguration extends ALanguageController {
 		ResourceController resController = controller.getResourceController();
 		if (resController.getProperty("ApplicationName").equals("Docear") && DocearController.getController().isDocearFirstStart()) {			
 			resController.setProperty("selection_method", "selection_method_by_click");
-			resController.setProperty("links", "relative_to_workspace");
+			//resController.setProperty("links", "relative_to_workspace");
 			resController.setProperty("save_folding", "always_save_folding");
 			resController.setProperty("leftToolbarVisible", "false");			
 			resController.setProperty("styleScrollPaneVisible", "true");

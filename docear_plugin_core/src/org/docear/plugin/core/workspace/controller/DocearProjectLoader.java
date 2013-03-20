@@ -33,6 +33,7 @@ import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.link.LinkController;
 import org.freeplane.plugin.workspace.URIUtils;
+import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.model.AWorkspaceNodeCreator;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
@@ -171,6 +172,12 @@ public class DocearProjectLoader extends ProjectLoader {
 		
 		project.getModel().setRoot(root);
 		
+		
+		File _dataInfoFile = new File(URIUtils.getFile(project.getProjectDataPath()).getParentFile(), "!!!info.txt");
+		if(!_dataInfoFile.exists()) {
+			createAndCopy(_dataInfoFile, "/conf/!!!info.txt");
+		}
+		
 		// create and load all default nodes
 		FolderTypeLibraryNode libNode = new FolderTypeLibraryNode();
 		libNode.setName(TextUtils.getText(libNode.getClass().getName().toLowerCase(Locale.ENGLISH)+".label" ));
@@ -260,6 +267,13 @@ public class DocearProjectLoader extends ProjectLoader {
 		FolderVirtualNode misc = new FolderVirtualNode();
 		misc.setName(TextUtils.getText(FolderTypeMyFilesNode.class.getPackage().getName().toLowerCase(Locale.ENGLISH)+".miscnode.name"));
 		project.getModel().addNodeTo(misc, root);
+		
+		File _welcomeFile = new File(URIUtils.getFile(WorkspaceController.getApplicationHome()), "docear-welcome.mm");
+		URI welcomeURI = project.getRelativeURI(_welcomeFile.toURI());
+		LinkTypeFileNode welcomeNode = new LinkTypeFileNode();
+		welcomeNode.setLinkURI(welcomeURI);
+		welcomeNode.setName(_welcomeFile.getName());
+		project.getModel().addNodeTo(welcomeNode, misc);
 		
 		if(settings != null && settings.includeDemoFiles()) {
 			LiteratureRepositoryPathNode pathNode = new LiteratureRepositoryPathNode();

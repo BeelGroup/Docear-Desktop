@@ -27,6 +27,8 @@ public class Activator implements BundleActivator {
 		context.registerService(IControllerExtensionProvider.class.getName(), new IControllerExtensionProvider() {
 			public void installExtension(Controller controller) {
 				WorkspaceController.install(controller);
+				LogUtils.info("Workspace controller installed.");
+				startControllerExtensions(context, controller);
 			}
 		}, null);
 		
@@ -79,6 +81,23 @@ public class Activator implements BundleActivator {
 					final ServiceReference serviceReference = dependends[i];
 					final WorkspaceDependentService service = (WorkspaceDependentService) context.getService(serviceReference);
 					service.startPlugin(context, modeController);
+					context.ungetService(serviceReference);
+				}
+			}
+		}
+		catch (final InvalidSyntaxException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	protected void startControllerExtensions(BundleContext context, Controller controller) {
+		try {
+			final ServiceReference[] extensions = context.getServiceReferences(IWorkspaceDependentControllerExtension.class.getName(), "(dependsOn="+ WorkspaceDependentService.DEPENDS_ON +")");
+			if (extensions != null) {
+				for (ServiceReference serviceReference : extensions) {
+					final IWorkspaceDependentControllerExtension extension = (IWorkspaceDependentControllerExtension) context.getService(serviceReference);
+					extension.installExtension(context, controller);
 					context.ungetService(serviceReference);
 				}
 			}

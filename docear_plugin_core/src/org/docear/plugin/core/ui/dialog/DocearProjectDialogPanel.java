@@ -175,6 +175,7 @@ public class DocearProjectDialogPanel extends JPanel {
 				FormFactory.RELATED_GAP_COLSPEC,
 				FormFactory.DEFAULT_COLSPEC,},
 			new RowSpec[] {
+				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
@@ -197,17 +198,17 @@ public class DocearProjectDialogPanel extends JPanel {
 				}
 			}
 		});
-		panel_1.add(chckbxUseDefaults, "1, 1");
+		panel_1.add(chckbxUseDefaults, "1, 2");
 		
 		JLabel lblAdvancedInfo = new JHyperlink(TextUtils.getText("library_paths_help"), TextUtils.getText("library_paths_help_uri"));
-		panel_1.add(lblAdvancedInfo, "3, 1, 3, 1");
+		panel_1.add(lblAdvancedInfo, "3, 2, 3, 1");
 		
 		lblBibPath = new JLabel("BibTeX Library:");
-		panel_1.add(lblBibPath, "1, 3, right, default");
+		panel_1.add(lblBibPath, "1, 4, right, default");
 		
 		txtBibfile = new JTextField();
 		txtBibfile.setText("default.bib");
-		panel_1.add(txtBibfile, "3, 3, fill, default");
+		panel_1.add(txtBibfile, "3, 4, fill, default");
 		txtBibfile.setColumns(10);
 		
 		btnBrowseBib = new JButton(TextUtils.getText("browse"));
@@ -237,16 +238,16 @@ public class DocearProjectDialogPanel extends JPanel {
 				}
 			}
 		});
-		panel_1.add(btnBrowseBib, "5, 3");
+		panel_1.add(btnBrowseBib, "5, 4");
 		
 		JLabel lblMendeleyInfo = new JHyperlink(TextUtils.getText("bibtex_mendeley_help"), TextUtils.getText("bibtex_mendeley_help_uri"));
-		panel_1.add(lblMendeleyInfo, "3, 5, 3, 1");
+		panel_1.add(lblMendeleyInfo, "3, 6, 3, 1");
 		
 		lblLiteratureRepository = new JLabel("Literature Repository");
-		panel_1.add(lblLiteratureRepository, "1, 7, 5, 1");
+		panel_1.add(lblLiteratureRepository, "1, 8, 5, 1");
 		
 		reposiScrollPane = new JScrollPane();
-		panel_1.add(reposiScrollPane, "1, 9, 3, 3, fill, fill");
+		panel_1.add(reposiScrollPane, "1, 10, 3, 3, fill, fill");
 		
 		repositoryPathList = new JList();
 		reposiScrollPane.setViewportView(repositoryPathList);
@@ -290,7 +291,7 @@ public class DocearProjectDialogPanel extends JPanel {
 				}
 			}
 		});
-		panel_1.add(btnAddPath, "5, 9");
+		panel_1.add(btnAddPath, "5, 10");
 		
 		btnRemovePath = new JButton("Remove Path");
 		btnRemovePath.addActionListener(new ActionListener() {
@@ -304,7 +305,7 @@ public class DocearProjectDialogPanel extends JPanel {
 				}
 			}
 		});
-		panel_1.add(btnRemovePath, "5, 11");
+		panel_1.add(btnRemovePath, "5, 12");
 		
 		setUseDefaults(true);
 	}

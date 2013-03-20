@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.docear.plugin.core.DocearService;
+import org.docear.plugin.core.IDocearControllerExtension;
 import org.docear.plugin.services.communications.CommunicationsController;
 import org.docear.plugin.services.communications.DocearAuthenticator;
 import org.docear.plugin.services.communications.components.dialog.ProxyAuthenticationDialog;
@@ -15,9 +16,9 @@ import org.freeplane.core.resources.OptionPanelController;
 import org.freeplane.core.resources.OptionPanelController.PropertyLoadListener;
 import org.freeplane.core.resources.ResourceBundles;
 import org.freeplane.core.resources.components.IPropertyControl;
+import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
-import org.freeplane.main.osgi.IControllerExtensionProvider;
 import org.osgi.framework.BundleContext;
 
 public class Activator extends DocearService {
@@ -32,11 +33,11 @@ public class Activator extends DocearService {
 		ServiceController.initialize(modeController);
 	}
 
-	protected Collection<IControllerExtensionProvider> getControllerExtensions() {
-		List<IControllerExtensionProvider> controllerExtensions = new ArrayList<IControllerExtensionProvider>();
-		controllerExtensions.add(new IControllerExtensionProvider() {
+	protected Collection<IDocearControllerExtension> getControllerExtensions() {
+		List<IDocearControllerExtension> controllerExtensions = new ArrayList<IDocearControllerExtension>();
+		controllerExtensions.add(new IDocearControllerExtension() {
 			
-			public void installExtension(Controller controller) {
+			public void installExtension(BundleContext context, Controller controller) {
 				setLanguage();
 				
 				final OptionPanelController optionController = controller.getOptionPanelController();
@@ -62,6 +63,7 @@ public class Activator extends DocearService {
 					ProxyAuthenticationDialog dialog =  new ProxyAuthenticationDialog();
 					dialog.showDialog();
 				}
+				LogUtils.info("Docear Services controller extension initiated.");
 			}
 		});
 		return controllerExtensions;

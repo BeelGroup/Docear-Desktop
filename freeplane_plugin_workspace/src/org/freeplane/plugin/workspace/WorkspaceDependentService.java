@@ -7,10 +7,12 @@ package org.freeplane.plugin.workspace;
 import java.util.Collection;
 import java.util.Hashtable;
 
+import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.main.osgi.IControllerExtensionProvider;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 
 /**
  * 
@@ -28,7 +30,7 @@ public abstract class WorkspaceDependentService implements BundleActivator{
 
 	public abstract void startPlugin(BundleContext context, ModeController modeController);
 	
-	protected abstract Collection<IControllerExtensionProvider> getControllerExtensions();
+	protected abstract Collection<IWorkspaceDependentControllerExtension> getControllerExtensions();
 	
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
@@ -37,10 +39,16 @@ public abstract class WorkspaceDependentService implements BundleActivator{
 	public final void start(BundleContext context) throws Exception {
 		final Hashtable<String, String[]> props = new Hashtable<String, String[]>();
 		props.put("dependsOn", new String[] { DEPENDS_ON }); //$NON-NLS-1$
-		
-		if(getControllerExtensions() != null) {
-			for(IControllerExtensionProvider provider : getControllerExtensions()) {
-				context.registerService(IControllerExtensionProvider.class.getName(), provider, null);
+
+		Collection<IWorkspaceDependentControllerExtension> extensions = getControllerExtensions();
+		if(extensions != null) {
+			for(IWorkspaceDependentControllerExtension provider : extensions) {
+				try {
+					context.registerService(IWorkspaceDependentControllerExtension.class.getName(), provider, props);
+				}
+				catch (Exception e) {
+					LogUtils.warn(provider.getClass() +" has not been registered", e);
+				}
 			}
 		}
 		context.registerService(WorkspaceDependentService.class.getName(), this, props);

@@ -16,6 +16,7 @@ import org.freeplane.core.resources.OptionPanelController.PropertyLoadListener;
 import org.freeplane.core.resources.ResourceBundles;
 import org.freeplane.core.resources.components.IPropertyControl;
 import org.freeplane.core.ui.AFreeplaneAction;
+import org.freeplane.core.ui.FreeplaneActionCascade;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.mode.Controller;
@@ -56,6 +57,17 @@ public final class WorkspaceController implements IExtension {
 			Controller.getCurrentController().addAction(action);
 		} catch (Exception e) {
 			LogUtils.info(WorkspaceController.class + ".addAction(): action "+ action.getKey() +" not added! ("+e.getMessage()+")");
+		}	
+	}
+	
+	public static void addCascadingAction(final AFreeplaneAction action) {
+		if(action == null) {
+			return;
+		}
+		try {
+			FreeplaneActionCascade.addAction(action);
+		} catch (Exception e) {
+			LogUtils.info(WorkspaceController.class + ".addCascadingAction(): action "+ action.getKey() +" not added! ("+e.getMessage()+")");
 		}	
 	}
 
@@ -289,6 +301,8 @@ public final class WorkspaceController implements IExtension {
 	public static void save() {
 		getCurrentModeExtension().save();
 	}
+
+	
 
 	
 	

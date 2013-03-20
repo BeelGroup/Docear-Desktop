@@ -17,6 +17,7 @@ import org.freeplane.features.mapio.MapIO;
 import org.freeplane.features.mapio.mindmapmode.MMapIO;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.mindmapmode.MModeController;
+import org.freeplane.n3.nanoxml.XMLException;
 import org.freeplane.plugin.workspace.URIUtils;
 
 /**
@@ -65,7 +66,7 @@ public class WorkspaceNewMapAction extends AFreeplaneAction {
 		}
 
 		if (name != null) {
-			//WORKSPACE - fixme: does not show in mapview
+			//WORKSPACE - fixme: the updates do not show in mapview (ask dimitry)
 			//String oldName = map.getRootNode().getText(); 
 			map.getRootNode().setText(name);
 			Controller.getCurrentController().getViewController().getMapView().repaint();
@@ -82,7 +83,14 @@ public class WorkspaceNewMapAction extends AFreeplaneAction {
 					LogUtils.warn(WorkspaceNewMapAction.class + ": " + e.getMessage());
 				}
 			}
-			Controller.getCurrentModeController().getMapController().setSaved(map, false);			
+			Controller.getCurrentModeController().getMapController().setSaved(map, false);
+		}
+		//WORKSPACE - todo: remove the following when the "fixme" above has been fixed
+		Controller.getCurrentController().close(false);
+		try {
+			mapIO.newMap(f.toURI().toURL());
+		} catch (Exception e) {
+			LogUtils.severe(e);
 		}
 				
 		return map;

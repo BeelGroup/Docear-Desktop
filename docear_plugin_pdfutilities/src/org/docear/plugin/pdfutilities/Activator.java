@@ -3,8 +3,8 @@ package org.docear.plugin.pdfutilities;
 import java.util.Collection;
 
 import org.docear.plugin.core.DocearService;
+import org.docear.plugin.core.IDocearControllerExtension;
 import org.freeplane.features.mode.ModeController;
-import org.freeplane.main.osgi.IControllerExtensionProvider;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -17,7 +17,7 @@ public class Activator extends DocearService implements BundleActivator {
 		new PdfUtilitiesController(modeController);
 	}
 
-	protected Collection<IControllerExtensionProvider> getControllerExtensions() {	
+	protected Collection<IDocearControllerExtension> getControllerExtensions() {	
 		return null;
 	}
 
