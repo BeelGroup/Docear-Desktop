@@ -162,7 +162,7 @@ public class DocearProjectDialogPanel extends JPanel {
 		JSeparator separator = new JSeparator();
 		add(separator, "2, 8, 6, 1");
 		
-		chckbxIncludeDemoFiles = new JCheckBox("include demo files");
+		chckbxIncludeDemoFiles = new JCheckBox(TextUtils.getText("docear.new.project.include_demo.label"));
 		add(chckbxIncludeDemoFiles, "2, 10, 5, 1");
 		
 		JPanel panel_1 = new JPanel();
@@ -243,7 +243,7 @@ public class DocearProjectDialogPanel extends JPanel {
 		JLabel lblMendeleyInfo = new JHyperlink(TextUtils.getText("bibtex_mendeley_help"), TextUtils.getText("bibtex_mendeley_help_uri"));
 		panel_1.add(lblMendeleyInfo, "3, 6, 3, 1");
 		
-		lblLiteratureRepository = new JLabel("Literature Repository");
+		lblLiteratureRepository = new JLabel(TextUtils.getText("docear.new.project.lit_rep.title"));
 		panel_1.add(lblLiteratureRepository, "1, 8, 5, 1");
 		
 		reposiScrollPane = new JScrollPane();
@@ -254,7 +254,7 @@ public class DocearProjectDialogPanel extends JPanel {
 		repositoryPathList.setModel(repoModel);
 		repoModel.addItem(new DefaultRepositoryListItem());
 		
-		btnAddPath = new JButton("Add Path");
+		btnAddPath = new JButton(TextUtils.getText("docear.new.project.lit_rep.add.label"));
 		btnAddPath.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				File home = URIUtils.getAbsoluteFile(getProjectPath());
@@ -293,7 +293,7 @@ public class DocearProjectDialogPanel extends JPanel {
 		});
 		panel_1.add(btnAddPath, "5, 10");
 		
-		btnRemovePath = new JButton("Remove Path");
+		btnRemovePath = new JButton(TextUtils.getText("docear.new.project.lit_rep.remove.label"));
 		btnRemovePath.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int[] indices = repositoryPathList.getSelectedIndices();
