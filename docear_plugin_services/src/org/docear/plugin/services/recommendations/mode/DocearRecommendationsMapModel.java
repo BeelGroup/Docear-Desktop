@@ -1,6 +1,7 @@
 package org.docear.plugin.services.recommendations.mode;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 import org.docear.plugin.services.ServiceController;
 import org.docear.plugin.services.communications.CommunicationsController;
@@ -34,15 +35,29 @@ public class DocearRecommendationsMapModel extends MapModel {
 			}
 			return;
 		}
-		setRoot(DocearRecommendationsNodeModel.getRecommendationContainer(TextUtils.getText("recommendations.container.documents"),this));
+		
+		
+		Iterator<RecommendationEntry> entries = recommendations.iterator();
+		// small hack: first element in collection is xml-element "recommendations"
+		RecommendationEntry recommendationsElement = entries.next();
+		String rootTitle = recommendationsElement.getTitle();
+		
+		if (rootTitle != null && rootTitle.trim().length() > 0) {
+			setRoot(DocearRecommendationsNodeModel.getRecommendationContainer(rootTitle, this));
+		}
+		else {
+			//fallback to standard title
+			setRoot(DocearRecommendationsNodeModel.getRecommendationContainer(TextUtils.getText("recommendations.container.documents"),this));
+		}
+		
 		if(recommendations.isEmpty()) {
 			getRootNode().insert(DocearRecommendationsNodeModel.getNoRecommendationsNode(this, TextUtils.getText("recommendations.error.no_recommendations")));
 		} 
 		else {
 			//shuffle on server side
 			//Collections.shuffle((List<?>) recommendations);
-			for(RecommendationEntry entry : recommendations) {
-				getRootNode().insert(new DocearRecommendationsNodeModel(entry, this));
+			while (entries.hasNext()) {
+				getRootNode().insert(new DocearRecommendationsNodeModel(entries.next(), this));
 			}		
 		}
 	}

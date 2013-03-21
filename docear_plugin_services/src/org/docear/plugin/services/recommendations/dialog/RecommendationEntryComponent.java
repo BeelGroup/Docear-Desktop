@@ -31,6 +31,8 @@ public class RecommendationEntryComponent extends JPanel {
 	public static final int OPEN_RECOMMENDATION = 1;
 	public static final int IMPORT_RECOMMENDATION = 2;
 	private Set<ActionListener> actionListeners = new HashSet<ActionListener>();
+	private Color background;
+	private Color selectionBackground;
 
 	public RecommendationEntryComponent(final RecommendationEntry recommendation) {
 		setLayout(new FormLayout(new ColumnSpec[] {
@@ -39,19 +41,37 @@ public class RecommendationEntryComponent extends JPanel {
 			new RowSpec[] {
 				RowSpec.decode("50px"),}));
 		
-		final JLabel lblOpenButton = new JLabel(recommendation.getTitle());
+		final JLabel lblOpenButton = new JLabel();
+		StringBuilder sb = new StringBuilder();
+		sb.append("<html>");
+		if (recommendation.getPrefix() != null && recommendation.getPrefix().trim().length()>0) {
+			sb.append("<b>");
+			sb.append(recommendation.getPrefix()).append(" ");			
+			sb.append("</b>");
+		}		
+		sb.append(recommendation.getTitle());
+		sb.append("</html>");
+		lblOpenButton.setIcon(new ImageIcon(RecommendationEntryComponent.class.getResource("/icons/document-open-remote_32x32.png")));
+		background = lblOpenButton.getBackground();
+		selectionBackground = new Color(140, 180, 240);		
+		lblOpenButton.setText(sb.toString());		
+		
+		if (recommendation.isHighlighted()) {
+			background = new Color(204, 178, 178);
+			selectionBackground = new Color(220, 113, 113);
+		}		
+		setBackground(background);
+		
 //		final JTextField lblOpenButton = new JTextField(recommendation.getTitle());		
 //		lblOpenButton.setBorder( null );
 //		lblOpenButton.setOpaque( false );
-//		lblOpenButton.setEditable( false ); 
-		lblOpenButton.setIcon(new ImageIcon(RecommendationEntryComponent.class.getResource("/icons/document-open-remote_32x32.png")));
-		lblOpenButton.setToolTipText(TextUtils.getText("recommendation.preview.tooltip"));
-		lblOpenButton.setBorder(new BevelBorder(BevelBorder.RAISED, SystemColor.control, null, null, null));
+//		lblOpenButton.setEditable( false );
+		
+		lblOpenButton.setToolTipText(TextUtils.getText("recommendation.preview.tooltip"));		
+		lblOpenButton.setBorder(new BevelBorder(BevelBorder.RAISED, SystemColor.control, null, null, null));		
 		lblOpenButton.setMinimumSize(new Dimension(200, 50));
-		lblOpenButton.setPreferredSize(new Dimension(200, 50));
-		//javax.swing.plaf.ColorUIResource[r=10,g=36,b=106]
-		final Color background = lblOpenButton.getBackground();
-		final Color selectionBackground = new Color(140, 180, 240);
+		lblOpenButton.setPreferredSize(new Dimension(200, 50));		
+		
 		lblOpenButton.addMouseListener(new MouseListener() {
 						
 			public void mouseReleased(MouseEvent e) {}
@@ -81,7 +101,8 @@ public class RecommendationEntryComponent extends JPanel {
 		lblImportButton.setToolTipText(TextUtils.getText("recommendation.import.tooltip"));
 		lblImportButton.setHorizontalAlignment(SwingConstants.CENTER);
 		lblImportButton.setIcon(new ImageIcon(RecommendationEntryComponent.class.getResource("/icons/document-import_32x32.png")));
-		lblImportButton.setBorder(new BevelBorder(BevelBorder.RAISED, SystemColor.control, null, null, null));
+		lblImportButton.setBorder(new BevelBorder(BevelBorder.RAISED, SystemColor.control, null, null, null));		
+				
 		lblImportButton.setMinimumSize(new Dimension(50, 50));
 		lblImportButton.setPreferredSize(new Dimension(50, 50));
 		MouseListener downloadMouseListener = new MouseListener() {
