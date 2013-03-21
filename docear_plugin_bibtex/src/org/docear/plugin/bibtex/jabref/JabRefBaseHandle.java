@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.docear.plugin.bibtex.ReferencesController;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 
 import net.sf.jabref.BasePanel;
@@ -60,5 +61,9 @@ public class JabRefBaseHandle {
 	
 	public boolean hasMoreConnections() {
 		return connectedProjects.size() > 0;
+	}
+	
+	public void showBasePanel() {
+		ReferencesController.getController().getJabrefWrapper().getJabrefFrame().showBasePanel(getBasePanel());		
 	}
 }

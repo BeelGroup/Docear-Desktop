@@ -18,4 +18,9 @@ public class JabRefProjectExtension implements IWorkspaceProjectExtension {
 		return this.handle;
 	}
 
+	public void selectBasePanel() {
+		if(getBaseHandle() != null) {
+			getBaseHandle().showBasePanel();
+		}		
+	}
 }

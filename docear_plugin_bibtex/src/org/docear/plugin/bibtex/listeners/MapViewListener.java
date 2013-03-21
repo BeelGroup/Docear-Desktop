@@ -6,6 +6,7 @@ import java.util.TreeMap;
 
 import javax.swing.SwingUtilities;
 
+import net.sf.jabref.BasePanel;
 import net.sf.jabref.BibtexDatabase;
 import net.sf.jabref.BibtexEntry;
 import net.sf.jabref.export.DocearReferenceUpdateController;
@@ -16,14 +17,25 @@ import org.docear.plugin.bibtex.jabref.ResolveDuplicateEntryAbortedException;
 import org.freeplane.features.map.INodeSelectionListener;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
+import org.freeplane.features.mode.Controller;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.features.WorkspaceMapModelExtension;
 
 public class MapViewListener implements MouseListener, INodeSelectionListener {
 
 	private void handleEvent() {
+		if(ReferencesController.getController().getJabrefWrapper().getBasePanel() != null) {
+			BasePanel bp = ReferencesController.getController().getJabrefWrapper().getBasePanel();
+			WorkspaceMapModelExtension ext = WorkspaceController.getMapModelExtension(Controller.getCurrentController().getMap());
+			if(ext != null) {
+				JabRefProjectExtension jpe = (JabRefProjectExtension) ext.getProject().getExtensions(JabRefProjectExtension.class);
+				if(jpe != null && !jpe.getBaseHandle().getBasePanel().equals(bp)) {
+					jpe.selectBasePanel();
+				}
+			}
+		}
+		
 		SwingUtilities.invokeLater(new Runnable() {
-
 			@Override
 			public void run() {
 
