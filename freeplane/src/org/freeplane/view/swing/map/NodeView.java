@@ -923,8 +923,14 @@ public class NodeView extends JComponent implements INodeView {
 					final NodeView view = (NodeView) components[i];
 					final MainView childMainView = view.getMainView();
 					if(childMainView != null){
+						//DOCEAR - fix: catch occasionally occurring exceptions 
+						try {
 						childMainView.updateText(view.getModel());
 						view.numberingChanged(0);
+						}
+						catch (Exception e) {
+							LogUtils.info(e.getMessage());
+						}
 					}
 				}
 			}
