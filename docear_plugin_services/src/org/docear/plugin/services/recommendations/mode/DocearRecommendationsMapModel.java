@@ -47,7 +47,7 @@ public class DocearRecommendationsMapModel extends MapModel {
 		}
 		else {
 			//fallback to standard title
-			setRoot(DocearRecommendationsNodeModel.getRecommendationContainer(TextUtils.getText("recommendations.container.documents"),this));
+			setRoot(DocearRecommendationsNodeModel.getRecommendationContainer("",this));
 		}
 		
 		if(recommendations.isEmpty()) {
