@@ -3,6 +3,7 @@ package org.docear.plugin.pdfutilities.actions;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Set;
 
 import javax.swing.JOptionPane;
 
@@ -40,13 +41,20 @@ public class RemoveLinebreaksAction extends ImportAnnotationsAction {
 	}
 
 	public void actionPerformed(ActionEvent evt) {
-		NodeModel selected = Controller.getCurrentController().getSelection().getSelected();
-		if(selected == null){
+		Set<NodeModel> selection = Controller.getCurrentController().getSelection().getSelection();
+		if(selection == null){
 			return;
 		}
 		
-		else{	
-			removeLinebreaks(selected);			
+		else{
+			for(NodeModel selected : selection){
+				if(selected == null){
+					continue;
+				}
+				else{
+					removeLinebreaks(selected);	
+				}
+			}					
 		}
 	}
 

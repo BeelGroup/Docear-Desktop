@@ -16,6 +16,7 @@ import java.util.Map;
 
 import javax.swing.JOptionPane;
 
+import org.apache.commons.lang.StringUtils;
 import org.docear.plugin.core.features.AnnotationID;
 import org.docear.plugin.core.util.HtmlUtils;
 import org.docear.plugin.core.util.Tools;
@@ -32,6 +33,9 @@ import org.freeplane.features.filter.NextPresentationItemAction;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
+
+import com.google.common.base.CharMatcher;
+
 import de.intarsys.pdf.cds.CDSNameTreeEntry;
 import de.intarsys.pdf.cds.CDSNameTreeNode;
 import de.intarsys.pdf.content.CSDeviceBasedInterpreter;
@@ -488,15 +492,15 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 			if(removeDashes && lines[i].endsWith("-")){
 				lines[i] = lines[i].substring(0, lines[i].length() - 1);
 				if(i + 1 < lines.length && lines[i + 1].startsWith(" ")){
-					lines[i + 1].trim();
+					lines[i] = CharMatcher.WHITESPACE.trimFrom(lines[i]);
 				}
 				sb.append(lines[i]);
 				continue;
 			}
-			if(addSpaces){
-				if((i + 1 < lines.length) && (!lines[i].endsWith(" ") && !lines[i + 1].startsWith(" "))){
-					lines[i] = lines[i] + " ";
-					sb.append(lines[i]);
+			if(addSpaces){				
+				if((i + 1 < lines.length) && (!lines[i].endsWith(" ") && !lines[i + 1].startsWith(" "))){				
+					lines[i] = CharMatcher.WHITESPACE.trimFrom(lines[i]) + " ";
+					sb.append(lines[i]);					
 					continue;
 				}
 			}
