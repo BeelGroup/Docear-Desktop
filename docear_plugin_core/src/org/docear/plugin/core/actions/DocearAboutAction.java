@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
+import java.util.Calendar;
 import java.util.Properties;
 
 import javax.swing.Box;
@@ -47,7 +48,7 @@ public class DocearAboutAction extends AboutAction {
 			LogUtils.warn("DOCEAR: could not load core \"about\" properties");
 		}
 		String programmer = about_props.getProperty("docear_programmer");
-		String copyright = about_props.getProperty("docear_copyright");
+		String copyright = about_props.getProperty("docear_copyright")+Calendar.getInstance().get(Calendar.YEAR);
 		
 		
 		String aboutText = TextUtils.getRawText("docear_about");
