@@ -28,10 +28,10 @@ import org.docear.plugin.pdfutilities.map.IAnnotationImporter;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
+import org.freeplane.features.filter.NextPresentationItemAction;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
-
 import de.intarsys.pdf.cds.CDSNameTreeEntry;
 import de.intarsys.pdf.cds.CDSNameTreeNode;
 import de.intarsys.pdf.content.CSDeviceBasedInterpreter;
@@ -137,7 +137,9 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 	}
 	
 	public boolean renameAnnotation(IAnnotation annotation, String newTitle) throws COSRuntimeException, IOException, COSLoadException{
-		newTitle = HtmlUtils.extractText(newTitle);
+		if(newTitle.startsWith("<HTML>") || newTitle.startsWith("<html>")){
+			newTitle = HtmlUtils.extractText(newTitle);
+		}
 		List<AnnotationModel> annotations = new ArrayList<AnnotationModel>();
 		boolean ret = false;
 		this.currentFile = annotation.getUri();
@@ -207,7 +209,7 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 	
 	private List<AnnotationModel> importBookmarks(PDOutlineNode parent) throws IOException, COSLoadException, COSRuntimeException{
 		List<AnnotationModel> annotations = new ArrayList<AnnotationModel>();
-		boolean removeLinebreaksBookmarks = ResourceController.getResourceController().getBooleanProperty(PdfUtilitiesController.REMOVE_LINEBREAKS_BOOKMARKS_KEY);
+		//boolean removeLinebreaksBookmarks = ResourceController.getResourceController().getBooleanProperty(PdfUtilitiesController.REMOVE_LINEBREAKS_BOOKMARKS_KEY);
 		if(!this.importAll && !ResourceController.getResourceController().getBooleanProperty(PdfUtilitiesController.IMPORT_BOOKMARKS_KEY)){
 			return annotations;
 		}	
@@ -232,9 +234,9 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 			if(annotation.getAnnotationType() == AnnotationType.BOOKMARK){
 				annotation.setPage(this.getAnnotationDestinationPage(child));
 			}			
-			if(removeLinebreaksBookmarks){
+			/*if(removeLinebreaksBookmarks){
         		this.removeLinebreaks(annotation, child, child.getDoc());
-        	}
+        	}*/
 			annotations.add(annotation);
 		}
 		
@@ -283,8 +285,8 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		List<AnnotationModel> annotations = new ArrayList<AnnotationModel>();
 		boolean importComments = false;
 		boolean importHighlightedTexts = false;
-		boolean removeLinebreaksComments = ResourceController.getResourceController().getBooleanProperty(PdfUtilitiesController.REMOVE_LINEBREAKS_COMMENTS_KEY);
-		boolean removeLinebreaksHighlighted = ResourceController.getResourceController().getBooleanProperty(PdfUtilitiesController.REMOVE_LINEBREAKS_HIGHLIGHTED_KEY);
+		//boolean removeLinebreaksComments = ResourceController.getResourceController().getBooleanProperty(PdfUtilitiesController.REMOVE_LINEBREAKS_COMMENTS_KEY);
+		//boolean removeLinebreaksHighlighted = ResourceController.getResourceController().getBooleanProperty(PdfUtilitiesController.REMOVE_LINEBREAKS_HIGHLIGHTED_KEY);
 		
 		if(this.importAll){
 			importComments = true;
@@ -347,9 +349,9 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		            	pdfAnnotation.setAnnotationType(AnnotationType.COMMENT);            	
 		            	pdfAnnotation.setGenerationNumber(annotation.cosGetObject().getIndirectObject().getGenerationNumber());
 		            	pdfAnnotation.setPage(pdPage.getNodeIndex()+1);
-		            	if(removeLinebreaksComments){
+		            	/*if(removeLinebreaksComments){
 		            		this.removeLinebreaks(pdfAnnotation, annotation, document);
-		            	}
+		            	}*/
 		    			annotations.add(pdfAnnotation);
 		            }
 		            if((annotation.getClass() == PDTextMarkupAnnotation.class 
@@ -392,9 +394,9 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		            	pdfAnnotation.setGenerationNumber(annotation.cosGetObject().getIndirectObject().getGenerationNumber());
 		            	pdfAnnotation.setPage(pdPage.getNodeIndex()+1);
 		            	if(pdfAnnotation.getTitle() == null) continue;
-		            	if(removeLinebreaksHighlighted){
+		            	/*if(removeLinebreaksHighlighted){
 		            		this.removeLinebreaks(pdfAnnotation, annotation, document);
-		            	}
+		            	}*/
 		    			annotations.add(pdfAnnotation);
 		            }
 				}
