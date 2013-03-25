@@ -357,7 +357,7 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 
 		}
 		
-		DocearController.getController().getDocearEventLogger().appendToLog(this, DocearLogEvent.RM_BIBTEX_FILE_OPEN, new Object[] {file, this.getDatabase().getEntries().size()});
+		DocearController.getController().getDocearEventLogger().appendToLog(this, DocearLogEvent.RM_BIBTEX_FILE_OPEN, new Object[] {file});
 		return handle;
 	}
 
