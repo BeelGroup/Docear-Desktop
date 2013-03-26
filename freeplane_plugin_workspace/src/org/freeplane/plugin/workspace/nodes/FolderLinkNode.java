@@ -16,8 +16,6 @@ import javax.swing.ImageIcon;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.monitor.FileAlterationListener;
-import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.plugin.workspace.URIUtils;
@@ -36,7 +34,6 @@ import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.IMutableLinkNode;
 
 public class FolderLinkNode extends AFolderNode implements IWorkspaceNodeActionListener
-																, FileAlterationListener
 																, IWorkspaceTransferableCreator
 																, IDropAcceptor
 																, IFileSystemRepresentation
@@ -50,7 +47,6 @@ public class FolderLinkNode extends AFolderNode implements IWorkspaceNodeActionL
 	
 	private URI folderPath;
 	private boolean doMonitoring = false;
-	private boolean first;
 	private boolean orderDescending = false;
 	
 	public FolderLinkNode() {
@@ -125,24 +121,8 @@ public class FolderLinkNode extends AFolderNode implements IWorkspaceNodeActionL
 			this.doMonitoring = enable;
 		} 
 		else {
-			File file = URIUtils.getAbsoluteFile(getPath());
 			if(enable != this.doMonitoring) {
 				this.doMonitoring = enable;
-				first = true;
-				if(file == null) {
-					return;
-				}
-				try {		
-//					if(enable) {					
-//						WorkspaceController.getController().getFileSystemAlterationMonitor().addFileSystemListener(file, this);
-//					}
-//					else {
-//						WorkspaceController.getController().getFileSystemAlterationMonitor().removeFileSystemListener(file, this);
-//					}
-				} 
-				catch (Exception e) {
-					e.printStackTrace();
-				}
 			}
 		}
 	}
@@ -291,51 +271,6 @@ public class FolderLinkNode extends AFolderNode implements IWorkspaceNodeActionL
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
 	 **********************************************************************************/
-
-	private boolean fsChanges = false;
-	public void onStart(FileAlterationObserver observer) {
-		fsChanges = false;
-		if(first ) return;
-		// called when the observer starts a check cycle. do nth so far. 
-	}
-
-	public void onDirectoryCreate(File directory) {
-		if(first) return;
-		fsChanges = true;
-	}
-
-	public void onDirectoryChange(File directory) {
-		if(first) return;
-		fsChanges = true;
-	}
-
-	public void onDirectoryDelete(File directory) {
-		if(first) return;
-		fsChanges = true;
-	}
-
-	public void onFileCreate(File file) {
-		if(first) return;
-		fsChanges = true;
-	}
-
-	public void onFileChange(File file) {
-		if(first) return;
-		fsChanges = true;
-	}
-
-	public void onFileDelete(File file) {
-		if(first) return;
-		fsChanges = true;	
-	}
-
-	public void onStop(FileAlterationObserver observer) {
-		if(!first && fsChanges) {
-			fsChanges=false;
-			refresh();
-		}
-		first = false;
-	}
 	
 	public WorkspacePopupMenu getContextMenu() {
 		if (popupMenu == null) {
@@ -405,7 +340,7 @@ public class FolderLinkNode extends AFolderNode implements IWorkspaceNodeActionL
 		return false;
 	}
 
-	public Transferable getTransferable() {
+	public WorkspaceTransferable getTransferable() {
 		WorkspaceTransferable transferable = new WorkspaceTransferable();
 		try {
 			URI uri = URIUtils.getAbsoluteURI(getPath());

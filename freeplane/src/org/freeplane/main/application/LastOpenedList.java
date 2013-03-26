@@ -107,8 +107,13 @@ public class LastOpenedList implements IMapViewChangeListener, IMapChangeListene
 			return;
 		}
 		if(!currenlyOpenedList.remove(restoreable)) {
-			//DOCEAR - decode url string
-			currenlyOpenedList.remove(sun.net.www.ParseUtil.decode(restoreable));
+			try {
+				//DOCEAR - decode url string
+				currenlyOpenedList.remove(sun.net.www.ParseUtil.decode(restoreable));
+			}
+			catch (Exception e) {
+				//just try and ignore if it fails
+			}
 		}
 	}
 
@@ -210,8 +215,7 @@ public class LastOpenedList implements IMapViewChangeListener, IMapChangeListene
 			if (token.hasMoreTokens()) {
 				final String mode = token.nextToken();
 				Controller.getCurrentController().selectMode(mode);
-				//DOCEAR - decode url string
-				String fileName = sun.net.www.ParseUtil.decode(token.nextToken("").substring(1));
+				String fileName = token.nextToken("").substring(1);
 				if (PORTABLE_APP && fileName.startsWith(":") && USER_DRIVE.endsWith(":")) {
 					fileName = USER_DRIVE + fileName.substring(1);
 				}
@@ -247,8 +251,13 @@ public class LastOpenedList implements IMapViewChangeListener, IMapChangeListene
 
 	public void remove(final String restoreable) {
 		if(!lastOpenedList.remove(restoreable)) {
-			//DOCEAR - decode url string
-			lastOpenedList.remove(sun.net.www.ParseUtil.decode(restoreable));
+			try {
+				//DOCEAR - decode url string fallback
+				lastOpenedList.remove(sun.net.www.ParseUtil.decode(restoreable));
+			}
+			catch (Exception e) {
+				//ignore
+			}
 		}
 		updateMenus();
 	}
@@ -298,8 +307,7 @@ public class LastOpenedList implements IMapViewChangeListener, IMapChangeListene
 		if(map.containsExtension(DocuMapAttribute.class))
 			return;
 		if (restoreString != null) {
-			//DOCEAR - decode url string
-			String str = sun.net.www.ParseUtil.decode(restoreString);
+			String str = restoreString;
 			if (lastOpenedList.contains(str)) {
 				lastOpenedList.remove(str);
 			}
@@ -329,8 +337,7 @@ public class LastOpenedList implements IMapViewChangeListener, IMapChangeListene
 			final AFreeplaneAction lastOpenedActionListener = new OpenLastOpenedAction(i++, this);
 			final IFreeplaneAction decoratedAction = menuBuilder.decorateAction(lastOpenedActionListener);
 			final JMenuItem item = new JFreeplaneMenuItem(decoratedAction);
-			//DOCEAR - decode url string
-			String text = createOpenMapItemName(sun.net.www.ParseUtil.decode(key));
+			String text = createOpenMapItemName(key);
 			item.setText(createOpenMapItemName(text));
 			item.setMnemonic(0);
 			menuBuilder.addMenuItem(MENU_CATEGORY, item, MENU_CATEGORY + '/' + lastOpenedActionListener.getKey(),
@@ -344,7 +351,7 @@ public class LastOpenedList implements IMapViewChangeListener, IMapChangeListene
 			return restorable;
 		String key = restorable.substring(0, separatorIndex);
 		//DOCEAR - decode url string
-		return TextUtils.getText("open_as" + key, key) + sun.net.www.ParseUtil.decode(restorable.substring(separatorIndex));
+		return TextUtils.getText("open_as" + key, key) + restorable.substring(separatorIndex);
 		
     }
 

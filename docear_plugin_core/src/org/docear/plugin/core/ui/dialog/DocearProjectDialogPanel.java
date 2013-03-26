@@ -111,20 +111,25 @@ public class DocearProjectDialogPanel extends JPanel {
 		add(txtProjectName, "4, 4, fill, default");
 		txtProjectName.setColumns(10);
 		txtProjectName.addKeyListener(new KeyListener() {			
-			public void keyTyped(KeyEvent arg0) {
+			public void keyTyped(KeyEvent evt) {
 			}
 			
-			public void keyReleased(KeyEvent arg0) {
-				if(!manualChoice) {
-					SwingUtilities.invokeLater(new Runnable() {
-						public void run() {
-							setProjectPath(getDefaultProjectPath(getProjectName()));
-						}
-					});
+			public void keyReleased(KeyEvent evt) {
+				if(NewProjectDialogPanel.isBlackListed(evt.getKeyChar())) {
+					evt.consume();
+				}
+				else {
+					if(!manualChoice) {
+						SwingUtilities.invokeLater(new Runnable() {
+							public void run() {
+								setProjectPath(getDefaultProjectPath(getProjectName()));
+							}
+						});
+					}
 				}
 			}
 			
-			public void keyPressed(KeyEvent arg0) {	
+			public void keyPressed(KeyEvent evt) {	
 			}
 		});
 		

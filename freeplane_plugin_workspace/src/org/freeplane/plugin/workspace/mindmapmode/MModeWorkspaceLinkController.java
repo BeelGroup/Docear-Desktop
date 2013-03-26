@@ -8,6 +8,7 @@ import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.link.mindmapmode.MLinkController;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.features.WorkspaceMapModelExtension;
 //WORKSPACE - todo register as LinkController but beware of addAction problems
 public class MModeWorkspaceLinkController extends MLinkController {
 	

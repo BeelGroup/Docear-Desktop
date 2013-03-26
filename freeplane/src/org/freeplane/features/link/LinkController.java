@@ -553,10 +553,16 @@ public class LinkController extends SelectionController implements IExtension {
 			{
 				final Matcher mat = patSMB.matcher(inputValue);
 				if (mat.matches()) {
-					final String scheme = "smb";
-					final String ssp = "//" + mat.group(1) + "/" + mat.group(2).replace('\\', '/');
-					final String fragment = mat.group(3);
-					return new URI(scheme, ParseUtil.decode(ssp), fragment);
+					String scheme = "smb";
+					String ssp = "//" + mat.group(1) + "/" + mat.group(2).replace('\\', '/');
+					String fragment = mat.group(3);
+					try {
+						ssp = ParseUtil.decode(ssp);
+					}
+					catch (Exception ex) {
+						//just try and ignore if it fails
+					}
+					return new URI(scheme, ssp, fragment);
 				}
 			}
 			{

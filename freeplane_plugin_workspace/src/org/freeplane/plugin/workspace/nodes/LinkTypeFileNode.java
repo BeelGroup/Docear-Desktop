@@ -3,7 +3,6 @@ package org.freeplane.plugin.workspace.nodes;
 
 import java.awt.Component;
 import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DropTargetDropEvent;
 import java.io.File;
 import java.net.URI;
@@ -138,7 +137,7 @@ public class LinkTypeFileNode extends ALinkNode implements IWorkspaceNodeActionL
 		}
 	}
 
-	public Transferable getTransferable() {
+	public WorkspaceTransferable getTransferable() {
 		WorkspaceTransferable transferable = new WorkspaceTransferable();
 		try {
 			URI uri = URIUtils.getAbsoluteURI(getLinkURI());

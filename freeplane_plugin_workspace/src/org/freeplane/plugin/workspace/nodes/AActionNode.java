@@ -5,13 +5,13 @@
 package org.freeplane.plugin.workspace.nodes;
 
 import java.awt.Component;
-import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.plugin.workspace.dnd.IWorkspaceTransferableCreator;
+import org.freeplane.plugin.workspace.dnd.WorkspaceTransferable;
 import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.io.annotation.ExportAsAttribute;
@@ -41,7 +41,7 @@ public abstract class AActionNode extends AWorkspaceTreeNode implements IWorkspa
 	 * METHODS
 	 **********************************************************************************/
 	
-	public final Transferable getTransferable() {
+	public final WorkspaceTransferable getTransferable() {
 		return null;
 	}
 	

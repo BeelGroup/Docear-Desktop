@@ -76,17 +76,23 @@ public class WorkspaceTransferHandler extends TransferHandler implements DropTar
 	}
 
 	public Transferable createTransferable(JComponent comp) {
+		WorkspaceTransferable transferable = null;
 		if (comp instanceof JTree) {
 			JTree t = (JTree) comp;			
 			for (TreePath p : t.getSelectionPaths()) {
 				AWorkspaceTreeNode node = (AWorkspaceTreeNode) p.getLastPathComponent();
 				if (node instanceof IWorkspaceTransferableCreator) {
 					//FIXME: prepare for multiple node selection
-					return ((IWorkspaceTransferableCreator)node).getTransferable();
+					if(transferable == null) {
+						transferable = ((IWorkspaceTransferableCreator)node).getTransferable();
+					}
+					else {
+						transferable.merge(((IWorkspaceTransferableCreator)node).getTransferable());
+					}
 				} 
 			}
 		}		
-		return null;
+		return transferable;
 
 	}
 

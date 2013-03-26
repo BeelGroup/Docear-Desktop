@@ -1,6 +1,9 @@
 package org.freeplane.plugin.workspace.mindmapmode;
 
+import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDropEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -26,6 +29,7 @@ import org.freeplane.core.util.FileUtils;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.link.LinkController;
 import org.freeplane.features.mode.ModeController;
+import org.freeplane.features.ui.INodeViewLifeCycleListener;
 import org.freeplane.features.ui.ViewController;
 import org.freeplane.features.url.UrlManager;
 import org.freeplane.plugin.workspace.URIUtils;
@@ -51,6 +55,7 @@ import org.freeplane.plugin.workspace.actions.WorkspaceNewProjectAction;
 import org.freeplane.plugin.workspace.components.IWorkspaceView;
 import org.freeplane.plugin.workspace.components.TreeView;
 import org.freeplane.plugin.workspace.creator.DefaultFileNodeCreator;
+import org.freeplane.plugin.workspace.dnd.WorkspaceTransferable;
 import org.freeplane.plugin.workspace.features.AWorkspaceModeExtension;
 import org.freeplane.plugin.workspace.handler.DefaultFileNodeIconHandler;
 import org.freeplane.plugin.workspace.handler.LinkTypeFileIconHandler;
@@ -62,6 +67,8 @@ import org.freeplane.plugin.workspace.model.project.IProjectSelectionListener;
 import org.freeplane.plugin.workspace.model.project.ProjectSelectionEvent;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
+import org.freeplane.view.swing.map.NodeView;
+import org.freeplane.view.swing.ui.mindmapmode.MNodeDropListener;
 
 public class MModeWorkspaceController extends AWorkspaceModeExtension {
 	
@@ -99,7 +106,28 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 		UrlManager.install(new MModeWorkspaceUrlManager());
 		
 		modeController.removeExtension(LinkController.class);
-		LinkController.install(new MModeWorkspaceLinkController());		
+		LinkController.install(new MModeWorkspaceLinkController());
+		
+		modeController.addINodeViewLifeCycleListener(new INodeViewLifeCycleListener() {
+
+			public void onViewCreated(Container nodeView) {
+				NodeView node = (NodeView) nodeView;
+				final DropTarget dropTarget = new DropTarget(node.getMainView(), new MNodeDropListener() {
+					public void drop(final DropTargetDropEvent dtde) {
+						DropTargetDropEvent evt = dtde;
+						if(dtde.getTransferable().isDataFlavorSupported(WorkspaceTransferable.WORKSPACE_NODE_FLAVOR)) {
+							evt = new DropTargetDropEvent(dtde.getDropTargetContext(), dtde.getLocation(), dtde.getDropAction(), dtde.getSourceActions(), false);
+						}
+						super.drop(evt);
+					}
+				});
+				dropTarget.setActive(true);
+			}
+
+			public void onViewRemoved(Container nodeView) {
+			}
+
+		});
 	}
 
 	private void setupSettings(ModeController modeController) {

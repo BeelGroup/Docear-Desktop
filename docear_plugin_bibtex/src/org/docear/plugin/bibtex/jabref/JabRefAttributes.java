@@ -599,6 +599,10 @@ public class JabRefAttributes {
 		}
 		else {    			
 			JabRefProjectExtension prjExt = (JabRefProjectExtension) mapExt.getProject().getExtensions(JabRefProjectExtension.class);
+			if(prjExt == null) {
+				//DOCEAR - todo: what to do?
+				return null;
+			}
 			ReferencesController.getController().getJabrefWrapper().getJabrefFrame().showBasePanel(prjExt.getBaseHandle().getBasePanel());
 		}
 		
@@ -608,7 +612,6 @@ public class JabRefAttributes {
 		}
 		// file name linked in a node
 		File nodeFile = UrlManager.getController().getAbsoluteFile(map, uri);
-		System.out.println(" ");
 		if (nodeFile == null) {
 			return null;
 		}

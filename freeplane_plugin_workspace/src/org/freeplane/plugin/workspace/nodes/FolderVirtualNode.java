@@ -242,7 +242,7 @@ public class FolderVirtualNode extends AFolderNode implements IWorkspaceNodeActi
 		
 	}	
 	
-	public Transferable getTransferable() {
+	public WorkspaceTransferable getTransferable() {
 		WorkspaceTransferable transferable = new WorkspaceTransferable();
 		try {
 			List<AWorkspaceTreeNode> objectList = new ArrayList<AWorkspaceTreeNode>();

@@ -33,8 +33,7 @@ public class NewProjectDialogPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private JTextField txtProjectName;
 	private JTextField txtProjectPath;
-	protected boolean manualChoice = false;
-	
+	protected boolean manualChoice = false;	
 	
 	public NewProjectDialogPanel() {
 		setPreferredSize(new Dimension(400, 160));
@@ -66,37 +65,48 @@ public class NewProjectDialogPanel extends JPanel {
 				FormFactory.RELATED_GAP_ROWSPEC,
 				RowSpec.decode("fill:default:grow"),}));
 		
-		JLabel lblNewLabel = new JLabel(TextUtils.getText(this.getClass().getSimpleName().toLowerCase(Locale.ENGLISH)+".help"));
+		JLabel lblNewLabel = new JLabel(TextUtils.getText(NewProjectDialogPanel.class.getSimpleName().toLowerCase(Locale.ENGLISH)+".help"));
 		lblNewLabel.setVerticalAlignment(SwingConstants.TOP);
 		panel.add(lblNewLabel, "2, 2");
 		
-		JLabel lblProjectName = new JLabel(TextUtils.getText(this.getClass().getSimpleName().toLowerCase(Locale.ENGLISH)+".name.label"));
+		JLabel lblProjectName = new JLabel(TextUtils.getText(NewProjectDialogPanel.class.getSimpleName().toLowerCase(Locale.ENGLISH)+".name.label"));
 		lblProjectName.setHorizontalAlignment(SwingConstants.RIGHT);
 		add(lblProjectName, "2, 4, right, default");
 		
 		txtProjectName = new JTextField();
-		txtProjectName.setText(TextUtils.getText(this.getClass().getSimpleName().toLowerCase(Locale.ENGLISH)+".name.default"));
+		txtProjectName.setText(TextUtils.getText(NewProjectDialogPanel.class.getSimpleName().toLowerCase(Locale.ENGLISH)+".name.default"));
 		add(txtProjectName, "4, 4, fill, default");
 		txtProjectName.setColumns(10);
 		txtProjectName.addKeyListener(new KeyListener() {			
-			public void keyTyped(KeyEvent arg0) {
-			}
-			
-			public void keyReleased(KeyEvent arg0) {
-				if(!manualChoice) {
-					SwingUtilities.invokeLater(new Runnable() {
-						public void run() {
-							setProjectPath(getDefaultProjectPath(getProjectName()));
-						}
-					});
+			public void keyTyped(KeyEvent evt) {
+				if(isBlackListed(evt.getKeyChar())) {
+					evt.consume();
 				}
 			}
 			
-			public void keyPressed(KeyEvent arg0) {	
+			public void keyReleased(KeyEvent evt) {
+				if(isBlackListed(evt.getKeyChar())) {
+					evt.consume();
+				}
+				else {
+					if(!manualChoice) {
+						SwingUtilities.invokeLater(new Runnable() {
+							public void run() {
+								setProjectPath(getDefaultProjectPath(getProjectName()));
+							}
+						});
+					} 
+				}
+			}
+			
+			public void keyPressed(KeyEvent evt) {
+				if(isBlackListed(evt.getKeyChar())) {
+					evt.consume();
+				}
 			}
 		});
 		
-		JLabel lblProjectPath = new JLabel(TextUtils.getText(this.getClass().getSimpleName().toLowerCase(Locale.ENGLISH)+".path.label"));
+		JLabel lblProjectPath = new JLabel(TextUtils.getText(NewProjectDialogPanel.class.getSimpleName().toLowerCase(Locale.ENGLISH)+".path.label"));
 		lblProjectPath.setHorizontalAlignment(SwingConstants.RIGHT);
 		add(lblProjectPath, "2, 6, right, default");
 		
@@ -106,7 +116,7 @@ public class NewProjectDialogPanel extends JPanel {
 		txtProjectPath.setColumns(10);
 		
 		JButton btnBrowse = new JButton("...");
-		btnBrowse.setToolTipText(TextUtils.getText(this.getClass().getSimpleName().toLowerCase(Locale.ENGLISH)+".button.tip"));
+		btnBrowse.setToolTipText(TextUtils.getText(NewProjectDialogPanel.class.getSimpleName().toLowerCase(Locale.ENGLISH)+".button.tip"));
 		btnBrowse.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				File home = URIUtils.getAbsoluteFile(getProjectPath());
@@ -128,14 +138,29 @@ public class NewProjectDialogPanel extends JPanel {
 		add(btnBrowse, "6, 6");
 	}
 	
-	private void setProjectPath(String path) {
+	public static boolean isBlackListed(char keyChar) {
+		if(
+			'%' == keyChar
+			|| '!' == keyChar
+			|| '$' == keyChar
+			|| '§' == keyChar
+			|| '&' == keyChar
+			|| '\'' == keyChar
+			|| '´' == keyChar
+		) {
+			return true;
+		}
+		return false;
+	}
+
+	protected void setProjectPath(String path) {
 		txtProjectPath.setText(path);
 	}
 
-	private String getDefaultProjectPath(String projectName) {
+	protected String getDefaultProjectPath(String projectName) {
 		File base = URIUtils.getAbsoluteFile(WorkspaceController.getDefaultProjectHome());
 		if(projectName == null) {
-			projectName = TextUtils.getText(this.getClass().getSimpleName().toLowerCase(Locale.ENGLISH)+".name.default");
+			projectName = TextUtils.getText(NewProjectDialogPanel.class.getSimpleName().toLowerCase(Locale.ENGLISH)+".name.default");
 		}
 		File path = new File(base, projectName.trim());		
 		int counter = 1;

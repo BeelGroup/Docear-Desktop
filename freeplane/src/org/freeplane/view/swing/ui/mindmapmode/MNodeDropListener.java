@@ -209,7 +209,7 @@ public class MNodeDropListener implements DropTargetListener {
 		return false;
 	}
 
-	private boolean isDropAcceptable(final DropTargetDropEvent event) {
+	protected boolean isDropAcceptable(final DropTargetDropEvent event) {
 		final NodeModel node = ((MainView) event.getDropTargetContext().getComponent()).getNodeView().getModel();
 		final ModeController modeController = Controller.getCurrentController().getModeController();
 		final NodeModel selected = modeController.getMapController().getSelectedNode();

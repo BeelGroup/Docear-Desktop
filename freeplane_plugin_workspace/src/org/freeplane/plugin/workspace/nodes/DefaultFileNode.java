@@ -288,7 +288,7 @@ public class DefaultFileNode extends AWorkspaceTreeNode implements IWorkspaceNod
 		return false;
 	}
 	
-	public Transferable getTransferable() {
+	public WorkspaceTransferable getTransferable() {
 		WorkspaceTransferable transferable = new WorkspaceTransferable();
 		try {
 			URI uri = URIUtils.getAbsoluteURI(getFile().toURI());

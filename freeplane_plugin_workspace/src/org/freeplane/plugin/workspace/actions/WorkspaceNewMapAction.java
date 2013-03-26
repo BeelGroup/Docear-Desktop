@@ -17,7 +17,6 @@ import org.freeplane.features.mapio.MapIO;
 import org.freeplane.features.mapio.mindmapmode.MMapIO;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.mindmapmode.MModeController;
-import org.freeplane.n3.nanoxml.XMLException;
 import org.freeplane.plugin.workspace.URIUtils;
 
 /**

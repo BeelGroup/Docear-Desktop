@@ -62,7 +62,7 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 		mTree.addTreeExpansionListener(new DefaultTreeExpansionListener());
         mTree.addTreeSelectionListener(new DefaultWorkspaceSelectionListener());
         mTree.addTreeSelectionListener(getProjectSelectionHandler());
-		mTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		mTree.getSelectionModel().setSelectionMode(TreeSelectionModel.CONTIGUOUS_TREE_SELECTION);
 		DefaultWorkspaceMouseHandler mouseHandler = new DefaultWorkspaceMouseHandler();
 		mTree.addMouseListener(mouseHandler);
 		mTree.addMouseMotionListener(mouseHandler);
