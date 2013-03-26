@@ -39,7 +39,7 @@ public class DefaultWorkspaceProjectCreator implements IWorkspaceProjectCreater 
 				//WORKSPACE - todo: check new implementation 
 				try {
 					URI relativeUri = LinkController.getController().createRelativeURI(new File(getProjectHome()), new File(uri), LinkController.LINK_RELATIVE_TO_MINDMAP);
-					return new URI(WorkspaceController.PROJECT_RESOURCE_URL_PROTOCOL + "://"+ getProjectID() +"/"+relativeUri.getPath());
+					return new URI(WorkspaceController.PROJECT_RESOURCE_URL_PROTOCOL + "://"+ getProjectID() +"/"+relativeUri.getRawPath());
 				}
 				catch (Exception e) {
 					LogUtils.warn(e);

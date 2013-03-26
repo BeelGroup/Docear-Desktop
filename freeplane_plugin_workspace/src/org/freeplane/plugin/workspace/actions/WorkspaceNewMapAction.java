@@ -84,14 +84,17 @@ public class WorkspaceNewMapAction extends AFreeplaneAction {
 			}
 			Controller.getCurrentModeController().getMapController().setSaved(map, false);
 		}
+		
+			
 		//WORKSPACE - todo: remove the following when the "fixme" above has been fixed
-		Controller.getCurrentController().close(false);
-		try {
-			mapIO.newMap(f.toURI().toURL());
-		} catch (Exception e) {
-			LogUtils.severe(e);
-		}
-				
+		if(f != null) {
+			Controller.getCurrentController().close(true);
+			try {
+				mapIO.newMap(f.toURI().toURL());
+			} catch (Exception e) {
+				LogUtils.severe(e);
+			}
+		}		
 		return map;
 	}
 

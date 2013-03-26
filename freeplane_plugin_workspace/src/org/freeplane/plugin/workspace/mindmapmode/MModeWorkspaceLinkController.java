@@ -6,6 +6,7 @@ import java.net.URI;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.link.mindmapmode.MLinkController;
+import org.freeplane.features.map.NodeModel;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.features.WorkspaceMapModelExtension;
@@ -30,6 +31,33 @@ public class MModeWorkspaceLinkController extends MLinkController {
 			self = new MModeWorkspaceLinkController();
 		}
 		return self;
+	}
+	
+	public void setLink(final NodeModel node, final URI argUri, final int linkType) {
+		URI uri = argUri;
+		int finalLinkType = linkType;
+		if (linkType == LINK_RELATIVE_TO_PROJECT) {			
+			WorkspaceMapModelExtension mapExt = WorkspaceController.getMapModelExtension(node.getMap());
+			if(mapExt != null && mapExt.getProject() != null) {
+				uri = mapExt.getProject().getRelativeURI(argUri);
+				if(uri == null) {
+					uri = argUri;
+				}
+				else {
+					finalLinkType = LINK_ABSOLUTE;
+				}
+			}
+			else {
+				if(node.getMap().getFile() != null) {
+					finalLinkType = LINK_RELATIVE_TO_MINDMAP;
+				}
+				else {
+					finalLinkType = LINK_ABSOLUTE;
+				}
+			}
+		}		
+		super.setLink(node, uri, finalLinkType);
+		
 	}
 	
 	public int linkType() {
