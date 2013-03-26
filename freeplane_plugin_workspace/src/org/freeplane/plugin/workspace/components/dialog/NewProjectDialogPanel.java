@@ -143,10 +143,10 @@ public class NewProjectDialogPanel extends JPanel {
 			'%' == keyChar
 			|| '!' == keyChar
 			|| '$' == keyChar
-			|| '§' == keyChar
+			|| 'Â§' == keyChar
 			|| '&' == keyChar
 			|| '\'' == keyChar
-			|| '´' == keyChar
+			|| 'Â´' == keyChar
 		) {
 			return true;
 		}

@@ -296,7 +296,7 @@ public class FolderTypeLibraryNode extends AFolderNode implements ILibraryReposi
 	
 	
 	
-	public Transferable getTransferable() {
+	public WorkspaceTransferable getTransferable() {
 		return null;
 	}
 	
