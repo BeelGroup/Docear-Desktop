@@ -34,6 +34,7 @@ public class ProjectRootNode extends AFolderNode implements IMutableLinkNode, IW
 	private static WorkspacePopupMenu popupMenu = null;
 	private String projectID;
 	private URI projectRoot = null;
+	private String versionID;
 	
 	/***********************************************************************************
 	 * CONSTRUCTORS
@@ -168,5 +169,14 @@ public class ProjectRootNode extends AFolderNode implements IMutableLinkNode, IW
 			return false;
 		}
 		return true;
+	}
+
+	public void setVersion(String version) {
+		this.versionID = version;		
+	}
+	
+	@ExportAsAttribute(name="version")
+	public String getVersion() {
+		return this.versionID;
 	}
 }

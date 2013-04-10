@@ -1,6 +1,5 @@
 package org.docear.plugin.core.workspace.controller;
 
-import java.awt.datatransfer.DataFlavor;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -211,16 +210,13 @@ public class DocearProjectLoader extends ProjectLoader {
 		trashNode.setName(TextUtils.getText(trashNode.getClass().getName().toLowerCase(Locale.ENGLISH)+".trash.label" ));
 		trashNode.setSystem(true);
 		project.getModel().addNodeTo(trashNode, libNode);
-				
+		
+		//DOCEAR - todo: impl own Type (important for DnD handling) -> acts now as if a virtual folder
 		FolderVirtualNode refs = new FolderVirtualNode() {
 			private static final long serialVersionUID = 1L;
 
 			public WorkspacePopupMenu getContextMenu() {
 				return null;
-			}
-			
-			public boolean acceptDrop(DataFlavor[] flavors) {
-				return false;
 			}
 		};
 		refs.setName(TextUtils.getText(FolderTypeMyFilesNode.class.getPackage().getName().toLowerCase(Locale.ENGLISH)+".refnode.name"));
@@ -399,8 +395,10 @@ public class DocearProjectLoader extends ProjectLoader {
 				getProject().getModel().setRoot(node);
 				if(((ProjectRootNode) node).getProjectID() == null) {
 					((ProjectRootNode) node).setProjectID(getProject().getProjectID());
-				}
-				
+					if(!DocearWorkspaceProject.CURRENT_PROJECT_VERSION.equals(getProject().getVersion())) {
+						((ProjectRootNode) node).initiateMyFile(getProject());
+					}
+				}				
 			}
 			else {
 				if(parent == null) {
@@ -415,9 +413,11 @@ public class DocearProjectLoader extends ProjectLoader {
 				}
 				//add myFiles after a certain node type
 //				if(node instanceof FolderTypeLibraryNode)
-				if(node instanceof FolderTypeLiteratureRepositoryNode)
-				{
-					((ProjectRootNode) parent.getModel().getRoot()).initiateMyFile(getProject());
+				if(DocearWorkspaceProject.CURRENT_PROJECT_VERSION.equals(getProject().getVersion())) {
+					if(node instanceof FolderTypeLiteratureRepositoryNode)
+					{
+						((ProjectRootNode) parent.getModel().getRoot()).initiateMyFile(getProject());
+					}
 				}
 			}
 		}

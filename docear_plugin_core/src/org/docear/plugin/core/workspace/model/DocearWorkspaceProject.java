@@ -22,9 +22,12 @@ import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.model.WorkspaceModelEvent;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.model.project.IProjectModelListener;
+import org.freeplane.plugin.workspace.model.project.ProjectVersion;
+import org.freeplane.plugin.workspace.nodes.ProjectRootNode;
 
 public class DocearWorkspaceProject extends AWorkspaceProject {
 	public  static final String REPOSITORY_PATH_ADDED = "__added_repository_path__";
+	public  static final ProjectVersion CURRENT_PROJECT_VERSION = new ProjectVersion("docear 1.0");
 	//WORKSPACE - should docear-project ids have a prefix like "dcr_"?
 	private String id;
 	private URI home;	
@@ -196,6 +199,19 @@ public class DocearWorkspaceProject extends AWorkspaceProject {
 			LogUtils.warn(e);
 		}
 		return null;
+	}
+
+	@Override
+	public ProjectVersion getVersion() {
+		ProjectVersion version = null;
+		if(getModel().getRoot() == null || ((ProjectRootNode)getModel().getRoot()).getVersion() == null) {
+			version = CURRENT_PROJECT_VERSION;
+		}
+		else {
+			version = new ProjectVersion(((ProjectRootNode)getModel().getRoot()).getVersion());
+		}
+		
+		return version;
 	}
 
 	

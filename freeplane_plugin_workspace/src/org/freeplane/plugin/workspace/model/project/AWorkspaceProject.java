@@ -17,6 +17,8 @@ public abstract class AWorkspaceProject {
 
 	private ProjectModel model;
 	
+	public abstract ProjectVersion getVersion();
+	
 	public abstract URI getProjectHome();
 	
 	public abstract String getProjectID();

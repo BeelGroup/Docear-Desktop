@@ -10,9 +10,11 @@ import java.util.List;
 
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.plugin.workspace.URIUtils;
+import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.dnd.INodeDropHandler;
 import org.freeplane.plugin.workspace.dnd.WorkspaceTransferable;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 import org.freeplane.plugin.workspace.nodes.FolderLinkNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
@@ -33,7 +35,7 @@ public class VirtualFolderDropHandler implements INodeDropHandler {
 			for(AWorkspaceTreeNode node : nodes) {
 				AWorkspaceTreeNode newNode = null;
 				if(node instanceof DefaultFileNode) {					
-					newNode = createFSNodeLinks(((DefaultFileNode) node).getFile());
+					newNode = createFSNodeLinks(targetNode, ((DefaultFileNode) node).getFile());
 				}
 				else {
 					if(dropAction == DnDConstants.ACTION_COPY) {
@@ -63,7 +65,7 @@ public class VirtualFolderDropHandler implements INodeDropHandler {
 	private void processFileListDrop(AWorkspaceTreeNode targetNode, List<File> files, int dropAction) {
 		try {		
 			for(File srcFile : files) {
-				AWorkspaceTreeNode node = createFSNodeLinks(srcFile);
+				AWorkspaceTreeNode node = createFSNodeLinks(targetNode, srcFile);
 				targetNode.getModel().addNodeTo(node, targetNode);
 				node.refresh();
 			}
@@ -81,7 +83,7 @@ public class VirtualFolderDropHandler implements INodeDropHandler {
 				if(srcFile == null || !srcFile.exists()) {
 					continue;
 				}
-				AWorkspaceTreeNode node = createFSNodeLinks(srcFile);
+				AWorkspaceTreeNode node = createFSNodeLinks(targetNode, srcFile);
 				targetNode.getModel().addNodeTo(node, targetNode);
 				node.refresh();
 			};
@@ -96,16 +98,17 @@ public class VirtualFolderDropHandler implements INodeDropHandler {
 	 * @param file
 	 * @return
 	 */
-	private AWorkspaceTreeNode createFSNodeLinks(File file) {
+	private AWorkspaceTreeNode createFSNodeLinks(AWorkspaceTreeNode targetNode, File file) {
 		AWorkspaceTreeNode node = null;
+		AWorkspaceProject project = WorkspaceController.getProject(targetNode);
 		if(file.isDirectory()) {
-			FolderLinkNode pNode = new FolderLinkNode();
-//			pNode.setPath(WorkspaceUtils.getWorkspaceRelativeURI(file));
+			FolderLinkNode pNode = new FolderLinkNode();			
+			pNode.setPath(project.getRelativeURI(file.toURI()));
 			node = pNode;
 		}
 		else {
 			LinkTypeFileNode lNode = new LinkTypeFileNode();
-//			lNode.setLinkPath(WorkspaceUtils.getWorkspaceRelativeURI(file));
+			lNode.setLinkURI(project.getRelativeURI(file.toURI()));
 			node = lNode;
 		}
 		node.setName(file.getName());

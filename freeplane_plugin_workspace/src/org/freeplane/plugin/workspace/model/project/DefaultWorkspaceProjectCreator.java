@@ -8,6 +8,7 @@ import org.freeplane.core.util.UniqueIDCreator;
 import org.freeplane.features.link.LinkController;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.nodes.ProjectRootNode;
 
 public class DefaultWorkspaceProjectCreator implements IWorkspaceProjectCreater {
 
@@ -45,6 +46,20 @@ public class DefaultWorkspaceProjectCreator implements IWorkspaceProjectCreater 
 					LogUtils.warn(e);
 				}
 				return null;
+			}
+
+			@Override
+			public ProjectVersion getVersion() {
+				String version = null;
+				if(getModel().getRoot() != null) {
+					version = ((ProjectRootNode)getModel().getRoot()).getVersion();
+				}
+				
+				if(version == null) {
+					version = "freeplane 1.0";
+				}
+				
+				return new ProjectVersion(version);
 			}
 		};
 	}

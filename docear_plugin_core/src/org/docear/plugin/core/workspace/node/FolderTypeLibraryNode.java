@@ -5,13 +5,8 @@
 package org.docear.plugin.core.workspace.node;
 
 import java.awt.Component;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTargetDropEvent;
 import java.io.File;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -33,19 +28,16 @@ import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.actions.WorkspaceNewProjectAction;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
-import org.freeplane.plugin.workspace.dnd.IDropAcceptor;
 import org.freeplane.plugin.workspace.dnd.IWorkspaceTransferableCreator;
 import org.freeplane.plugin.workspace.dnd.WorkspaceTransferable;
 import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
-import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.nodes.AFolderNode;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
-import org.freeplane.plugin.workspace.nodes.FolderLinkNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
 
-public class FolderTypeLibraryNode extends AFolderNode implements ILibraryRepository, IDocearEventListener, IWorkspaceNodeActionListener, IWorkspaceTransferableCreator, IDropAcceptor, TreeModelListener {
+public class FolderTypeLibraryNode extends AFolderNode implements ILibraryRepository, IDocearEventListener, IWorkspaceNodeActionListener, IWorkspaceTransferableCreator, TreeModelListener {
 	private static final Icon DEFAULT_ICON = new ImageIcon(FolderTypeLibraryNode.class.getResource("/images/folder-database.png"));
 	private static final long serialVersionUID = 1L;
 	public static final String TYPE = "library";	
@@ -123,94 +115,7 @@ public class FolderTypeLibraryNode extends AFolderNode implements ILibraryReposi
 		LogUtils.info("DOCEAR: adding mindmap to library: "+ uri);
 		mindmapIndex.add(uri);
 	}
-	
-		
-	/**
-	 * @param file
-	 * @return
-	 */
-	private AWorkspaceTreeNode createFSNodeLinks(File file) {
-		AWorkspaceTreeNode node = null;
-		AWorkspaceProject project = WorkspaceController.getProject(this);
-		if(file.isDirectory()) {
-			FolderLinkNode pNode = new FolderLinkNode();			
-			pNode.setPath(project.getRelativeURI(file.toURI()));
-			node = pNode;
-		}
-		else {
-			LinkTypeFileNode lNode = new LinkTypeFileNode();
-			lNode.setLinkURI(project.getRelativeURI(file.toURI()));
-			node = lNode;
-		}
-		node.setName(file.getName());
-		return node;
-	}
-
-	
-	private void processWorkspaceNodeDrop(List<AWorkspaceTreeNode> nodes, int dropAction) {
-		try {	
-			for(AWorkspaceTreeNode node : nodes) {
-				AWorkspaceTreeNode newNode = null;
-				if(node instanceof DefaultFileNode) {					
-					newNode = createFSNodeLinks(((DefaultFileNode) node).getFile());
-				}
-				else {
-					if(dropAction == DnDConstants.ACTION_COPY) {
-						newNode = node.clone();
-					} 
-					else if (dropAction == DnDConstants.ACTION_MOVE) {
-						AWorkspaceTreeNode parent = node.getParent();
-						getModel().cutNodeFromParent(node);						
-						parent.refresh();
-						newNode = node;
-					}
-				}
-				if(newNode == null) {
-					continue;
-				}
-				getModel().addNodeTo(newNode, this);
-				getModel().requestSave();
-				//WORKSPACE - todo: handle node expands
-				//WorkspaceController.getController().getExpansionStateHandler().addPathKey(this.getKey());
-			}
 			
-		}
-		catch (Exception e) {
-			LogUtils.warn(e);
-		}
-		refresh();
-	}
-	
-	private void processFileListDrop(List<File> files, int dropAction) {
-		try {		
-			for(File srcFile : files) {
-				getModel().addNodeTo(createFSNodeLinks(srcFile), this);		
-			}
-			getModel().requestSave();
-		}
-		catch (Exception e) {
-			LogUtils.warn(e);
-		}
-		refresh();
-	}
-	
-	private void processUriListDrop(List<URI> uris, int dropAction) {
-		try {			
-			for(URI uri : uris) {
-				File srcFile = new File(uri);
-				if(srcFile == null || !srcFile.exists()) {
-					continue;
-				}
-				getModel().addNodeTo(createFSNodeLinks(srcFile), this);
-			};
-			getModel().requestSave();
-		}
-		catch (Exception e) {
-			LogUtils.warn(e);
-		}
-		refresh();
-		
-	}	
 	
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
@@ -236,65 +141,6 @@ public class FolderTypeLibraryNode extends AFolderNode implements ILibraryReposi
 		}
 		
 	}
-	
-	public boolean acceptDrop(DataFlavor[] flavors) {
-		for(DataFlavor flavor : flavors) {
-			if(WorkspaceTransferable.WORKSPACE_FILE_LIST_FLAVOR.equals(flavor)
-				|| WorkspaceTransferable.WORKSPACE_URI_LIST_FLAVOR.equals(flavor)
-				|| WorkspaceTransferable.WORKSPACE_NODE_FLAVOR.equals(flavor)
-			) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public boolean processDrop(Transferable transferable, int dropAction) {
-		try {
-			if(transferable.isDataFlavorSupported(WorkspaceTransferable.WORKSPACE_NODE_FLAVOR)) {
-				processWorkspaceNodeDrop((List<AWorkspaceTreeNode>) transferable.getTransferData(WorkspaceTransferable.WORKSPACE_NODE_FLAVOR), dropAction);	
-			}
-			else if(transferable.isDataFlavorSupported(WorkspaceTransferable.WORKSPACE_FILE_LIST_FLAVOR)) {
-				processFileListDrop((List<File>) transferable.getTransferData(WorkspaceTransferable.WORKSPACE_FILE_LIST_FLAVOR), dropAction);
-			} 
-			else if(transferable.isDataFlavorSupported(WorkspaceTransferable.WORKSPACE_URI_LIST_FLAVOR)) {
-				ArrayList<URI> uriList = new ArrayList<URI>();
-				String uriString = (String) transferable.getTransferData(WorkspaceTransferable.WORKSPACE_URI_LIST_FLAVOR);
-				if (!uriString.startsWith("file://")) {
-					return false;
-				}
-				String[] uriArray = uriString.split("\r\n");
-				for(String singleUri : uriArray) {
-					try {
-						uriList.add(URIUtils.createURI(singleUri));
-					}
-					catch (Exception e) {
-						LogUtils.info("DOCEAR - "+ e.getMessage());
-					}
-				}
-				processUriListDrop(uriList, dropAction);	
-			}
-		}
-		catch (Exception e) {
-			LogUtils.warn(e);
-		}
-		return true;
-	}
-
-	
-	public boolean processDrop(DropTargetDropEvent event) {
-		event.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
-		Transferable transferable = event.getTransferable();
-		if(processDrop(transferable, event.getDropAction())) {
-			event.dropComplete(true);
-			return true;
-		}
-		event.dropComplete(false);
-		return false;
-	}
-	
-	
 	
 	public WorkspaceTransferable getTransferable() {
 		return null;

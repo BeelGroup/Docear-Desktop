@@ -3,6 +3,8 @@ package org.docear.plugin.bibtex.actions;
 import java.awt.event.ActionEvent;
 import java.io.File;
 
+import javax.swing.tree.TreePath;
+
 import org.docear.plugin.bibtex.ReferencesController;
 import org.docear.plugin.bibtex.jabref.JabRefCommons;
 import org.docear.plugin.bibtex.jabref.JabrefWrapper;
@@ -22,7 +24,7 @@ public class AddOrUpdateReferenceEntryWorkspaceAction extends AWorkspaceAction {
 	}
 	private static final long serialVersionUID = 1L;
 
-	public void setEnabledFor(AWorkspaceTreeNode node) {
+	public void setEnabledFor(AWorkspaceTreeNode node, TreePath[] selectedPaths) {
 		File file = null;
 		if(node instanceof IFileSystemRepresentation) {
 			file = ((IFileSystemRepresentation) node).getFile();
@@ -38,7 +40,7 @@ public class AddOrUpdateReferenceEntryWorkspaceAction extends AWorkspaceAction {
 			return;
 		}
 		
-		super.setEnabledFor(node);
+		super.setEnabledFor(node, selectedPaths);
 	}
 	
 	public void actionPerformed(ActionEvent e) {
