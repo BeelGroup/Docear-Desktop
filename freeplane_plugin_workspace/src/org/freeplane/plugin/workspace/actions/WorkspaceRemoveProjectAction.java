@@ -12,12 +12,11 @@ import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
-import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.WorkspaceModel;
-import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
 @EnabledAction(checkOnPopup = true)
-public class ProjectRemoveAction extends AWorkspaceAction {
+public class WorkspaceRemoveProjectAction extends AWorkspaceAction {
 
 	public static final String KEY = "workspace.action.project.remove";
 	private static final long serialVersionUID = -8965412338727545850L;
@@ -26,39 +25,44 @@ public class ProjectRemoveAction extends AWorkspaceAction {
 	 * CONSTRUCTORS
 	 **********************************************************************************/
 
-	public ProjectRemoveAction() {
+	public WorkspaceRemoveProjectAction() {
 		super(KEY);
 	}
 	
 	/***********************************************************************************
 	 * METHODS
-	 **********************************************************************************/
-	
-	public void setEnabledFor(AWorkspaceTreeNode node) {
-		if(node.isSystem() || !node.isTransferable() || node instanceof DefaultFileNode) {
+	 **********************************************************************************/	
+	@Override
+	public void setEnabled() {
+		if(WorkspaceController.getCurrentProject() == null) {
 			setEnabled(false);
 		}
-		else{
-			setEnabled();
-		}
+		else {
+			setEnabled(true);
+		}	
 	}
 	
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
 	 **********************************************************************************/
 	public void actionPerformed(ActionEvent e) {
+		AWorkspaceProject project = WorkspaceController.getCurrentProject();
+		if(project == null) {
+			return;
+		}
 		//WORKSPACE - todo: dialog that asks for physical deletion as well
 		int option = JOptionPane.showConfirmDialog(
 				UITools.getFrame()
-				,TextUtils.format("workspace.action.node.remove.confirm.text", getNodeFromActionEvent(e).getName())
+				,TextUtils.format("workspace.action.node.remove.confirm.text", project.getModel().getRoot().getName())
 				,TextUtils.getRawText("workspace.action.node.remove.confirm.title")
 				,JOptionPane.YES_NO_OPTION
 				,JOptionPane.QUESTION_MESSAGE
 		);
 		if(option == JOptionPane.YES_OPTION) {
-			AWorkspaceTreeNode targetNode = getNodeFromActionEvent(e);
+			//AWorkspaceTreeNode targetNode = getNodeFromActionEvent(e);
 			WorkspaceModel model = WorkspaceController.getCurrentModel();
-			model.removeProject(model.getProject(targetNode.getModel()));
+			//model.removeProject(model.getProject(targetNode.getModel()));
+			model.removeProject(project);
 			model.getRoot().getModel().requestSave();
 		}
 	}

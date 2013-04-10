@@ -1,53 +1,26 @@
-/**
- * author: Marcel Genzmehr
- * 16.08.2011
- */
-package org.freeplane.plugin.workspace.nodes;
+package org.freeplane.plugin.workspace.dnd;
 
-import java.net.URI;
+import java.io.IOException;
 
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 
+public class NoDropHandlerFoundExeption extends IOException {
 
-/**
- * 
- */
-public abstract class ALinkNode extends AWorkspaceTreeNode {
-	
 	private static final long serialVersionUID = 1L;
-	
 	/***********************************************************************************
 	 * CONSTRUCTORS
 	 **********************************************************************************/
-	
-	public static final String LINK_TYPE_FILE = "file";
 
-	/**
-	 * @param type
-	 */
-	public ALinkNode(String type) {
-		super(type);
+	public NoDropHandlerFoundExeption(AWorkspaceTreeNode targetNode) {
+		super("no drop handler has been registered for: "+ targetNode.getClass());
 	}
 
+	
 	/***********************************************************************************
 	 * METHODS
 	 **********************************************************************************/
 
-	public abstract URI getLinkURI();
-	
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
 	 **********************************************************************************/
-	
-	public final String getTagName() {
-		return "link";
-	}
-	
-	public boolean getAllowsChildren() {
-		return false;
-	}
-
-	@Override
-	public void initializePopup() {		
-	}
 }

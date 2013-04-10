@@ -1,9 +1,6 @@
 package org.freeplane.plugin.workspace.nodes;
 
 import java.awt.Component;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.dnd.DropTargetDropEvent;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -23,6 +20,7 @@ import javax.swing.ImageIcon;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
+import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.FileUtils;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.Compat;
@@ -35,7 +33,6 @@ import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.actions.WorkspaceNewProjectAction;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
-import org.freeplane.plugin.workspace.dnd.IDropAcceptor;
 import org.freeplane.plugin.workspace.dnd.IWorkspaceTransferableCreator;
 import org.freeplane.plugin.workspace.dnd.WorkspaceTransferable;
 import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
@@ -48,7 +45,7 @@ import org.freeplane.plugin.workspace.model.IMutableLinkNode;
 /**
  * 
  */
-public class DefaultFileNode extends AWorkspaceTreeNode implements IWorkspaceNodeActionListener, IWorkspaceTransferableCreator, IDropAcceptor, IFileSystemRepresentation, IMutableLinkNode {
+public class DefaultFileNode extends AWorkspaceTreeNode implements IWorkspaceNodeActionListener, IWorkspaceTransferableCreator, IFileSystemRepresentation, IMutableLinkNode {
 	private static final Icon DEFAULT_ICON = new ImageIcon(AWorkspaceTreeNode.class.getResource("/images/16x16/text-x-preview.png"));
 	private static final Icon NOT_EXISTING = new ImageIcon(AWorkspaceTreeNode.class.getResource("/images/16x16/cross.png"));
 	public static final Icon DOCEAR_ICON = new ImageIcon(ResourceController.class.getResource("/images/docear16.png"));
@@ -157,41 +154,47 @@ public class DefaultFileNode extends AWorkspaceTreeNode implements IWorkspaceNod
 	 */
 	public void copyTo(File destFile) throws IOException {
 		assert(destFile != null);
-		
-		if(destFile.isDirectory()) {
-			if(getFile().isDirectory()) {
-				FileUtils.copyDirectoryToDirectory(getFile(), destFile);
-			}
-			else {
-				FileUtils.copyFileToDirectory(getFile(), destFile);
-			}
-			//copyFileTo(getFile(), getFile());
-		} 
-		else {
-			copyTo(destFile.getParentFile());
+		if(getFile().equals(destFile)) {
+			return;
 		}
 		
-	
-		
+		if(destFile.isDirectory()) {
+			try {
+				if(getFile().isDirectory()) {
+					FileUtils.copyDirectoryToDirectory(getFile(), destFile);
+				}
+				else { 
+					FileUtils.copyFileToDirectory(getFile(), destFile);
+				}
+			}
+			catch (FileExistsException e) {
+			}
+		} 
+		else {			
+			copyTo(destFile.getParentFile());
+		}		
 	}
 	
 	public void moveTo(File destFile) throws IOException {
 		assert(destFile != null);
+		if(getFile().equals(destFile)) {
+			return;
+		}
 		if(destFile.isDirectory()) {
-			if(getFile().isDirectory()) {				
-				FileUtils.moveDirectoryToDirectory(getFile(), destFile, true);
+			try {
+				if(getFile().isDirectory()) {				
+					FileUtils.moveDirectoryToDirectory(getFile(), destFile, true);
+				}
+				else {
+					FileUtils.moveFileToDirectory(getFile(), destFile, true);
+				}
 			}
-			else {
-				FileUtils.moveFileToDirectory(getFile(), destFile, true);
+			catch (FileExistsException e) {
 			}
-			
-			//copyFileTo(getFile(), getFile());
 		} 
 		else {
-			copyTo(destFile.getParentFile());
+			moveTo(destFile.getParentFile());
 		}
-//		copyTo(file);
-//		if(!file.delete()) throw new IOException("Could not delete File "+ file);
 	}
 	
 	public boolean isEditable() {
@@ -276,18 +279,6 @@ public class DefaultFileNode extends AWorkspaceTreeNode implements IWorkspaceNod
 		return null;
 	}
 	
-	public boolean acceptDrop(DataFlavor[] flavors) {
-		return false;
-	}
-
-	public boolean processDrop(DropTargetDropEvent event) {
-		return false;
-	}
-	
-	public boolean processDrop(Transferable transferable, int dropAction) {
-		return false;
-	}
-	
 	public WorkspaceTransferable getTransferable() {
 		WorkspaceTransferable transferable = new WorkspaceTransferable();
 		try {
@@ -364,5 +355,9 @@ public class DefaultFileNode extends AWorkspaceTreeNode implements IWorkspaceNod
 	@ExportAsAttribute(name="orderDescending")
 	public boolean orderDescending() {
 		return orderDescending;
+	}
+
+	public boolean getAllowsChildren() {
+		return false;
 	}
 }

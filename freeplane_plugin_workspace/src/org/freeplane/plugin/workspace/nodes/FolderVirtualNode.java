@@ -1,11 +1,6 @@
 package org.freeplane.plugin.workspace.nodes;
 
 import java.awt.Component;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTargetDropEvent;
-import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,18 +11,17 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
-import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.actions.WorkspaceNewProjectAction;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
-import org.freeplane.plugin.workspace.dnd.IDropAcceptor;
 import org.freeplane.plugin.workspace.dnd.IWorkspaceTransferableCreator;
 import org.freeplane.plugin.workspace.dnd.WorkspaceTransferable;
 import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 
-public class FolderVirtualNode extends AFolderNode implements IWorkspaceNodeActionListener, IWorkspaceTransferableCreator, IDropAcceptor {
+public class FolderVirtualNode extends AFolderNode implements IWorkspaceNodeActionListener
+																, IWorkspaceTransferableCreator {
 	
 	private static final long serialVersionUID = 1L;
 	private static final Icon DEFAULT_ICON = new ImageIcon(AWorkspaceTreeNode.class.getResource("/images/16x16/object-group-2.png"));
@@ -94,152 +88,6 @@ public class FolderVirtualNode extends AFolderNode implements IWorkspaceNodeActi
 
 	public URI getPath() {
 		return null;
-	}
-	
-	public boolean acceptDrop(DataFlavor[] flavors) {
-		for(DataFlavor flavor : flavors) {
-			if(WorkspaceTransferable.WORKSPACE_FILE_LIST_FLAVOR.equals(flavor)
-				|| WorkspaceTransferable.WORKSPACE_URI_LIST_FLAVOR.equals(flavor)
-				|| WorkspaceTransferable.WORKSPACE_NODE_FLAVOR.equals(flavor)
-			) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public boolean processDrop(Transferable transferable, int dropAction) {
-		try {
-			if(transferable.isDataFlavorSupported(WorkspaceTransferable.WORKSPACE_NODE_FLAVOR)) {
-				processWorkspaceNodeDrop((List<AWorkspaceTreeNode>) transferable.getTransferData(WorkspaceTransferable.WORKSPACE_NODE_FLAVOR), dropAction);	
-			}
-			else if(transferable.isDataFlavorSupported(WorkspaceTransferable.WORKSPACE_FILE_LIST_FLAVOR)) {
-				processFileListDrop((List<File>) transferable.getTransferData(WorkspaceTransferable.WORKSPACE_FILE_LIST_FLAVOR), dropAction);
-			} 
-			else if(transferable.isDataFlavorSupported(WorkspaceTransferable.WORKSPACE_URI_LIST_FLAVOR)) {
-				ArrayList<URI> uriList = new ArrayList<URI>();
-				String uriString = (String) transferable.getTransferData(WorkspaceTransferable.WORKSPACE_URI_LIST_FLAVOR);
-				if (!uriString.startsWith("file://")) {
-					return false;
-				}
-				String[] uriArray = uriString.split("\r\n");
-				for(String singleUri : uriArray) {
-					try {
-						uriList.add(URIUtils.createURI(singleUri));
-					}
-					catch (Exception e) {
-						LogUtils.info("DOCEAR - "+ e.getMessage());
-					}
-				}
-				processUriListDrop(uriList, dropAction);	
-			}			
-		}
-		catch (Exception e) {
-			LogUtils.warn(e);
-		}
-		return true;
-	}
-
-	
-	public boolean processDrop(DropTargetDropEvent event) {
-		event.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
-		Transferable transferable = event.getTransferable();
-		if(processDrop(transferable, event.getDropAction())) {
-			event.dropComplete(true);
-			return true;
-		}
-		event.dropComplete(false);
-		return false;
-	}
-	
-	/**
-	 * @param file
-	 * @return
-	 */
-	private AWorkspaceTreeNode createFSNodeLinks(File file) {
-		AWorkspaceTreeNode node = null;
-		if(file.isDirectory()) {
-			FolderLinkNode pNode = new FolderLinkNode();
-//			pNode.setPath(WorkspaceUtils.getWorkspaceRelativeURI(file));
-			node = pNode;
-		}
-		else {
-			LinkTypeFileNode lNode = new LinkTypeFileNode();
-//			lNode.setLinkPath(WorkspaceUtils.getWorkspaceRelativeURI(file));
-			node = lNode;
-		}
-		node.setName(file.getName());
-		return node;
-	}
-
-	
-	private void processWorkspaceNodeDrop(List<AWorkspaceTreeNode> nodes, int dropAction) {
-		try {	
-			for(AWorkspaceTreeNode node : nodes) {
-				AWorkspaceTreeNode newNode = null;
-				if(node instanceof DefaultFileNode) {					
-					newNode = createFSNodeLinks(((DefaultFileNode) node).getFile());
-				}
-				else {
-					if(dropAction == DnDConstants.ACTION_COPY) {
-						newNode = node.clone();
-					} 
-					else if (dropAction == DnDConstants.ACTION_MOVE) {
-						AWorkspaceTreeNode parent = node.getParent();
-						getModel().cutNodeFromParent(node);
-						parent.refresh();
-						newNode = node;
-					}
-				}
-				if(newNode == null) {
-					continue;
-				}
-				getModel().addNodeTo(newNode, this);
-//				WorkspaceController.getController().getExpansionStateHandler().addPathKey(this.getKey());
-			}
-//			WorkspaceUtils.saveCurrentConfiguration();
-			
-		}
-		catch (Exception e) {
-			LogUtils.warn(e);
-		}
-		refresh();
-	}
-	
-	private void processFileListDrop(List<File> files, int dropAction) {
-		try {		
-			for(File srcFile : files) {
-				AWorkspaceTreeNode node = createFSNodeLinks(srcFile);
-				getModel().addNodeTo(node, this);
-				node.refresh();
-			}
-//			WorkspaceUtils.saveCurrentConfiguration();
-		}
-		catch (Exception e) {
-			LogUtils.warn(e);
-		}
-		refresh();
-	}
-	
-	private void processUriListDrop(List<URI> uris, int dropAction) {
-		try {			
-			for(URI uri : uris) {
-				File srcFile = new File(uri);
-				if(srcFile == null || !srcFile.exists()) {
-					continue;
-				}
-				AWorkspaceTreeNode node = createFSNodeLinks(srcFile);
-				getModel().addNodeTo(node, this);
-				node.refresh();
-			};
-//			WorkspaceUtils.saveCurrentConfiguration();
-		}
-		catch (Exception e) {
-			LogUtils.warn(e);
-		}
-		refresh();
-		
 	}	
 	
 	public WorkspaceTransferable getTransferable() {

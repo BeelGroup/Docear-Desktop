@@ -3,6 +3,7 @@ package org.freeplane.plugin.workspace.actions;
 import java.awt.event.ActionEvent;
 
 import javax.swing.JOptionPane;
+import javax.swing.tree.TreePath;
 
 import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.ui.components.UITools;
@@ -26,8 +27,8 @@ public class NodeRenameAction extends AWorkspaceAction {
 	 * METHODS
 	 **********************************************************************************/
 	
-	public void setEnabledFor(AWorkspaceTreeNode node) {
-		if(node.isSystem()) {
+	public void setEnabledFor(AWorkspaceTreeNode node, TreePath[] selectedPaths) {
+		if(node.isSystem() || selectedPaths.length > 1) {
 			setEnabled(false);
 		}
 		else{

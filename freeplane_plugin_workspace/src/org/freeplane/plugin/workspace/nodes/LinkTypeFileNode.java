@@ -158,6 +158,10 @@ public class LinkTypeFileNode extends ALinkNode implements IWorkspaceNodeActionL
 		return null;
 	}
 	
+	public boolean getAllowsChildren() {
+		return false;
+	}
+	
 	protected AWorkspaceTreeNode clone(LinkTypeFileNode node) {		
 		node.setLinkURI(getLinkURI());		
 		return super.clone(node);

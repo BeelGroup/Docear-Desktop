@@ -18,17 +18,26 @@ import java.util.Properties;
 
 import javax.swing.Box;
 import javax.swing.JComponent;
+import javax.swing.JMenu;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 
+import org.freeplane.core.resources.ResourceController;
+import org.freeplane.core.ui.IMenuContributor;
+import org.freeplane.core.ui.MenuBuilder;
 import org.freeplane.core.ui.components.JResizer.Direction;
 import org.freeplane.core.ui.components.OneTouchCollapseResizer;
 import org.freeplane.core.ui.components.OneTouchCollapseResizer.CollapseDirection;
 import org.freeplane.core.ui.components.OneTouchCollapseResizer.ComponentCollapseListener;
 import org.freeplane.core.ui.components.ResizeEvent;
 import org.freeplane.core.ui.components.ResizerListener;
+import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.FileUtils;
 import org.freeplane.core.util.LogUtils;
+import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.link.LinkController;
 import org.freeplane.features.mode.ModeController;
+import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.features.ui.INodeViewLifeCycleListener;
 import org.freeplane.features.ui.ViewController;
 import org.freeplane.features.url.UrlManager;
@@ -47,11 +56,12 @@ import org.freeplane.plugin.workspace.actions.NodeRefreshAction;
 import org.freeplane.plugin.workspace.actions.NodeRemoveAction;
 import org.freeplane.plugin.workspace.actions.NodeRenameAction;
 import org.freeplane.plugin.workspace.actions.PhysicalFolderSortOrderAction;
-import org.freeplane.plugin.workspace.actions.ProjectRemoveAction;
 import org.freeplane.plugin.workspace.actions.WorkspaceCollapseAction;
 import org.freeplane.plugin.workspace.actions.WorkspaceExpandAction;
 import org.freeplane.plugin.workspace.actions.WorkspaceNewMapAction;
 import org.freeplane.plugin.workspace.actions.WorkspaceNewProjectAction;
+import org.freeplane.plugin.workspace.actions.WorkspaceProjectOpenLocationAction;
+import org.freeplane.plugin.workspace.actions.WorkspaceRemoveProjectAction;
 import org.freeplane.plugin.workspace.components.IWorkspaceView;
 import org.freeplane.plugin.workspace.components.TreeView;
 import org.freeplane.plugin.workspace.creator.DefaultFileNodeCreator;
@@ -106,7 +116,10 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 		UrlManager.install(new MModeWorkspaceUrlManager());
 		
 		modeController.removeExtension(LinkController.class);
-		LinkController.install(new MModeWorkspaceLinkController());
+		LinkController.install(MModeWorkspaceLinkController.getController());
+		
+		//add link type entry to the chooser
+		MModeWorkspaceLinkController.getController().prepareOptionPanelBuilder(((MModeController)modeController).getOptionPanelBuilder());
 		
 		modeController.addINodeViewLifeCycleListener(new INodeViewLifeCycleListener() {
 
@@ -127,6 +140,57 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 			public void onViewRemoved(Container nodeView) {
 			}
 
+		});
+		
+		modeController.addMenuContributor(new IMenuContributor() {
+			public void updateMenus(ModeController modeController, MenuBuilder builder) {
+				final String MENU_PROJECT_KEY = "/menu_bar/project";
+				//insert project menu into main menu
+				JMenu projectMenu = new JMenu(TextUtils.getText("menu.project.entry.label"));
+				projectMenu.setMnemonic('o');				
+				builder.addMenuItem("/menu_bar/format", projectMenu, MENU_PROJECT_KEY, MenuBuilder.AFTER);
+				
+				builder.addAction(MENU_PROJECT_KEY, new WorkspaceNewProjectAction(), MenuBuilder.AS_CHILD);
+				builder.addAction(MENU_PROJECT_KEY, new WorkspaceRemoveProjectAction(), MenuBuilder.AS_CHILD);
+				
+				builder.addSeparator(MENU_PROJECT_KEY, MenuBuilder.AS_CHILD);
+				
+				final String MENU_PROJECT_ADD_KEY = builder.getMenuKey(MENU_PROJECT_KEY, "new");				
+				final JMenu addMenu = new JMenu(TextUtils.getText("workspace.action.new.label"));
+				projectMenu.getPopupMenu().addPopupMenuListener(new PopupMenuListener() {					
+					public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+						if(WorkspaceController.getCurrentProject() == null) {
+							addMenu.setEnabled(false);
+						}
+						else {
+							addMenu.setEnabled(true);
+						}						
+					}
+					
+					public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {}
+					
+					public void popupMenuCanceled(PopupMenuEvent e) {}
+				});
+				builder.addMenuItem(MENU_PROJECT_KEY, addMenu, MENU_PROJECT_ADD_KEY, MenuBuilder.AS_CHILD);
+				builder.addAction(MENU_PROJECT_ADD_KEY, new NodeNewFolderAction(), MenuBuilder.AS_CHILD);
+				builder.addAction(MENU_PROJECT_ADD_KEY, new NodeNewLinkAction(), MenuBuilder.AS_CHILD);
+				
+				builder.addSeparator(MENU_PROJECT_KEY, MenuBuilder.AS_CHILD);
+				setDefaultAccelerator(builder.getShortcutKey(builder.getMenuKey(MENU_PROJECT_KEY,WorkspaceProjectOpenLocationAction.KEY)), "control alt L");
+				builder.addAction(MENU_PROJECT_KEY, new WorkspaceProjectOpenLocationAction(), MenuBuilder.AS_CHILD);
+			}
+			
+			private void setDefaultAccelerator(final String shortcutKey, String accelerator) {
+				if (accelerator != null) {				
+					if (null == ResourceController.getResourceController().getProperty(shortcutKey, null)) {
+						if (Compat.isMacOsX()) {
+					        accelerator = accelerator.replaceFirst("CONTROL", "META").replaceFirst("control", "meta");
+					    }
+						
+						ResourceController.getResourceController().setDefaultProperty(shortcutKey, accelerator);
+					}
+				}
+			}
 		});
 	}
 
@@ -193,7 +257,7 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 		
 		Box resizableTools = Box.createHorizontalBox();
 		try {
-			int width = Integer.parseInt(settings.getProperty(WORKSPACE_VIEW_WIDTH, "150"));
+			int width = Integer.parseInt(settings.getProperty(WORKSPACE_VIEW_WIDTH, "250"));
 			getWorkspaceView().setPreferredSize(new Dimension(width, 40));
 		}
 		catch (Exception e) {
@@ -207,9 +271,7 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 		getView().expandPath(getModel().getRoot().getTreePath());
 		
 		getView().getNodeTypeIconManager().addNodeTypeIconHandler(LinkTypeFileNode.class, new LinkTypeFileIconHandler());
-		getView().getNodeTypeIconManager().addNodeTypeIconHandler(DefaultFileNode.class, new DefaultFileNodeIconHandler());
-
-				
+		getView().getNodeTypeIconManager().addNodeTypeIconHandler(DefaultFileNode.class, new DefaultFileNodeIconHandler());				
 	}
 		
 	private void setupActions(ModeController modeController) {
@@ -227,7 +289,7 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 		WorkspaceController.addAction(new NodeRenameAction());
 		WorkspaceController.addAction(new NodeRemoveAction());
 		WorkspaceController.addAction(new NodeRefreshAction());
-		WorkspaceController.addAction(new ProjectRemoveAction());
+		WorkspaceController.addAction(new WorkspaceRemoveProjectAction());
 		
 		WorkspaceController.replaceAction(new WorkspaceNewMapAction());
 		WorkspaceController.addAction(new FileNodeNewMindmapAction());

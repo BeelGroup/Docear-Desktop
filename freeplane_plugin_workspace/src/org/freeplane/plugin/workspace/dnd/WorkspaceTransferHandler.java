@@ -15,13 +15,17 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.swing.JComponent;
 import javax.swing.JTree;
 import javax.swing.TransferHandler;
 import javax.swing.tree.TreePath;
 
+import org.freeplane.core.util.LogUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.components.IWorkspaceView;
 import org.freeplane.plugin.workspace.components.WorkspaceNodeRenderer;
 import org.freeplane.plugin.workspace.features.AWorkspaceModeExtension;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
@@ -39,15 +43,14 @@ public class WorkspaceTransferHandler extends TransferHandler implements DropTar
 	private static final Insets DEFAULT_INSETS = new Insets(20, 20, 20, 20);
 
 	private JTree tree;
-	private final IDropTargetDispatcher dispatcher;
+	
+	private Map<Class<? extends AWorkspaceTreeNode>, INodeDropHandler> dropHandlers = new LinkedHashMap<Class<? extends AWorkspaceTreeNode>, INodeDropHandler>();
 
 	/***********************************************************************************
 	 * CONSTRUCTORS
 	 **********************************************************************************/
 
-	public WorkspaceTransferHandler(JTree tree) {
-		this.dispatcher = new DefaultWorkspaceDropTargetDispatcher();
-		
+	public WorkspaceTransferHandler(JTree tree) {		
 		this.tree = tree;
 		this.tree.setTransferHandler(this);
 		this.tree.setDragEnabled(true);
@@ -82,7 +85,6 @@ public class WorkspaceTransferHandler extends TransferHandler implements DropTar
 			for (TreePath p : t.getSelectionPaths()) {
 				AWorkspaceTreeNode node = (AWorkspaceTreeNode) p.getLastPathComponent();
 				if (node instanceof IWorkspaceTransferableCreator) {
-					//FIXME: prepare for multiple node selection
 					if(transferable == null) {
 						transferable = ((IWorkspaceTransferableCreator)node).getTransferable();
 					}
@@ -101,11 +103,15 @@ public class WorkspaceTransferHandler extends TransferHandler implements DropTar
 			JTree t = (JTree) comp;			
 			for (TreePath p : t.getSelectionPaths()) {
 				AWorkspaceTreeNode targetNode = (AWorkspaceTreeNode) p.getLastPathComponent();
-				if (targetNode instanceof IDropAcceptor) {
+				if (DnDController.isDropAllowed(targetNode)) {
 					if(transf == null) {
 		        		return false;
 		        	}
-		        	return ((IDropAcceptor) targetNode).processDrop(transf, DnDConstants.ACTION_COPY);
+		        	try {
+						return handleDrop(targetNode, transf, DnDConstants.ACTION_COPY);
+					} catch (NoDropHandlerFoundExeption e) {
+						LogUtils.info("org.freeplane.plugin.workspace.dnd.WorkspaceTransferHandler.importData(comp, transf): " + e.getMessage());
+					}
 				}
 			}
 		}		
@@ -144,6 +150,78 @@ public class WorkspaceTransferHandler extends TransferHandler implements DropTar
 	public void exportDone(JComponent source, Transferable data, int action) {
 		super.exportDone(source, data, action);
 	}
+	
+	public boolean handleDrop(AWorkspaceTreeNode targetNode, Transferable transf, int dndAction) throws NoDropHandlerFoundExeption {
+		if(targetNode == null) {
+			throw new IllegalArgumentException("targetNode is NULL");
+		}
+		
+		INodeDropHandler h = findHandler(targetNode.getClass());
+		if(h == null) {
+			throw new NoDropHandlerFoundExeption(targetNode);
+		}
+		
+		if(h.acceptDrop(transf)) {
+			return h.processDrop(targetNode, transf, dndAction);
+		}
+		return false;
+	}
+	
+	private INodeDropHandler findHandler(Class<?> clzz) {
+		if(clzz == null) {
+			return null;
+		}
+		
+		INodeDropHandler h = dropHandlers.get(clzz);
+//		if(h == null) {
+//		
+//			for (Class<?> interf : clzz.getInterfaces()) {
+//				h = findHandler(interf);
+//				if(h != null) {
+//					return h;
+//				}
+//			}
+//			
+//			h = findHandler((Class<?>) clzz.getSuperclass());
+//		}
+//		
+		return h;
+	}
+	
+	public void registerNodeDropHandler(Class<? extends AWorkspaceTreeNode> clzz, INodeDropHandler handler) {
+		if(clzz == null || handler == null) {
+			return;
+		}
+		synchronized (dropHandlers) {
+			dropHandlers.put(clzz, handler);
+		}
+	}
+	
+	private boolean processDrop(AWorkspaceTreeNode targetNode, DropTargetDropEvent event) {
+		event.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+		
+
+		final Transferable transferable = event.getTransferable();
+		final int dropAction = event.getDropAction();
+		try {
+			if(!targetNode.getAllowsChildren()) {
+				targetNode = targetNode.getParent();
+			}
+			if(!DnDController.isDropAllowed(targetNode)) {
+				event.dropComplete(false);
+				return false;
+			}
+			if(handleDrop(targetNode, transferable, dropAction)) {
+				event.dropComplete(true);
+				return true;
+			}
+		} catch (NoDropHandlerFoundExeption e) {
+			LogUtils.info("org.freeplane.plugin.workspace.dnd.WorkspaceTransferHandler.processDrop(targetNode, event): "+ e.getMessage());
+		}
+		
+		event.dropComplete(false);
+		return false;
+	}
 
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
@@ -151,20 +229,29 @@ public class WorkspaceTransferHandler extends TransferHandler implements DropTar
 	/* DropTarget Methods */
 
 	public final void drop(DropTargetDropEvent event) {
-		if(WorkspaceController.getCurrentModeExtension().getView().getPathForLocation(event.getLocation().x, event.getLocation().y) == null) {
+		IWorkspaceView view = WorkspaceController.getCurrentModeExtension().getView();
+		if(view == null) {
 			return;
 		}
-		// new method to handle drop events
-		if(this.dispatcher.dispatchDropEvent(event)) {
-			return;
-		}		
+		
+		TreePath targetPath = view.getPathForLocation(event.getLocation().x, event.getLocation().y);
+		if(targetPath != null) {
+			AWorkspaceTreeNode targetNode = (AWorkspaceTreeNode) targetPath.getLastPathComponent();
+			if(processDrop(targetNode, event)) {
+				return;
+			}	
+		}
 		event.rejectDrop();
 	}
 
 	public final void dragEnter(DropTargetDragEvent dtde) {
+		dtde.getDropTargetContext().getDropTarget().setDefaultActions(COPY_OR_MOVE);
+		LogUtils.info("org.freeplane.plugin.workspace.dnd.WorkspaceTransferHandler.dragEnter(dtde)");
 	}
 
 	public final void dragExit(DropTargetEvent dte) {
+		dte.getDropTargetContext().getDropTarget().setDefaultActions(COPY);
+		LogUtils.info("org.freeplane.plugin.workspace.dnd.WorkspaceTransferHandler.dragExit(dte)");
 	}
 
 	private TreePath lastPathLocation = null;
@@ -188,7 +275,10 @@ public class WorkspaceTransferHandler extends TransferHandler implements DropTar
 	}
 
 	public final void dropActionChanged(DropTargetDragEvent dtde) {
+		LogUtils.info("org.freeplane.plugin.workspace.dnd.WorkspaceTransferHandler.dropActionChanged(dtde)");
 	}
+
+	
 
 	/***********************************************************************************
 	 * INTERNAL CLASSES

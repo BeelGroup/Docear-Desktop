@@ -225,10 +225,6 @@ public abstract class AWorkspaceTreeNode implements Cloneable, TreeNode, Destruc
 		return children.indexOf(node);
 	}
 
-	public boolean getAllowsChildren() {
-		return allowsChildren;
-	}
-
 	public boolean isLeaf() {
 		return !allowsChildren  || (children.size() == 0);
 	}
@@ -266,11 +262,5 @@ public abstract class AWorkspaceTreeNode implements Cloneable, TreeNode, Destruc
 	public void disassociateReferences() {
 		getModel().removeAllElements(this);
 		this.parent = null;
-	}
-
-	
-
-	
-
-		
+	}	
 }

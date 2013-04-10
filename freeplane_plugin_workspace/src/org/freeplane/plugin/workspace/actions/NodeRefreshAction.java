@@ -14,14 +14,17 @@ public class NodeRefreshAction extends AWorkspaceAction {
 		super(KEY);
 	}
 
-	public void actionPerformed(final ActionEvent e) {
-		AWorkspaceTreeNode targetNode = getNodeFromActionEvent(e);
-		if(targetNode == null) {
-			targetNode = WorkspaceController.getCurrentModel().getRoot();
+	public void actionPerformed(final ActionEvent e) {		
+		AWorkspaceTreeNode[] targetNodes = getSelectedNodes(e);
+		for (AWorkspaceTreeNode targetNode : targetNodes) {
+			if(targetNode == null) {
+				targetNode = WorkspaceController.getCurrentModel().getRoot();
+			}
+			else {
+				targetNode.refresh();
+			}
 		}
-		else {
-			targetNode.refresh();
-		}
+		
 	}	
 	
 	

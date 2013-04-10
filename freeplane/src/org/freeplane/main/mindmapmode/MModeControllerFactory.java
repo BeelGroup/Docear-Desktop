@@ -19,6 +19,7 @@
  */
 package org.freeplane.main.mindmapmode;
 
+import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 
 import javax.swing.Box;
@@ -34,6 +35,9 @@ import org.freeplane.core.ui.IMouseListener;
 import org.freeplane.core.ui.SetAcceleratorOnNextClickAction;
 import org.freeplane.core.ui.components.FButtonBar;
 import org.freeplane.core.ui.components.FreeplaneToolBar;
+import org.freeplane.core.ui.components.OneTouchCollapseResizer.ComponentCollapseListener;
+import org.freeplane.core.ui.components.ResizeEvent;
+import org.freeplane.core.ui.components.ResizerListener;
 import org.freeplane.core.ui.components.JResizer.Direction;
 import org.freeplane.core.ui.components.OneTouchCollapseResizer;
 import org.freeplane.core.ui.components.OneTouchCollapseResizer.CollapseDirection;
@@ -241,9 +245,48 @@ public class MModeControllerFactory {
 		final JTabbedPane tabs = new JTabbedPane();
 		Box resisableTabs = Box.createHorizontalBox();
 		//DOCEAR - new OneTouchCollapseResizer
-		resisableTabs.add(new OneTouchCollapseResizer(Direction.RIGHT, CollapseDirection.COLLAPSE_RIGHT));
+		final String TABBEDPANE_VIEW_COLLAPSED = "tabbed_pane.collapsed";
+		final String TABBEDPANE_VIEW_WIDTH = "tabbed_pane.width";
+		boolean expanded = true;
+		try {
+			expanded = !Boolean.parseBoolean(ResourceController.getResourceController().getProperty(TABBEDPANE_VIEW_COLLAPSED, "false"));
+		}
+		catch (Exception e) {
+			// ignore -> default is true
+		}
+		
+		OneTouchCollapseResizer otcr = new OneTouchCollapseResizer(Direction.RIGHT, CollapseDirection.COLLAPSE_RIGHT);
+		resisableTabs.add(otcr);
 		//resisableTabs.add(new JResizer(Direction.RIGHT));
 		resisableTabs.add(tabs);
+		otcr.addResizerListener(new ResizerListener() {			
+			public void componentResized(ResizeEvent event) {
+				if(event.getSource().equals(tabs)) {
+					ResourceController.getResourceController().setProperty(TABBEDPANE_VIEW_WIDTH, String.valueOf(((JComponent) event.getSource()).getPreferredSize().width));
+				}
+			}
+		});
+		otcr.addCollapseListener(new ComponentCollapseListener() {			
+			public void componentCollapsed(ResizeEvent event) {
+				if(event.getSource().equals(tabs)) {
+					ResourceController.getResourceController().setProperty(TABBEDPANE_VIEW_COLLAPSED, "true");
+				}
+			}
+
+			public void componentExpanded(ResizeEvent event) {
+				if(event.getSource().equals(tabs)) {
+					ResourceController.getResourceController().setProperty(TABBEDPANE_VIEW_COLLAPSED, "false");
+				}
+			}
+		});
+		try {
+			int width = Integer.parseInt(ResourceController.getResourceController().getProperty(TABBEDPANE_VIEW_WIDTH, "350"));
+			tabs.setPreferredSize(new Dimension(width, 40));
+		}
+		catch (Exception e) {
+			// blindly accept
+		}
+		otcr.setExpanded(expanded);
 		resisableTabs.putClientProperty(ViewController.VISIBLE_PROPERTY_KEY, "styleScrollPaneVisible");
 		modeController.getUserInputListenerFactory().addToolBar("/format", ViewController.RIGHT, resisableTabs);
 		final FButtonBar fButtonToolBar = new FButtonBar(controller.getViewController().getRootPaneContainer().getRootPane());

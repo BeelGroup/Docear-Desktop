@@ -27,9 +27,9 @@ import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.WorkspaceModelEvent;
+import org.freeplane.plugin.workspace.model.WorkspaceModelEvent.ProjectModelEventType;
 import org.freeplane.plugin.workspace.model.WorkspaceModelException;
 import org.freeplane.plugin.workspace.model.WorkspaceTreeModel;
-import org.freeplane.plugin.workspace.model.WorkspaceModelEvent.ProjectModelEventType;
 import org.freeplane.plugin.workspace.nodes.AFolderNode;
 import org.freeplane.plugin.workspace.nodes.ALinkNode;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
@@ -306,7 +306,7 @@ public class ProjectModel implements WorkspaceTreeModel {
 			}
 		}
 	}
-
+	
 	public void reload(AWorkspaceTreeNode node) {
 		if (node != null) {
 			fireTreeStructureChanged(this, node.getTreePath(), null, null);

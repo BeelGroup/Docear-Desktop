@@ -4,6 +4,7 @@
  */
 package org.freeplane.plugin.workspace.actions;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
@@ -42,7 +43,14 @@ public class NodeNewFolderAction extends AWorkspaceAction {
 	 **********************************************************************************/
 	
 	public void actionPerformed(ActionEvent e) {
-		AWorkspaceTreeNode targetNode = getNodeFromActionEvent(e);
+		AWorkspaceTreeNode targetNode = null;
+		if(e == null || getRootPopupMenu((Component) e.getSource()) == null) {
+			targetNode = WorkspaceController.getCurrentProject().getModel().getRoot();
+		}
+		else {
+			targetNode = getNodeFromActionEvent(e);
+		}
+		
 		if(targetNode == null) {
 			return;
 		}
@@ -56,7 +64,7 @@ public class NodeNewFolderAction extends AWorkspaceAction {
 		if(response == JOptionPane.OK_OPTION) {
 			String value = dialog.getFolderName();
 			if(value == null || value.trim().length() <= 0) {
-				//DOCEAR - prepare message, or call this method (with error message) again? 
+				//WORKSPACE - ToDo: prepare message, or call this method (with error message) again? 
 				return;
 			}
 			if(dialog.isLinkedFolder()) {

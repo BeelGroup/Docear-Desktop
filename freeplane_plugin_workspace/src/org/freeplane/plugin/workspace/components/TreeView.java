@@ -25,20 +25,32 @@ import javax.swing.tree.TreeSelectionModel;
 import org.freeplane.core.ui.components.OneTouchCollapseResizer.ComponentCollapseListener;
 import org.freeplane.core.ui.components.ResizeEvent;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.dnd.DnDController;
 import org.freeplane.plugin.workspace.dnd.WorkspaceTransferHandler;
 import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.handler.DefaultNodeTypeIconManager;
-import org.freeplane.plugin.workspace.handler.DefaultWorkspaceKeyHandler;
-import org.freeplane.plugin.workspace.handler.DefaultWorkspaceMouseHandler;
 import org.freeplane.plugin.workspace.handler.INodeTypeIconManager;
 import org.freeplane.plugin.workspace.listener.DefaultTreeExpansionListener;
 import org.freeplane.plugin.workspace.listener.DefaultWorkspaceSelectionListener;
+import org.freeplane.plugin.workspace.mindmapmode.DefaultFileDropHandler;
+import org.freeplane.plugin.workspace.mindmapmode.FileFolderDropHandler;
+import org.freeplane.plugin.workspace.mindmapmode.InputController;
+import org.freeplane.plugin.workspace.mindmapmode.VirtualFolderDropHandler;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.WorkspaceModel;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.model.project.IProjectSelectionListener;
 import org.freeplane.plugin.workspace.model.project.ProjectSelectionEvent;
+import org.freeplane.plugin.workspace.nodes.AFolderNode;
+import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
+import org.freeplane.plugin.workspace.nodes.FolderFileNode;
+import org.freeplane.plugin.workspace.nodes.FolderLinkNode;
+import org.freeplane.plugin.workspace.nodes.FolderTypeMyFilesNode;
+import org.freeplane.plugin.workspace.nodes.FolderVirtualNode;
+import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
+import org.freeplane.plugin.workspace.nodes.ProjectRootNode;
+import org.freeplane.plugin.workspace.nodes.WorkspaceRootNode;
 
 public class TreeView extends JPanel implements IWorkspaceView, ComponentCollapseListener {
 	private static final long serialVersionUID = 1L;
@@ -50,6 +62,7 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 	private INodeTypeIconManager nodeTypeIconManager;
 	private List<IProjectSelectionListener> projectSelectionListeners = new ArrayList<IProjectSelectionListener>();
 	private AWorkspaceProject lastSelectedProject;
+	private InputController inputController;
 	
 	public TreeView() {
 		this.setLayout(new BorderLayout());
@@ -62,16 +75,18 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 		mTree.addTreeExpansionListener(new DefaultTreeExpansionListener());
         mTree.addTreeSelectionListener(new DefaultWorkspaceSelectionListener());
         mTree.addTreeSelectionListener(getProjectSelectionHandler());
-		mTree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
-		DefaultWorkspaceMouseHandler mouseHandler = new DefaultWorkspaceMouseHandler();
-		mTree.addMouseListener(mouseHandler);
-		mTree.addMouseMotionListener(mouseHandler);
-		mTree.addKeyListener(new DefaultWorkspaceKeyHandler());
+        //WORKSPACE - impl(later): enable multi selection 
+		mTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		mTree.addMouseListener(getInputController());
+		mTree.addMouseMotionListener(getInputController());
+		mTree.addKeyListener(getInputController());
 		mTree.setRowHeight(18);
 		mTree.setShowsRootHandles(false);
 		mTree.setEditable(true);
 		
 		this.transferHandler = WorkspaceTransferHandler.configureDragAndDrop(mTree);
+		
+		initTransferHandler();
 		
 				
 		this.add(new JScrollPane(mTree), BorderLayout.CENTER);
@@ -81,6 +96,31 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 //		add(workspaceToolBar, BorderLayout.NORTH);
 	}
 	
+	private void initTransferHandler() {
+		getTransferHandler().registerNodeDropHandler(DefaultFileNode.class, new DefaultFileDropHandler());
+	
+		getTransferHandler().registerNodeDropHandler(FolderFileNode.class, new FileFolderDropHandler());
+		getTransferHandler().registerNodeDropHandler(FolderLinkNode.class, new FileFolderDropHandler());
+		getTransferHandler().registerNodeDropHandler(FolderTypeMyFilesNode.class, new FileFolderDropHandler());
+		
+		getTransferHandler().registerNodeDropHandler(FolderVirtualNode.class, new VirtualFolderDropHandler());
+		getTransferHandler().registerNodeDropHandler(ProjectRootNode.class, new VirtualFolderDropHandler());
+		
+		//default fallback for folder
+		getTransferHandler().registerNodeDropHandler(AFolderNode.class, new VirtualFolderDropHandler());
+		
+		DnDController.excludeFromDND(WorkspaceRootNode.class);
+		DnDController.excludeFromDND(LinkTypeFileNode.class);
+		DnDController.excludeFromDND(DefaultFileNode.class);
+	}
+
+	public InputController getInputController() {
+		if(inputController == null) {
+			inputController = new InputController();
+		}
+		return inputController;
+	}
+
 	private TreeSelectionListener getProjectSelectionHandler() {
 		return new TreeSelectionListener() {			
 			public void valueChanged(TreeSelectionEvent e) {
@@ -177,13 +217,11 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 		}
 
 		public void addTreeModelListener(TreeModelListener l) {
-			// TODO Auto-generated method stub
-
+			this.model.addTreeModelListener(l);
 		}
 
 		public void removeTreeModelListener(TreeModelListener l) {
-			// TODO Auto-generated method stub
-
+			this.model.removeTreeModelListener(l);
 		}
 
 	}
@@ -203,7 +241,7 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 	}
 
 	public TreePath getPathForLocation(int x, int y) {
-		return mTree.getPathForLocation(x, y);
+		return mTree.getClosestPathForLocation(x, y);
 	}
 
 	public INodeTypeIconManager getNodeTypeIconManager() {

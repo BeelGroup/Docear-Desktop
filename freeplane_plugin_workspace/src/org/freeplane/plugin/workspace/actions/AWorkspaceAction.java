@@ -17,7 +17,6 @@ import org.freeplane.core.util.TextUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
-import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
 public abstract class AWorkspaceAction extends AFreeplaneAction {
 
@@ -35,7 +34,7 @@ public abstract class AWorkspaceAction extends AFreeplaneAction {
 		setIcon();
 	}
 	
-	public void setEnabledFor(AWorkspaceTreeNode node) {
+	public void setEnabledFor(AWorkspaceTreeNode node, TreePath[] selectedPaths) {
 		setEnabled();
 	}
 
@@ -43,7 +42,7 @@ public abstract class AWorkspaceAction extends AFreeplaneAction {
 		setEnabled(true);
 	}
 	
-	public void setSelectedFor(AWorkspaceTreeNode node) {
+	public void setSelectedFor(AWorkspaceTreeNode node, TreePath[] selectedPaths) {
 		super.setSelected();
 	}
 	
@@ -77,27 +76,60 @@ public abstract class AWorkspaceAction extends AFreeplaneAction {
 	}
 	
 	protected AWorkspaceTreeNode getNodeFromActionEvent(ActionEvent e) {
-		WorkspacePopupMenu pop = getRootPopupMenu((Component) e.getSource());
-		if(pop == null) {
-			return null;
+		JTree tree = null;
+		TreePath path = null;
+		
+		if(e.getSource() instanceof JTree) {
+			tree = (JTree) e.getSource();
+			path = tree.getSelectionPath();
+		} 
+		else { 
+			WorkspacePopupMenu pop = getRootPopupMenu((Component) e.getSource());
+			if(pop == null) {
+				return null;
+			}
+			tree = (JTree)pop.getInvoker();
+			int x = pop.getInvokerLocation().x;
+			int y = pop.getInvokerLocation().y;
+			
+			path = tree.getClosestPathForLocation(x, y);
 		}
-		int x = pop.getInvokerLocation().x;
-		int y = pop.getInvokerLocation().y;
-		JTree tree = (JTree)pop.getInvoker();
-		TreePath path = tree.getPathForLocation(x, y);
+		
 		if(path == null) {
 			return null;
 		}
 		return (AWorkspaceTreeNode) path.getLastPathComponent();
 	}
 	
-	protected AWorkspaceProject getProjectFromActionEvent(ActionEvent e) {
-		AWorkspaceTreeNode node = getNodeFromActionEvent(e);
-		if(node == null) {
-			return null;
+	protected AWorkspaceTreeNode[] getSelectedNodes(ActionEvent e) {
+		JTree tree = null;
+		if(e.getSource() instanceof JTree) {
+			tree = (JTree) e.getSource();
+		} 
+		else { 
+			WorkspacePopupMenu pop = getRootPopupMenu((Component) e.getSource());
+			if(pop == null) {
+				return null;
+			}
+			tree = (JTree)pop.getInvoker();
 		}
-		return WorkspaceController.getProject(node);
+		AWorkspaceTreeNode[] nodes = new AWorkspaceTreeNode[tree.getSelectionPaths().length]; 
+		int i = 0;
+		for(TreePath path : tree.getSelectionPaths()) {
+			nodes[i++] = (AWorkspaceTreeNode) path.getLastPathComponent();
+		}
+		return nodes;
 	}
+	
+	
+	
+//	protected AWorkspaceProject getProjectFromActionEvent(ActionEvent e) {
+//		AWorkspaceTreeNode node = getNodeFromActionEvent(e);
+//		if(node == null) {
+//			return null;
+//		}
+//		return WorkspaceController.getProject(node);
+//	}
 	
 	public WorkspacePopupMenu getRootPopupMenu(Component component) {
 		Component parent = component;

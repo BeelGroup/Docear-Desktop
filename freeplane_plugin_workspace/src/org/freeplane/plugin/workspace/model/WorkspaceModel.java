@@ -1,5 +1,6 @@
 package org.freeplane.plugin.workspace.model;
 
+import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +10,9 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import org.freeplane.core.util.LogUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.dnd.WorkspaceTransferable;
 import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
@@ -81,12 +84,20 @@ public abstract class WorkspaceModel implements TreeModel {
 		}
 		return -1;
 	}
+	
+	protected void resetClipboard() {
+		if(Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null) instanceof WorkspaceTransferable) {
+			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(null, null);
+			LogUtils.info("clipboard has been reset");
+		}
+	}
 
 	protected IProjectModelListener getProjectModelListener() {
 		if(projectModelListener == null) {
 			projectModelListener = new IProjectModelListener() {
 				
 				public void treeStructureChanged(WorkspaceModelEvent event) {
+					resetClipboard();
 					event = validatedModelEvent(event);
 					synchronized (listeners) {
 						for (int i = listeners.size()-1; i >= 0; i--) {
@@ -351,7 +362,7 @@ public abstract class WorkspaceModel implements TreeModel {
 			if(node == null) {
 				return;
 			}
-			
+			resetClipboard();
 			if(getRoot().equals(node)) {
 				for (AWorkspaceProject project : getProjects()) {
 					project.getModel().reload();

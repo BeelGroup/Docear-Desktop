@@ -175,7 +175,6 @@ public class NewProjectDialogPanel extends JPanel {
 	}
 	
 	public URI getProjectPath() {
-		//WORKSPACE - info: temporarily implementation
 		return new File(txtProjectPath.getText()).toURI();
 	}
 

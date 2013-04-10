@@ -48,4 +48,8 @@ public abstract class AFolderNode extends AWorkspaceTreeNode {
 	public String getTagName() {
 		return "folder";
 	}
+	
+	public boolean getAllowsChildren() {
+		return true;
+	}
 }

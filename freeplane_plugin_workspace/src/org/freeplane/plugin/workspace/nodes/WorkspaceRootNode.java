@@ -149,7 +149,5 @@ public final class WorkspaceRootNode extends AFolderNode implements IWorkspaceNo
 				throw new NoSuchElementException("WorkspaceRoot Enumeration");
 		    }
 		};
-	}
-	
-	
+	}	
 }

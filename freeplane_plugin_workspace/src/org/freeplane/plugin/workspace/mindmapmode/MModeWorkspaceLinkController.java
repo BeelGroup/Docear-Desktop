@@ -2,8 +2,15 @@ package org.freeplane.plugin.workspace.mindmapmode;
 
 import java.io.File;
 import java.net.URI;
+import java.util.Enumeration;
+import java.util.List;
 
 import org.freeplane.core.resources.ResourceController;
+import org.freeplane.core.resources.components.ComboProperty;
+import org.freeplane.core.resources.components.IPropertyControl;
+import org.freeplane.core.resources.components.IPropertyControlCreator;
+import org.freeplane.core.resources.components.OptionPanelBuilder;
+import org.freeplane.core.ui.IndexedTree;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.link.mindmapmode.MLinkController;
 import org.freeplane.features.map.NodeModel;
@@ -21,7 +28,6 @@ public class MModeWorkspaceLinkController extends MLinkController {
 	private static MModeWorkspaceLinkController self;
 
 	protected void init() {
-		
 	}
 	
 	public static MModeWorkspaceLinkController getController() {
@@ -94,5 +100,38 @@ public class MModeWorkspaceLinkController extends MLinkController {
 	 */
 	public static URI extendPath(URI base, String child) {
 		return new File(URIUtils.getAbsoluteFile(base), child).toURI();
+	}
+	
+	public void prepareOptionPanelBuilder(OptionPanelBuilder builder) {
+		IndexedTree.Node node = (IndexedTree.Node) builder.getRoot();
+		String path = "Environment/hyperlink_types/links";
+		final IndexedTree.Node found = getNodeForPath(path, node);
+		if(found != null) {
+			found.setUserObject(new IPropertyControlCreator() {
+				private final IPropertyControlCreator creator = (IPropertyControlCreator) found.getUserObject();
+				public IPropertyControl createControl() {
+					ComboProperty property = (ComboProperty) creator.createControl();
+					List<String> list = property.getPossibleValues();
+					list.add(MModeWorkspaceLinkController.LINK_RELATIVE_TO_PROJECT_PROPERTY);
+					return new ComboProperty("links", list.toArray(new String[] {}));
+				}
+
+			});
+		}
+	}
+	
+	private IndexedTree.Node getNodeForPath(String path, IndexedTree.Node node) {
+		Enumeration<?> children = node.children();
+		while(children.hasMoreElements()) {
+			IndexedTree.Node child = (IndexedTree.Node)children.nextElement();
+			if(child.getKey() != null && path.startsWith(child.getKey().toString())) {
+				if(path.equals(child.getKey().toString())) {
+					return child;
+				}
+				return getNodeForPath(path, child);
+				
+			}
+		}
+		return null;
 	}
 }

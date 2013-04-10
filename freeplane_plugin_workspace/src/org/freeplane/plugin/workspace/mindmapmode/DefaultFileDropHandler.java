@@ -1,53 +1,32 @@
-/**
- * author: Marcel Genzmehr
- * 16.08.2011
- */
-package org.freeplane.plugin.workspace.nodes;
+package org.freeplane.plugin.workspace.mindmapmode;
 
-import java.net.URI;
+import java.awt.datatransfer.Transferable;
 
+import org.freeplane.plugin.workspace.dnd.INodeDropHandler;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 
+public class DefaultFileDropHandler implements INodeDropHandler {
 
-/**
- * 
- */
-public abstract class ALinkNode extends AWorkspaceTreeNode {
-	
-	private static final long serialVersionUID = 1L;
 	
 	/***********************************************************************************
 	 * CONSTRUCTORS
 	 **********************************************************************************/
-	
-	public static final String LINK_TYPE_FILE = "file";
-
-	/**
-	 * @param type
-	 */
-	public ALinkNode(String type) {
-		super(type);
-	}
 
 	/***********************************************************************************
 	 * METHODS
 	 **********************************************************************************/
 
-	public abstract URI getLinkURI();
-	
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
 	 **********************************************************************************/
 	
-	public final String getTagName() {
-		return "link";
-	}
-	
-	public boolean getAllowsChildren() {
+	public boolean processDrop(AWorkspaceTreeNode targetNode, Transferable transferable, int dropAction) {
+		// TODO Auto-generated method stub
 		return false;
 	}
 
-	@Override
-	public void initializePopup() {		
+	public boolean acceptDrop(Transferable transferable) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

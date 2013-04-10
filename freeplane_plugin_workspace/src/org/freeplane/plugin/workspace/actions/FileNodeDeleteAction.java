@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 
 import javax.swing.JOptionPane;
+import javax.swing.tree.TreePath;
 
 import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.ui.components.UITools;
@@ -29,7 +30,7 @@ public class FileNodeDeleteAction extends AWorkspaceAction {
 	 * METHODS
 	 **********************************************************************************/
 	
-	public void setEnabledFor(AWorkspaceTreeNode node) {
+	public void setEnabledFor(AWorkspaceTreeNode node, TreePath[] selectedPath) {
 		if(node.isSystem()|| !node.isTransferable() || (!(node instanceof DefaultFileNode) && !(node instanceof LinkTypeFileNode))) {
 			setEnabled(false);
 		}

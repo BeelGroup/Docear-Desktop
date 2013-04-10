@@ -4,6 +4,7 @@
  */
 package org.freeplane.plugin.workspace.actions;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.net.URI;
@@ -41,7 +42,14 @@ public class NodeNewLinkAction extends AWorkspaceAction {
 	 **********************************************************************************/
 
 	public void actionPerformed(ActionEvent e) {
-		AWorkspaceTreeNode targetNode = getNodeFromActionEvent(e);
+		AWorkspaceTreeNode targetNode = null;
+		if(e == null || getRootPopupMenu((Component) e.getSource()) == null) {
+			targetNode = WorkspaceController.getCurrentProject().getModel().getRoot();
+		}
+		else {
+			targetNode = getNodeFromActionEvent(e);
+		}
+		
 		if(targetNode == null) {
 			return;
 		}

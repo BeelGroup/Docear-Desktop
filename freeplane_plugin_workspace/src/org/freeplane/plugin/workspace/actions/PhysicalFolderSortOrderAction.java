@@ -6,6 +6,8 @@ package org.freeplane.plugin.workspace.actions;
 
 import java.awt.event.ActionEvent;
 
+import javax.swing.tree.TreePath;
+
 import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.ui.SelectableAction;
 import org.freeplane.plugin.workspace.io.IFileSystemRepresentation;
@@ -31,7 +33,7 @@ public class PhysicalFolderSortOrderAction extends AWorkspaceAction {
 	 * METHODS
 	 **********************************************************************************/
 
-	public void setSelectedFor(AWorkspaceTreeNode node) {
+	public void setSelectedFor(AWorkspaceTreeNode node, TreePath[] selectedPaths) {
 		if(node instanceof IFileSystemRepresentation) {
 			if(((IFileSystemRepresentation) node).orderDescending()) {
 				setSelected(true);
@@ -41,7 +43,7 @@ public class PhysicalFolderSortOrderAction extends AWorkspaceAction {
 		setSelected(false);
 	}
 	
-	public void setEnabledFor(AWorkspaceTreeNode node) {
+	public void setEnabledFor(AWorkspaceTreeNode node, TreePath[] selectedPaths) {
 		if(!(node instanceof IFileSystemRepresentation)) {
 			setEnabled(false);
 		}

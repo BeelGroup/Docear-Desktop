@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
+import org.freeplane.plugin.workspace.nodes.AFolderNode;
 
 /**
  * 
@@ -26,6 +27,7 @@ public class WorkspaceTransferable implements Transferable {
 	public static DataFlavor WORKSPACE_FREEPLANE_NODE_FLAVOR; // = new DataFlavor("text/freeplane-nodes; class=java.lang.String");
 	public static DataFlavor WORKSPACE_SERIALIZED_FLAVOR;
 	public static DataFlavor WORKSPACE_URI_LIST_FLAVOR;
+	public static DataFlavor WORKSPACE_MOVE_NODE_FLAVOR;
 	static {
 		try {
 			WORKSPACE_DROP_ACTION_FLAVOR = new DataFlavor("text/drop-action; class=java.lang.String");
@@ -34,6 +36,7 @@ public class WorkspaceTransferable implements Transferable {
 			WORKSPACE_FREEPLANE_NODE_FLAVOR = new DataFlavor("text/freeplane-nodes; class=java.lang.String");
 			WORKSPACE_SERIALIZED_FLAVOR = new DataFlavor("application/x-java-serialized-object; class=java.lang.String");
 			WORKSPACE_URI_LIST_FLAVOR = new DataFlavor("text/uri-list; class=java.lang.String");
+			WORKSPACE_MOVE_NODE_FLAVOR = new DataFlavor("text/move-action; class=java.lang.String");
 		}
 		catch (final Exception e) {
 			LogUtils.severe(e);
@@ -41,6 +44,7 @@ public class WorkspaceTransferable implements Transferable {
 	}
 	
 	private final Hashtable<DataFlavor, Object> dataMap = new Hashtable<DataFlavor, Object>();
+	private boolean isCopy = true;
 	
 	
 	/***********************************************************************************
@@ -59,6 +63,23 @@ public class WorkspaceTransferable implements Transferable {
 	/***********************************************************************************
 	 * METHODS
 	 **********************************************************************************/
+	
+	public boolean isCopy() {
+		return this.isCopy ;
+	}
+	
+	public void setAsCopy(boolean asCopy) {
+		boolean old = isCopy();
+		this.isCopy = asCopy;
+		if(old != isCopy()) {
+			if(isCopy()) {
+				dataMap.remove(WORKSPACE_MOVE_NODE_FLAVOR);
+			}
+			else {
+				dataMap.put(WORKSPACE_MOVE_NODE_FLAVOR, "move-action");
+			}
+		}
+	}
 	
 	public boolean addData(DataFlavor flavor, Object data) {
 		dataMap.put(flavor, data);
@@ -154,6 +175,34 @@ public class WorkspaceTransferable implements Transferable {
 			}
 		}
 		
+	}
+	
+	public boolean contains(AWorkspaceTreeNode node) {
+		if(node != null) {
+			List<AWorkspaceTreeNode> nodes = (List<AWorkspaceTreeNode>) dataMap.get(WORKSPACE_NODE_FLAVOR);
+			if(nodes != null) {
+				for (AWorkspaceTreeNode inNode : nodes) {
+					if(inNode.getKey().equals(node.getKey())) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	public void refreshNodes() {
+		List<AWorkspaceTreeNode> nodes = (List<AWorkspaceTreeNode>) dataMap.get(WORKSPACE_NODE_FLAVOR);
+		if(nodes != null) {
+			for (AWorkspaceTreeNode node : nodes) {
+				if(!(node instanceof AFolderNode)) {
+					node.getParent().refresh();
+				}
+				else {
+					node.refresh();
+				}
+			}
+		}
 	}
 	
 	/***********************************************************************************

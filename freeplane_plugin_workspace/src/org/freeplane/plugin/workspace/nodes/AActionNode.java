@@ -76,6 +76,10 @@ public abstract class AActionNode extends AWorkspaceTreeNode implements IWorkspa
 			showPopup((Component) event.getBaggage(), event.getX(), event.getY());
 		}		
 	}
+	
+	public boolean getAllowsChildren() {
+		return false;
+	}
 
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES

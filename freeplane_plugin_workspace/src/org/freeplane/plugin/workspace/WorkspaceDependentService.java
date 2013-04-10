@@ -9,10 +9,8 @@ import java.util.Hashtable;
 
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.mode.ModeController;
-import org.freeplane.main.osgi.IControllerExtensionProvider;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
 
 /**
  * 

@@ -12,7 +12,6 @@ import org.freeplane.main.osgi.IModeControllerExtensionProvider;
 import org.freeplane.plugin.workspace.actions.WorkspaceQuitAction;
 import org.freeplane.plugin.workspace.features.ProjectURLHandler;
 import org.freeplane.plugin.workspace.features.PropertyUrlHandler;
-import org.freeplane.plugin.workspace.features.WorkspaceUrlHandler;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -51,11 +50,10 @@ public class Activator implements BundleActivator {
 		FreeplaneActionCascade.addAction(new WorkspaceQuitAction());
 	}
 
-	@SuppressWarnings("deprecation")
 	private void registerClasspathUrlHandler(final BundleContext context) {
 		Hashtable<String, String[]> properties = new Hashtable<String, String[]>();
-        properties.put(URLConstants.URL_HANDLER_PROTOCOL, new String[] { WorkspaceController.WORKSPACE_RESOURCE_URL_PROTOCOL });
-        context.registerService(URLStreamHandlerService.class.getName(), new WorkspaceUrlHandler(), properties);
+//        properties.put(URLConstants.URL_HANDLER_PROTOCOL, new String[] { WorkspaceController.WORKSPACE_RESOURCE_URL_PROTOCOL });
+//        context.registerService(URLStreamHandlerService.class.getName(), new WorkspaceUrlHandler(), properties);
         
         properties = new Hashtable<String, String[]>();
         properties.put(URLConstants.URL_HANDLER_PROTOCOL, new String[] { WorkspaceController.PROJECT_RESOURCE_URL_PROTOCOL });
@@ -106,21 +104,4 @@ public class Activator implements BundleActivator {
 			e.printStackTrace();
 		}
 	}
-	
-//	private class OptionPanelExtender implements IPropertyControlCreator {
-//		private final IPropertyControlCreator creator;
-//		
-//		public OptionPanelExtender(final IPropertyControlCreator creator) {
-//			this.creator = creator;
-//		}
-//
-//		public IPropertyControl createControl() {
-//			ComboProperty property = (ComboProperty) creator.createControl();
-//			List<String> list = property.getPossibleValues();
-//			list.add(WorkspacePreferences.RELATIVE_TO_WORKSPACE);
-//			return new ComboProperty(WorkspacePreferences.LINK_PROPERTY_KEY, list.toArray(new String[] {}));
-//		}
-//
-//	}
-
 }
