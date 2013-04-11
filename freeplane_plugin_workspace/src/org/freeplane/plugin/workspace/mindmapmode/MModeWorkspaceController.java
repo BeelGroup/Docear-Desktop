@@ -58,6 +58,7 @@ import org.freeplane.plugin.workspace.actions.NodeRenameAction;
 import org.freeplane.plugin.workspace.actions.PhysicalFolderSortOrderAction;
 import org.freeplane.plugin.workspace.actions.WorkspaceCollapseAction;
 import org.freeplane.plugin.workspace.actions.WorkspaceExpandAction;
+import org.freeplane.plugin.workspace.actions.WorkspaceImportProjectAction;
 import org.freeplane.plugin.workspace.actions.WorkspaceNewMapAction;
 import org.freeplane.plugin.workspace.actions.WorkspaceNewProjectAction;
 import org.freeplane.plugin.workspace.actions.WorkspaceProjectOpenLocationAction;
@@ -151,10 +152,9 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 				builder.addMenuItem("/menu_bar/format", projectMenu, MENU_PROJECT_KEY, MenuBuilder.AFTER);
 				
 				builder.addAction(MENU_PROJECT_KEY, new WorkspaceNewProjectAction(), MenuBuilder.AS_CHILD);
-				builder.addAction(MENU_PROJECT_KEY, new WorkspaceRemoveProjectAction(), MenuBuilder.AS_CHILD);
+				builder.addAction(MENU_PROJECT_KEY, new WorkspaceImportProjectAction(), MenuBuilder.AS_CHILD);
 				
 				builder.addSeparator(MENU_PROJECT_KEY, MenuBuilder.AS_CHILD);
-				
 				final String MENU_PROJECT_ADD_KEY = builder.getMenuKey(MENU_PROJECT_KEY, "new");				
 				final JMenu addMenu = new JMenu(TextUtils.getText("workspace.action.new.label"));
 				projectMenu.getPopupMenu().addPopupMenuListener(new PopupMenuListener() {					
@@ -174,6 +174,8 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 				builder.addMenuItem(MENU_PROJECT_KEY, addMenu, MENU_PROJECT_ADD_KEY, MenuBuilder.AS_CHILD);
 				builder.addAction(MENU_PROJECT_ADD_KEY, new NodeNewFolderAction(), MenuBuilder.AS_CHILD);
 				builder.addAction(MENU_PROJECT_ADD_KEY, new NodeNewLinkAction(), MenuBuilder.AS_CHILD);
+				
+				builder.addAction(MENU_PROJECT_KEY, new WorkspaceRemoveProjectAction(), MenuBuilder.AS_CHILD);
 				
 				builder.addSeparator(MENU_PROJECT_KEY, MenuBuilder.AS_CHILD);
 				setDefaultAccelerator(builder.getShortcutKey(builder.getMenuKey(MENU_PROJECT_KEY,WorkspaceProjectOpenLocationAction.KEY)), "control alt L");

@@ -38,6 +38,10 @@ public class DefaultWorkspaceProjectCreator implements IWorkspaceProjectCreater 
 
 			public URI getRelativeURI(URI uri) {
 				//WORKSPACE - todo: check new implementation 
+				/* windows paths on different drives are getting a relative version as well 
+				 * -> modify method that builds the relative paths  
+				 *  
+				 */
 				try {
 					URI relativeUri = LinkController.getController().createRelativeURI(new File(getProjectHome()), new File(uri), LinkController.LINK_RELATIVE_TO_MINDMAP);
 					return new URI(WorkspaceController.PROJECT_RESOURCE_URL_PROTOCOL + "://"+ getProjectID() +"/"+relativeUri.getRawPath());
