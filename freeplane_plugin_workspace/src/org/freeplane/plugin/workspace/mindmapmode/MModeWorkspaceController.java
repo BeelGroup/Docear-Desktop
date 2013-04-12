@@ -460,7 +460,7 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 		if(this.projectSelectionListener == null) {
 			this.projectSelectionListener = new IProjectSelectionListener() {
 				public void selectionChanged(ProjectSelectionEvent event) {
-					LogUtils.info("now selected project: "+ event.getSelectedProject());
+//					LogUtils.info("now selected project: "+ event.getSelectedProject());
 					currentSelectedProject = event.getSelectedProject();				
 				}
 			};
