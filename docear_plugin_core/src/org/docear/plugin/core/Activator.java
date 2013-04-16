@@ -12,13 +12,13 @@ import java.util.Set;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
-import org.freeplane.plugin.workspace.IWorkspaceDependentControllerExtension;
-import org.freeplane.plugin.workspace.WorkspaceDependentService;
+import org.freeplane.plugin.workspace.IWorkspaceDependingControllerExtension;
+import org.freeplane.plugin.workspace.WorkspaceDependingService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 
-public class Activator extends WorkspaceDependentService {
+public class Activator extends WorkspaceDependingService {
 	CoreConfiguration config;
 	
 	public final void startPlugin(BundleContext context, ModeController modeController) {	
@@ -26,9 +26,9 @@ public class Activator extends WorkspaceDependentService {
 		startPluginServices(context, modeController);
 	}
 	
-	protected Collection<IWorkspaceDependentControllerExtension> getControllerExtensions() {
-		List<IWorkspaceDependentControllerExtension> controllerExtensions = new ArrayList<IWorkspaceDependentControllerExtension>();
-		controllerExtensions.add(new IWorkspaceDependentControllerExtension() {
+	protected Collection<IWorkspaceDependingControllerExtension> getControllerExtensions() {
+		List<IWorkspaceDependingControllerExtension> controllerExtensions = new ArrayList<IWorkspaceDependingControllerExtension>();
+		controllerExtensions.add(new IWorkspaceDependingControllerExtension() {
 			public void installExtension(BundleContext context, Controller controller) {
 				getConfig().initController(controller);
 				LogUtils.info("Docear Core controller extension initiated.");
