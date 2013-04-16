@@ -161,7 +161,7 @@ public class WorkspacePopupMenuBuilder {
 				}
 			});
 		}
-		if (AFreeplaneAction.checkEnabledOnPopup(action)) {
+		if (AWorkspaceAction.checkEnabledOnPopup(action)) {
 			popupMenu.addPopupMenuListener(new PopupMenuListener() {
 				public void popupMenuCanceled(final PopupMenuEvent e) {
 				}

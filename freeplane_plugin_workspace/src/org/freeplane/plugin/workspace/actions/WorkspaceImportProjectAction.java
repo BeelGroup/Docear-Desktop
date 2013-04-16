@@ -2,7 +2,6 @@ package org.freeplane.plugin.workspace.actions;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
-import java.io.File;
 import java.io.IOException;
 
 import javax.swing.JOptionPane;
@@ -11,10 +10,8 @@ import javax.swing.JPanel;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
-import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.components.dialog.ImportProjectDialogPanel;
-import org.freeplane.plugin.workspace.components.dialog.NewProjectDialogPanel;
 import org.freeplane.plugin.workspace.io.IProjectSettingsIOHandler.LOAD_RETURN_TYPE;
 import org.freeplane.plugin.workspace.model.WorkspaceModelException;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;

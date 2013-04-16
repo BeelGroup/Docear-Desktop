@@ -85,8 +85,7 @@ public class MakeLinkFromAnchorAction extends AFreeplaneAction {
 			final NodeModel sourceNode = modeControllerForSelectedMap.getMapController().getNodeFromID(sourceNodeID);
 
 			// insert only targetNodeID as link
-			linkController.setLinkTypeDependantLink(sourceNode, targetID.substring(targetID.indexOf("#")));
-			
+			linkController.setLink(sourceNode, targetID.substring(targetID.indexOf("#")), LinkController.LINK_ABSOLUTE);
 		} else {
 		
 			// navigate to anchored map (source)
@@ -108,7 +107,8 @@ public class MakeLinkFromAnchorAction extends AFreeplaneAction {
 			final MLinkController linkController_anchored = (MLinkController) MLinkController.getController();
 			try {
 				final URI linkToCurrentNode = LinkController.createURI(targetID.trim());
-				linkController_anchored.setLinkTypeDependantLink(sourceNode, linkToCurrentNode);
+
+				linkController_anchored.setLink(sourceNode, linkToCurrentNode, LinkController.LINK_ABSOLUTE);
 			}
 			catch (final URISyntaxException e1) {
 				LogUtils.warn(e1);

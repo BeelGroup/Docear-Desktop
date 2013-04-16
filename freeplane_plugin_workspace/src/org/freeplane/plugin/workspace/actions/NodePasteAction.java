@@ -8,15 +8,15 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.tree.TreePath;
 
-import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.components.menu.CheckEnableOnPopup;
 import org.freeplane.plugin.workspace.dnd.DnDController;
 import org.freeplane.plugin.workspace.dnd.NoDropHandlerFoundExeption;
 import org.freeplane.plugin.workspace.dnd.WorkspaceTransferable;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 
-@EnabledAction(checkOnPopup = true)
+@CheckEnableOnPopup
 public class NodePasteAction extends AWorkspaceAction {
 
 	public static final String KEY = "workspace.action.node.paste";

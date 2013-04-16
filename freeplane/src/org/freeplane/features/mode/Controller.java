@@ -1,3 +1,4 @@
+
 /*
  *  Freeplane - mind map editor
  *  Copyright (C) 2008 Joerg Mueller, Daniel Polansky, Christian Foltin, Dimitry Polivaev
@@ -61,7 +62,8 @@ public class Controller extends AController {
 	private ViewController viewController;
 	private final ResourceController resourceController;
 	private final List<IValidator> optionValidators = new ArrayList<IValidator>();
-	final private OptionPanelController optionPanelController;
+	private final OptionPanelController optionPanelController;
+	private IMapViewManager mapViewManager;
 
 	public Controller(ResourceController resourceController) {
 		super();
@@ -93,7 +95,7 @@ public class Controller extends AController {
 		getMapViewManager().close(withoutSave);
 	}
 
-	public IExtension getExtension(final Class<? extends IExtension> clazz) {
+	public <T extends IExtension> T getExtension(final Class<T> clazz){
 		return extensionContainer.getExtension(clazz);
 	}
 
@@ -101,11 +103,15 @@ public class Controller extends AController {
 	 * @return
 	 */
 	public MapModel getMap() {
-		return getViewController().getMap();
+		return getMapViewManager().getModel();
 	}
 
 	public IMapViewManager getMapViewManager() {
-		return getViewController().getMapViewManager();
+		return mapViewManager;
+	}
+
+	public void setMapViewManager(IMapViewManager mapViewManager) {
+    	this.mapViewManager = mapViewManager;
 	}
 
 	/** @return the current modeController. */
@@ -122,7 +128,7 @@ public class Controller extends AController {
 	}
 
 	public IMapSelection getSelection() {
-		return getViewController().getSelection();
+		return getMapViewManager().getMapSelection();
 	}
 
 	/**

@@ -67,7 +67,7 @@ class UpdateCheckAction extends AFreeplaneAction {
 				if (newView == null) {
 					return;
 				}
-				EventQueue.invokeLater(new Runnable() {
+				controller.getViewController().invokeLater(new Runnable() {
 					public void run() {
 						removeMe();
 					}
@@ -168,7 +168,7 @@ class UpdateCheckAction extends AFreeplaneAction {
 			history = translatedVersionClient.getHistory();
 			connectSuccesfull = translatedVersionClient.isSuccessful();
 		}
-		EventQueue.invokeLater(new Runnable() {
+		Controller.getCurrentController().getViewController().invokeLater(new Runnable() {
 			public void run() {
 				addUpdateButton(lastVersion);
 				if (autoRun) {

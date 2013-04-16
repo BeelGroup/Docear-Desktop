@@ -5,15 +5,15 @@ import java.awt.event.ActionEvent;
 import javax.swing.JOptionPane;
 import javax.swing.tree.TreePath;
 
-import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.plugin.workspace.components.dialog.NodeRenameDialogPanel;
+import org.freeplane.plugin.workspace.components.menu.CheckEnableOnPopup;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.IMutableLinkNode;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 
-@EnabledAction(checkOnPopup = true)
+@CheckEnableOnPopup
 public class NodeRenameAction extends AWorkspaceAction {
 
 	public static final String KEY = "workspace.action.node.rename";

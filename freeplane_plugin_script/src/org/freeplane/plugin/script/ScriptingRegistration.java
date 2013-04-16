@@ -41,6 +41,7 @@ import org.apache.commons.lang.StringUtils;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.resources.components.IValidator;
 import org.freeplane.core.ui.IMenuContributor;
+import org.freeplane.core.ui.IUserInputListenerFactory;
 import org.freeplane.core.ui.MenuBuilder;
 import org.freeplane.core.util.FileUtils;
 import org.freeplane.core.util.LogUtils;
@@ -191,8 +192,10 @@ class ScriptingRegistration {
 			}
 		});
 		registerScriptAddOns();
+		if(! modeController.getController().getViewController().isHeadless()){
+			final IUserInputListenerFactory userInputListenerFactory = modeController.getUserInputListenerFactory();
 		addPropertiesToOptionPanel();
-		final MenuBuilder menuBuilder = modeController.getUserInputListenerFactory().getMenuBuilder();
+			final MenuBuilder menuBuilder = userInputListenerFactory.getMenuBuilder();
 		modeController.addAction(new ScriptEditor());
 		modeController.addAction(new ExecuteScriptForAllNodes());
 		modeController.addAction(new ExecuteScriptForSelectionAction());
@@ -207,12 +210,14 @@ class ScriptingRegistration {
 		});
 		final ScriptingConfiguration configuration = new ScriptingConfiguration();
 		ScriptingEngine.setClasspath(configuration.getClasspath());
+			ScriptCompiler.compileScriptsOnPath(configuration.getClasspath());
 		modeController.addMenuContributor(new IMenuContributor() {
 			public void updateMenus(ModeController modeController, MenuBuilder builder) {
 				registerScripts(menuBuilder, configuration);
 			}
 		});
 		createUserScriptsDirectory();
+		}
 		FilterController.getCurrentFilterController().getConditionFactory().addConditionController(10,
 		    new ScriptConditionController());
 	}

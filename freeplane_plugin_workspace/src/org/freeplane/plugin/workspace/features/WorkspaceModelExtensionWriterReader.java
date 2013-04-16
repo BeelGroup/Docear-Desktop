@@ -23,11 +23,7 @@ public class WorkspaceModelExtensionWriterReader implements IExtensionAttributeW
 	private WorkspaceModelExtensionWriterReader(MapController mapController) {
 		registerAttributeHandlers(mapController.getReadManager());
 		mapController.getWriteManager().addExtensionAttributeWriter(WorkspaceMapModelExtension.class, this);	
-		mapController.addMapLifeCycleListener(new IMapLifeCycleListener() {					
-			public void onSavedAs(MapModel map) {}
-			
-			public void onSaved(MapModel map) {}
-			
+		mapController.addMapLifeCycleListener(new IMapLifeCycleListener() {			
 			public void onRemove(MapModel map) {}
 			
 			public void onCreate(MapModel map) {
@@ -41,6 +37,12 @@ public class WorkspaceModelExtensionWriterReader implements IExtensionAttributeW
 						LogUtils.warn("Exception in "+this.getClass()+".onCreate(MapModel): no current project was selected");
 					}
 				}
+			}
+
+			public void onSavedAs(MapModel map) {
+			}
+
+			public void onSaved(MapModel map) {
 			}
 		});		
 	}

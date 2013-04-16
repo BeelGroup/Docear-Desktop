@@ -7,7 +7,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.tree.TreePath;
 
-import org.freeplane.core.ui.EnabledAction;
+import org.freeplane.plugin.workspace.components.menu.CheckEnableOnPopup;
 import org.freeplane.plugin.workspace.dnd.DnDController;
 import org.freeplane.plugin.workspace.dnd.IWorkspaceTransferableCreator;
 import org.freeplane.plugin.workspace.dnd.IWorspaceClipboardOwner;
@@ -15,7 +15,7 @@ import org.freeplane.plugin.workspace.dnd.WorkspaceTransferable;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 
-@EnabledAction(checkOnPopup = true)
+@CheckEnableOnPopup
 public class NodeCutAction extends AWorkspaceAction {
 
 	public static final String KEY = "workspace.action.node.cut";

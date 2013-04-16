@@ -2,12 +2,12 @@ package org.freeplane.plugin.workspace.actions;
 
 import java.awt.event.ActionEvent;
 
-import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.components.menu.CheckEnableOnPopup;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
-@EnabledAction(checkOnPopup=true)
+@CheckEnableOnPopup
 public class WorkspaceProjectOpenLocationAction extends NodeOpenLocationAction {
 	private static final long serialVersionUID = 1L;
 

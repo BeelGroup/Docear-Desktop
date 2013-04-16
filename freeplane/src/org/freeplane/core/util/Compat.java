@@ -12,7 +12,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Properties;
 import java.util.Set;
 
@@ -28,6 +27,7 @@ import org.freeplane.features.mode.Controller;
  * @author robert.ladstaetter
  */
 public class Compat {
+	public static final String PROPERTY_FREEPLANE_USERDIR = "org.freeplane.userfpdir";
 	public static final String JAVA_VERSION = System.getProperty("java.version");
 	public static final String VERSION_1_6_0 = "1.6.0";
 
@@ -162,8 +162,9 @@ public class Compat {
 			}
 		}
 	}
-	final private static String PREVIEW_DIR=File.separatorChar + "1.2.x";
+	final private static String CURRENT_VERSION_DIR= File.separatorChar + "1.3.x";
 	
+	/** the directory *including* the version directory. */
 	public static String getFreeplaneUserDirectory() {
 		Properties freeplaneProperties = new Properties();
 		try {
@@ -171,24 +172,30 @@ public class Compat {
 		} catch (IOException e) {
 			LogUtils.warn(e);
 		}
-		String applicationName = freeplaneProperties.getProperty("ApplicationName", "freeplane").toLowerCase(Locale.ENGLISH);
+		String applicationName = freeplaneProperties.getProperty("ApplicationName", "Freeplane");
 		String userFpDir = null;
 		if(applicationName.equalsIgnoreCase("freeplane")){
-			userFpDir = System.getProperty("org.freeplane.userfpdir");
+			userFpDir = System.getProperty(PROPERTY_FREEPLANE_USERDIR);
+			
+			if(userFpDir == null){
+				userFpDir = getDefaultFreeplaneUserDirectory();
+			}
+			userFpDir += CURRENT_VERSION_DIR;
 		}
-		else if(System.getProperty("org.freeplane.userfpdir") != null && System.getProperty("org.freeplane.userfpdir").endsWith("Data")){
-			userFpDir = System.getProperty("org.freeplane.userfpdir") + File.separator + freeplaneProperties.getProperty("ApplicationName", "Freeplane");
+		else if(System.getProperty("org.freeplane.userfpdir") != null && System.getProperty(PROPERTY_FREEPLANE_USERDIR).endsWith("Data")){
+			userFpDir = System.getProperty("org.freeplane.userfpdir") + File.separator + applicationName;
 		}
-		else if(System.getenv("APPDATA") != null && System.getenv("APPDATA").length() > 0){			
-			userFpDir = System.getenv("APPDATA") + File.separator + freeplaneProperties.getProperty("ApplicationName", "Freeplane");
-		}
+		
 		if(userFpDir == null){						
-			userFpDir = System.getProperty("user.home")+ File.separator + "." + applicationName;			
+			userFpDir = System.getProperty("user.home")+ File.separator + "." + applicationName.toLowerCase();			
 		}
-		//DOCEAR: #121: do not use freeplane's version in path names
-		if(PREVIEW_DIR != null && applicationName.equalsIgnoreCase("freeplane"))
-			return userFpDir + PREVIEW_DIR;
+		
 		return userFpDir;
+	}
+
+	/** the default FP directory *excluding* the version directory. */
+    public static String getDefaultFreeplaneUserDirectory() {
+        return System.getProperty("user.home")+ File.separator + ".freeplane";
 	}
 
 	static public String smbUri2unc(final URI uri) {

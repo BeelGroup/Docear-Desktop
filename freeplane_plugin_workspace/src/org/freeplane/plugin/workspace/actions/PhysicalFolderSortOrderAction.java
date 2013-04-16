@@ -8,8 +8,8 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.tree.TreePath;
 
-import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.ui.SelectableAction;
+import org.freeplane.plugin.workspace.components.menu.CheckEnableOnPopup;
 import org.freeplane.plugin.workspace.io.IFileSystemRepresentation;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 
@@ -17,7 +17,8 @@ import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 /**
  * PhysicalFolderSortOrderAction
  */
-@EnabledAction(checkOnPopup = true)
+
+@CheckEnableOnPopup
 @SelectableAction(checkOnPopup = true)
 public class PhysicalFolderSortOrderAction extends AWorkspaceAction {	
 	public static final String KEY = "workspace.action.node.physical.sort";

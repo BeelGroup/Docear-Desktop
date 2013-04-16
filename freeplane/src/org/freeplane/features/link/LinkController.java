@@ -89,13 +89,7 @@ import sun.net.www.ParseUtil;
 /**
  * @author Dimitry Polivaev
  */
-//WORKSPACE - todo: move every modification to MLinkController
 public class LinkController extends SelectionController implements IExtension {
-	public final static int LINK_ABSOLUTE = 0;
-	public final static int LINK_RELATIVE_TO_MINDMAP = 1;
-	
-//	private final static String LINK_ABSOLUTE_PROPERTY = "absolute";
-	private final static String LINK_RELATIVE_TO_MINDMAP_PROPERTY = "relative";
 	
 	public static final String MENUITEM_SCHEME = "menuitem";
 
@@ -109,8 +103,7 @@ public class LinkController extends SelectionController implements IExtension {
 	}
 
 	public static void install() {
-		FilterController.getCurrentFilterController().getConditionFactory()
-				.addConditionController(3, new LinkConditionController());
+		FilterController.getCurrentFilterController().getConditionFactory().addConditionController(3, new LinkConditionController());
 	}
 
 	public static void install(final LinkController linkController) {
@@ -123,10 +116,7 @@ public class LinkController extends SelectionController implements IExtension {
 	private static final String MAIL_ICON = ResourceController.getResourceController().getProperty("mail_icon");
 	public static final String LINK_LOCAL_ICON = ResourceController.getResourceController().getProperty("link_local_icon");
 
-	// final private ModeController modeController;
-
 	public LinkController() {
-		// this.modeController = modeController;
 	}
 	
 	protected void init() {
@@ -173,8 +163,9 @@ public class LinkController extends SelectionController implements IExtension {
 			componentBox.add(Box.createHorizontalStrut(10));
 			componentBox.add(component);
 		}
-		else
+        else {
 			componentBox = component;
+        }
 		componentBox.setAlignmentX(JComponent.LEFT_ALIGNMENT);
 		componentBox.setMinimumSize(new Dimension());
 		componentBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
@@ -399,7 +390,10 @@ public class LinkController extends SelectionController implements IExtension {
     }
 
 	protected void loadURL(final NodeModel selectedNode, final ActionEvent e) {
-		final URI link = NodeLinks.getValidLink(selectedNode);
+		loadURL(selectedNode, e, NodeLinks.getValidLink(selectedNode));
+	}
+
+    public void loadURL(final NodeModel selectedNode, final ActionEvent e, final URI link) {
 		if (link != null) {
 			onDeselect(selectedNode);
 			ModeController modeController = Controller.getCurrentModeController();
@@ -428,9 +422,12 @@ public class LinkController extends SelectionController implements IExtension {
 		return getController().linkType();
 	}
 	
+    public static final int LINK_ABSOLUTE = 0;
+	public static final int LINK_RELATIVE_TO_MINDMAP = 1;
+    
 	public int linkType() {
 		String linkTypeProperty = ResourceController.getResourceController().getProperty("links");
-		if (linkTypeProperty.equals(LINK_RELATIVE_TO_MINDMAP_PROPERTY)) {
+		if ("relative".equals(linkTypeProperty)) {
 			return LINK_RELATIVE_TO_MINDMAP;
 		}
 		return LINK_ABSOLUTE;
@@ -457,7 +454,7 @@ public class LinkController extends SelectionController implements IExtension {
 		URI normalizedUri = uri.normalize();
 		//Fix UNC paths that are incorrectly normalized by URI#resolve (see Java bug 4723726)
 		String normalizedPath = normalizedUri.getPath();
-		if ("file".equalsIgnoreCase(uri.getScheme()) && uri.getPath() != null && uri.getPath().startsWith(UNC_PREFIX) && (normalizedPath == null || !normalizedPath.startsWith(UNC_PREFIX))){
+		if ("file".equalsIgnoreCase(uri.getScheme()) && uri.getPath() != null && uri.getPath().startsWith(UNC_PREFIX) && (normalizedPath == null || !normalizedPath.startsWith(UNC_PREFIX))) {
 			try {
 				normalizedUri = new URI(normalizedUri.getScheme(), ensureUNCPath(normalizedUri.getSchemeSpecificPart()), normalizedUri.getFragment());
 			} catch (URISyntaxException e) {
@@ -483,7 +480,7 @@ public class LinkController extends SelectionController implements IExtension {
 		if (linkType == LINK_ABSOLUTE) {
 			return null;
 		}
-		try {			
+		try {
 			URI mapUri = null;
 			if (map != null) {
 				mapUri = map.getAbsoluteFile().toURI();
@@ -526,6 +523,44 @@ public class LinkController extends SelectionController implements IExtension {
 		}
 		return null;
 	}
+
+//	public static URI toRelativeURI(final File map, final File input) {
+//		try {
+//			final URI fileUri = input.getAbsoluteFile().toURI();
+//			if (map == null) {
+//				return fileUri;
+//			}
+//			final URI mapUri = map.getAbsoluteFile().toURI();
+//			final String filePathAsString = fileUri.getRawPath();
+//			final String mapPathAsString = mapUri.getRawPath();
+//			int differencePos;
+//			final int lastIndexOfSeparatorInMapPath = mapPathAsString.lastIndexOf("/");
+//			final int lastIndexOfSeparatorInFilePath = filePathAsString.lastIndexOf("/");
+//			int lastCommonSeparatorPos = 0;
+//			for (differencePos = 1; differencePos <= lastIndexOfSeparatorInMapPath
+//			        && differencePos <= lastIndexOfSeparatorInFilePath
+//			        && filePathAsString.charAt(differencePos) == mapPathAsString.charAt(differencePos); differencePos++) {
+//				if (filePathAsString.charAt(differencePos) == '/') {
+//					lastCommonSeparatorPos = differencePos;
+//				}
+//			}
+//			if (lastCommonSeparatorPos == 0) {
+//				return fileUri;
+//			}
+//			final StringBuilder relativePath = new StringBuilder();
+//			for (int i = lastCommonSeparatorPos + 1; i <= lastIndexOfSeparatorInMapPath; i++) {
+//				if (mapPathAsString.charAt(i) == '/') {
+//					relativePath.append("../");
+//				}
+//			}
+//			relativePath.append(filePathAsString.substring(lastCommonSeparatorPos + 1));
+//			return new URI(relativePath.toString());
+//		}
+//		catch (final URISyntaxException e) {
+//			e.printStackTrace();
+//		}
+//		return null;
+//	}
 
 	// patterns only need to be compiled once
 	static Pattern patSMB = Pattern.compile( // \\host\path[#fragement]

@@ -15,6 +15,7 @@ import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.components.menu.CheckEnableOnPopup;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
@@ -150,5 +151,15 @@ public abstract class AWorkspaceAction extends AFreeplaneAction {
 		WorkspacePopupMenu pop = getRootPopupMenu((Component) e.getSource()); //(WorkspacePopupMenu)((Component) e.getSource()).getParent();		
 		JTree tree = (JTree)pop.getInvoker();
 		return tree.getComponentAt(pop.getInvokerLocation());
+	}
+	
+	static public boolean checkEnabledOnPopup(final AFreeplaneAction action) {
+		if(action instanceof AWorkspaceAction) {	
+			final CheckEnableOnPopup annotation = action.getClass().getAnnotation(CheckEnableOnPopup.class);
+			if (annotation != null) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

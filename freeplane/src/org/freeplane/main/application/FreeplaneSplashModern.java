@@ -29,6 +29,7 @@ import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Rectangle2D;
 import java.io.InputStream;
 import java.net.URL;
 
@@ -62,6 +63,7 @@ public class FreeplaneSplashModern extends JWindow {
 
 	public FreeplaneSplashModern(final JFrame frame) {
 		super(frame);
+		//splashResource = ResourceController.getResourceController().getResource("/images/Freeplane_splash.png");
 		appName = ResourceController.getResourceController().getProperty("ApplicationName", "Freeplane");
 		//DOCEAR: synch with plugin/app start			
 		if(appName != null && !"freeplane".equals(appName.toLowerCase())) {
@@ -91,7 +93,7 @@ public class FreeplaneSplashModern extends JWindow {
 		}
 	    InputStream fontInputStream = null;
 		try {
-			fontInputStream = ResourceController.getResourceController().getResource("/fonts/BPreplay.ttf")
+			fontInputStream = ResourceController.getResourceController().getResource("/fonts/intuitive-subset.ttf")
 			    .openStream();
 			versionTextFont = Font.createFont(Font.TRUETYPE_FONT, fontInputStream);
 		}
@@ -104,6 +106,7 @@ public class FreeplaneSplashModern extends JWindow {
     }
 
 	private final ImageIcon splashImage;
+
 	private Integer mWidth3;
 	private URL splashResource;
 
@@ -125,10 +128,30 @@ public class FreeplaneSplashModern extends JWindow {
 				g2.drawString(description, xCoordinate, yCoordinate);
 				if (mWidth3 == null) {
 					mWidth3 = new Integer(g2.getFontMetrics().stringWidth(copyright));
+//		g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+//		final FreeplaneVersion version = FreeplaneVersion.getVersion();
+//		final String versionString = getVersionText(version);
+//		g2.setColor(Color.BLACK);
+//		final int xCoordinate = 164;
+//		final int yCoordinate = 194;
+//		createVersionTextFont();
+//		final float versionFontSize;
+//		versionFontSize = 15;
+//		g2.setFont(versionTextFont.deriveFont(versionFontSize));
+//		g2.drawString(versionString, xCoordinate, yCoordinate);
 				}
-				xCoordinate = getSize().width - mWidth3.intValue() - 10;
-				g2.drawString(copyright, xCoordinate, yCoordinate);
 			}
+		}
+	}
+
+	private String getVersionText(final FreeplaneVersion version) {
+	    final String freeplaneNumber = version.numberToString();
+		final String status = version.getType().toUpperCase();
+		if("".equals(status))
+			return freeplaneNumber;
+		else{
+			final String versionString = freeplaneNumber + " " + status;
+			return versionString;
 		}
 	}
 

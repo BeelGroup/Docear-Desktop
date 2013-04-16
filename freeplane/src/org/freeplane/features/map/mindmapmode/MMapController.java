@@ -147,7 +147,7 @@ public class MMapController extends MapController {
 	}
 	
 	private void startEditingAfterSelect(final NodeModel newNode) {
-		final Component component = Controller.getCurrentController().getViewController().getComponent(newNode);
+		final Component component = Controller.getCurrentController().getMapViewManager().getComponent(newNode);
 		if(component == null)
 			return;
 		component.addFocusListener(new FocusListener() {
@@ -597,7 +597,7 @@ public class MMapController extends MapController {
 		mapModel.setSaved(saved);
 		if (setTitle) {
 			final Controller controller = Controller.getCurrentController();
-			controller.getViewController().setTitle();
+			controller.getMapViewManager().setTitle();
 			final AFreeplaneAction saveAction = controller.getModeController().getAction("SaveAction");
 			if(saveAction != null)
 				saveAction.setEnabled();
@@ -627,7 +627,7 @@ public class MMapController extends MapController {
 		if(! addNewNode(newNode, target, -1, newNodeIsLeft))
 			return null;
 		((MLocationController)MLocationController.getController(modeController)).moveNodePosition(newNode, -1, pt.x, pt.y);
-		final Component component = Controller.getCurrentController().getViewController().getComponent(newNode);
+		final Component component = Controller.getCurrentController().getMapViewManager().getComponent(newNode);
 		if (component == null)
 			return newNode;
 		component.addFocusListener(new FocusListener() {

@@ -7,8 +7,10 @@ package org.freeplane.plugin.workspace.actions;
 import java.awt.event.ActionEvent;
 
 import org.freeplane.core.ui.EnabledAction;
+import org.freeplane.plugin.workspace.components.menu.CheckEnableOnPopup;
 
-@EnabledAction(checkOnNodeChange = true, checkOnPopup = true)
+@CheckEnableOnPopup
+@EnabledAction(checkOnNodeChange = true)
 public class FileNodeNewFileAction extends AWorkspaceAction {
 
 	private static final long serialVersionUID = 1L;

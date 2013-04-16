@@ -8,14 +8,14 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.JOptionPane;
 
-import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.components.menu.CheckEnableOnPopup;
 import org.freeplane.plugin.workspace.model.WorkspaceModel;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
-@EnabledAction(checkOnPopup = true)
+@CheckEnableOnPopup
 public class WorkspaceRemoveProjectAction extends AWorkspaceAction {
 
 	public static final String KEY = "workspace.action.project.remove";
