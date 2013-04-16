@@ -21,7 +21,7 @@ import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.plugin.workspace.URIUtils;
 
-@EnabledAction( checkOnPopup = true, checkOnNodeChange = true )
+@EnabledAction(checkOnNodeChange=true)
 public class ImportNewChildAnnotationsAction extends ImportAnnotationsAction {
 
 	/**

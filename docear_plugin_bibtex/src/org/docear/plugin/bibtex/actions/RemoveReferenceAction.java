@@ -9,7 +9,7 @@ import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.view.swing.map.MapView;
 
-@EnabledAction(checkOnPopup = true)
+@EnabledAction(checkOnNodeChange=true)
 public class RemoveReferenceAction extends AFreeplaneAction {
 
     /**
@@ -25,7 +25,7 @@ public class RemoveReferenceAction extends AFreeplaneAction {
 	for (NodeModel node : Controller.getCurrentModeController().getMapController().getSelectedNodes()) {
 	    ReferencesController.getController().getJabRefAttributes().removeReferenceFromNode(node);
 
-	    ((MapView) Controller.getCurrentController().getViewController().getMapView()).getNodeView(node).updateAll();
+	    ((MapView) Controller.getCurrentController().getMapViewManager().getMapViewComponent()).getNodeView(node).updateAll();
 	}
 
     }

@@ -108,9 +108,9 @@ import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.features.ui.INodeViewLifeCycleListener;
+import org.freeplane.features.url.MapVersionInterpreter;
 import org.freeplane.features.url.UrlManager;
 import org.freeplane.features.url.mindmapmode.MFileManager;
-import org.freeplane.features.url.mindmapmode.MapVersionInterpreter;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.mindmapmode.MModeWorkspaceUrlManager;
@@ -205,7 +205,7 @@ public class PdfUtilitiesController extends ALanguageController {
 		this.registerListener();
 		this.addMenuEntries();
 		
-		MapVersionInterpreter.addMapVersionInterpreter(new MapVersionInterpreter("0.9.0\" software_name=\"SciPlore_", false, false, "SciploreMM", "http://sciplore.org", null, new MapConverter()));
+		MapVersionInterpreter.addMapVersionInterpreter(new MapVersionInterpreter("SciploreMM", 1, "0.9.0\" software_name=\"SciPlore_", false, false, "SciploreMM", "http://sciplore.org", null, new MapConverter()));
 		
 	}
 

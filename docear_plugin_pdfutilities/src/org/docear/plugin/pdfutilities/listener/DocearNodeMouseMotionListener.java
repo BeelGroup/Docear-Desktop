@@ -75,7 +75,7 @@ public class DocearNodeMouseMotionListener implements IMouseListener {
 					Rectangle iconR = ((MultipleImage)view.getIcon()).getIconR(PdfUtilitiesController.REFRESH_MONITORING_ICON);
 					if(iconR != null) {
 						view.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-						float zoom = Controller.getCurrentController().getViewController().getZoom();
+						float zoom = Controller.getCurrentController().getMapViewManager().getZoom();
 						iconR.setLocation((int) (iconR.x*zoom), iconR.y);
 						iconR.setSize((int)(iconR.width*zoom), (int)(iconR.height*zoom));
 						iconR.translate(bounds.x, bounds.y);
@@ -121,12 +121,13 @@ public class DocearNodeMouseMotionListener implements IMouseListener {
 				if(view.getIcon() instanceof MultipleImage) {
 					Rectangle iconR = ((MultipleImage)view.getIcon()).getIconR(PdfUtilitiesController.REFRESH_MONITORING_ICON);
 					if(iconR != null) {
-						float zoom = Controller.getCurrentController().getViewController().getZoom();
+						float zoom = Controller.getCurrentController().getMapViewManager().getZoom();
 						iconR.setLocation((int) (iconR.x*zoom), iconR.y);
 						iconR.setSize((int)(iconR.width*zoom), (int)(iconR.height*zoom));
 						iconR.translate(bounds.x, bounds.y);
 						if(iconR.contains(p)) {												
-							UpdateMonitoringFolderAction.updateNodesAgainstMonitoringDir(getMonitorNodes(Controller.getCurrentController().getViewController().getMap().getRootNode()), false);
+							//DOCEAR - todo: test this (changed after merge)
+							UpdateMonitoringFolderAction.updateNodesAgainstMonitoringDir(getMonitorNodes(Controller.getCurrentController().getMapViewManager().getModel().getRootNode()), false);
 							return;
 						}
 					}
@@ -307,7 +308,7 @@ public class DocearNodeMouseMotionListener implements IMouseListener {
 			final KeyboardFocusManager currentKeyboardFocusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
             final Window activeWindow = currentKeyboardFocusManager.getActiveWindow();
 			if(activeWindow instanceof JDialog && ((JDialog) activeWindow).isModal() 
-            		&& ! SwingUtilities.isDescendingFrom(Controller.getCurrentController().getViewController().getMapView(), activeWindow)){
+            		&& ! SwingUtilities.isDescendingFrom(Controller.getCurrentController().getMapViewManager().getMapViewComponent(), activeWindow)){
 				popup.hide();
 				hideTimer.removeActionListener(this);
 				hideTimer.stop();
@@ -346,7 +347,7 @@ public class DocearNodeMouseMotionListener implements IMouseListener {
 						if(view.getIcon() instanceof MultipleImage) {
 							Rectangle iconR = ((MultipleImage)view.getIcon()).getIconR(PdfUtilitiesController.REFRESH_MONITORING_ICON);
 							if(iconR != null) {
-								float zoom = Controller.getCurrentController().getViewController().getZoom();
+								float zoom = Controller.getCurrentController().getMapViewManager().getZoom();
 								iconR.setLocation((int) (iconR.x*zoom), iconR.y);
 								iconR.setSize((int)(iconR.width*zoom), (int)(iconR.height*zoom));
 								iconR.translate(bounds.x, bounds.y);

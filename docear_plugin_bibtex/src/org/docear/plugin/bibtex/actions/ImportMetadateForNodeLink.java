@@ -17,7 +17,7 @@ import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 
-@EnabledAction(checkOnPopup = true)
+@EnabledAction(checkOnNodeChange=true)
 public class ImportMetadateForNodeLink extends AFreeplaneAction {
 
 	private static final String KEY = "menu_import_metadata";

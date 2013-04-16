@@ -155,7 +155,7 @@ public class NodeUtilities {
 							// Attribute(attributeKey, value));
 						}
 
-						AttributeView attributeView = (((MapView) Controller.getCurrentController().getViewController().getMapView()).getSelected())
+						AttributeView attributeView = (((MapView) Controller.getCurrentController().getMapViewManager().getMapViewComponent()).getSelected())
 								.getAttributeView();
 						attributeView.getContainer().invalidate();
 						attributeView.update();

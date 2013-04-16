@@ -28,7 +28,7 @@ import org.freeplane.features.mode.Controller;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.jdesktop.swingworker.SwingWorker;
 
-@EnabledAction( checkOnPopup = true )
+@EnabledAction(checkOnNodeChange=true)
 public class MonitoringFlattenSubfoldersAction extends DocearAction {
 
 	/**

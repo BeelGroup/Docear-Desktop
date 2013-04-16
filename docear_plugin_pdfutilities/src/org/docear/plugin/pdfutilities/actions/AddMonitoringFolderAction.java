@@ -24,7 +24,7 @@ import org.freeplane.features.link.mindmapmode.MLinkController;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 
-@EnabledAction( checkOnPopup = true )
+@EnabledAction(checkOnNodeChange=true)
 public class AddMonitoringFolderAction extends AbstractMonitoringAction {
 
 	/**

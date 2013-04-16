@@ -8,14 +8,14 @@ import javax.swing.tree.TreePath;
 import org.docear.plugin.bibtex.ReferencesController;
 import org.docear.plugin.bibtex.jabref.JabRefCommons;
 import org.docear.plugin.bibtex.jabref.JabrefWrapper;
-import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.actions.AWorkspaceAction;
+import org.freeplane.plugin.workspace.components.menu.CheckEnableOnPopup;
 import org.freeplane.plugin.workspace.io.IFileSystemRepresentation;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
 
-@EnabledAction(checkOnPopup = true)
+@CheckEnableOnPopup
 public class AddOrUpdateReferenceEntryWorkspaceAction extends AWorkspaceAction {
 	public static final String KEY = "workspace.action.addOrUpdateReferenceEntry";
 

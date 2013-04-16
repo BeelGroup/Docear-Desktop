@@ -63,7 +63,7 @@ public class WorkspaceTreeModelListener implements TreeModelListener {
 							//set to unsaved 
 							map.setSaved(false);
 							//update the application title to show that the map is not saved
-							Controller.getCurrentController().getViewController().setTitle();
+							Controller.getCurrentController().getMapViewManager().setTitle();
 						}
 					} catch (Throwable e) {
 						LogUtils.warn(e);

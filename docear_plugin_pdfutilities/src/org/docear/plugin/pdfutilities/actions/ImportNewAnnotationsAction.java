@@ -24,7 +24,7 @@ import org.freeplane.plugin.workspace.URIUtils;
 
 import de.intarsys.pdf.parser.COSLoadException;
 
-@EnabledAction( checkOnPopup = true, checkOnNodeChange = true )
+@EnabledAction(checkOnNodeChange=true)
 public class ImportNewAnnotationsAction extends ImportAnnotationsAction {
 
 	/**

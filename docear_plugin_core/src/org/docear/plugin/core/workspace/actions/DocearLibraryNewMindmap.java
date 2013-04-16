@@ -8,13 +8,11 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.net.URI;
 
-import javax.swing.Icon;
 import javax.swing.JOptionPane;
 
 import org.apache.commons.io.FilenameUtils;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.docear.plugin.core.workspace.node.FolderTypeLibraryNode;
-import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
@@ -32,19 +30,13 @@ import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
 public class DocearLibraryNewMindmap extends AWorkspaceAction {
 
 private static final long serialVersionUID = 1L;
-	
-	private static final Icon icon;
-	
-	static {
-		icon = (ResourceController.getResourceController().getProperty("ApplicationName", "Docear").equals("Docear") ? DefaultFileNode.DOCEAR_ICON : DefaultFileNode.FREEPLANE_ICON);
-	}
 
 	/***********************************************************************************
 	 * CONSTRUCTORS
 	 **********************************************************************************/
 	
 	public DocearLibraryNewMindmap() {
-		super("workspace.action.library.new.mindmap", TextUtils.getRawText("workspace.action.library.new.mindmap.label"), icon);
+		super("workspace.action.library.new.mindmap", TextUtils.getRawText("workspace.action.library.new.mindmap.label"), DefaultFileNode.getApplicationIcon());
 	}
 	
 

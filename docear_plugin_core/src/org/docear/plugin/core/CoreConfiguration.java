@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Properties;
 
+import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.io.FileUtils;
@@ -60,10 +61,9 @@ import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.features.ui.ViewController;
+import org.freeplane.features.url.MapConversionException;
+import org.freeplane.features.url.MapVersionInterpreter;
 import org.freeplane.features.url.UrlManager;
-import org.freeplane.features.url.mindmapmode.IMapConverter;
-import org.freeplane.features.url.mindmapmode.MapConversionException;
-import org.freeplane.features.url.mindmapmode.MapVersionInterpreter;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.components.IWorkspaceView;
@@ -71,6 +71,7 @@ import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.mindmapmode.VirtualFolderDropHandler;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
+import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 
 
 public class CoreConfiguration extends ALanguageController {
@@ -95,13 +96,8 @@ public class CoreConfiguration extends ALanguageController {
 
 	public static final String DOCUMENT_REPOSITORY_PATH = "@@literature_repository@@";
 	public static final String LIBRARY_PATH = "@@library_mindmaps@@"; 
-//	public static final String BIBTEX_PATH = DocearController.BIBTEX_PATH_PROPERTY;
-		
-	//WORKSPACE - todo: think about a solution
-//	public static final NodeAttributeObserver projectPathObserver = new NodeAttributeObserver();
-//	public static final NodeAttributeObserver referencePathObserver = new NodeAttributeObserver();
-//	public static final NodeAttributeObserver repositoryPathObserver = new NodeAttributeObserver();	
-		
+
+	
 	public CoreConfiguration() {			
 		LogUtils.info("org.docear.plugin.core.CoreConfiguration() initializing...");
 	}
@@ -111,6 +107,14 @@ public class CoreConfiguration extends ALanguageController {
 		adjustProperties(controller);				
 		
 		AWorkspaceProject.setCurrentProjectCreator(new DocearWorspaceProjectCreator());
+		if(ResourceController.getResourceController().getProperty("ApplicationName", "Docear").equals("Docear")) {
+			try {
+			DefaultFileNode.setApplicationIcon(new ImageIcon(CoreConfiguration.class.getResource("/images/docear16.png")));
+			}
+			catch (Exception e) {
+				LogUtils.warn("ERROR: default file application icon has not been replaced");
+			}
+		}
 		
 		WorkspaceController.replaceAction(new DocearAboutAction());
 		WorkspaceController.replaceAction(new DocearQuitAction());
@@ -180,7 +184,7 @@ public class CoreConfiguration extends ALanguageController {
 		DocearController.getController().getDocearEventLogger().appendToLog(this, DocearLogEvent.OS_TIME_ZONE, System.getProperty("user.timezone"));
 		DocearController.getController().getDocearEventLogger().appendToLog(this, DocearLogEvent.OS_SCREEN_RESOLUTION, Toolkit.getDefaultToolkit().getScreenSize().toString());
 		
-		MapVersionInterpreter.addMapVersionInterpreter(new MapVersionInterpreter("docear", false, false, "Docear", "http://www.docear.org", null, new IMapConverter() {
+		MapVersionInterpreter.addMapVersionInterpreter(new MapVersionInterpreter("Docear", 1, "docear", false, false, "Docear", "url", null, new org.freeplane.features.url.IMapConverter() {
 			public void convert(NodeModel root) throws MapConversionException {
 				final MapModel mapModel = root.getMap();				
 				DocearMapModelExtension docearMapModel = mapModel.getExtension(DocearMapModelExtension.class);

@@ -10,7 +10,7 @@ import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 
-@EnabledAction( checkOnPopup = true )
+@EnabledAction(checkOnNodeChange=true)
 public class DeleteMonitoringFolderAction extends AbstractMonitoringAction {
 
 	/**

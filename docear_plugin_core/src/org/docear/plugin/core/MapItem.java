@@ -45,7 +45,7 @@ public class MapItem {
 			}
 
 			if (mapExtensionKey != null) {
-				map = Controller.getCurrentController().getViewController().getMapViewManager().getMaps().get(mapExtensionKey);
+				map = Controller.getCurrentController().getMapViewManager().getMaps().get(mapExtensionKey);
 				if (map != null) {
 					return map;
 				}
@@ -97,8 +97,7 @@ public class MapItem {
 			} 
 			else {
 				for (MapView view : (List<MapView>) Controller
-						.getCurrentController().getViewController()
-						.getMapViewManager().getMapViewVector()) {
+						.getCurrentController().getMapViewManager().getMapViewVector()) {
 					File mapFile = view.getModel().getFile();
 					if (mapFile != null) {
 						URI mapUri = mapFile.toURI();

@@ -166,7 +166,7 @@ public class RecommendationTabListener implements ChangeListener, ContainerListe
 			if(selection != null){
 				final NodeModel selected = selection.getSelected();
 				if(selected != null)
-					controller.getViewController().getComponent(selected).requestFocusInWindow();
+					controller.getMapViewManager().getComponent(selected).requestFocusInWindow();
 			}
 			
 		}

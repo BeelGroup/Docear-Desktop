@@ -67,7 +67,7 @@ public class PdfNodeChangeListener implements INodeChangeListener {
 				} catch (IOException e) {
 					if(e.getMessage().equals("destination is read only")){ //$NON-NLS-1$
 						Object[] options = { TextUtils.getText("DocearRenameAnnotationListener.1"), TextUtils.getText("DocearRenameAnnotationListener.2"),TextUtils.getText("DocearRenameAnnotationListener.3") }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-						int result = JOptionPane.showOptionDialog(Controller.getCurrentController().getViewController().getComponent(node), TextUtils.getText("DocearRenameAnnotationListener.4"), TextUtils.getText("DocearRenameAnnotationListener.5"), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]); //$NON-NLS-1$ //$NON-NLS-2$
+						int result = JOptionPane.showOptionDialog(Controller.getCurrentController().getMapViewManager().getComponent(node), TextUtils.getText("DocearRenameAnnotationListener.4"), TextUtils.getText("DocearRenameAnnotationListener.5"), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]); //$NON-NLS-1$ //$NON-NLS-2$
 						if( result == JOptionPane.OK_OPTION){
 							this.nodeChanged(event);
 						}
