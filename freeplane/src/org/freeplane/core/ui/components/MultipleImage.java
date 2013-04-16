@@ -67,6 +67,7 @@ public class MultipleImage implements Icon {
 			myX += icon.getIconWidth();
 		}
 	}
+
 	//DOCEAR - get a rect relative to this image for a specific icon  
 	public Rectangle getIconR(Icon icon) {
 		int myX = 0;
