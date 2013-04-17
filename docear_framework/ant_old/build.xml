@@ -1,40 +1,31 @@
-<project name="docear" default="docear-dist" basedir="..">
-	
+<project name="docear" default="docear-bin" basedir="..">
+
 	<scriptdef name="toLowerCase" language="javascript">
 		<classpath>
 			<fileset dir="./lib" includes="*.jar" />
 		</classpath>
 		<attribute name="property" />
 		<attribute name="value" />
-		if(attributes.get("value") != null || attributes.get("value") != "undefined"){
-		   project.setNewProperty(attributes.get("property"), attributes.get("value").toLowerCase());
-		}
-	</scriptdef >
-	
+           if(attributes.get("value") != null || attributes.get("value") != "undefined"){
+              project.setNewProperty(attributes.get("property"), attributes.get("value").toLowerCase());
+           }
+    </scriptdef >
+
+
 	<property name="workspace" location=".." />
 	<property file="${workspace}/freeplane/viewer-resources/version.properties" />
 	<property file="${workspace}/docear_plugin_core/resources/version.properties" />
 	<property file="docear.version.properties" />
 	<property file="ant/ant.properties" />
+	<property file="${workspace}/freeplane/viewer-resources/freeplane.properties" />
 	<property name="freeplaneant.jar" value="${workspace}/freeplane_ant/dist/freeplaneant.jar" />
 	<property name="root" value="." />
 	<property name="build" value="${root}/build" />
 	<property name="build4mac" value="${root}/build4mac" />
 	<property name="build.plugins" value="${build}/plugins" />
 	<property name="dist" value="${root}/dist" />
-	<property name="macappfullpath" value="${build4mac}/Freeplane.app" />
+	<property name="macappfullpath" value="${build4mac}/Docear.app" />
 	<toLowerCase property="ApplicationNameToLowerCase" value="${ApplicationName}" />
-
-	<property name="launcher_src" value="src" />
-	<property name="launcher_manifest" value="${root}/META-INF/LAUNCHER_MANIFEST.MF" />
-	<property name="launcher_build" value="${root}/launcher_build" />
-	<property name="launcher_classpath" value="${framework.jar}" />
-	
-	<property name="debug" value="on" />
-	<property name="java_source_version" value="1.6" />
-	<property name="java_target_version" value="1.6" />
-	<property name="build.compiler" value="modern" />
-
 	<condition property="ver_freeplane" value="${freeplane_version}_${minor}" else="${freeplane_version}">
 		<isset property="minor" />
 	</condition>
@@ -46,24 +37,17 @@
 	<property name="build.scripts" value="${build}/scripts" />
 	<property name="script" value="${root}/script" />
 	<property name="docear.version.status.incr" value="1" />
-	
+
 	<!-- Mac OS X -->
 	<condition property="isMacOs">
-		<os family="mac"/>
+		<os family="mac" />
 	</condition>
 
-	<property name="mac-jarbundler" value = "${root}/mac-jarbundler"/>
-	<property name="jarbundler.jar" value = "jarbundler-2.1.0.jar"/>
-	<taskdef name="jarbundler" onerror="report"
-			 classpath="${mac-jarbundler}/${jarbundler.jar}"
-			 classname="net.sourceforge.jarbundler.JarBundler" />
-	<taskdef name="create-plugin" onerror="report"
-			 classpath="${freeplaneant.jar}"
-			 classname="org.freeplane.ant.CreatePlugin"/>
-	<taskdef name="nsis" onerror="report" 
-		classpath="${root}/lib/nsisant-1.3.jar" 
-		classname="com.danielreese.nsisant.Task" />
-
+	<property name="mac-jarbundler" value="${root}/mac-jarbundler" />
+	<property name="jarbundler.jar" value="jarbundler-2.1.0.jar" />
+	<taskdef name="jarbundler" onerror="report" classpath="${mac-jarbundler}/${jarbundler.jar}" classname="net.sourceforge.jarbundler.JarBundler" />
+	<taskdef name="create-plugin" onerror="report" classpath="${freeplaneant.jar}" classname="org.freeplane.ant.CreatePlugin" />
+	<taskdef name="nsis" classpath="${root}/lib/nsisant-1.3.jar" classname="com.danielreese.nsisant.Task" />
 	<target name="makePlugin">
 		<ant antfile="ant/build.xml" target="${anttarget}" dir="${workspace}/${plugindir}" inheritall="false" />
 		<mkdir dir="${build}/${targetdir}/${pluginname}" />
@@ -71,16 +55,16 @@
 			<fileset dir="${workspace}/${plugindir}/dist/${pluginname}" />
 		</copy>
 	</target>
-	
-	<target name="prepareDefaultVersion" unless="docear.version.status">
+    
+    <target name="prepareDefaultVersion" unless="docear.version.status">
 		<property name="docear.version.status" value="devel" />
 		<propertyfile file="docear.version.properties">
 			<entry key="docear.build.date" type="date" value="now" pattern="MM/dd/yyyy" />
 		</propertyfile>
-	</target>
+    </target>
 
 	<target name="prepareDevelVersion" if="${docear_devel}">
-		<antcall target="prepareDefaultVersion" />
+        <antcall target="prepareDefaultVersion" />
 	</target>
 
 	<target name="prepareAlphaVersion" if="${docear_alpha}">
@@ -152,12 +136,10 @@
 		<condition property="ver" value="${ver_docear}" else="${ver_freeplane}">
 			<equals arg1="${ApplicationNameToLowerCase}" arg2="docear" />
 		</condition>
-    </target>
-
-
-	<target name="build_core" depends="prepareVersion"> 
 		<echo>Docear Version = ${ver}.</echo>
+	</target>
 
+	<target name="build_core" depends="prepareVersion">
 		<mkdir dir="${build}" />
 		<copy todir="${build}">
 			<fileset dir="${script}" />
@@ -184,175 +166,144 @@
 			<fileset file="windows-launcher/${ApplicationNameToLowerCase}.exe" casesensitive="no" />
 		</copy>
 		<chmod file="${build}/${ApplicationNameToLowerCase}.sh" perm="ugo+rx" />
-		
 		<antcall target="makePlugin" inheritall="false">
-			<param name="anttarget" value="osgi_dist"/>
-			<param name="targetdir" value="core"/>
-			<param name="plugindir" value="freeplane"/>
-			<param name="pluginname" value="org.freeplane.core"/>
+			<param name="anttarget" value="osgi_dist" />
+			<param name="targetdir" value="core" />
+			<param name="plugindir" value="freeplane" />
+			<param name="pluginname" value="org.freeplane.core" />
 		</antcall>
 	</target>
 
+
 	<target name="build_help" unless="skip_help">
 		<antcall target="makePlugin" inheritall="false">
-			<param name="anttarget" value="dist"/>
-			<param name="targetdir" value="plugins"/>
-			<param name="plugindir" value="freeplane_plugin_help"/>
-			<param name="pluginname" value="org.freeplane.plugin.help"/>
+			<param name="anttarget" value="dist" />
+			<param name="targetdir" value="plugins" />
+			<param name="plugindir" value="freeplane_plugin_help" />
+			<param name="pluginname" value="org.freeplane.plugin.help" />
 		</antcall>
 	</target>
 
 	<target name="build_latex" unless="skip_latex">
 		<antcall target="makePlugin" inheritall="false">
-			<param name="anttarget" value="dist"/>
-			<param name="targetdir" value="plugins"/>
-			<param name="plugindir" value="freeplane_plugin_latex"/>
-			<param name="pluginname" value="org.freeplane.plugin.latex"/>
+			<param name="anttarget" value="dist" />
+			<param name="targetdir" value="plugins" />
+			<param name="plugindir" value="freeplane_plugin_latex" />
+			<param name="pluginname" value="org.freeplane.plugin.latex" />
 		</antcall>
 	</target>
 
 	<target name="build_svg" unless="skip_svg">
 		<antcall target="makePlugin" inheritall="false">
-			<param name="anttarget" value="dist"/>
-			<param name="targetdir" value="plugins"/>
-			<param name="plugindir" value="freeplane_plugin_svg"/>
-			<param name="pluginname" value="org.freeplane.plugin.svg"/>
+			<param name="anttarget" value="dist" />
+			<param name="targetdir" value="plugins" />
+			<param name="plugindir" value="freeplane_plugin_svg" />
+			<param name="pluginname" value="org.freeplane.plugin.svg" />
 		</antcall>
 	</target>
 
 	<target name="build_script" unless="skip_script">
 		<antcall target="makePlugin" inheritall="false">
-			<param name="anttarget" value="dist"/>
-			<param name="targetdir" value="plugins"/>
-			<param name="plugindir" value="freeplane_plugin_script"/>
-			<param name="pluginname" value="org.freeplane.plugin.script"/>
+			<param name="anttarget" value="dist" />
+			<param name="targetdir" value="plugins" />
+			<param name="plugindir" value="freeplane_plugin_script" />
+			<param name="pluginname" value="org.freeplane.plugin.script" />
 		</antcall>
 	</target>
 
 	<target name="build_script_api" unless="skip_script">
 		<antcall target="makePlugin" inheritall="false">
-			<param name="anttarget" value="api"/>
-			<param name="targetdir" value="plugins"/>
-			<param name="plugindir" value="freeplane_plugin_script"/>
-			<param name="pluginname" value="org.freeplane.plugin.script"/>
+			<param name="anttarget" value="api" />
+			<param name="targetdir" value="plugins" />
+			<param name="plugindir" value="freeplane_plugin_script" />
+			<param name="pluginname" value="org.freeplane.plugin.script" />
 		</antcall>
 	</target>
 
 	<target name="build_formula" unless="skip_formula">
 		<antcall target="makePlugin" inheritall="false">
-			<param name="anttarget" value="dist"/>
-			<param name="targetdir" value="plugins"/>
-			<param name="plugindir" value="freeplane_plugin_formula"/>
-			<param name="pluginname" value="org.freeplane.plugin.formula"/>
+			<param name="anttarget" value="dist" />
+			<param name="targetdir" value="plugins" />
+			<param name="plugindir" value="freeplane_plugin_formula" />
+			<param name="pluginname" value="org.freeplane.plugin.formula" />
 		</antcall>
 	</target>
 
 	<target name="build_bugreport" unless="skip_bugreport">
 		<antcall target="makePlugin" inheritall="false">
-			<param name="anttarget" value="dist"/>
-			<param name="targetdir" value="plugins"/>
-			<param name="plugindir" value="freeplane_plugin_bugreport"/>
-			<param name="pluginname" value="org.freeplane.plugin.bugreport"/>
-		</antcall>
-	</target>
-
-	<target name="build_openmaps" unless="skip_openmaps">
-		<antcall target="makePlugin" inheritall="false">
 			<param name="anttarget" value="dist" />
 			<param name="targetdir" value="plugins" />
-			<param name="plugindir" value="freeplane_plugin_openmaps" />
-			<param name="pluginname" value="org.freeplane.plugin.openmaps"/>
+			<param name="plugindir" value="freeplane_plugin_bugreport" />
+			<param name="pluginname" value="org.freeplane.plugin.bugreport" />
 		</antcall>
-    </target>
+	</target>
 
 	<target name="build_workspace" unless="skip_workspace">
 		<antcall target="makePlugin" inheritall="false">
-			<param name="anttarget" value="dist"/>
-			<param name="targetdir" value="plugins"/>
-			<param name="plugindir" value="freeplane_plugin_workspace"/>
-			<param name="pluginname" value="org.freeplane.plugin.workspace"/>
+			<param name="anttarget" value="dist" />
+			<param name="targetdir" value="plugins" />
+			<param name="plugindir" value="freeplane_plugin_workspace" />
+			<param name="pluginname" value="org.freeplane.plugin.workspace" />
 		</antcall>
 	</target>
 
-	<target name="build_docear_core" unless="skip_docear">
+	<target name="build_docear_core" unless="skip_core">
 		<antcall target="makePlugin" inheritall="false">
-			<param name="anttarget" value="dist"/>
-			<param name="targetdir" value="plugins"/>
-			<param name="plugindir" value="docear_plugin_core"/>
-			<param name="pluginname" value="org.docear.plugin.core"/>
+			<param name="anttarget" value="dist" />
+			<param name="targetdir" value="plugins" />
+			<param name="plugindir" value="docear_plugin_core" />
+			<param name="pluginname" value="org.docear.plugin.core" />
 		</antcall>
 	</target>
 
-	<target name="build_docear_services" unless="skip_docear">
+	<target name="build_docear_services" unless="skip_services">
 		<antcall target="makePlugin" inheritall="false">
-			<param name="anttarget" value="dist"/>
-			<param name="targetdir" value="plugins"/>
-			<param name="plugindir" value="docear_plugin_services"/>
-			<param name="pluginname" value="org.docear.plugin.services"/>
+			<param name="anttarget" value="dist" />
+			<param name="targetdir" value="plugins" />
+			<param name="plugindir" value="docear_plugin_services" />
+			<param name="pluginname" value="org.docear.plugin.services" />
 		</antcall>
 	</target>
 
-	<target name="build_docear_pdfutilities" unless="skip_docear">
+	<target name="build_docear_pdfutilities" unless="skip_pdfutilities">
 		<antcall target="makePlugin" inheritall="false">
-			<param name="anttarget" value="dist"/>
-			<param name="targetdir" value="plugins"/>
-			<param name="plugindir" value="docear_plugin_pdfutilities"/>
-			<param name="pluginname" value="org.docear.plugin.pdfutilities"/>
+			<param name="anttarget" value="dist" />
+			<param name="targetdir" value="plugins" />
+			<param name="plugindir" value="docear_plugin_pdfutilities" />
+			<param name="pluginname" value="org.docear.plugin.pdfutilities" />
 		</antcall>
 	</target>
 
-	<target name="build_docear_bibtex" depends="build_docear_jabref" unless="skip_docear">
+	<target name="build_docear_dragbase" unless="skip_dragbase">
 		<antcall target="makePlugin" inheritall="false">
-			<param name="anttarget" value="dist"/>
-			<param name="targetdir" value="plugins"/>
-			<param name="plugindir" value="docear_plugin_bibtex"/>
-			<param name="pluginname" value="org.docear.plugin.bibtex"/>
+			<param name="anttarget" value="dist" />
+			<param name="targetdir" value="plugins" />
+			<param name="plugindir" value="docear_plugin_dragbase" />
+			<param name="pluginname" value="org.docear.plugin.dragbase" />
 		</antcall>
 	</target>
 
-<!--
-	<target name="build_docear_dragbase" unless="skip_docear">
-		<antcall target="makePlugin" inheritall="false">
-			<param name="anttarget" value="dist"/>
-			<param name="targetdir" value="plugins"/>
-			<param name="plugindir" value="docear_plugin_dragbase"/>
-			<param name="pluginname" value="org.docear.plugin.dragbase"/>
-		</antcall>
-	</target>
--->
-	
-	<target name="build_docear_jabref">
+	<target name="prepare_jabref">
 		<ant antfile="${workspace}/Jabref_Beta_2_7_Docear/build.xml" target="jars" dir="${workspace}/Jabref_Beta_2_7_Docear" inheritAll="false" />
 	</target>
-	
-	<target name="build_launcher" depends="build_core">
-		<mkdir dir="${launcher_build}" />
-		<javac srcdir="${launcher_src}" destdir="${launcher_build}" classpath="${launcher_classpath}" 
-			debug="${debug}" source="${java_source_version}" target="${java_target_version}" encoding="utf8"/>
-		<jar jarfile="${freeplanelauncher.jar}" manifest="${launcher_manifest}">
-			<fileset dir="${launcher_build}">
-				<include name="**" />
-			</fileset>
-		</jar>
-		
-		<copy todir="${build}">
-			<fileset dir="${script}" />
-			<fileset file="${framework.jar}" />
-			<fileset file="${freeplanelauncher.jar}" />
-			<fileset file="windows-icons/freeplaneIcons.dll" />
-			<fileset dir="launch4j" includes="*.exe" />
-			<fileset dir="launch4j" includes="*.ini" />
-		</copy>
-		<chmod file="${build}/freeplane.sh" perm="ugo+rx" />
+
+	<target name="build_docear_bibtex" unless="skip_bibtex" depends="prepare_jabref">
+		<antcall target="makePlugin" inheritall="false">
+			<param name="anttarget" value="dist" />
+			<param name="targetdir" value="plugins" />
+			<param name="plugindir" value="docear_plugin_bibtex" />
+			<param name="pluginname" value="org.docear.plugin.bibtex" />
+		</antcall>
 	</target>
 
-	<target name="build" depends="build_core, build_latex, build_svg, build_script, build_formula, build_bugreport, build_openmaps
-		   , build_workspace, build_docear_core, build_docear_services, build_docear_pdfutilities, build_docear_bibtex
-		   , build_launcher, git_version_info">
+
+	<target name="build" depends="build_core, build_latex, build_svg, build_script, build_formula, build_bugreport, 
+    build_workspace, build_docear_core, build_docear_services, build_docear_pdfutilities, build_docear_bibtex, 
+    bzr_version_info">
 		<mkdir dir="${build.resources}" />
 		<copy todir="${build.resources}">
 			<fileset dir="${workspace}/freeplane/dist/resources" />
-			<fileset file="${dist}/gitinfo.properties"/>
+			<fileset file="${dist}/bzrinfo.properties" />
 		</copy>
 		<mkdir dir="${build.doc}" />
 		<copy todir="${build.doc}">
@@ -378,32 +329,29 @@
 	</target>
 
 
-	<target name="rungit" depends="mkdistdir">
-		<delete file="${build}/gitinfo.txt" quiet="true"/>
-		<delete file="${dist}/git.properties" quiet="true"/>
-		<exec dir="${build}" executable="git" output="${build}/gitinfo.txt"
-			failifexecutionfails="false" failonerror="false" logError="true"
-			resultproperty="gitresult">
-			<arg value='log'/>
-			<arg value='--pretty=format:git-revision=%h_%an_%ai'/>
-			<arg value='-n1'/>
+	<target name="runbzr" depends="mkdistdir">
+		<delete file="${build}/bzrinfo.txt" quiet="true" />
+		<delete file="${dist}/bzr.properties" quiet="true" />
+		<exec dir="${build}" executable="bzr" output="${build}/bzrinfo.txt" failifexecutionfails="false" failonerror="false" logError="true" resultproperty="bzrresult">
+			<arg value="version-info" />
 		</exec>
-		<condition property="gitok" value="">
-			<equals arg1="${gitresult}" arg2="0"/>
+		<condition property="bzrok" value="">
+			<equals arg1="${bzrresult}" arg2="0" />
 		</condition>
 	</target>
 
-	<target name="git_version_info" depends="rungit" unless="giterror">
-		<native2ascii src="${build}" dest="${dist}" includes="gitinfo.txt" ext=".properties"/>
-		<replaceregexp file="${dist}/gitinfo.properties" flags="g" byline="false" match="[^\w=-]" replace="" />
-		<property file="${dist}/gitinfo.properties"/>
-		<exec dir="${build}" executable="git" output="${build}/gitinfo.txt" append="true"
-            failifexecutionfails="false" failonerror="false" logError="true">
-			<arg value='branch'/>
+	<target name="bzr_version_info" depends="runbzr" unless="bzrerror">
+		<native2ascii src="${build}" dest="${dist}" includes="bzrinfo.txt" ext=".properties" />
+		<replaceregexp file="${dist}/bzrinfo.properties" byline="true" match=": " replace="=" />
+		<replaceregexp file="${dist}/bzrinfo.properties" byline="true" match="^\w" replace="bzr-\0" />
+		<property file="${dist}/bzrinfo.properties" />
+		<property name="release-branch-nick" value="1_0_x" />
+		<exec dir="${build}" executable="bzr" output="${build}/bzrinfo.txt" append="true" failifexecutionfails="false" failonerror="false" logError="true">
+			<arg value="info" />
 		</exec>
 	</target>
 
-	<target name="binzip" depends="build">
+	<target name="binzip" depends="build, mkdistdir">
 		<zip destfile="${dist}/${ApplicationNameToLowerCase}_windows.zip" compress="true">
 			<zipfileset dir="${build}" prefix="${ApplicationNameToLowerCase}-${ver}">
 				<exclude name="${ApplicationNameToLowerCase}.sh" />
@@ -434,16 +382,19 @@
 		</zip>
 	</target>
 
-	<target name="srczip" depends="mkdistdir, git_version_info">
+	<target name="srczip" depends="mkdistdir, bzr_version_info">
 		<zip destfile="${dist}/${ApplicationNameToLowerCase}_source.zip" compress="true">
 			<zipfileset prefix="${ApplicationNameToLowerCase}-${ver}" dir="${workspace}">
 				<patternset id="freeplane.sources">
 					<include name="build.xml" />
 					<include name="freeplane/**" />
 					<include name="freeplane_plugin*/**" />
+					<include name="docear_plugin*/**" />
+					<include name="Jabref_Beta_2_7_Docear/**" />
 					<include name="freeplane_ant/**" />
 					<include name="freeplane_mac/**" />
 					<include name="freeplane_framework/**" />
+					<include name="docear_framework/**" />
 					<include name="freeplane_devresources/**" />
 					<include name="JOrtho_0.4_freeplane/**" />
 					<include name="build.xml" />
@@ -455,16 +406,14 @@
 					<exclude name="dist/**" />
 					<exclude name="*/bin/**" />
 					<exclude name="*/build/**" />
-					<exclude name="*/launcher_build/**" />
-					<exclude name="*/build-nodehighlighter/**" />
 					<exclude name="*/build4mac/**" />
 					<exclude name="*/dist/**" />
 					<exclude name="**/.backup/**" />
 					<exclude name="**/backups/**" />
 					<exclude name="JOrtho_0.4_freeplane/src/dictionary_*.ortho" />
-					<exclude name="freeplane_framework/windows-icons/Objects/**" />
-					<exclude name="freeplane_framework/windows-icons/*.layout" />
-					<exclude name="freeplane_framework/windows-icons/Makefile.win" />
+					<exclude name="freeplane_framework/windows-launcher/Objects/**" />
+					<exclude name="freeplane_framework/windows-launcher/*.layout" />
+					<exclude name="freeplane_framework/windows-launcher/Makefile.win" />
 					<exclude name="docear_framework/windows-launcher/Objects/**" />
 					<exclude name="docear_framework/windows-launcher/*.layout" />
 					<exclude name="docear_framework/windows-launcher/Makefile.win" />
@@ -478,13 +427,10 @@
 
 		<zip destfile="${dist}/${ApplicationNameToLowerCase}_srcpure.zip" compress="true">
 			<zipfileset prefix="${ApplicationNameToLowerCase}-${ver}" dir="${workspace}">
-				<patternset refid="freeplane.sources"/>
-				<!-- this file is built from latex.flex using jflex! -->
-				<exclude name="freeplane_plugin_script/src-jsyntaxpane/jsyntaxpane/lexers/LaTeXLexer.java"/>
+				<patternset refid="freeplane.sources" />
 				<exclude name="**/*.exe" />
 				<exclude name="**/*.res" />
 				<exclude name="**/*.jar" />
-				<exclude name="**/*.dll" />
 				<exclude name="**/*JavaApplicationStub*" />
 			</zipfileset>
 			<zipfileset prefix="${ApplicationNameToLowerCase}-${ver}" dir="${root}">
@@ -508,46 +454,28 @@
 		<mkdir dir="${workingdir}/App/Freeplane" />
 		<copy todir="${workingdir}">
 			<fileset dir="${root}/windows-portable" />
+			<fileset file="windows-launcher/freeplanePortable.exe" />
 		</copy>
 		<mkdir dir="${workingdir}/Other/Source" />
 		<copy tofile="${workingdir}/Other/Source/EULA.txt">
 			<fileset file="${workspace}/freeplane/resources/license.txt" />
 		</copy>
 		<copy tofile="${workingdir}/App/AppInfo/appicon.ico">
-			<fileset file="launch4j/Freeplane_app.ico" />
+			<fileset file="windows-launcher/Freeplane_app.ico" />
 		</copy>
 
 		<copy todir="${workingdir}/App/Freeplane">
 			<fileset dir="${build}">
+				<exclude name="*.exe" />
 				<exclude name="*.bat" />
-				<exclude name="*.ini" />
 				<exclude name="*.sh" />
 			</fileset>
 		</copy>
-		<copy file="${root}/portableApps/portable.ini"  
-			tofile="${workingdir}/App/Freeplane/freeplane.l4j.ini"/>
-
-		<copy file="${root}/portableApps/portable.ini"  
-			tofile="${workingdir}/App/Freeplane/freeplaneConsole.l4j.ini"/>
-
 		<dirname property="workingdir.path" file="${workingdir}/file" />
 		<exec osfamily="windows" executable="PortableApps.comInstaller.exe" failifexecutionfails="false" failonerror="true">
 			<arg line="${workingdir.path}" />
 		</exec>
 		<move todir="${dist}">
-			<fileset dir="${workingdir}/..">
-				<include name="*.paf.exe" />
-			</fileset>
-		</move>
-
-		<mkdir dir="${workingdir}/App/Freeplane/resources/images" />
-		<copy file="${root}/portableApps/Splash.png"  
-			tofile="${workingdir}/App/Freeplane/resources/images/Freeplane_splash.png"/>
-		<exec osfamily="windows" executable="PortableApps.comInstaller.exe" failifexecutionfails="false" failonerror="true">
-			<arg line="${workingdir.path}" />
-		</exec>
-		<move todir="${dist}">
-			<mapper type="glob" from="*.paf.exe" to="*-Test.paf.exe"/>
 			<fileset dir="${workingdir}/..">
 				<include name="*.paf.exe" />
 			</fileset>
@@ -574,27 +502,13 @@
 	-->
 
 		<condition property="debugparams" else="">
-			<isset property="debugparams"/>
+			<isset property="debugparams" />
 		</condition>
 
 		<!-- Delete any existing Docear.app (it's a directory) -->
-		<mkdir dir="${build4mac}"/>
-		<delete dir="${build4mac}/Docear.app"/>
-		<jarbundler dir="${build4mac}"
-                name="Docear"
-                mainclass="org.knopflerfish.framework.Main"
-                version="${ver}"
-                infostring="${ApplicationName} ${ver}"
-                shortname="${ApplicationName}"
-                bundleid="org.freeplane.core"
-                jvmversion="1.2+"
-                vmoptions="${debugparams} -Xmx512m ${macdefines}"
-                arguments="-xargs ./props.xargs -xargs ./init.xargs"
-                jar="${build}/framework.jar"
-                icon="${mac-jarbundler}/docear.icns"
-                stubfile="${mac-jarbundler}/FreeplaneJavaApplicationStub"
-                signature="FP"
-                >
+		<mkdir dir="${build4mac}" />
+		<delete dir="${build4mac}/Docear.app" />
+		<jarbundler dir="${build4mac}" name="Docear" mainclass="org.knopflerfish.framework.Main" version="${ver}" infostring="Docear-${ver_docear}" shortname="Docear" bundleid="org.freeplane.core" jvmversion="1.2+" vmoptions="${debugparams} -Xmx512m ${macdefines}" arguments="-xargs ./props.xargs -xargs ./init.xargs" jar="${build}/framework.jar" icon="${mac-jarbundler}/docear.icns" stubfile="${mac-jarbundler}/FreeplaneJavaApplicationStub" signature="FP">
 			<!-- For OSGI we want the entire build/ tree except WIndows-related stuff
              Commented out to allow testing jar=framework.jar
       <jarfileset dir="${macosgidir}">
@@ -606,41 +520,36 @@
 			<!-- Commenting out the document icon until we get an appropriate image
                     iconfile="${mac-jarbundler}/Banner.icns"
       -->
-			<documenttype name="Mindmap"
-                    extensions="mm"
-                    ostypes="MM"
-                    iconfile="${mac-jarbundler}/${ApplicationNameToLowerCase}.icns"
-                    role="Editor"/>
+			<documenttype name="Mindmap" extensions="mm" ostypes="MM" iconfile="${mac-jarbundler}/docear.icns" role="Editor" />
 		</jarbundler>
 		<chmod file="${macappfullpath}/Contents/MacOS/FreeplaneJavaApplicationStub" perm="ugo+rx" />
 		<!-- Patch the Info.plist file created by JarBundler, to work with Knopflerfish OSGI
            Courtesy of Volker who supplied the logic for this <replace> subtask
-           Allows Freeplane to start when double-clicking on Freeplane.app in Finder
+           Allows Freeplane to start when double-clicking on Docear.app in Finder
            Sets the WorkingDirectory to $JAVAROOT
               Found this idea in a post on Knopflerfish's SF site:
                 http://sourceforge.net/tracker/index.php?func=detail&aid=1651148&group_id=82798&atid=567241
                 The downloadable example code has problems but inspired the solution
     -->
 		<echo message="Adding WorkingDirectory to Info.plist" />
-		<property name="dist_macos_info" location="${macappfullpath}/Contents/Info.plist"/>
-		<xslt style="${mac-jarbundler}/mac_info_plist.xslt"
-			in ="${dist_macos_info}"
-			out="${dist_macos_info}2"/>
-		<move file="${dist_macos_info}2"
-			  tofile="${dist_macos_info}"/>
-		<!-- Done. -->
+		<replace file="${macappfullpath}/Contents/Info.plist">
+		    <replacetoken><![CDATA[<string>org.knopflerfish.framework.Main</string>]]></replacetoken>
+		    <replacevalue><![CDATA[<string>org.knopflerfish.framework.Main</string>
+<key>WorkingDirectory</key>
+	<string>$JAVAROOT</string>]]></replacevalue>
+		</replace>
 
 		<!-- Copy the entire build/ tree except WIndows-related stuff
           Also exclude the OSGI framework.jar which is copied by the jarbundler task
           Doing this separately to allow specifying jar=framework.jar in the jarbundler task
             jarbundler allows either jar= or jarfileset but not both
-            Copying after the jarbundler task which creates the Freeplane.app directory
+            Copying after the jarbundler task which creates the Docear.app directory
               JarBundler may erase the directory if it already exists
                 This is documented in their change log
             !! TODO: Test restoring the jarfileset inside jarbundler
                        Comment out this copy task, and delete it if jarfileset works
     -->
-		<property name="macjavafullpath" value="${macappfullpath}/Contents/Resources/Java"/>
+		<property name="macjavafullpath" value="${macappfullpath}/Contents/Resources/Java" />
 		<copy todir="${macjavafullpath}">
 			<fileset dir="${build}">
 				<exclude name="**/*.bat" />
@@ -650,58 +559,33 @@
 		</copy>
 
 		<!-- Restore the eXecutable permission flags on the Unix script -->
-		<echo message="Setting eXecutable permissions on ${macappfullpath}/Contents/Resources/Java/${ApplicationNameToLowerCase}.sh" />
-		<chmod file="${macappfullpath}/Contents/Resources/Java/${ApplicationNameToLowerCase}.sh" perm="ugo+rx" />
+		<echo message="Setting eXecutable permissions on ${macappfullpath}/Contents/Resources/Java/docear.sh" />
+		<chmod file="${macappfullpath}/Contents/Resources/Java/docear.sh" perm="ugo+rx" />
 	</target>
 
-	<target name="zip4mac" depends="git_version_info, macosxapp">
+	<target name="zip4mac" depends="bzr_version_info, macosxapp">
 		<zip destfile="${dist}/${ApplicationNameToLowerCase}_macos.zip" compress="true">
 			<zipfileset dir="${build4mac}" prefix="${ApplicationNameToLowerCase}-${ver}">
-				<exclude name="${macappfullpath}/Contents/MacOS/FreeplaneJavaApplicationStub"/>
+				<exclude name="${macappfullpath}/Contents/MacOS/FreeplaneJavaApplicationStub" />
 			</zipfileset>
-			<zipfileset file="${macappfullpath}/Contents/MacOS/FreeplaneJavaApplicationStub" filemode="775"
-            	prefix="${ApplicationNameToLowerCase}-${ver}/${ApplicationName}.app/Contents/MacOS"/>
+			<zipfileset file="${macappfullpath}/Contents/MacOS/FreeplaneJavaApplicationStub" filemode="775" prefix="${ApplicationNameToLowerCase}-${ver}/${ApplicationName}.app/Contents/MacOS" />
 		</zip>
 	</target>
-	
-	<target name="dmg4mac"  depends="git_version_info, macosxapp" if="isMacOs" >
+	<target name="dmg4mac" depends="bzr_version_info, macosxapp" if="isMacOs">
 		<exec executable="hdiutil">
-			<arg line="create -srcfolder ${macappfullpath} ${dist}/${ApplicationNameToLowerCase}.dmg"/>
+			<arg line="create -srcfolder ${macappfullpath} ${dist}/docear.dmg" />
 		</exec>
 	</target>
 
-	<target name="renameDistFiles" if="minor">
-		<move todir="${dist}" includeemptydirs="false">
-		    <fileset dir="${dist}">
-		      <include name="*${freeplane_version}.*"/>
-		    </fileset>
-			<mapper type="regexp" from="^(.*[-_])${freeplane_version}(\..*)$" to="\1${ver}\2"/>
-		  </move>
-	</target>
-	
-	
-	<target name="dist" depends="copyDistFiles, renameDistFiles">
-		<checksum>
-		  <fileset dir="${dist}">
-		    <include name="*.dmg"/>
-		    <include name="*.zip"/>
-		    <include name="*.gz"/>
-		    <include name="*.exe"/>
-		  </fileset>
-		</checksum>
+	<target name="dist" depends="bzr_version_info, binzip, srczip, installer, portableinstaller, zip4mac, dmg4mac, javadoc">
+		<copy file="${workspace}/freeplane/doc/history_en.txt" todir="${dist}" />
+		<copy file="${build}/bzrinfo.txt" tofile="${dist}/bzrinfo-${ver}.txt" failonerror="false" />
+		<copy file="${workspace}/freeplane_plugin_script/dist/script-api.zip" tofile="${dist}/script-api-${ver}.zip" failonerror="false" />
 	</target>
 
-	<target name="copyDistFiles" depends="git_version_info, binzip, srczip, installer, portableinstaller, zip4mac, dmg4mac, javadoc">
-		<copy file="${workspace}/freeplane/doc/history_en.txt"
-			todir="${dist}" />
-		<copy file="${build}/gitinfo.txt"
-			tofile="${dist}/gitinfo-${ver}.txt"
-			failonerror="false"/>
-		<copy file="${workspace}/freeplane_plugin_script/dist/script-api.zip"
-			tofile="${dist}/script-api-${ver}.zip"
-			failonerror="false"/>
+	<target name="docear-mac" depends="docear-bin, zip4mac, dmg4mac" if="isMacOs">
 	</target>
-	
+
 	<target name="docear-nsis" depends="docear-bin">
 		<nsis script="${root}/windows-installer/docear_windows_installer.nsi" verbosity="4" out="${root}/dist/nsis-build.log" noconfig="yes">
 			<define name="VERSION" value="${ver_docear}" />
@@ -709,27 +593,11 @@
 			<define name="DOCEAR_OUT_FILE" value="docear.exe" />
 		</nsis>
 	</target>
-	
-	<target name="docear-dist" depends="docear-bin">
-		<checksum>
-			<fileset dir="${dist}">
-				<include name="*.dmg"/>
-				<include name="*.zip"/>
-				<include name="*.gz"/>
-				<include name="*.exe"/>
-			</fileset>
-		</checksum>
-	</target>
-	
-	<target name="docear-bin" depends="clean, git_version_info, binzip, srczip, javadoc">
-		<copy file="${workspace}/freeplane/doc/history_en.txt" 
-			todir="${dist}" />
-        <copy file="${build}/gitinfo.txt"
-            tofile="${dist}/gitinfo-${ver}.txt"
-            failonerror="false"/>
-        <copy file="${workspace}/freeplane_plugin_script/dist/script-api.zip"
-            tofile="${dist}/script-api-${ver}.zip"
-            failonerror="false"/>
+
+	<target name="docear-bin" depends="clean, bzr_version_info, binzip, srczip, javadoc">
+		<copy file="${workspace}/freeplane/doc/history_en.txt" todir="${dist}" />
+		<copy file="${build}/bzrinfo.txt" tofile="${dist}/bzrinfo-${ver}.txt" failonerror="false" />
+		<copy file="${workspace}/freeplane_plugin_script/dist/script-api.zip" tofile="${dist}/script-api-${ver}.zip" failonerror="false" />
 	</target>
 
 	<target name="cleandist" depends="clean,dist">
@@ -738,19 +606,15 @@
 	<target name="check-translation">
 		<ant antfile="ant/build.xml" target="check-translation" dir="${workspace}/freeplane" />
 	</target>
-	
 	<target name="format-translation">
 		<ant antfile="ant/build.xml" target="format-translation" dir="${workspace}/freeplane" />
 	</target>
-	
 	<target name="format-translation-force">
 		<ant antfile="ant/build.xml" target="format-translation-force" dir="${workspace}/freeplane" />
 	</target>
-	
 	<target name="create-plugin">
 		<create-plugin />
 	</target>
-	
 	<target name="test">
 		<ant antfile="build.xml" target="test" dir="${workspace}/freeplane_ant" inheritall="false" />
 		<ant antfile="ant/build.xml" target="test" dir="${workspace}/freeplane_plugin_script" inheritall="false" />
@@ -760,36 +624,21 @@
 	<target name="clean">
 		<delete quiet="true" includeemptydirs="true">
 			<fileset dir="${build}" />
-			<fileset dir="${launcher_build}" />
 			<fileset dir="${build4mac}" />
 			<fileset dir="${dist}" />
 		</delete>
-		<ant antfile="ant/build.xml" target="clean" inheritall="false"
-			  dir="${workspace}/freeplane"/>
-		<ant antfile="ant/build.xml" target="clean" inheritall="false"
-			  dir="${workspace}/freeplane_plugin_help"/>
-		<ant antfile="ant/build.xml" target="clean" inheritall="false"
-			  dir="${workspace}/freeplane_plugin_svg"/>
-		<ant antfile="ant/build.xml" target="clean" inheritall="false"
-			  dir="${workspace}/freeplane_plugin_latex"/>
-		<ant antfile="ant/build.xml" target="clean" inheritall="false"
-			  dir="${workspace}/freeplane_plugin_script"/>
-		<ant antfile="ant/build.xml" target="clean" inheritall="false"
-			  dir="${workspace}/freeplane_plugin_formula"/>
-		<ant antfile="ant/build.xml" target="clean" inheritall="false"
-			  dir="${workspace}/freeplane_plugin_bugreport"/>
-		<ant antfile="ant/build.xml" target="clean" inheritall="false"
-			  dir="${workspace}/freeplane_plugin_openmaps"/>
-		<ant antfile="ant/build.xml" target="clean" inheritall="false"
-			  dir="${workspace}/freeplane_plugin_workspace"/>
-		<ant antfile="ant/build.xml" target="clean" inheritall="false" 
-			  dir="${workspace}/docear_plugin_core" />
-		<ant antfile="ant/build.xml" target="clean" inheritall="false" 
-			  dir="${workspace}/docear_plugin_pdfutilities" />
-		<ant antfile="ant/build.xml" target="clean" inheritall="false" 
-			  dir="${workspace}/docear_plugin_bibtex" />
-		<ant antfile="ant/build.xml" target="clean" inheritall="false" 
-			  dir="${workspace}/docear_plugin_services" />
+		<ant antfile="ant/build.xml" target="clean" inheritall="false" dir="${workspace}/freeplane" />
+		<ant antfile="ant/build.xml" target="clean" inheritall="false" dir="${workspace}/freeplane_plugin_help" />
+		<ant antfile="ant/build.xml" target="clean" inheritall="false" dir="${workspace}/freeplane_plugin_svg" />
+		<ant antfile="ant/build.xml" target="clean" inheritall="false" dir="${workspace}/freeplane_plugin_latex" />
+		<ant antfile="ant/build.xml" target="clean" inheritall="false" dir="${workspace}/freeplane_plugin_script" />
+		<ant antfile="ant/build.xml" target="clean" inheritall="false" dir="${workspace}/freeplane_plugin_formula" />
+		<ant antfile="ant/build.xml" target="clean" inheritall="false" dir="${workspace}/freeplane_plugin_bugreport" />
+		<ant antfile="ant/build.xml" target="clean" inheritall="false" dir="${workspace}/freeplane_plugin_workspace" />
+		<ant antfile="ant/build.xml" target="clean" inheritall="false" dir="${workspace}/docear_plugin_core" />
+		<ant antfile="ant/build.xml" target="clean" inheritall="false" dir="${workspace}/docear_plugin_pdfutilities" />
+		<ant antfile="ant/build.xml" target="clean" inheritall="false" dir="${workspace}/docear_plugin_bibtex" />
+		<ant antfile="ant/build.xml" target="clean" inheritall="false" dir="${workspace}/docear_plugin_services" />
 	</target>
 
 </project>
