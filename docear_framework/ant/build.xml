@@ -1,4 +1,5 @@
 <project name="docear" default="docear-dist" basedir="..">
+	<property name="ApplicationName" value="Docear" />
 	
 	<scriptdef name="toLowerCase" language="javascript">
 		<classpath>
@@ -181,7 +182,7 @@
 				</patternset>
 			</fileset>
 			<fileset file="${framework.jar}" />
-			<fileset file="windows-launcher/${ApplicationNameToLowerCase}.exe" casesensitive="no" />
+			<!--<fileset file="windows-launcher/${ApplicationNameToLowerCase}.exe" casesensitive="no" /-->
 		</copy>
 		<chmod file="${build}/${ApplicationNameToLowerCase}.sh" perm="ugo+rx" />
 		
@@ -339,11 +340,11 @@
 			<fileset dir="${script}" />
 			<fileset file="${framework.jar}" />
 			<fileset file="${freeplanelauncher.jar}" />
-			<fileset file="windows-icons/freeplaneIcons.dll" />
-			<fileset dir="launch4j" includes="*.exe" />
-			<fileset dir="launch4j" includes="*.ini" />
+			<!--<fileset file="windows-icons/freeplaneIcons.dll" /-->
+			<fileset dir="docear_launch4j" includes="*.exe" />
+			<fileset dir="docear_launch4j" includes="*.ini" />
 		</copy>
-		<chmod file="${build}/freeplane.sh" perm="ugo+rx" />
+		<chmod file="${build}/${ApplicationNameToLowerCase}.sh" perm="ugo+rx" />
 	</target>
 
 	<target name="build" depends="build_core, build_latex, build_svg, build_script, build_formula, build_bugreport, build_openmaps
@@ -462,9 +463,6 @@
 					<exclude name="**/.backup/**" />
 					<exclude name="**/backups/**" />
 					<exclude name="JOrtho_0.4_freeplane/src/dictionary_*.ortho" />
-					<exclude name="freeplane_framework/windows-icons/Objects/**" />
-					<exclude name="freeplane_framework/windows-icons/*.layout" />
-					<exclude name="freeplane_framework/windows-icons/Makefile.win" />
 					<exclude name="docear_framework/windows-launcher/Objects/**" />
 					<exclude name="docear_framework/windows-launcher/*.layout" />
 					<exclude name="docear_framework/windows-launcher/Makefile.win" />
