@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -15,6 +16,7 @@ import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOExceptionWithCause;
 import org.docear.plugin.core.actions.DocearAboutAction;
 import org.docear.plugin.core.actions.DocearOpenUrlAction;
 import org.docear.plugin.core.actions.DocearQuitAction;
@@ -50,6 +52,7 @@ import org.freeplane.core.resources.components.IPropertyControl;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.IMenuContributor;
 import org.freeplane.core.ui.MenuBuilder;
+import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.ConfigurationUtils;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.help.OnlineDocumentationAction;
@@ -58,6 +61,7 @@ import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mapio.MapIO;
 import org.freeplane.features.mapio.mindmapmode.MMapIO;
 import org.freeplane.features.mode.Controller;
+import org.freeplane.features.mode.IControllerExecuteExtension;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.features.ui.ViewController;
@@ -72,6 +76,10 @@ import org.freeplane.plugin.workspace.mindmapmode.VirtualFolderDropHandler;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
+
+import com.sun.jna.platform.win32.Kernel32;
+import com.sun.jna.platform.win32.WinBase;
+import com.sun.jna.platform.win32.WinDef;
 
 
 public class CoreConfiguration extends ALanguageController {
@@ -95,7 +103,8 @@ public class CoreConfiguration extends ALanguageController {
 	
 
 	public static final String DOCUMENT_REPOSITORY_PATH = "@@literature_repository@@";
-	public static final String LIBRARY_PATH = "@@library_mindmaps@@"; 
+	public static final String LIBRARY_PATH = "@@library_mindmaps@@";
+	private IControllerExecuteExtension docearExecutor; 
 
 	
 	public CoreConfiguration() {			
@@ -103,6 +112,7 @@ public class CoreConfiguration extends ALanguageController {
 	}
 	
 	protected void initController(Controller controller) {
+		Controller.getCurrentController().addExtension(IControllerExecuteExtension.class, getDocearCommandExecutor());
 		loadAndStoreVersion(controller);		
 		adjustProperties(controller);				
 		
@@ -122,6 +132,91 @@ public class CoreConfiguration extends ALanguageController {
 		copyInfoIfNecessary();		
 	}
 	
+
+	private IControllerExecuteExtension getDocearCommandExecutor() {
+		if(docearExecutor == null) {
+			docearExecutor = new IControllerExecuteExtension() {
+				
+				@Override
+				public void exec(String command, boolean waitFor) throws IOException {
+					if (Compat.isWindowsOS()) {
+						LogUtils.info("using jna to execute " + command);
+						windowsNativeExec(command, waitFor);
+					}
+					else {
+						LogUtils.info("execute " + command);
+						Process proc = Runtime.getRuntime().exec(command);
+						waiting(waitFor, proc);
+					}
+				}
+				
+				public void exec(String[] command, boolean waitFor) throws IOException {
+					if (Compat.isWindowsOS()) {
+						String commandString = command[0];
+						for (int i=1; i<command.length; i++) {
+							commandString += " " + command[i];
+						}
+						LogUtils.info("using jna to execute: " + commandString);
+						try {
+							windowsNativeExec(commandString, waitFor);
+						} catch (Exception e) {
+							throw new IOException(e.getMessage()+" for command: "+commandString);
+						}
+					}
+					else {
+						LogUtils.info("execute: " + Arrays.toString(command));
+						Process proc = Runtime.getRuntime().exec(command);
+						waiting(waitFor, proc);
+					}
+				}
+				
+				private void windowsNativeExec(String command, boolean waitFor) throws IllegalStateException {
+					WinBase.PROCESS_INFORMATION.ByReference processInfo = new WinBase.PROCESS_INFORMATION.ByReference();
+					WinBase.STARTUPINFO startupInfo = new WinBase.STARTUPINFO();
+
+					try {
+			    		if (!Kernel32.INSTANCE.CreateProcess(
+			    		    null,           // Application name, not needed if supplied in command line
+			    		    command,        // Command line
+			    		    null,           // Process security attributes
+			    		    null,           // Thread security attributes
+			    		    true,           // Inherit handles
+			    		    new WinDef.DWORD(0) ,              // Creation flags
+			    		    null,           // Environment
+			    		    null,           // Directory
+			    		    startupInfo,
+			    		    processInfo)) {
+			    		    throw new IllegalStateException("Error creating process. Last error: " +
+			    		        Kernel32.INSTANCE.GetLastError());
+			    		}
+			    
+			    		if (waitFor) {
+			    			Kernel32.INSTANCE.WaitForSingleObject(processInfo.hProcess, Kernel32.INFINITE);
+			    		}
+					}
+					finally {
+			    		// The CreateProcess documentation indicates that it is very important to 
+			    		// close the returned handles
+			    		Kernel32.INSTANCE.CloseHandle(processInfo.hThread);
+			    		Kernel32.INSTANCE.CloseHandle(processInfo.hProcess);
+					}
+				}
+				
+				private void waiting(boolean waitFor, Process proc)
+						throws IOExceptionWithCause {
+					if(waitFor) {
+						try {
+							proc.waitFor();
+						} catch (InterruptedException e) {
+							throw new IOExceptionWithCause(e);
+						}
+					}
+				}
+				
+			};
+		}
+		return docearExecutor;
+	}
 
 	private void copyInfoIfNecessary() {	
 		File _welcomeFile = new File(URIUtils.getFile(WorkspaceController.getApplicationHome()), "docear-welcome.mm");

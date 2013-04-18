@@ -166,30 +166,30 @@ public class Compat {
 	
 	/** the directory *including* the version directory. */
 	public static String getFreeplaneUserDirectory() {
-		Properties freeplaneProperties = new Properties();
-		try {
-			freeplaneProperties.load(Compat.class.getClassLoader().getResourceAsStream(ResourceController.FREEPLANE_PROPERTIES));
-		} catch (IOException e) {
-			LogUtils.warn(e);
-		}
-		String applicationName = freeplaneProperties.getProperty("ApplicationName", "Freeplane");
-		String userFpDir = null;
-		if(applicationName.equalsIgnoreCase("freeplane")){
-			userFpDir = System.getProperty(PROPERTY_FREEPLANE_USERDIR);
-			
-			if(userFpDir == null){
-				userFpDir = getDefaultFreeplaneUserDirectory();
+		String userFpDir = System.getProperty(PROPERTY_FREEPLANE_USERDIR);
+		
+		if(userFpDir == null) {
+			Properties freeplaneProperties = new Properties();
+			try {
+				freeplaneProperties.load(Compat.class.getClassLoader().getResourceAsStream(ResourceController.FREEPLANE_PROPERTIES));
+			} catch (IOException e) {
+				LogUtils.warn(e);
 			}
-			userFpDir += CURRENT_VERSION_DIR;
-		}
-		else if(System.getProperty("org.freeplane.userfpdir") != null && System.getProperty(PROPERTY_FREEPLANE_USERDIR).endsWith("Data")){
-			userFpDir = System.getProperty("org.freeplane.userfpdir") + File.separator + applicationName;
-		}
+			String applicationName = freeplaneProperties.getProperty("ApplicationName", "Freeplane");
 		
-		if(userFpDir == null){						
-			userFpDir = System.getProperty("user.home")+ File.separator + "." + applicationName.toLowerCase();			
+			if(applicationName.equalsIgnoreCase("freeplane")){
+				userFpDir = getDefaultFreeplaneUserDirectory() + CURRENT_VERSION_DIR;
+			} 
+			else {
+				if(System.getenv("APPDATA") != null && System.getenv("APPDATA").length() > 0){	
+					userFpDir = System.getenv("APPDATA") + File.separator + applicationName;
+				}
+				
+				if(userFpDir == null){						
+					userFpDir = System.getProperty("user.home")+ File.separator + "." + applicationName.toLowerCase();			
+				}
+			}
 		}
-		
 		return userFpDir;
 	}
 

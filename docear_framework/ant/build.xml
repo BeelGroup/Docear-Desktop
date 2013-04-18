@@ -337,7 +337,7 @@
 		</jar>
 		
 		<copy todir="${build}">
-			<fileset dir="${script}" />
+			<!--fileset dir="${script}" /-->
 			<fileset file="${framework.jar}" />
 			<fileset file="${freeplanelauncher.jar}" />
 			<!--<fileset file="windows-icons/freeplaneIcons.dll" /-->
