@@ -25,6 +25,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -196,7 +200,7 @@ public class PdfUtilitiesController extends ALanguageController {
 		super();
 		controller = this;
 
-		LogUtils.info("starting DocearPdfUtilitiesStarter(ModeController)"); //$NON-NLS-1$
+		LogUtils.info("starting DocearPdfUtilitiesStarter(ModeController)..."); //$NON-NLS-1$
 		this.modecontroller = modeController;
 		this.addPropertiesToOptionPanel();
 		this.addPluginDefaults();
@@ -206,7 +210,6 @@ public class PdfUtilitiesController extends ALanguageController {
 		this.addMenuEntries();
 		
 		MapVersionInterpreter.addMapVersionInterpreter(new MapVersionInterpreter("SciploreMM", 1, "0.9.0\" software_name=\"SciPlore_", false, false, "SciploreMM", "http://sciplore.org", null, new MapConverter()));
-		
 	}
 
 	public static PdfUtilitiesController getController() {
@@ -214,7 +217,18 @@ public class PdfUtilitiesController extends ALanguageController {
 	}
 
 	public void showViewerSelectionIfNecessary() {
-		showViewerSelectionIfNecessary(false);
+		ExecutorService execSrv = Executors.newSingleThreadExecutor();
+		Future<?> f = execSrv.submit(new Runnable() {
+			public void run() {
+				showViewerSelectionIfNecessary(false);
+			}
+		});
+		try {
+			f.get(2, TimeUnit.SECONDS);
+		} catch (Exception e) {
+			LogUtils.info("ABORTED - finding pdf readers");
+		}
+		execSrv.shutdown();
 	}
 
 	public void showViewerSelectionIfNecessary(boolean force) {
@@ -663,7 +677,6 @@ public class PdfUtilitiesController extends ALanguageController {
 	}
 
 	private void addMenuEntries() {
-
 		this.modecontroller.addMenuContributor(new IMenuContributor() {
 
 			public void updateMenus(ModeController modeController, MenuBuilder builder) {
@@ -981,27 +994,9 @@ public class PdfUtilitiesController extends ALanguageController {
 		//WORKSPACE - todo: adjust to new initiation process
 		showViewerSelectionIfNecessary();
 		
-		WorkspaceController.getCurrentModel().addWorldModelListener(new WorkspaceModelListener() {
-			
-			public void projectRemoved(WorkspaceModelEvent event) {
-				event.getProject().getModel().removeProjectModelListener(getProjectModelListener());
-			}
-			
-			public void projectAdded(WorkspaceModelEvent event) {
-				event.getProject().getModel().addProjectModelListener(getProjectModelListener());
-			}		
-			
-			public void treeStructureChanged(TreeModelEvent e) {}
-			
-			public void treeNodesRemoved(TreeModelEvent e) {}
-			
-			public void treeNodesInserted(TreeModelEvent e) {}
-			
-			public void treeNodesChanged(TreeModelEvent e) {}
-		});
-
-		this.modecontroller.getMapController().addNodeChangeListener(new PdfNodeChangeListener());		
-
+		WorkspaceController.getCurrentModel().addWorldModelListener(new DefaultWorkspaceModelListener());
+		
+		this.modecontroller.getMapController().addNodeChangeListener(new PdfNodeChangeListener());
 		DocearAutoMonitoringListener autoMonitoringListener = new DocearAutoMonitoringListener();
 		this.modecontroller.getMapController().addMapLifeCycleListener(autoMonitoringListener);
 		Controller.getCurrentController().getViewController().getJFrame().addWindowFocusListener(autoMonitoringListener);
@@ -1151,11 +1146,16 @@ public class PdfUtilitiesController extends ALanguageController {
 		}
 	}
 
-	public boolean hasCompatibleSettings(String readerCommand) throws IOException {
-		PdfReaderFileFilter filter = new PdfReaderFileFilter();
+	public boolean hasCompatibleSettings(final String readerCommand) throws IOException {
+		LogUtils.info("checking pdf reader settings ...");
+		
+		final PdfReaderFileFilter filter = new PdfReaderFileFilter();
 		if (Compat.isMacOsX() || (!filter.isPdfXChange(readerCommand) && !filter.isAcrobat(readerCommand))) {
 			return true;
-		}		
+		}
+		
+
+		
 		File exportFile = new File(ResourceController.getResourceController().getFreeplaneUserDirectory(), "exported.reg");
 		try {
 			
@@ -1217,7 +1217,7 @@ public class PdfUtilitiesController extends ALanguageController {
 			LogUtils.warn("org.docear.plugin.pdfutilities.PdfUtilitiesController.hasCompatibleSettings(): " + e.getMessage());
 			throw new IOException("Could not validate PDF-X-Change Viewer settings!");
 		}
-
+		
 		return false;
 	}	
 	
@@ -1447,6 +1447,25 @@ public class PdfUtilitiesController extends ALanguageController {
     	else{
     		throw new IOException("Could not read applescript file.");
     	}
+	}
+	
+	
+	private class DefaultWorkspaceModelListener implements WorkspaceModelListener {
+		public void projectRemoved(WorkspaceModelEvent event) {
+			event.getProject().getModel().removeProjectModelListener(getProjectModelListener());
+		}
+
+		public void projectAdded(WorkspaceModelEvent event) {
+			event.getProject().getModel().addProjectModelListener(getProjectModelListener());
+		}
+
+		public void treeStructureChanged(TreeModelEvent e) {}
+
+		public void treeNodesRemoved(TreeModelEvent e) {}
+
+		public void treeNodesInserted(TreeModelEvent e) {}
+
+		public void treeNodesChanged(TreeModelEvent e) {}
 	}
 
 }
