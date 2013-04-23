@@ -6,6 +6,8 @@ import java.util.Collection;
 import javax.swing.SwingUtilities;
 
 import org.docear.plugin.core.DocearController;
+import org.docear.plugin.core.event.DocearEvent;
+import org.docear.plugin.core.event.DocearEventType;
 import org.docear.plugin.core.logging.DocearLogger;
 import org.docear.plugin.services.actions.DocearAllowUploadChooserAction;
 import org.docear.plugin.services.actions.DocearCheckForUpdatesAction;
@@ -71,8 +73,11 @@ public class ServiceController extends UploadController {
 
 	protected static void initialize(ModeController modeController) {
 		if (serviceController == null) {
-
 			serviceController = new ServiceController(modeController);
+			if (DocearController.getController().isLicenseDialogNecessary())
+			{
+				DocearController.getController().dispatchDocearEvent(new DocearEvent(DocearController.getController(), null, DocearEventType.SHOW_LICENSES));
+			}			
 			serviceController.startRecommendationsMode();
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
