@@ -20,6 +20,7 @@ import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.features.WorkspaceMapModelExtension;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
 public class MapViewListener implements MouseListener, INodeSelectionListener {
 
@@ -28,9 +29,12 @@ public class MapViewListener implements MouseListener, INodeSelectionListener {
 			BasePanel bp = ReferencesController.getController().getJabrefWrapper().getBasePanel();
 			WorkspaceMapModelExtension ext = WorkspaceController.getMapModelExtension(Controller.getCurrentController().getMap());
 			if(ext != null) {
-				JabRefProjectExtension jpe = (JabRefProjectExtension) ext.getProject().getExtensions(JabRefProjectExtension.class);
-				if(jpe != null && !jpe.getBaseHandle().getBasePanel().equals(bp)) {
-					jpe.selectBasePanel();
+				AWorkspaceProject project = ext.getProject();
+				if(project != null) {
+					JabRefProjectExtension jpe = (JabRefProjectExtension) project.getExtensions(JabRefProjectExtension.class);
+					if(jpe != null && !jpe.getBaseHandle().getBasePanel().equals(bp)) {
+						jpe.selectBasePanel();
+					}
 				}
 			}
 		}
