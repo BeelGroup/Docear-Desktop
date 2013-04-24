@@ -1,6 +1,7 @@
 package org.docear.plugin.services.workspace;
 
 import org.docear.plugin.services.communications.CommunicationsController;
+import org.freeplane.core.util.TextUtils;
 import org.freeplane.plugin.workspace.nodes.WorkspaceRootNode;
 
 public class DocearWorkspaceRootNode extends WorkspaceRootNode {
@@ -15,14 +16,12 @@ public class DocearWorkspaceRootNode extends WorkspaceRootNode {
 	 * METHODS
 	 **********************************************************************************/
 	public String getName() {
+		String text = TextUtils.getText("docear.node.root.default");
 		String name = CommunicationsController.getController().getRegisteredUserName();
 		if(name != null) {
-			name = name+"'s workspace";
+			text = TextUtils.format("docear.node.root.name", name);
 		}
-		else {
-			name = "default workspace";
-		}
-		return name; 
+		return text; 
 	}
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
