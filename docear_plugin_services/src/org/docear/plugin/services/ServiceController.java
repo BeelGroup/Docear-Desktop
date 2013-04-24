@@ -1,9 +1,13 @@
 package org.docear.plugin.services;
 
+import java.io.File;
 import java.net.URL;
 import java.util.Collection;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
+import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.event.DocearEvent;
@@ -27,11 +31,14 @@ import org.docear.plugin.services.workspace.DocearWorkspaceModel;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;
+import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.map.IMapLifeCycleListener;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
+import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
+import org.freeplane.plugin.workspace.nodes.FolderLinkNode;
 
 public class ServiceController extends UploadController {
 	public static final String DOCEAR_INFORMATION_RETRIEVAL = "docear_information_retrieval";
@@ -108,7 +115,46 @@ public class ServiceController extends UploadController {
 		Controller.getCurrentController().getResourceController().addDefaults(defaults);
 		
 		AWorkspaceTreeNode wsRoot = WorkspaceController.getModeExtension(modeController).getModel().getRoot();
-		wsRoot.insertChildNode(new ShowRecommendationsNode(), 0);	
+		wsRoot.insertChildNode(new ShowRecommendationsNode(), 0);
+		FolderLinkNode downloads = new FolderLinkNode() {
+			private static final long serialVersionUID = 2295413841014945798L;
+			private final Icon FOLDER_DOWNLOADS_ICON = new ImageIcon(ServiceController.class.getResource("/icons/folder-download.png"));
+			@Override
+			public String getTagName() {
+				//don't write this node into the ws config
+				return null;
+			}
+
+			@Override
+			public String getName() {
+				//always show the localized node name
+				return TextUtils.getText("docear.node.downloads");
+			}
+			
+			public boolean setIcons(DefaultTreeCellRenderer renderer) {
+				
+				renderer.setOpenIcon(FOLDER_DOWNLOADS_ICON);
+				renderer.setClosedIcon(FOLDER_DOWNLOADS_ICON);
+				renderer.setLeafIcon(FOLDER_DOWNLOADS_ICON);
+				return true;
+			}
+			
+			public boolean isSystem() {
+				return true;
+			}
+			
+		};
+		File file = new File( URIUtils.getFile(WorkspaceController.getApplicationHome()),"downloads");
+		if(!file.exists()) {
+			try {
+				file.mkdirs();
+			}
+			catch (Exception e) {
+				LogUtils.warn("Exception in org.docear.plugin.services.ServiceController.addPluginDefaults(modeController):"+ e.getMessage());
+			}
+		}
+		downloads.setPath(file.toURI());
+		wsRoot.insertChildNode(downloads, 1);	
 	}
 
 	public boolean isBackupEnabled() {

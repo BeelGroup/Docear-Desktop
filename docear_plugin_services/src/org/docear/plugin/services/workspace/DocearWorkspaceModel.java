@@ -9,6 +9,8 @@ import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
 public class DocearWorkspaceModel extends WorkspaceModel {
 
+	private static final int XTRA_NODES = 2;
+
 	public void addProject(AWorkspaceProject project) {
 		if(project == null) {
 			return;
@@ -27,18 +29,18 @@ public class DocearWorkspaceModel extends WorkspaceModel {
 			return;
 		}
 		synchronized (projects) {
-			int index = projects.indexOf(project)+1;
+			int index = projects.indexOf(project);
 			if(index > -1) {				
 				projects.remove(project);
 				project.getModel().removeProjectModelListener(getProjectModelListener());
-				fireProjectRemoved(project, index);
+				fireProjectRemoved(project, index+XTRA_NODES);
 			}
 		}
 	}
 	
 	public int getProjectIndex(AWorkspaceProject project) {
 		synchronized (projects) {
-			int index = 1;
+			int index = XTRA_NODES;
 			for (AWorkspaceProject prj : projects) {
 				if(prj.equals(project)) {
 					return index;

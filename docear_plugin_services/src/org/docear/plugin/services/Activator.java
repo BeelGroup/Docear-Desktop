@@ -25,7 +25,6 @@ public class Activator extends DocearService {
 	private static final String DEFAULT_LANGUAGE = "en";
 	
 	public void stop(BundleContext context) throws Exception {
-		System.out.println("Goodbye World!!");
 	}
 
 	public void startService(BundleContext context, ModeController modeController) {
