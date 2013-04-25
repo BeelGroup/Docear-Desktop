@@ -14,7 +14,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.ProgressMonitor;
 import javax.ws.rs.core.MultivaluedMap;
@@ -50,12 +49,7 @@ public abstract class RecommendationsController {
 	}
 	
 	public static void refreshRecommendations(Collection<RecommendationEntry> recommendations) {
-		//DOCEAR - todo: debug
-		if(true) {
-			UITools.showMessage("not available", JOptionPane.INFORMATION_MESSAGE);
-			return;
-		}
-		RecommendationsModel model;
+		RecommendationsModel model = null;
 		if(recommendations == null) {
 			try {
 				model = requestRecommendations();
@@ -80,9 +74,6 @@ public abstract class RecommendationsController {
 		} catch (NoSuchElementException e) {
 			LogUtils.severe(e);
 		}
-//		IMapViewManager mgr = Controller.getCurrentController().getViewController().getMapViewManager();		
-		
-		
 	}
 	
 	private static RecommendationsModel requestRecommendations() throws AlreadyInUseException {
@@ -213,7 +204,7 @@ public abstract class RecommendationsController {
 			LogUtils.info("finished recommendation request");
 		}
 	}
-	//DOCEAR - todo: close does not work
+	
 	public static void closeRecommendationView() {
 		RecommendationsView.close();
 	}

@@ -51,6 +51,8 @@ public class RecommendationsView extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private RecommendationTabListener closeListener;
+	private static JTabbedPane tabPane;
+	private static RecommendationsView view;
 
 	public RecommendationsView(final RecommendationsModel model) {
 		this();
@@ -68,28 +70,22 @@ public class RecommendationsView extends JPanel {
 	
 	
 	public static RecommendationsView getView() throws NoSuchElementException {
-		JTabbedPane tabPane = findTabbedPane();
-		RecommendationsView view = findView(tabPane);
+		Container cont = Controller.getCurrentController().getViewController().getContentPane();
+		if(tabPane == null) {
+			tabPane = findTabbedPane(cont);
+		}
+		//view = findView(tabPane);
 		if(view == null) {
 			view = new RecommendationsView();
-			new RecommendationTabListener(tabPane, view);
-			tabPane.addTab(view.getName(), view);
+			cont.remove(tabPane);
+			cont.add(view, BorderLayout.CENTER, 0);
+//			new RecommendationTabListener(tabPane, view);
+//			tabPane.addTab(view.getName(), view);
 		}
 		return view;
 	}
 
-	private static RecommendationsView findView(JTabbedPane tabPane) {		
-		for(int i=0; i < tabPane.getTabCount(); i++) {
-			Component comp = tabPane.getComponentAt(i);
-			if(comp instanceof RecommendationsView) {
-				return (RecommendationsView) comp;
-			}
-		}
-		return null;
-	}
-
-	private static JTabbedPane findTabbedPane() throws NoSuchElementException {
-		Container cont = Controller.getCurrentController().getViewController().getContentPane();
+	private static JTabbedPane findTabbedPane(Container cont) throws NoSuchElementException {
 		JTabbedPane tabPane = null;
 		for(Component comp : cont.getComponents()) {
 			if(comp instanceof JTabbedPane) {
@@ -107,13 +103,17 @@ public class RecommendationsView extends JPanel {
 	
 	//DOCEAR - todo: close does not work
 	public static void close() throws NoSuchElementException {
-		JTabbedPane tabPane = findTabbedPane();
-		RecommendationsView view = findView(tabPane);
+		Container cont = Controller.getCurrentController().getViewController().getContentPane();
+//		JTabbedPane tabPane = findTabbedPane();
+//		RecommendationsView view = findView(tabPane);
 		if(view == null) {
 			return;
 		}
-		//tabPane.
 		
+		cont.remove(view);
+		cont.add(tabPane, BorderLayout.CENTER, 0);
+		view = null;
+		((JComponent) cont).revalidate();
 	}
 	
 	public void setModel(RecommendationsModel model) {
@@ -317,9 +317,9 @@ public class RecommendationsView extends JPanel {
 				int top = parent.getInsets().top;
 				int count = parent.getComponentCount();
 				for(Component comp : parent.getComponents()) {
+					comp.setSize(comp.getPreferredSize());
 					int x = right-comp.getWidth()*count;
 					comp.setLocation(x,top);
-					comp.setSize(comp.getPreferredSize());
 					count--;
 				}
 			}

@@ -1,6 +1,7 @@
 package org.docear.plugin.services;
 
 import java.io.File;
+import java.net.URI;
 import java.net.URL;
 import java.util.Collection;
 
@@ -59,6 +60,9 @@ public class ServiceController extends UploadController {
 	private Application application;
 	private Collection<RecommendationEntry> autoRecommendations;
 	private Boolean AUTO_RECOMMENDATIONS_LOCK = false;
+
+	private File downloadsFolder;
+	private FolderLinkNode downloadsNode;
 	
 
 	
@@ -116,7 +120,7 @@ public class ServiceController extends UploadController {
 		
 		AWorkspaceTreeNode wsRoot = WorkspaceController.getModeExtension(modeController).getModel().getRoot();
 		wsRoot.insertChildNode(new ShowRecommendationsNode(), 0);
-		FolderLinkNode downloads = new FolderLinkNode() {
+		downloadsNode = new FolderLinkNode() {
 			private static final long serialVersionUID = 2295413841014945798L;
 			private final Icon FOLDER_DOWNLOADS_ICON = new ImageIcon(ServiceController.class.getResource("/icons/folder-download.png"));
 			@Override
@@ -132,7 +136,6 @@ public class ServiceController extends UploadController {
 			}
 			
 			public boolean setIcons(DefaultTreeCellRenderer renderer) {
-				
 				renderer.setOpenIcon(FOLDER_DOWNLOADS_ICON);
 				renderer.setClosedIcon(FOLDER_DOWNLOADS_ICON);
 				renderer.setLeafIcon(FOLDER_DOWNLOADS_ICON);
@@ -144,17 +147,26 @@ public class ServiceController extends UploadController {
 			}
 			
 		};
-		File file = new File( URIUtils.getFile(WorkspaceController.getApplicationHome()),"downloads");
-		if(!file.exists()) {
+		downloadsFolder = new File( URIUtils.getFile(WorkspaceController.getApplicationHome()),"downloads");
+		if(!downloadsFolder.exists()) {
 			try {
-				file.mkdirs();
+				downloadsFolder.mkdirs();
 			}
 			catch (Exception e) {
 				LogUtils.warn("Exception in org.docear.plugin.services.ServiceController.addPluginDefaults(modeController):"+ e.getMessage());
 			}
 		}
-		downloads.setPath(file.toURI());
-		wsRoot.insertChildNode(downloads, 1);	
+		downloadsNode.setPath(downloadsFolder.toURI());
+		wsRoot.insertChildNode(downloadsNode, 1);	
+	}
+	
+	public URI getDownloadsFolder() {
+		return downloadsFolder.toURI();
+	}
+	
+	public void refreshDownloadsFolder() {
+		WorkspaceController.getCurrentModeExtension().getView().expandPath(downloadsNode.getTreePath());
+		downloadsNode.refresh();
 	}
 
 	public boolean isBackupEnabled() {
