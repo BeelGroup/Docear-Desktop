@@ -13,7 +13,7 @@ import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.model.WorkspaceModelEvent;
-import org.freeplane.plugin.workspace.model.WorkspaceModelEvent.ProjectModelEventType;
+import org.freeplane.plugin.workspace.model.WorkspaceModelEvent.WorkspaceModelEventType;
 
 public class MindmapFileLinkUpdater extends AMindmapUpdater {
 	
@@ -39,7 +39,7 @@ public class MindmapFileLinkUpdater extends AMindmapUpdater {
 		if(link != null){
 			if(fileMap.containsKey(link)){
 				((MLinkController) LinkController.getController()).setLinkTypeDependantLink(node, fileMap.get(link));
-				if(event != null && event.getType() == ProjectModelEventType.RENAMED && node.getText().equals(link.getName())){
+				if(event != null && event.getType() == WorkspaceModelEventType.RENAMED && node.getText().equals(link.getName())){
 					node.setText(fileMap.get(link).getName());
 				}
 				IAnnotation annotation = AnnotationController.getModel(node, false);

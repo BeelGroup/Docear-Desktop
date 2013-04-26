@@ -8,6 +8,8 @@ import java.util.Collection;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeExpansionListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.docear.plugin.core.DocearController;
@@ -42,6 +44,47 @@ import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.nodes.FolderLinkNode;
 
 public class ServiceController extends UploadController {
+	static class DownloadFolderNode extends FolderLinkNode implements TreeExpansionListener {
+		private static final long serialVersionUID = 2295413841014945798L;
+		private final Icon FOLDER_DOWNLOADS_ICON = new ImageIcon(ServiceController.class.getResource("/icons/folder-download.png"));
+		private boolean firstExpand = true;
+
+		@Override
+		public String getTagName() {
+			//don't write this node into the ws config
+			return null;
+		}
+
+		@Override
+		public String getName() {
+			//always show the localized node name
+			return TextUtils.getText("docear.node.downloads");
+		}
+
+		public boolean setIcons(DefaultTreeCellRenderer renderer) {
+			renderer.setOpenIcon(FOLDER_DOWNLOADS_ICON);
+			renderer.setClosedIcon(FOLDER_DOWNLOADS_ICON);
+			renderer.setLeafIcon(FOLDER_DOWNLOADS_ICON);
+			return true;
+		}
+
+		public boolean isSystem() {
+			return true;
+		}
+
+		public void treeExpanded(TreeExpansionEvent event) {
+			if(firstExpand) {
+				firstExpand  = false;
+				this.refresh();
+			}
+		}
+
+		public void treeCollapsed(TreeExpansionEvent event) {
+			// TODO Auto-generated method stub
+			
+		}
+	}
+
 	public static final String DOCEAR_INFORMATION_RETRIEVAL = "docear_information_retrieval";
 
 	public static final String DOCEAR_SAVE_BACKUP = "docear_save_backup";
@@ -120,33 +163,7 @@ public class ServiceController extends UploadController {
 		
 		AWorkspaceTreeNode wsRoot = WorkspaceController.getModeExtension(modeController).getModel().getRoot();
 		wsRoot.insertChildNode(new ShowRecommendationsNode(), 0);
-		downloadsNode = new FolderLinkNode() {
-			private static final long serialVersionUID = 2295413841014945798L;
-			private final Icon FOLDER_DOWNLOADS_ICON = new ImageIcon(ServiceController.class.getResource("/icons/folder-download.png"));
-			@Override
-			public String getTagName() {
-				//don't write this node into the ws config
-				return null;
-			}
-
-			@Override
-			public String getName() {
-				//always show the localized node name
-				return TextUtils.getText("docear.node.downloads");
-			}
-			
-			public boolean setIcons(DefaultTreeCellRenderer renderer) {
-				renderer.setOpenIcon(FOLDER_DOWNLOADS_ICON);
-				renderer.setClosedIcon(FOLDER_DOWNLOADS_ICON);
-				renderer.setLeafIcon(FOLDER_DOWNLOADS_ICON);
-				return true;
-			}
-			
-			public boolean isSystem() {
-				return true;
-			}
-			
-		};
+		downloadsNode = new DownloadFolderNode();
 		downloadsFolder = new File( URIUtils.getFile(WorkspaceController.getApplicationHome()),"downloads");
 		if(!downloadsFolder.exists()) {
 			try {

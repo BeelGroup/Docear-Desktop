@@ -327,6 +327,10 @@ public abstract class WorkspaceModel implements TreeModel {
 	 *
 	 */
 	protected final class DefaultWorkspaceTreeModel implements WorkspaceTreeModel {
+		
+		public DefaultWorkspaceTreeModel() {
+		}
+
 		public void removeNodeFromParent(AWorkspaceTreeNode node) {
 			if(node == null) {
 				return;
@@ -430,7 +434,7 @@ public abstract class WorkspaceModel implements TreeModel {
 				return false;
 			}
 			else {
-				WorkspaceTreeModel tModel = node.getModel();
+				WorkspaceTreeModel tModel = targetNode.getModel();
 				if(tModel == this) {
 					node.setParent(targetNode);
 					// DOCEAR - look for problems that may caused by this change!!!
