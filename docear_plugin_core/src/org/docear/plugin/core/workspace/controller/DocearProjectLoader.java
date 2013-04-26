@@ -143,6 +143,7 @@ public class DocearProjectLoader extends ProjectLoader {
 			}
 			else {
 				createDefaultProject((DocearWorkspaceProject)project);
+				((ProjectRootNode)project.getModel().getRoot()).setVersion(DocearWorkspaceProject.CURRENT_PROJECT_VERSION.getVersionString());
 				return LOAD_RETURN_TYPE.NEW_PROJECT;
 			}
 		}
