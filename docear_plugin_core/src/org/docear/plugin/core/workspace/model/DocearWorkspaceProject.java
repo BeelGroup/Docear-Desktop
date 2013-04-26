@@ -214,6 +214,14 @@ public class DocearWorkspaceProject extends AWorkspaceProject {
 		return version;
 	}
 
+	public static boolean isCompatible(AWorkspaceProject project) {
+		if(project == null || project.getVersion() == null) {
+			return false;
+		}
+		//DOCEAR - todo: implement more differentiated version compare method
+		return CURRENT_PROJECT_VERSION.getVersionString().equals(project.getVersion().getVersionString());
+	}
+
 	
 	
 	

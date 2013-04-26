@@ -729,7 +729,7 @@ public class PdfUtilitiesController extends ALanguageController {
 
 				builder.addMenuItem(
 						MENU_BAR + MONITORING_MENU + SETTINGS_MENU,
-						new JMenu(TextUtils.getText("PdfUtilitiesController_12")), MENU_BAR + PDF_MANAGEMENT_MENU + MONITORING_MENU + SETTINGS_MENU + AUTOUPDATE_MENU, //$NON-NLS-1$
+						new JMenu(TextUtils.getText("PdfUtilitiesController_12")), MENU_BAR + MONITORING_MENU + SETTINGS_MENU + AUTOUPDATE_MENU, //$NON-NLS-1$
 						MenuBuilder.AS_CHILD);
 				builder.addMenuItem(monitoringCategory + MONITORING_MENU + SETTINGS_MENU,
 						new JMenu(TextUtils.getText("PdfUtilitiesController_12")), monitoringCategory + MONITORING_MENU + SETTINGS_MENU + AUTOUPDATE_MENU, //$NON-NLS-1$
@@ -737,7 +737,7 @@ public class PdfUtilitiesController extends ALanguageController {
 
 				builder.addMenuItem(
 						MENU_BAR + MONITORING_MENU + SETTINGS_MENU,
-						new JMenu(TextUtils.getText("PdfUtilitiesController_14")), MENU_BAR + PDF_MANAGEMENT_MENU + MONITORING_MENU + SETTINGS_MENU + SUBFOLDERS_MENU, //$NON-NLS-1$
+						new JMenu(TextUtils.getText("PdfUtilitiesController_14")), MENU_BAR + MONITORING_MENU + SETTINGS_MENU + SUBFOLDERS_MENU, //$NON-NLS-1$
 						MenuBuilder.AS_CHILD);
 				builder.addMenuItem(monitoringCategory + MONITORING_MENU + SETTINGS_MENU,
 						new JMenu(TextUtils.getText("PdfUtilitiesController_14")), monitoringCategory + MONITORING_MENU + SETTINGS_MENU + SUBFOLDERS_MENU, //$NON-NLS-1$

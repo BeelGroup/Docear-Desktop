@@ -23,13 +23,15 @@ import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.io.IFileSystemRepresentation;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
+import org.freeplane.plugin.workspace.model.project.IWorkspaceProjectExtension;
 import org.freeplane.plugin.workspace.nodes.AFolderNode;
 
 /**
  * 
  */
-public class FolderTypeLiteratureRepositoryNode extends AFolderNode implements IWorkspaceNodeActionListener,
-																				IFileSystemRepresentation {
+public class FolderTypeLiteratureRepositoryNode extends AFolderNode implements IWorkspaceNodeActionListener
+																				,IWorkspaceProjectExtension
+																				,IFileSystemRepresentation {
 	//WORKSPACE - todo: implement dnd handling
 	private static final long serialVersionUID = 1L;
 	private WorkspacePopupMenu popupMenu = null;

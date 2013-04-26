@@ -38,6 +38,7 @@ import org.freeplane.plugin.workspace.model.AWorkspaceNodeCreator;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.IResultProcessor;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
+import org.freeplane.plugin.workspace.model.project.IWorkspaceProjectExtension;
 import org.freeplane.plugin.workspace.model.project.ProjectLoader;
 import org.freeplane.plugin.workspace.nodes.FolderTypeMyFilesNode;
 import org.freeplane.plugin.workspace.nodes.FolderVirtualNode;
@@ -258,7 +259,7 @@ public class DocearProjectLoader extends ProjectLoader {
 				project.getModel().addNodeTo(pathNode, litRepoNode);
 			}
 		}		
-		
+		project.addExtension(FolderTypeLiteratureRepositoryNode.class, litRepoNode);
 		root.initiateMyFile(project);
 		
 		FolderVirtualNode misc = new FolderVirtualNode();
@@ -414,11 +415,13 @@ public class DocearProjectLoader extends ProjectLoader {
 				}
 				//add myFiles after a certain node type
 //				if(node instanceof FolderTypeLibraryNode)
-				if(DocearWorkspaceProject.CURRENT_PROJECT_VERSION.equals(getProject().getVersion())) {
-					if(node instanceof FolderTypeLiteratureRepositoryNode)
-					{
+				if(node instanceof FolderTypeLiteratureRepositoryNode)
+				{
+					project.addExtension(FolderTypeLiteratureRepositoryNode.class, (IWorkspaceProjectExtension) node);
+					if(DocearWorkspaceProject.CURRENT_PROJECT_VERSION.equals(getProject().getVersion())) {
 						((ProjectRootNode) parent.getModel().getRoot()).initiateMyFile(getProject());
 					}
+					
 				}
 			}
 		}

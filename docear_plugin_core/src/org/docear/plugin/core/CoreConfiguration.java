@@ -38,6 +38,7 @@ import org.docear.plugin.core.listeners.PropertyLoadListener;
 import org.docear.plugin.core.listeners.WorkspaceOpenDocumentListener;
 import org.docear.plugin.core.logger.DocearLogEvent;
 import org.docear.plugin.core.ui.NotificationBar;
+import org.docear.plugin.core.workspace.actions.DocearAddRepositoryPathAction;
 import org.docear.plugin.core.workspace.actions.DocearLibraryNewMindmap;
 import org.docear.plugin.core.workspace.actions.DocearLibraryOpenLocation;
 import org.docear.plugin.core.workspace.actions.DocearNewProjectAction;
@@ -258,7 +259,8 @@ public class CoreConfiguration extends ALanguageController {
 		file.createNewFile();
 	}
 	
-	protected void initMode(ModeController modeController) {				
+	protected void initMode(ModeController modeController) {
+		WorkspaceController.replaceAction(new DocearAddRepositoryPathAction());
 		WorkspaceController.replaceAction(new DocearLibraryOpenLocation());
 		WorkspaceController.replaceAction(new DocearNewProjectAction());
 		WorkspaceController.replaceAction(new DocearLibraryNewMindmap());
