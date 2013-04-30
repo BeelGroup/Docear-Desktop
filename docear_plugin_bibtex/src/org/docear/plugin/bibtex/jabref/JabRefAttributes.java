@@ -496,7 +496,7 @@ public class JabRefAttributes {
 	// findBibtexEntryForPDF
 	public BibtexEntry findBibtexEntryForURL(URI nodeUri, MapModel map, boolean ignoreDuplicates) throws ResolveDuplicateEntryAbortedException {
 		WorkspaceMapModelExtension mapExt = WorkspaceController.getMapModelExtension(map);
-		if(mapExt == null) {
+		if(mapExt == null || mapExt.getProject() == null) {
 			//DOCEAR - todo: what to do?
 			return null;
 		}
@@ -593,7 +593,7 @@ public class JabRefAttributes {
 
 	public BibtexEntry findBibtexEntryForPDF(URI uri, MapModel map, boolean ignoreDuplicates) throws ResolveDuplicateEntryAbortedException {
 		WorkspaceMapModelExtension mapExt = WorkspaceController.getMapModelExtension(map);
-		if(mapExt == null) {
+		if(mapExt == null || mapExt.getProject() == null) {
 			//DOCEAR - todo: what to do?
 			return null;
 		}

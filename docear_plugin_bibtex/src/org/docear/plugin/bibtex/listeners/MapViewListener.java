@@ -97,7 +97,7 @@ public class MapViewListener implements MouseListener, INodeSelectionListener {
 		DocearReferenceUpdateController.lock();
 		try {
 			WorkspaceMapModelExtension mapExt = WorkspaceController.getMapModelExtension(mapModel);
-    		if(mapExt == null) {
+    		if(mapExt == null || mapExt.getProject() == null) {
     			//DOCEAR - todo: what to do?
     		}
     		else {    			

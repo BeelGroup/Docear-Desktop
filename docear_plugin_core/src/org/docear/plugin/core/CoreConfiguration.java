@@ -13,7 +13,10 @@ import java.util.Enumeration;
 import java.util.Properties;
 
 import javax.swing.ImageIcon;
+import javax.swing.JMenu;
 import javax.swing.SwingUtilities;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOExceptionWithCause;
@@ -72,6 +75,7 @@ import org.freeplane.features.url.MapVersionInterpreter;
 import org.freeplane.features.url.UrlManager;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.actions.AWorkspaceAction;
 import org.freeplane.plugin.workspace.components.IWorkspaceView;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.mindmapmode.VirtualFolderDropHandler;
@@ -386,8 +390,23 @@ public class CoreConfiguration extends ALanguageController {
 				//add entries to project menu
 				final String MENU_PROJECT_KEY = "/menu_bar/project";
 				builder.addSeparator(MENU_PROJECT_KEY, MenuBuilder.AS_CHILD);
-				builder.addAction(MENU_PROJECT_KEY, new DocearAddRepositoryPathAction(), MenuBuilder.AS_CHILD);
-				builder.addAction(MENU_PROJECT_KEY, new DocearRemoveRepositoryPathAction(), MenuBuilder.AS_CHILD);
+				final AWorkspaceAction addAction = new DocearAddRepositoryPathAction();
+				builder.addAction(MENU_PROJECT_KEY, addAction, MenuBuilder.AS_CHILD);
+				final AWorkspaceAction removeAction = new DocearRemoveRepositoryPathAction();
+				builder.addAction(MENU_PROJECT_KEY, removeAction, MenuBuilder.AS_CHILD);
+				Object obj = builder.get(MENU_PROJECT_KEY).getUserObject();
+				if(obj instanceof JMenu) {
+					((JMenu) obj).getPopupMenu().addPopupMenuListener(new PopupMenuListener() {					
+						public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+							addAction.setEnabled();
+							removeAction.setEnabled();
+						}
+						
+						public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {}
+						
+						public void popupMenuCanceled(PopupMenuEvent e) {}
+					});
+				}
 				
 				//add entries to
 				builder.addAction("/menu_bar/help", new DocearShowTermsOfUseAction(),	MenuBuilder.AS_CHILD);

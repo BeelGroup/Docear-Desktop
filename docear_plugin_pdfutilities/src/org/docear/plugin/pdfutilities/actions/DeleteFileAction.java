@@ -53,7 +53,7 @@ public class DeleteFileAction extends DocearAction {
 				
 		MindmapUpdateController ctrl = new MindmapUpdateController();
 		ctrl.addMindmapUpdater(new MindmapFileRemovedUpdater(TextUtils.getText("docear.mm_updater.remove_filelinks"), deletedFiles));
-		ctrl.updateRegisteredMindmapsInWorkspace(true);
+		ctrl.updateRegisteredMindmapsInProject(true);
 		//TODO: update mindmap
 		
 		//WorkspaceController.getController().refreshWorkspace();

@@ -12,11 +12,11 @@ import java.util.concurrent.Executors;
 
 import javax.swing.SwingUtilities;
 
-import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.MapItem;
 import org.docear.plugin.core.features.DocearMapModelExtension;
 import org.docear.plugin.core.features.MapModificationSession;
 import org.docear.plugin.core.ui.SwingWorkerDialog;
+import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.map.INodeView;
@@ -25,6 +25,7 @@ import org.freeplane.features.map.MapModel;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.url.UrlManager;
 import org.freeplane.features.url.mindmapmode.MFileManager;
+import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.view.swing.map.MapView;
 import org.freeplane.view.swing.map.NodeView;
@@ -49,25 +50,35 @@ public class MindmapUpdateController {
 		return this.updaters;
 	}
 
-	//WORKSPACE - todo: updateAllMindmapsInProject (current or with id)
-	public boolean updateAllMindmapsInWorkspace() {
+	public boolean updateAllMindmapsInProject() {
+		return updateAllMindmapsInProject(WorkspaceController.getCurrentProject());
+	}
+	
+	public boolean updateAllMindmapsInProject(AWorkspaceProject project) {
+		if(!DocearWorkspaceProject.isCompatible(project)) {
+			return false;
+		}
 		List<MapItem> maps = new ArrayList<MapItem>();
-//		for (URI uri : WorkspaceController.getModel().getAllNodesFiltered(".mm")) {
-//			maps.add(new MapItem(uri));
-//		}
-//		
+		for (URI uri : project.getModel().getAllNodesFiltered(".mm")) {
+			maps.add(new MapItem(uri));
+		}
+		
 		return updateMindmaps(maps);
 	}
 	
-	public boolean updateRegisteredMindmapsInWorkspace() {
-		return updateRegisteredMindmapsInWorkspace(false);
+	public boolean updateRegisteredMindmapsInProject() {
+		return updateRegisteredMindmapsInProject(false);
 	}
 
-	public boolean updateRegisteredMindmapsInWorkspace(boolean openMindmapsToo) {
+	public boolean updateRegisteredMindmapsInProject(boolean openMindmapsToo) {
 		List<MapItem> maps = new ArrayList<MapItem>(); 
 		
-		//WORKSPACE - DOCEAR todo: get all library maps from project/workspace
-		
+		AWorkspaceProject project = WorkspaceController.getCurrentProject();
+		if(DocearWorkspaceProject.isCompatible(project)) {
+			for(URI mapUri : ((DocearWorkspaceProject)project).getLibraryMaps()) {
+				maps.add(new MapItem(mapUri));
+			}
+		}
 		if (openMindmapsToo) {
 			for (MapItem item : getAllOpenMaps()) {
 				maps.add(item);

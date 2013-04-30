@@ -13,6 +13,8 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.event.TreeModelEvent;
 
 import net.sf.jabref.BibtexEntry;
@@ -108,8 +110,6 @@ public class ReferencesController extends ALanguageController implements IDocear
 	private static final String ADD_NEW_REFERENCE_LANG_KEY = "menu_add_new_reference";
 	private static final String ADD_EXISTING_REFERENCES_LANG_KEY = "menu_add_existing_references";
 	private static final String REMOVE_REFERENCE_LANG_KEY = "menu_remove_references";
-	private static final String UPDATE_REFERENCES_IN_LIBRARY_LANG_KEY = "menu_update_references_in_library";
-	private static final String UPDATE_REFERENCES_ALL_MAPS_LANG_KEY = "menu_update_references_all_maps";
 	private static final String UPDATE_REFERENCES_ALL_OPEN_MAPS_LANG_KEY = "menu_update_references_all_open_maps";
 	private static final String UPDATE_REFERENCES_CURRENT_MAP_LANG_KEY = "menu_update_references_current_map";
 //	private static final String CONVERT_SPLMM_REFERENCES_LANG_KEY = "menu_update_splmm_references_current_map";
@@ -120,8 +120,8 @@ public class ReferencesController extends ALanguageController implements IDocear
 			UPDATE_REFERENCES_CURRENT_MAP_LANG_KEY);
 	private AFreeplaneAction UpdateReferencesAllOpenMaps = new UpdateReferencesAllOpenMapsAction(
 			UPDATE_REFERENCES_ALL_OPEN_MAPS_LANG_KEY);
-	private AFreeplaneAction UpdateReferencesInLibrary = new UpdateReferencesInLibrary(UPDATE_REFERENCES_IN_LIBRARY_LANG_KEY);
-	private AFreeplaneAction UpdateReferencesAllMaps = new UpdateReferencesAllMapsAction(UPDATE_REFERENCES_ALL_MAPS_LANG_KEY);
+	private AFreeplaneAction UpdateReferencesInLibrary = new UpdateReferencesInLibrary();
+	private AFreeplaneAction UpdateReferencesAllMaps = new UpdateReferencesAllMapsAction();
 //	private AFreeplaneAction ConvertSplmmReferences = new ConvertSplmmReferencesAction(CONVERT_SPLMM_REFERENCES_LANG_KEY);
 	private AFreeplaneAction AddExistingReference = new AddExistingReferenceAction(ADD_EXISTING_REFERENCES_LANG_KEY);
 	private AFreeplaneAction RemoveReference = new RemoveReferenceAction(REMOVE_REFERENCE_LANG_KEY);
@@ -408,8 +408,24 @@ public class ReferencesController extends ALanguageController implements IDocear
 				builder.addAction(MENU_BAR + REFERENCE_MANAGEMENT_MENU, AddExistingReference, MenuBuilder.AS_CHILD);
 				builder.addAction(MENU_BAR + REFERENCE_MANAGEMENT_MENU, RemoveReference, MenuBuilder.AS_CHILD);
 
+				JMenu updRefMenuBar = new JMenu(TextUtils.getText(UPDATE_REFERENCES_MENU_LANG_KEY));
+				updRefMenuBar.getPopupMenu().addPopupMenuListener(new PopupMenuListener() {
+					
+					@Override
+					public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+						UpdateReferencesInLibrary.setEnabled();
+						UpdateReferencesAllMaps.setEnabled();
+					}
+					
+					@Override
+					public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {}
+					
+					@Override
+					public void popupMenuCanceled(PopupMenuEvent e) {}
+				});
+				
 				builder.addMenuItem(MENU_BAR + REFERENCE_MANAGEMENT_MENU,
-						new JMenu(TextUtils.getText(UPDATE_REFERENCES_MENU_LANG_KEY)), MENU_BAR + REFERENCE_MANAGEMENT_MENU
+						updRefMenuBar, MENU_BAR + REFERENCE_MANAGEMENT_MENU
 								+ UPDATE_REFERENCES_MENU, MenuBuilder.AS_CHILD);
 				builder.addAction(MENU_BAR + REFERENCE_MANAGEMENT_MENU + UPDATE_REFERENCES_MENU, UpdateReferencesCurrentMap,
 						MenuBuilder.AS_CHILD);
@@ -434,8 +450,25 @@ public class ReferencesController extends ALanguageController implements IDocear
 //				builder.addAction(referencesCategory + REFERENCE_MANAGEMENT_MENU, new ImportMetadateForNodeLink(), MenuBuilder.AS_CHILD);
 				builder.addAction(referencesCategory + REFERENCE_MANAGEMENT_MENU, AddExistingReference, MenuBuilder.AS_CHILD);
 				builder.addAction(referencesCategory + REFERENCE_MANAGEMENT_MENU, RemoveReference, MenuBuilder.AS_CHILD);
+				
+				
+				JMenu updRefMenu = new JMenu(TextUtils.getText(UPDATE_REFERENCES_MENU_LANG_KEY));
+				updRefMenu.getPopupMenu().addPopupMenuListener(new PopupMenuListener() {
+					
+					@Override
+					public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+						UpdateReferencesInLibrary.setEnabled();
+						UpdateReferencesAllMaps.setEnabled();
+					}
+					
+					@Override
+					public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {}
+					
+					@Override
+					public void popupMenuCanceled(PopupMenuEvent e) {}
+				});
 				builder.addMenuItem(referencesCategory + REFERENCE_MANAGEMENT_MENU,
-						new JMenu(TextUtils.getText(UPDATE_REFERENCES_MENU_LANG_KEY)), referencesCategory
+						updRefMenu, referencesCategory
 								+ REFERENCE_MANAGEMENT_MENU + UPDATE_REFERENCES_MENU, MenuBuilder.AS_CHILD);
 				builder.addAction(referencesCategory + REFERENCE_MANAGEMENT_MENU + UPDATE_REFERENCES_MENU,
 						UpdateReferencesCurrentMap, MenuBuilder.AS_CHILD);

@@ -34,6 +34,10 @@ public class DocearRemoveRepositoryPathAction extends AWorkspaceAction {
 	 * METHODS
 	 **********************************************************************************/
 	
+	public void setEnabled() {
+		setEnabled(DocearWorkspaceProject.isCompatible(WorkspaceController.getCurrentProject()));
+	}
+	
 	@Override
 	public void setEnabledFor(AWorkspaceTreeNode node, TreePath[] selectedPaths) {
 		if(node instanceof LiteratureRepositoryPathNode) {

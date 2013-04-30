@@ -66,8 +66,9 @@ public class ReferenceUpdater extends AMindmapUpdater {
     		DocearController.getController().getSemaphoreController().lock("MindmapUpdate");
     		
     		WorkspaceMapModelExtension mapExt = WorkspaceController.getMapModelExtension(map);
-    		if(mapExt == null) {
+    		if(mapExt == null || mapExt.getProject() == null) {
     			//DOCEAR - todo: what to do?
+    			return false;
     		}
     		else {    			
     			JabRefProjectExtension prjExt = (JabRefProjectExtension) mapExt.getProject().getExtensions(JabRefProjectExtension.class);
