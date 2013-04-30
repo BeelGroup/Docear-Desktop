@@ -14,6 +14,7 @@ import org.docear.plugin.core.workspace.AVirtualDirectory;
 import org.docear.plugin.core.workspace.node.FolderTypeLibraryNode;
 import org.docear.plugin.core.workspace.node.FolderTypeLiteratureRepositoryNode;
 import org.docear.plugin.core.workspace.node.LiteratureRepositoryPathNode;
+import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.UniqueIDCreator;
 import org.freeplane.features.link.LinkController;
@@ -190,9 +191,11 @@ public class DocearWorkspaceProject extends AWorkspaceProject {
 
 	@Override
 	public URI getRelativeURI(URI uri) {
-		//WORKSPACE - todo: check new implementation 
 		try {
 			URI relativeUri = LinkController.getController().createRelativeURI(new File(getProjectHome()), new File(uri), LinkController.LINK_RELATIVE_TO_MINDMAP);
+			if(Compat.isWindowsOS() && relativeUri.getRawPath().contains(":")) {
+				return uri;
+			}
 			return LinkController.createURI(WorkspaceController.PROJECT_RESOURCE_URL_PROTOCOL + "://"+ getProjectID() +"/"+relativeUri.getPath());
 		}
 		catch (Exception e) {

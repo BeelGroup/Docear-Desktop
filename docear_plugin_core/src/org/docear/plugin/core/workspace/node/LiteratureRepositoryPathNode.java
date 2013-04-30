@@ -6,6 +6,8 @@ import java.io.FileFilter;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 
+import org.docear.plugin.core.workspace.actions.DocearAddRepositoryPathAction;
+import org.docear.plugin.core.workspace.actions.DocearRemoveRepositoryPathAction;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.plugin.workspace.URIUtils;
@@ -50,7 +52,8 @@ public class LiteratureRepositoryPathNode extends FolderLinkNode implements Tree
 			WorkspacePopupMenuBuilder.addActions(popupMenu, new String[] {
 					WorkspacePopupMenuBuilder.createSubMenu(TextUtils.getRawText("workspace.action.new.label")),
 					WorkspaceNewProjectAction.KEY,
-					WorkspacePopupMenuBuilder.SEPARATOR,
+					DocearAddRepositoryPathAction.KEY,
+//					WorkspacePopupMenuBuilder.SEPARATOR,
 //					"workspace.action.node.new.folder",
 //					"workspace.action.file.new.mindmap",
 //					WorkspacePopupMenuBuilder.SEPARATOR,
@@ -63,8 +66,9 @@ public class LiteratureRepositoryPathNode extends FolderLinkNode implements Tree
 					"workspace.action.node.paste",
 					"workspace.action.node.physical.sort",
 					WorkspacePopupMenuBuilder.SEPARATOR,
-					"workspace.action.node.remove",
-					WorkspacePopupMenuBuilder.SEPARATOR,		
+					DocearRemoveRepositoryPathAction.KEY,
+//					"workspace.action.node.remove",
+					WorkspacePopupMenuBuilder.SEPARATOR,
 					"workspace.action.node.refresh"
 			});
 		}

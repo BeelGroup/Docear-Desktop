@@ -42,6 +42,7 @@ import org.docear.plugin.core.workspace.actions.DocearAddRepositoryPathAction;
 import org.docear.plugin.core.workspace.actions.DocearLibraryNewMindmap;
 import org.docear.plugin.core.workspace.actions.DocearLibraryOpenLocation;
 import org.docear.plugin.core.workspace.actions.DocearNewProjectAction;
+import org.docear.plugin.core.workspace.actions.DocearRemoveRepositoryPathAction;
 import org.docear.plugin.core.workspace.actions.DocearRenameAction;
 import org.docear.plugin.core.workspace.controller.DocearProjectLoader;
 import org.docear.plugin.core.workspace.model.DocearWorspaceProjectCreator;
@@ -261,6 +262,7 @@ public class CoreConfiguration extends ALanguageController {
 	
 	protected void initMode(ModeController modeController) {
 		WorkspaceController.replaceAction(new DocearAddRepositoryPathAction());
+		WorkspaceController.replaceAction(new DocearRemoveRepositoryPathAction());
 		WorkspaceController.replaceAction(new DocearLibraryOpenLocation());
 		WorkspaceController.replaceAction(new DocearNewProjectAction());
 		WorkspaceController.replaceAction(new DocearLibraryNewMindmap());
@@ -381,10 +383,19 @@ public class CoreConfiguration extends ALanguageController {
 	private void addMenus(ModeController modeController) {
 		modeController.addMenuContributor(new IMenuContributor() {
 			public void updateMenus(ModeController modeController, MenuBuilder builder) {
+				//add entries to project menu
+				final String MENU_PROJECT_KEY = "/menu_bar/project";
+				builder.addSeparator(MENU_PROJECT_KEY, MenuBuilder.AS_CHILD);
+				builder.addAction(MENU_PROJECT_KEY, new DocearAddRepositoryPathAction(), MenuBuilder.AS_CHILD);
+				builder.addAction(MENU_PROJECT_KEY, new DocearRemoveRepositoryPathAction(), MenuBuilder.AS_CHILD);
+				
+				//add entries to
 				builder.addAction("/menu_bar/help", new DocearShowTermsOfUseAction(),	MenuBuilder.AS_CHILD);
 				builder.addAction("/menu_bar/help", new DocearShowDataPrivacyStatementAction(),	MenuBuilder.AS_CHILD);
 				builder.addAction("/menu_bar/help", new DocearShowDataProcessingTermsAction(),	MenuBuilder.AS_CHILD);
 				//builder.addAction("/menu_bar/help", new DocearShowNotificationBar(),	MenuBuilder.AS_CHILD);
+				
+				//add node privacy actions
 				if("true".equals(System.getProperty("docear.debug", "false"))) {
 					modeController.addAction(new DocearSetNodePrivacyAction());
 					builder.addSeparator("/menu_bar/edit", MenuBuilder.AS_CHILD);
@@ -506,8 +517,6 @@ public class CoreConfiguration extends ALanguageController {
 		Controller.getCurrentController().getMapViewManager().addMapViewChangeListener(adapter);
 		Controller.getCurrentController().getMapViewManager().addMapViewChangeListener(new MapLifeCycleAndViewListener());
 		WorkspaceController.getModeExtension(modeController).getIOController().registerNodeActionListener(AWorkspaceTreeNode.class, WorkspaceActionEvent.WSNODE_OPEN_DOCUMENT, new WorkspaceOpenDocumentListener());
-		//WORKSPACE - info
-//		WorkspaceUtils.getModel().addTreeModelListener(new WorkspaceTreeModelListener());
 	}	
 	
 	class GettingStartedAction extends AFreeplaneAction {
