@@ -38,6 +38,7 @@ import org.docear.plugin.services.communications.CommunicationsController;
 import org.docear.plugin.services.recommendations.dialog.RecommendationEntryComponent;
 import org.docear.plugin.services.recommendations.model.RecommendationsModel;
 import org.docear.plugin.services.recommendations.model.RecommendationsModelNode;
+import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.Controller;
@@ -114,6 +115,7 @@ public class RecommendationsView extends JPanel {
 		cont.add(tabPane, BorderLayout.CENTER, 0);
 		view = null;
 		((JComponent) cont).revalidate();
+		UITools.getFrame().repaint();
 	}
 	
 	public void setModel(RecommendationsModel model) {
