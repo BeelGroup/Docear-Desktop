@@ -234,7 +234,7 @@ public class DocearProjectLoader extends ProjectLoader {
 		}
 		else {
 			defaultRef.setName(TextUtils.getText(FolderTypeMyFilesNode.class.getPackage().getName().toLowerCase(Locale.ENGLISH)+".refnode.name"));
-			defaultRef.setLinkURI(URIUtils.createURI(libPath.toString()+"/default.bib"));
+			defaultRef.setLinkURI(URIUtils.createURI(libPath.toString()+"/"+home.getName()+".bib"));
 		}
 		project.getModel().addNodeTo(defaultRef, refs);
 		
