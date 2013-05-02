@@ -34,6 +34,7 @@ public class DocearNewProjectAction extends AWorkspaceAction {
 		if(response == JOptionPane.OK_OPTION) {
 			DocearProjectSettings settings = new DocearProjectSettings();
 			settings.includeDemoFiles(dialog.includeDemoFiles());
+			settings.setProjectName(dialog.getProjectName());
 			if(!dialog.useDefaults()) {
 				settings.setBibTeXLibraryPath(dialog.getBibTeXPath());
 				settings.setUseDefaultRepositoryPath(dialog.useDefaultRepositoryPath());
@@ -54,11 +55,10 @@ public class DocearNewProjectAction extends AWorkspaceAction {
 			try {
 				LOAD_RETURN_TYPE return_type = WorkspaceController.getCurrentModeExtension().getProjectLoader().loadProject(project);
 				if(return_type == LOAD_RETURN_TYPE.NEW_PROJECT && dialog.getProjectName() != null && dialog.getProjectName().length() > 0) {
-					project.getModel().changeNodeName(project.getModel().getRoot(), dialog.getProjectName());
+					project.getModel().getRoot().setName(dialog.getProjectName());
+					project.getModel().nodeChanged(project.getModel().getRoot(), null, dialog.getProjectName());
 				}
 			} catch (IOException e) {
-				LogUtils.severe(e);
-			} catch (WorkspaceModelException e) {
 				LogUtils.severe(e);
 			}
 		}

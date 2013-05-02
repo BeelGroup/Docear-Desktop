@@ -123,8 +123,15 @@ public class LinkTypeIncomingNode extends ALinkNode implements IWorkspaceNodeAct
 					return;
 				}
 				if (!f.exists()) {
-					if(WorkspaceNewMapAction.createNewMap(f.toURI(), getName(), true) == null) {
+					MapModel map = WorkspaceNewMapAction.createNewMap(f.toURI(), getName(), true);
+					if(map == null) {
 						LogUtils.warn("could not create " + getLinkURI());
+					}
+					else {
+						DocearEvent evnt = new DocearEvent(this, (DocearWorkspaceProject) WorkspaceController.getCurrentModel().getProject(getModel()), DocearEventType.NEW_INCOMING, map);
+						DocearController.getController().dispatchDocearEvent(evnt);
+						//DOCEAR - todo: remove when updating a node attribute is working correctly
+						Controller.getCurrentController().close(true);
 					}
 				}
 				

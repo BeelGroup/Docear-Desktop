@@ -11,6 +11,7 @@ public class DocearProjectSettings implements IWorkspaceProjectExtension {
 	private List<URI> repositoryPathList = new ArrayList<URI>();
 	private URI bibPath = null;
 	private boolean addDefaultRepository = true;
+	private String name;
 	
 	public boolean includeDemoFiles() {
 		return includeDemo;
@@ -42,6 +43,14 @@ public class DocearProjectSettings implements IWorkspaceProjectExtension {
 
 	public void setUseDefaultRepositoryPath(boolean enabled) {
 		this.addDefaultRepository  = enabled;
+	}
+
+	public void setProjectName(String name) {
+		this.name = name;
+	}
+	
+	public String getProjectName() {
+		return this.name;
 	}
 	
 }

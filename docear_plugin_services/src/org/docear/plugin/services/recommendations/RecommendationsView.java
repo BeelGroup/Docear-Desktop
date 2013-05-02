@@ -51,7 +51,6 @@ import com.jgoodies.forms.layout.RowSpec;
 public class RecommendationsView extends JPanel {	
 
 	private static final long serialVersionUID = 1L;
-	private RecommendationTabListener closeListener;
 	private static JTabbedPane tabPane;
 	private static RecommendationsView view;
 
@@ -64,11 +63,6 @@ public class RecommendationsView extends JPanel {
 		this.setLayout(new BorderLayout());
 		updateTitle();
 	}
-	
-	public void setCloseListener(RecommendationTabListener listener) {
-		this.closeListener = listener;
-	}
-	
 	
 	public static RecommendationsView getView() throws NoSuchElementException {
 		Container cont = Controller.getCurrentController().getViewController().getContentPane();
@@ -352,12 +346,7 @@ public class RecommendationsView extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				SwingUtilities.invokeLater(new  Runnable() {
 					public void run() {
-						if(closeListener == null) {
-							RecommendationsController.closeRecommendationView();
-						}
-						else {
-							closeListener.closeView();
-						}
+						RecommendationsController.closeRecommendationView();
 					}
 				});
 			}

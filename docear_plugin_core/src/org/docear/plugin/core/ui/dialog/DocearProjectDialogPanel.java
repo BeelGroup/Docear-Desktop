@@ -112,6 +112,9 @@ public class DocearProjectDialogPanel extends JPanel {
 		txtProjectName.setColumns(10);
 		txtProjectName.addKeyListener(new KeyListener() {			
 			public void keyTyped(KeyEvent evt) {
+				if(NewProjectDialogPanel.isBlackListed(evt.getKeyChar())) {
+					evt.consume();
+				}
 			}
 			
 			public void keyReleased(KeyEvent evt) {
@@ -129,7 +132,10 @@ public class DocearProjectDialogPanel extends JPanel {
 				}
 			}
 			
-			public void keyPressed(KeyEvent evt) {	
+			public void keyPressed(KeyEvent evt) {
+				if(NewProjectDialogPanel.isBlackListed(evt.getKeyChar())) {
+					evt.consume();
+				}
 			}
 		});
 		
