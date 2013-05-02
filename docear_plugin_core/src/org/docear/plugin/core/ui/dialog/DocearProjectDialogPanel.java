@@ -169,6 +169,7 @@ public class DocearProjectDialogPanel extends JPanel {
 		
 		chckbxIncludeDemoFiles = new JCheckBox(TextUtils.getText("docear.new.project.include_demo.label"));
 		add(chckbxIncludeDemoFiles, "2, 10, 5, 1");
+		chckbxIncludeDemoFiles.setSelected(true);
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "  "+TextUtils.getText("advanced_project_settings_title")+"  ", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
