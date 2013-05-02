@@ -50,6 +50,7 @@ import org.docear.plugin.core.workspace.actions.DocearRenameAction;
 import org.docear.plugin.core.workspace.controller.DocearProjectLoader;
 import org.docear.plugin.core.workspace.model.DocearWorspaceProjectCreator;
 import org.docear.plugin.core.workspace.node.FolderTypeLibraryNode;
+import org.docear.plugin.core.workspace.node.LiteratureRepositoryPathNode;
 import org.freeplane.core.resources.OptionPanelController;
 import org.freeplane.core.resources.ResourceBundles;
 import org.freeplane.core.resources.ResourceController;
@@ -78,6 +79,7 @@ import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.actions.AWorkspaceAction;
 import org.freeplane.plugin.workspace.components.IWorkspaceView;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
+import org.freeplane.plugin.workspace.mindmapmode.FileFolderDropHandler;
 import org.freeplane.plugin.workspace.mindmapmode.VirtualFolderDropHandler;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
@@ -277,6 +279,7 @@ public class CoreConfiguration extends ALanguageController {
 		IWorkspaceView view = WorkspaceController.getModeExtension(modeController).getView();
 		if(view != null) {
 			view.getTransferHandler().registerNodeDropHandler(FolderTypeLibraryNode.class, new VirtualFolderDropHandler());
+			view.getTransferHandler().registerNodeDropHandler(LiteratureRepositoryPathNode.class, new FileFolderDropHandler());
 		}
 		
 		DocearController.getController().getDocearEventLogger().appendToLog(this, DocearLogEvent.APPLICATION_STARTED);
