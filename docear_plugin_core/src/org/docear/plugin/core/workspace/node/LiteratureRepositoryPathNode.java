@@ -23,6 +23,7 @@ public class LiteratureRepositoryPathNode extends FolderLinkNode implements Tree
 	public static final String TYPE = "repository_path";
 	
 	private WorkspacePopupMenu popupMenu = null;
+	private boolean inRefresh = false;
 	
 
 	public LiteratureRepositoryPathNode() {
@@ -85,29 +86,37 @@ public class LiteratureRepositoryPathNode extends FolderLinkNode implements Tree
 	public void refresh() {
 		File folder;
 		try {
+			inRefresh = true;
+			getModel().removeAllElements(this);
 			folder = URIUtils.getAbsoluteFile(getPath());
-			if (folder.isDirectory()) {
-				getModel().removeAllElements(this);
-				WorkspaceController.getFileSystemMgr().scanFileSystem(this, folder, new FileFilter() {
-					public boolean accept(File pathname) {
-						if(pathname.isDirectory() || pathname.getName().toLowerCase().endsWith(".pdf")) {
-							return true;
-						}
-						return false;
-					}
-				});
-				getModel().reload(this);				
-			}
+			loadDirectoryFiles(folder);
+			getModel().reload(this);
 		}
 		catch (Exception e) {
 			LogUtils.severe(e);
-		}		
+		}
+		finally {
+			inRefresh = false;
+		}
+	}
+
+	private void loadDirectoryFiles(File folder) {
+		if (folder != null && folder.isDirectory()) {
+			WorkspaceController.getFileSystemMgr().scanFileSystem(this, folder, new FileFilter() {
+				public boolean accept(File pathname) {
+					if(pathname.isDirectory() || pathname.getName().toLowerCase().endsWith(".pdf")) {
+						return true;
+					}
+					return false;
+				}
+			});
+		}
 	}
 
 	@Override
 	public void treeExpanded(TreeExpansionEvent event) {
-		if(getChildCount() <= 0) {
-			refresh();
+		if(!inRefresh && getChildCount() <= 0) {
+			loadDirectoryFiles(URIUtils.getAbsoluteFile(getPath()));
 		}
 	}
 
