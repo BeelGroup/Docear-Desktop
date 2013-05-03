@@ -1,0 +1,28 @@
+{
+	"type":"object",
+	"$schema": "http://json-schema.org/draft-03/schema",
+	"required":true,
+	"properties":{
+		"id": {
+			"type":"string",
+			"required":true
+		},
+		"isReadonly": {
+			"type":"boolean",
+			"required":true
+		},
+		"name": {
+			"type":"string",
+			"required":true
+		},
+		"revision": {
+			"type":"number",
+			"minimum":0,
+			"required":true
+		},
+		"root": {
+			"type":"object",
+			"required":true
+		}
+	}
+}

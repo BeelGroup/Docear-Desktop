@@ -6,5 +6,5 @@
 	<dialect name="FREEPLANE_NEWER" version = "32767" versionBegin="freeplane"  needsConversion="false" anotherDialect="true" appName="Freeplane" url="http://freeplane.sourceforge.net" />
 	<dialect name="FREEMIND"  version = "0" versionBegin="0.8"   needsConversion="false" anotherDialect="false" appName="FreeMind" url="http://freemind.sourceforge.net" />
 	<dialect name="FREEMIND_1"   version = "0" versionBegin="1."  needsConversion="false" anotherDialect="true" appName="FreeMind" url="http://freemind.sourceforge.net" />
-	<dialect name="DOCEAR" version = "2" versionBegin="docear "   needsConversion="false" anotherDialect="true" appName="Docear" url="http://www.doc-ear.com" />
+	<dialect name="DOCEAR" version = "2" versionBegin="docear "   needsConversion="false" anotherDialect="false" appName="Docear" url="http://www.doc-ear.com" />
 </MapVersions>

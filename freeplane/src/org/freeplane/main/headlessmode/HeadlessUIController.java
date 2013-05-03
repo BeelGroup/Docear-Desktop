@@ -57,135 +57,135 @@ public class HeadlessUIController implements ViewController {
 		}
 	}) ;
 	public Rectangle getFrameSize() {
-		throw new RuntimeException("Method not implemented");
+		return new Rectangle();
 	}
 
 	public void setFrameSize(Rectangle frameSize) {
-		throw new RuntimeException("Method not implemented");
+		
 	}
 
 	public void changeNoteWindowLocation() {
-		throw new RuntimeException("Method not implemented");
+		
 	}
 
 	public void err(String msg) {
-		throw new RuntimeException("Method not implemented");
+		
 	}
 
 	public RootPaneContainer getRootPaneContainer() {
-		throw new RuntimeException("Method not implemented");
+		return null;
 	}
 
 	public Container getContentPane() {
-		throw new RuntimeException("Method not implemented");
+		return null;
 	}
 
 	public Frame getFrame() {
-		throw new RuntimeException("Method not implemented");
+		return null;
 	}
 
 	public FreeplaneMenuBar getFreeplaneMenuBar() {
-		throw new RuntimeException("Method not implemented");
+		return null;
 	}
 
 	public JFrame getJFrame() {
-		throw new RuntimeException("Method not implemented");
+		return null;
 	}
 
 	public JComponent getStatusBar() {
-		throw new RuntimeException("Method not implemented");
+		return null;
 	}
 
 	public void init(Controller controller) {
-		throw new RuntimeException("Method not implemented");
+		
 	}
 
 	public void insertComponentIntoSplitPane(JComponent noteViewerComponent) {
-		throw new RuntimeException("Method not implemented");
+		
 	}
 
 	public boolean isApplet() {
-		throw new RuntimeException("Method not implemented");
+		return false;
 	}
 
 	public boolean isMenubarVisible() {
-		throw new RuntimeException("Method not implemented");
+		return false;
 	}
 
 	public void openDocument(URI uri) throws IOException {
-		throw new RuntimeException("Method not implemented");
+		
 	}
 
 	public void openDocument(URL fileToUrl) throws Exception {
-		throw new RuntimeException("Method not implemented");
+		
 	}
 
 	public void out(String msg) {
-		throw new RuntimeException("Method not implemented");
+		
 	}
 
 	public void addStatusInfo(String key, String info) {
-		throw new RuntimeException("Method not implemented");
+		
 	}
 
 	public void addStatusInfo(String key, Icon icon) {
-		throw new RuntimeException("Method not implemented");
+		
 	}
 
 	public void addStatusInfo(String key, String info, Icon icon) {
-		throw new RuntimeException("Method not implemented");
+		
 	}
 
 	public void addStatusInfo(String key, String info, Icon icon, String tooltip) {
-		throw new RuntimeException("Method not implemented");
+		
 	}
 
 	public void addStatusComponent(String key, Component component) {
-		throw new RuntimeException("Method not implemented");
+		
 	}
 
 	public void removeStatus(String key) {
-		throw new RuntimeException("Method not implemented");
+		
 	}
 
 	public void removeSplitPane() {
-		throw new RuntimeException("Method not implemented");
+		
 	}
 
 	public void saveProperties() {
-		throw new RuntimeException("Method not implemented");
+		
 	}
 
 	public void selectMode(ModeController oldModeController, ModeController newModeController) {
-		throw new RuntimeException("Method not implemented");
+		
 	}
 
 	public void setMenubarVisible(boolean visible) {
-		throw new RuntimeException("Method not implemented");
+		
 	}
 
 	public void setTitle(String title) {
-		throw new RuntimeException("Method not implemented");
+		
 	}
 
 	public void setWaitingCursor(boolean b) {
-		throw new RuntimeException("Method not implemented");
+		
 	}
 
 	public void viewNumberChanged(int number) {
-		throw new RuntimeException("Method not implemented");
+		
 	}
 
 	public String completeVisiblePropertyKey(JComponent toolBar) {
-		throw new RuntimeException("Method not implemented");
+		return "";
 	}
 
 	public void addObjectTypeInfo(Object value) {
-		throw new RuntimeException("Method not implemented");
+		
 	}
 
 	public boolean quit() {
-		throw new RuntimeException("Method not implemented");
+		return true;
 	}
 
 	public boolean isDispatchThread() {
@@ -206,14 +206,12 @@ public class HeadlessUIController implements ViewController {
     }
 
 	public boolean areScrollbarsVisible() {
-	    // TODO Auto-generated method stub
-	    return false;
-    }
+		return false;
+	}
 
 	public void setScrollbarsVisible(boolean b) {
-	    // TODO Auto-generated method stub
-	    
-    }
+		
+	}
 	
 	
 }
