@@ -23,6 +23,7 @@
 	<property name="src.dir" value="src" />
 	<property name="JOrtho_0.4_freeplane.location" value="${root}/../JOrtho_0.4_freeplane" />
 	<property name="freeplane.location" value="${root}/../freeplane" />
+	<property name="freeplane.remote.shared.location" value="${root}/../freeplane_plugin_remote_shared" />
 
 
 	<path id="JOrtho_0.4_freeplane.classpath">
@@ -49,12 +50,17 @@
 		<taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path" />
 	</target>
 
-
+	<available file="${freeplane.remote.shared.location}/lib/freeplane_remote_shared.jar" type="file" property="shared_lib.present"/>
+	<target name="resolve-remote-shared" description="retrieve freeplane_remote_shared.jar">
+		<ant antfile="${freeplane.remote.shared.location}/ant/build.xml" target="dist" inheritall="false" />
+		<copy file="${root}/../freeplane_plugin_remote_shared/lib/freeplane_remote_shared.jar" todir="${root}/lib" />
+	</target>
+			
 	<target name="resolve" description="retrieve dependencies with ivy" depends="install-ivy">
 		<ivy:retrieve />
 	</target>
 
-	<target name="build" depends="lib_fileset,git.revision">
+	<target name="build" depends="lib_fileset,git.revision,resolve-remote-shared">
 		<mkdir dir="${build}" />
 		<javac srcdir="${src}" destdir="${build}" debug="${debug}" source="${java_source_version}" target="${java_target_version}" encoding="utf8">
 			<classpath>
