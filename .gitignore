@@ -25,7 +25,6 @@ docear_plugin_core/src/TestMain.java
 
 freeplane_plugin_remote_server/META-INF/MANIFEST.MF
 freeplane_plugin_remote_server/lib/
-freeplane_plugin_remote_server/.classpath
 freeplane_plugin_remote_server_tests/lib
 freeplane_plugin_remote_server_tests/report
 freeplane_plugin_remote_server_tests/src/files/mindmaps/4.mm

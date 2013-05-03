@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="resources"/>
+	<classpathentry exported="true" kind="lib" path="lib/activation-1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/akka-actor_2.10-2.1.0-javadoc.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/akka-actor_2.10-2.1.0-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/akka-actor_2.10-2.1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/akka-remote_2.10-2.1.0-javadoc.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/akka-remote_2.10-2.1.0-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/akka-remote_2.10-2.1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-compiler-2.6.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-io-1.3.2-javadoc.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-io-1.3.2-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-io-1.3.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/config-1.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/geronimo-jms_1.1_spec-1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/hamcrest-core-1.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/janino-2.6.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jsch-0.1.46.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/junit-4.11-javadoc.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/junit-4.11-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/junit-4.11.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/logback-classic-1.0.9-javadoc.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/logback-classic-1.0.9-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/logback-classic-1.0.9.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/logback-core-1.0.9.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/mail-1.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/messages_2.10-0.1-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/netty-3.5.8.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.eclipse.jgit-2.3.1.201302201838-r-javadoc.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.eclipse.jgit-2.3.1.201302201838-r-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.eclipse.jgit-2.3.1.201302201838-r.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/protobuf-java-2.4.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/scala-library-2.10.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/servlet-api-2.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/slf4j-api-1.7.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sysout-over-slf4j-1.0.2-javadoc.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sysout-over-slf4j-1.0.2-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sysout-over-slf4j-1.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/uncommons-maths-1.2.2a.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-annotations-2.1.4.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-core-2.1.4.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-databind-2.1.4.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/freeplane"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/freeplane_plugin_remote_shared"/>
+	<classpathentry kind="output" path="build"/>
+</classpath>
