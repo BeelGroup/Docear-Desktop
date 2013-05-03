@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="resources"/>
+	<classpathentry exported="true" kind="lib" path="lib/activation-1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-io-1.3.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jsch-0.1.46.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/mail-1.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/messages_2.10-0.1-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.eclipse.jgit-2.3.1.201302201838-r.jar"/>
+	<classpathentry kind="lib" path="lib/jersey-client-1.17.1.jar"/>
+	<classpathentry kind="lib" path="lib/osgi_R4_core-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/stax-api-1.0-2.jar"/>
+	<classpathentry kind="lib" path="lib/jsr311-api-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/jaxb-api-2.1.jar"/>
+	<classpathentry kind="lib" path="lib/jersey-core-1.17.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-codec-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/commons-httpclient-3.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-logging-1.0.4.jar"/>
+	<classpathentry kind="lib" path="lib/jersey-apache-client-1.17.1.jar"/>
+	<classpathentry kind="lib" path="lib/akka-actor_2.10-2.1.0.jar"/>
+	<classpathentry kind="lib" path="lib/akka-remote_2.10-2.1.0.jar"/>
+	<classpathentry kind="lib" path="lib/netty-3.5.8.Final.jar"/>
+	<classpathentry kind="lib" path="lib/protobuf-java-2.4.1.jar"/>
+	<classpathentry kind="lib" path="lib/scala-library-2.10.0.jar"/>
+	<classpathentry kind="lib" path="lib/config-1.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-annotations-2.1.4.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-core-2.1.4.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-databind-2.1.4.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/freeplane"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/freeplane_plugin_remote_shared"/>
+	<classpathentry kind="output" path="build"/>
+</classpath>

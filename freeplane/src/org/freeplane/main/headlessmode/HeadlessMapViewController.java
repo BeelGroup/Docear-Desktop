@@ -31,8 +31,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JScrollPane;
 
@@ -41,6 +43,7 @@ import org.freeplane.features.map.IMapSelection;
 import org.freeplane.features.map.IMapSelectionListener;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
+import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.ui.IMapViewChangeListener;
 import org.freeplane.features.ui.IMapViewManager;
@@ -56,7 +59,7 @@ public class HeadlessMapViewController implements IMapViewManager {
 	private String currentKey = null;
 
 	public void addMapSelectionListener(IMapSelectionListener pListener) {
-		mapSelectionListeners.add(pListener);
+		
 	}
 
 	public void addMapViewChangeListener(IMapViewChangeListener pListener) {
@@ -64,7 +67,7 @@ public class HeadlessMapViewController implements IMapViewManager {
 	}
 
 	public boolean changeToMapView(Component newMapView) {
-		throw new RuntimeException("Method not implemented");
+		return true;
 	}
 
 	public boolean changeToMapView(String mapViewDisplayName) {
@@ -84,7 +87,7 @@ public class HeadlessMapViewController implements IMapViewManager {
 	}
 
 	public boolean changeToMode(String modeName) {
-		throw new RuntimeException("Method not implemented");
+		return true;
 	}
 
 	public String checkIfFileIsAlreadyOpened(URL urlToCheck) throws MalformedURLException {
@@ -105,23 +108,23 @@ public class HeadlessMapViewController implements IMapViewManager {
 	}
 
 	public String createHtmlMap() {
-		throw new RuntimeException("Method not implemented");
+		return "";
 	}
 
 	public RenderedImage createImage() {
-		throw new RuntimeException("Method not implemented");
+		return null;
 	}
 
 	public Color getBackgroundColor(NodeModel node) {
-		throw new RuntimeException("Method not implemented");
+		return Color.white;
 	}
 
 	public Component getComponent(NodeModel node) {
-		throw new RuntimeException("Method not implemented");
+		return null;
 	}
 
 	public Font getFont(NodeModel node) {
-		throw new RuntimeException("Method not implemented");
+		return null;
 	}
 
 	public List<String> getMapKeys() {
@@ -133,11 +136,11 @@ public class HeadlessMapViewController implements IMapViewManager {
 	}
 
 	public IMapSelection getMapSelection() {
-		throw new RuntimeException("Method not implemented");
+		return new MapSelection();
 	}
 
 	public Component getMapViewComponent() {
-		throw new RuntimeException("Method not implemented");
+		return null;
 	}
 
 	public List<? extends Component> getMapViewVector() {
@@ -145,7 +148,7 @@ public class HeadlessMapViewController implements IMapViewManager {
 	}
 
 	public ModeController getModeController(Component newMap) {
-		throw new RuntimeException("Method not implemented");
+		return null;
 	}
 
 	public MapModel getModel() {
@@ -153,7 +156,7 @@ public class HeadlessMapViewController implements IMapViewManager {
 	}
 
 	public MapModel getModel(Component mapView) {
-		throw new RuntimeException("Method not implemented");
+		return null;
 	}
 
 	public Component getSelectedComponent() {
@@ -227,31 +230,31 @@ public class HeadlessMapViewController implements IMapViewManager {
 	}
 
 	public JScrollPane getScrollPane() {
-		throw new RuntimeException("Method not implemented");
+		return null;
 	}
 
 	public Container getViewport() {
-		throw new RuntimeException("Method not implemented");
+		return null;
 	}
 
 	public void updateMenus(MenuBuilder menuBuilder) {
-		throw new RuntimeException("Method not implemented");
+		
 	}
 
 	public void obtainFocusForSelected() {
-		throw new RuntimeException("Method not implemented");
+		
 	}
 
 	public void setTitle() {
-		throw new RuntimeException("Method not implemented");
+		
 	}
 
 	public Object setEdgesRenderingHint(Graphics2D g) {
-		throw new RuntimeException("Method not implemented");
+		return "";
 	}
 
 	public void setTextRenderingHint(Graphics2D g) {
-		throw new RuntimeException("Method not implemented");
+		
 	}
 
 	public boolean closeAllMaps() {
@@ -260,9 +263,96 @@ public class HeadlessMapViewController implements IMapViewManager {
 		currentMap = null;
 		return true;
 	}
+	
+	private class MapSelection implements IMapSelection {
+
+		public void centerNode(NodeModel node) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public NodeModel getSelected() {
+			// TODO just a hack because of undo
+			return Controller.getCurrentController().getModeController().getMapController().getRootNode();
+		}
+
+		public Set<NodeModel> getSelection() {			 
+			return new HashSet<NodeModel>();
+		}
+
+		public List<NodeModel> getOrderedSelection() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public List<NodeModel> getSortedSelection(boolean differentSubtrees) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public boolean isSelected(NodeModel node) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		public void keepNodePosition(NodeModel node, float horizontalPoint,
+				float verticalPoint) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public void makeTheSelected(NodeModel node) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public void scrollNodeToVisible(NodeModel selected) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public void selectAsTheOnlyOneSelected(NodeModel node) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public void selectBranch(NodeModel node, boolean extend) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public void selectContinuous(NodeModel node) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public void selectRoot() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public void setSiblingMaxLevel(int nodeLevel) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public int size() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		public void toggleSelected(NodeModel node) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public void replaceSelection(NodeModel[] nodes) {
+			// TODO Auto-generated method stub
+			
+		}
+	}
 
 	public void setScrollbarsVisible(boolean areScrollbarsVisible) {
-	    // TODO Auto-generated method stub
-	    
-    }
+		
+	}
 }
