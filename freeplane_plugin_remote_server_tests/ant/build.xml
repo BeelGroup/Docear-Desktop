@@ -68,9 +68,7 @@
 		<ivy:retrieve />
 	</target>
 	
-	<available file="${freeplane.remote.shared.location}/lib/freeplane_remote_shared.jar" type="file" property="shared_lib.present"/>
 	<target name="resolve-remote-shared" description="retrieve freeplane_remote_shared.jar">
-		<ant antfile="${freeplane.remote.shared.location}/ant/build.xml" target="dist" inheritall="false" />
 		<copy file="${root}/../freeplane_plugin_remote_shared/lib/freeplane_remote_shared.jar" todir="${root}/lib" />
 	</target>
 
