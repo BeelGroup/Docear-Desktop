@@ -2,11 +2,13 @@ package org.freeplane.plugin.remote.v10.model;
 
 import java.io.Serializable;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.freeplane.features.map.NodeModel;
 
-@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+@JsonInclude(Include.NON_NULL)
 public class MapModel implements Serializable {
 	private static final long serialVersionUID = 1L;
 	

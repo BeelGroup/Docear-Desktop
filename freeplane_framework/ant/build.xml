@@ -220,8 +220,12 @@
 			<zipfileset dir="${build}" prefix="freeplane-${ver}">
 				<exclude name="freeplane.sh" />
 				<exclude name="freeplane-server.sh" />
+				<exclude name="**/*-javadoc.jar" />
+				<exclude name="**/*-sources.jar" />
+				<exclude name="plugins/org.freeplane.plugin.remote.server/**" />
 				<!-- for now excluded. Can be added when it is finished -->
 				<exclude name="plugins/org.freeplane.plugin.remote.client/**" />
+				
 			</zipfileset>
 			<zipfileset file="${build}/freeplane.sh" filemode="775" prefix="freeplane-${ver}" />
 			<zipfileset dir="${root}" prefix="freeplane-${ver}">
@@ -234,6 +238,8 @@
 		<zip destfile="${dist}/freeplane_server-${ver}.zip" compress="true">
 			<zipfileset dir="${build}" prefix="freeplane-${ver}">
 				<exclude name="freeplane-server.sh" />
+				<exclude name="**/*-javadoc.jar" />
+				<exclude name="**/*-sources.jar" />
 				<exclude name="plugins/org.freeplane.plugin.remote.client/**" />
 			</zipfileset>
 			<zipfileset file="${build}/freeplane-server.sh" filemode="775" prefix="freeplane-${ver}" />

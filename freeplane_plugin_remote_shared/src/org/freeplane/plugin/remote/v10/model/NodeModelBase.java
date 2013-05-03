@@ -5,16 +5,18 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.freeplane.features.icon.MindIcon;
 import org.freeplane.features.link.NodeLinks;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.note.NoteController;
 import org.freeplane.features.note.mindmapmode.MNoteController;
 
-@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+@JsonInclude(Include.NON_NULL)
 abstract public class NodeModelBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 

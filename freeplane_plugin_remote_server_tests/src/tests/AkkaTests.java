@@ -10,14 +10,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.docear.messages.Messages.AddNodeRequest;
 import org.docear.messages.Messages.AddNodeResponse;
 import org.docear.messages.Messages.ChangeNodeRequest;
@@ -68,6 +66,14 @@ import akka.actor.UntypedActor;
 import akka.pattern.Patterns;
 import akka.testkit.JavaTestKit;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonschema.main.JsonSchema;
+import com.github.fge.jsonschema.main.JsonSchemaFactory;
+import com.github.fge.jsonschema.report.ProcessingMessage;
+import com.github.fge.jsonschema.report.ProcessingReport;
 import com.typesafe.config.ConfigFactory;
 
 public class AkkaTests {
@@ -91,7 +97,7 @@ public class AkkaTests {
 
 		objectMapper = new ObjectMapper();
 	}
-	
+
 	private static void setUpConnectionToFreeplane() {
 		long startTime = System.currentTimeMillis();
 		long endTime = startTime + 60000; // one minute
@@ -126,7 +132,7 @@ public class AkkaTests {
 
 	@Before
 	public void setUp() throws Exception {
-		
+
 	}
 
 	@After
@@ -158,7 +164,10 @@ public class AkkaTests {
 						remoteActor.tell(new MindmapAsJsonRequest(SOURCE, USERNAME1, "5"), getRef());
 
 						MindmapAsJsonReponse response = expectMsgClass(MindmapAsJsonReponse.class);
-						System.out.println(response.getJsonString());
+						String jsonString = response.getJsonString();
+
+						validateMapSchema(jsonString);
+
 						assertThat(response.getJsonString()).contains("\"root\":{\"id\":\"ID_0\",\"nodeText\":\"test_5 = MapID ; 5.mm = Title\"");
 						closeMindMapOnServer(5);
 					}
@@ -249,13 +258,13 @@ public class AkkaTests {
 						try {
 							sendMindMapToServer(5);
 							remoteActor.tell(new AddNodeRequest(SOURCE, USERNAME1, "5", "ID_0"), localActor);
-							//expectMsgClass(Failure.class).cause().printStackTrace();
+							// expectMsgClass(Failure.class).cause().printStackTrace();
 							final AddNodeResponse response = expectMsgClass(AddNodeResponse.class);
 
 							final AddNodeUpdate update = objectMapper.readValue(response.getMapUpdate(), AddNodeUpdate.class);
 							assertThat(update.getType()).isEqualTo(MapUpdate.Type.AddNode);
+							validateDefaultNodeSchema(update.getNodeAsJson());
 							final NodeModelDefault node = objectMapper.readValue(update.getNodeAsJson(), NodeModelDefault.class);
-							System.out.println(node.nodeText);
 							Assert.assertEquals("", node.nodeText);
 
 						} catch (JsonMappingException e) {
@@ -332,6 +341,7 @@ public class AkkaTests {
 							remoteActor.tell(new GetNodeRequest(SOURCE, USERNAME1, "5", "ID_1", 1), localActor);
 
 							GetNodeResponse response = expectMsgClass(GetNodeResponse.class);
+							validateDefaultNodeSchema(response.getNode());
 							NodeModelDefault node = objectMapper.readValue(response.getNode(), NodeModelDefault.class);
 							System.out.println(node.nodeText);
 							assertThat(node.nodeText).isEqualTo("right_L1P0_Links");
@@ -476,7 +486,7 @@ public class AkkaTests {
 
 						remoteActor.tell(request, localActor);
 						ChangeNodeResponse response = expectMsgClass(ChangeNodeResponse.class);
-						System.out.println(response.getMapUpdates());
+						
 
 						// release lock
 						releaseLock("5", nodeId, USERNAME1);
@@ -567,15 +577,15 @@ public class AkkaTests {
 					protected void run() {
 						sendMindMapToServer(5);
 
-						//also checks that switching sides is no problem
+						// also checks that switching sides is no problem
 						final MoveNodeToRequest moveRequest = new MoveNodeToRequest(SOURCE, USERNAME1, "5", "ID_505304847", "ID_1", 1);
 						remoteActor.tell(moveRequest, localActor);
 						assertThat(expectMsgClass(MoveNodeToResponse.class).getSuccess()).isEqualTo(true);
-						
+
 						final GetNodeRequest getNodeRequest = new GetNodeRequest(SOURCE, USERNAME1, "5", "ID_505304847", 0);
 						remoteActor.tell(getNodeRequest, localActor);
 						final String parentNodeJson = expectMsgClass(GetNodeResponse.class).getNode();
-						
+
 						assertThat(parentNodeJson).contains("ID_1");
 
 						closeMindMapOnServer(5);
@@ -854,7 +864,69 @@ public class AkkaTests {
 		return attributeMap;
 	}
 
-	public static class TheActor extends UntypedActor {
+	private void validateMapSchema(final String mapJsonString) {
+		final String schemaPath = "/MapModelSchema.json";
+		final JsonNode mapNode = validateSchema(mapJsonString, schemaPath);
+		validateRootNodeSchema(mapNode.get("root").toString());
+	}
+	
+	private void validateRootNodeSchema(final String rootNodeJsonString) {
+		final String schemaPath = "/RootNodeSchema.json";
+		final JsonNode rootNode = validateSchema(rootNodeJsonString, schemaPath);
+		
+		final Iterator<JsonNode> itRight = rootNode.get("rightChildren").iterator();
+		while(itRight.hasNext()) {
+			final JsonNode node = itRight.next();
+			validateDefaultNodeSchema(node.toString());
+		}
+		
+		final Iterator<JsonNode> itLeft = rootNode.get("leftChildren").iterator();
+		while(itLeft.hasNext()) {
+			final JsonNode node = itLeft.next();
+			validateDefaultNodeSchema(node.toString());
+		}
+	}
+	
+	
+	private void validateDefaultNodeSchema(final String defaultNodeJsonString) {
+		final String schemaPath = "/DefaultNodeSchema.json";
+		final JsonNode node = validateSchema(defaultNodeJsonString, schemaPath);
+		
+		if(node.has("edgeStyle")) {
+			validateEdgeSchema(node.get("edgeStyle").toString());
+		}
+	}
+	
+	private void validateEdgeSchema(final String edgeJsonString) {
+		final String schemaPath = "/EdgeSchema.json";
+		validateSchema(edgeJsonString, schemaPath);
+	}
+	
+	private JsonNode validateSchema(final String jsonString, final String schemaPath) {
+		final ObjectMapper mapper = new ObjectMapper();
+		try {
+
+			final JsonNode objectToValidate = mapper.readTree(jsonString);
+			final JsonNode schemaNode = mapper.readTree(AkkaTests.class.getResourceAsStream(schemaPath));
+			final JsonSchema schema = JsonSchemaFactory.byDefault().getJsonSchema(schemaNode);
+			final ProcessingReport report = schema.validate(objectToValidate);
+			if (!report.isSuccess()) {
+				String errorMessage = "";
+				Iterator<ProcessingMessage> it = report.iterator();
+				while (it.hasNext()) {
+					final ProcessingMessage message = it.next();
+					errorMessage += message.toString() + ", ";
+				}
+				Fail.fail(errorMessage);
+			}
+			return objectToValidate;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		
+	}
+
+	private static class TheActor extends UntypedActor {
 		ActorRef target;
 
 		@Override

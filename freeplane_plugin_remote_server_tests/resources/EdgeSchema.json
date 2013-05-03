@@ -1,0 +1,19 @@
+{
+	"type":"object",
+	"$schema": "http://json-schema.org/draft-03/schema",
+	"required":true,
+	"properties":{
+		"width": {
+			"type":"number",
+			"required":false
+		},
+		"color": {
+			"type":"number",
+			"required":false
+		},
+		"style": {
+			"enum":["EDGESTYLE_BEZIER", "EDGESTYLE_HIDDEN", "EDGESTYLE_HORIZONTAL", "EDGESTYLE_LINEAR", "EDGESTYLE_SHARP_BEZIER", "EDGESTYLE_SHARP_LINEAR", "EDGESTYLE_SUMMARY"],
+			"required":false
+		}
+	}
+}

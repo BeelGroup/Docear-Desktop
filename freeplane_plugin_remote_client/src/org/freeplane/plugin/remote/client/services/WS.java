@@ -1,9 +1,10 @@
 package org.freeplane.plugin.remote.client.services;
 
-import org.codehaus.jackson.JsonNode;
 import org.freeplane.plugin.remote.client.User;
 
 import scala.concurrent.Future;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 public interface WS {
 	/**

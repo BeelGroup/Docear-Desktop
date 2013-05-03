@@ -8,12 +8,11 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
-import org.codehaus.jackson.JsonNode;
 import org.freeplane.features.mapio.mindmapmode.MMapIO;
 import org.freeplane.n3.nanoxml.XMLException;
 import org.freeplane.plugin.remote.client.ClientController;
-import org.freeplane.plugin.remote.client.User;
 import org.freeplane.plugin.remote.client.ClientController.CheckForChangesRunnable;
+import org.freeplane.plugin.remote.client.User;
 import org.freeplane.plugin.remote.client.actors.InitCollaborationActor.Messages.InitCollaborationMode;
 import org.freeplane.plugin.remote.client.actors.ListenForUpdatesActor.Messages.SetMapAndRevision;
 import org.freeplane.plugin.remote.client.services.WS;
@@ -23,6 +22,8 @@ import scala.concurrent.duration.Duration;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.pattern.Patterns;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 public class InitCollaborationActor extends FreeplaneClientActor {
 

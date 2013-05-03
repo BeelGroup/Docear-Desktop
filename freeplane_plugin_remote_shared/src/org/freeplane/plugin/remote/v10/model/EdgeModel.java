@@ -3,12 +3,14 @@ package org.freeplane.plugin.remote.v10.model;
 import java.awt.Color;
 import java.io.Serializable;
 
-import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.freeplane.features.edge.EdgeStyle;
 import org.freeplane.features.edge.mindmapmode.MEdgeController;
 import org.freeplane.features.map.NodeModel;
 
-@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+@JsonInclude(Include.NON_NULL)
 public class EdgeModel implements Serializable {
 	private static final long serialVersionUID = 1L;
 	

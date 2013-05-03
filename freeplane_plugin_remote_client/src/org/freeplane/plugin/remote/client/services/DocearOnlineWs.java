@@ -13,8 +13,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.commons.io.output.NullOutputStream;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.plugin.remote.client.ClientController;
 import org.freeplane.plugin.remote.client.User;
@@ -29,6 +27,8 @@ import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 import akka.dispatch.Futures;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientRequest;
@@ -52,26 +52,6 @@ public class DocearOnlineWs implements WS {
 		// disableCertificateValidation();
 		restClient = ApacheHttpClient.create();
 		restClient.addFilter(new LoggingFilter(stream));
-//		restClient.addFilter(new ClientFilter() {
-//			private ArrayList<Object> cookies;
-//
-//			@Override
-//			public ClientResponse handle(ClientRequest request) throws ClientHandlerException {
-//				if (cookies != null) {
-//					request.getHeaders().put("Cookie", cookies);
-//				}
-//				ClientResponse response = getNext().handle(request);
-//				if (response.getCookies() != null) {
-//					if (cookies == null) {
-//						cookies = new ArrayList<Object>();
-//					}
-//					// simple addAll just for illustration (should probably
-//					// check for duplicates and expired cookies)
-//					cookies.addAll(response.getCookies());
-//				}
-//				return response;
-//			}
-//		});
 
 		final String source = clientController.source();
 		restClient.addFilter(new ClientFilter() {
@@ -146,23 +126,24 @@ public class DocearOnlineWs implements WS {
 			JsonNode json = mapper.readTree(response.getEntity(String.class));
 			currentRevision = json.get("currentRevision").asInt();
 
-			Iterator<JsonNode> it = json.get("orderedUpdates").getElements();
+			Iterator<JsonNode> it = json.get("orderedUpdates").iterator();
 			while (it.hasNext()) {
 				final JsonNode mapUpdateJson = mapper.readTree(it.next().asText());
 
 				final MapUpdate.Type type = MapUpdate.Type.valueOf(mapUpdateJson.get("type").asText());
 				switch (type) {
 				case AddNode:
-					updates.add(mapper.readValue(mapUpdateJson, AddNodeUpdate.class));
+					
+					updates.add(mapper.treeToValue(mapUpdateJson, AddNodeUpdate.class));
 					break;
 				case ChangeNodeAttribute:
-					updates.add(mapper.readValue(mapUpdateJson, ChangeNodeAttributeUpdate.class));
+					updates.add(mapper.treeToValue(mapUpdateJson, ChangeNodeAttributeUpdate.class));
 					break;
 				case DeleteNode:
-					updates.add(mapper.readValue(mapUpdateJson, DeleteNodeUpdate.class));
+					updates.add(mapper.treeToValue(mapUpdateJson, DeleteNodeUpdate.class));
 					break;
 				case MoveNode:
-					updates.add(mapper.readValue(mapUpdateJson, MoveNodeUpdate.class));
+					updates.add(mapper.treeToValue(mapUpdateJson, MoveNodeUpdate.class));
 					break;
 
 				}

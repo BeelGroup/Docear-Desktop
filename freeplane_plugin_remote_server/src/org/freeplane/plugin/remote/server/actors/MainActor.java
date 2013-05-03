@@ -20,8 +20,8 @@ import org.docear.messages.exceptions.LockNotFoundException;
 import org.docear.messages.exceptions.MapNotFoundException;
 import org.docear.messages.exceptions.NodeAlreadyLockedException;
 import org.docear.messages.exceptions.NodeNotFoundException;
-import org.freeplane.plugin.remote.server.RemoteController;
 import org.freeplane.plugin.remote.server.InternalMessages.ReleaseTimedOutLocks;
+import org.freeplane.plugin.remote.server.RemoteController;
 import org.freeplane.plugin.remote.server.v10.Actions;
 import org.slf4j.Logger;
 

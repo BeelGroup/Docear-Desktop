@@ -1,6 +1,6 @@
 package org.freeplane.plugin.remote.v10.model.updates;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public abstract class MapUpdate {
 	public enum Type {

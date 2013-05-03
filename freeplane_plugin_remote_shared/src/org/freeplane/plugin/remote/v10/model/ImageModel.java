@@ -2,9 +2,10 @@ package org.freeplane.plugin.remote.v10.model;
 
 import java.io.Serializable;
 
-import org.codehaus.jackson.map.annotate.JsonSerialize;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
+@JsonInclude(Include.NON_NULL)
 public class ImageModel implements Serializable {
 	private static final long serialVersionUID = 1L;
 	

@@ -1,7 +1,6 @@
 package org.freeplane.plugin.remote.server.v10;
 
-import static org.freeplane.plugin.remote.RemoteUtils.changeNodeAttribute;
-import static org.freeplane.plugin.remote.RemoteUtils.getNodeFromOpenMapById;
+import static org.freeplane.plugin.remote.RemoteUtils.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,9 +16,6 @@ import java.util.Random;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.docear.messages.Messages.AddNodeRequest;
 import org.docear.messages.Messages.AddNodeResponse;
 import org.docear.messages.Messages.ChangeNodeRequest;
@@ -61,9 +57,9 @@ import org.freeplane.features.mapio.mindmapmode.MMapIO;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.n3.nanoxml.XMLException;
 import org.freeplane.plugin.remote.RemoteUtils;
+import org.freeplane.plugin.remote.server.InternalMessages.ReleaseTimedOutLocks;
 import org.freeplane.plugin.remote.server.OpenMindmapInfo;
 import org.freeplane.plugin.remote.server.RemoteController;
-import org.freeplane.plugin.remote.server.InternalMessages.ReleaseTimedOutLocks;
 import org.freeplane.plugin.remote.v10.model.LockModel;
 import org.freeplane.plugin.remote.v10.model.MapModel;
 import org.freeplane.plugin.remote.v10.model.NodeModelDefault;
@@ -75,6 +71,10 @@ import org.freeplane.plugin.remote.v10.model.updates.MoveNodeUpdate;
 import org.slf4j.Logger;
 
 import akka.actor.ActorRef;
+
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Actions {
 
