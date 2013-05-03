@@ -64,7 +64,7 @@
 		<copy file="${root}/../freeplane_plugin_remote_shared/lib/freeplane_remote_shared.jar" todir="${root}/lib" />
 	</target>
 
-	<target name="build" depends="lib_fileset,git.revision,resolve-remote-shared">
+	<target name="build" depends="resolve-remote-shared,lib_fileset,git.revision">
 		<mkdir dir="${build}" />
 		<javac srcdir="${src}" destdir="${build}" debug="${debug}" source="${java_source_version}" target="${java_target_version}" encoding="utf8">
 			<classpath>
