@@ -59,7 +59,7 @@ public class RemoteController {
 						new Runnable() {
 							@Override
 							public void run() {
-								logger.info("Scheduling closing of unused maps.");
+								logger.trace("Scheduling closing of unused maps.");
 								mainActor.tell(new CloseUnusedMaps("self", "", 600000), null); // ten minutes
 							}
 						}, system.dispatcher());
@@ -71,7 +71,7 @@ public class RemoteController {
 						new Runnable() {
 							@Override
 							public void run() {
-								logger.info("Scheduling release of locks that timed out.");
+								logger.trace("Scheduling release of locks that timed out.");
 								mainActor.tell(new ReleaseTimedOutLocks(15000L), null); // 15 seconds
 							}
 						}, system.dispatcher());

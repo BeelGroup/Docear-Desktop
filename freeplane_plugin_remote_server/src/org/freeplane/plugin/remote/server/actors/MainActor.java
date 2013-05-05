@@ -152,11 +152,10 @@ public class MainActor extends UntypedActor {
 		}
 
 		if (response != null) {
-
-			logger.info("MainActor.onReceive => sending '{}' as response.", response.getClass().getName());
+			logger.debug("MainActor.onReceive => sending '{}' as response.", response.getClass().getName());
 			sender.tell(response, getSelf());
 		} else {
-			logger.info("MainActor.onReceive => No response available");
+			logger.trace("MainActor.onReceive => No response available");
 		}
 	}
 }
