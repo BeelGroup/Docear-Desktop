@@ -19,7 +19,6 @@
  */
 package org.freeplane.main.osgi;
 
-import java.awt.EventQueue;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -94,7 +93,7 @@ class ActivatorImpl implements BundleActivator {
 		final File baseDir = new File(resourceBaseDir).getAbsoluteFile().getParentFile();
 		List<Bundle> loadedPlugins = new LinkedList<Bundle>();
 		loadPlugins(context, new File(baseDir, "plugins"), loadedPlugins);
-		final String freeplaneUserDirectory = Compat.getFreeplaneUserDirectory();
+		final String freeplaneUserDirectory = Compat.getApplicationUserDirectory();
 		loadPlugins(context, new File(freeplaneUserDirectory), loadedPlugins);
 		for(Bundle plugin:loadedPlugins){
 			try{

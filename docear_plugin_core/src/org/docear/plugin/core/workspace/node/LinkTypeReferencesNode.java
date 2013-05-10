@@ -24,9 +24,7 @@ import javax.swing.ImageIcon;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.docear.plugin.core.IBibtexDatabase;
-import org.freeplane.core.util.TextUtils;
 import org.freeplane.plugin.workspace.URIUtils;
-import org.freeplane.plugin.workspace.actions.WorkspaceNewProjectAction;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
@@ -94,17 +92,13 @@ public class LinkTypeReferencesNode extends LinkTypeFileNode implements IBibtexD
 						
 			popupMenu = new WorkspacePopupMenu();
 			WorkspacePopupMenuBuilder.addActions(popupMenu, new String[] {
-					WorkspacePopupMenuBuilder.createSubMenu(TextUtils.getRawText("workspace.action.new.label")),
-					WorkspaceNewProjectAction.KEY,
-					WorkspacePopupMenuBuilder.endSubMenu(),
-					WorkspacePopupMenuBuilder.SEPARATOR,
-					"workspace.action.docear.uri.change",					
+					"workspace.action.docear.uri.change",
 					WorkspacePopupMenuBuilder.SEPARATOR,
 					"workspace.action.node.cut",
-					"workspace.action.node.copy",						
+					"workspace.action.node.copy",
 					"workspace.action.node.paste",
 					WorkspacePopupMenuBuilder.SEPARATOR,
-					"workspace.action.node.rename",						
+					"workspace.action.node.rename",
 					"workspace.action.node.remove",
 					"workspace.action.file.delete",
 					WorkspacePopupMenuBuilder.SEPARATOR,

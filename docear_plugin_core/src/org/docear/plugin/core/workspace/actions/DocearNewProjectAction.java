@@ -15,7 +15,6 @@ import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.actions.AWorkspaceAction;
 import org.freeplane.plugin.workspace.io.IProjectSettingsIOHandler.LOAD_RETURN_TYPE;
-import org.freeplane.plugin.workspace.model.WorkspaceModelException;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
 public class DocearNewProjectAction extends AWorkspaceAction {

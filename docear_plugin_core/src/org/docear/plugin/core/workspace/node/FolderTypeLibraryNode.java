@@ -25,7 +25,6 @@ import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
-import org.freeplane.plugin.workspace.actions.WorkspaceNewProjectAction;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
 import org.freeplane.plugin.workspace.dnd.IWorkspaceTransferableCreator;
@@ -69,8 +68,6 @@ public class FolderTypeLibraryNode extends AFolderNode implements ILibraryReposi
 			
 			WorkspacePopupMenuBuilder.addActions(popupMenu, new String[] {
 					WorkspacePopupMenuBuilder.createSubMenu(TextUtils.getRawText("workspace.action.new.label")),
-					WorkspaceNewProjectAction.KEY,
-					WorkspacePopupMenuBuilder.SEPARATOR,
 					"workspace.action.node.new.folder",
 					"workspace.action.node.new.link",
 					WorkspacePopupMenuBuilder.SEPARATOR,
