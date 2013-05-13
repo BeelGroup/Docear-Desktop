@@ -32,7 +32,6 @@ import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.link.LinkController;
 import org.freeplane.plugin.workspace.URIUtils;
-import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.model.AWorkspaceNodeCreator;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.IResultProcessor;
@@ -40,7 +39,6 @@ import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.model.project.IWorkspaceProjectExtension;
 import org.freeplane.plugin.workspace.model.project.ProjectLoader;
 import org.freeplane.plugin.workspace.nodes.FolderTypeMyFilesNode;
-import org.freeplane.plugin.workspace.nodes.FolderVirtualNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
 import org.freeplane.plugin.workspace.nodes.ProjectRootNode;
 
@@ -212,18 +210,6 @@ public class DocearProjectLoader extends ProjectLoader {
 		trashNode.setSystem(true);
 		project.getModel().addNodeTo(trashNode, libNode);
 		
-		//DOCEAR - todo: impl own Type (important for DnD handling) -> acts now as if a virtual folder
-		FolderVirtualNode refs = new FolderVirtualNode() {
-			private static final long serialVersionUID = 1L;
-
-			public WorkspacePopupMenu getContextMenu() {
-				return null;
-			}
-		};
-		refs.setName(TextUtils.getText(FolderTypeMyFilesNode.class.getPackage().getName().toLowerCase(Locale.ENGLISH)+".refnode.name"));
-		refs.setSystem(true);
-		project.getModel().addNodeTo(refs, root);
-		
 		LinkTypeReferencesNode defaultRef = new LinkTypeReferencesNode();
 		//use default bib file
 		if(settings != null && settings.getBibTeXLibraryPath() != null) {
@@ -240,7 +226,7 @@ public class DocearProjectLoader extends ProjectLoader {
 			defaultRef.setLinkURI(URIUtils.createURI(libPath.toString()+"/"+bibName+".bib"));
 		}
 		defaultRef.setSystem(true);
-		project.getModel().addNodeTo(defaultRef, refs);
+		project.getModel().addNodeTo(defaultRef, root);
 		
 				
 		FolderTypeLiteratureRepositoryNode litRepoNode = new FolderTypeLiteratureRepositoryNode();
