@@ -32,6 +32,7 @@ import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.link.LinkController;
 import org.freeplane.plugin.workspace.URIUtils;
+import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.model.AWorkspaceNodeCreator;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.IResultProcessor;
@@ -209,7 +210,10 @@ public class DocearProjectLoader extends ProjectLoader {
 		trashNode.setName(TextUtils.getText(trashNode.getClass().getName().toLowerCase(Locale.ENGLISH)+".trash.label" ));
 		trashNode.setSystem(true);
 		project.getModel().addNodeTo(trashNode, libNode);
-				
+		
+		// expand library node by default
+		WorkspaceController.getCurrentModeExtension().getView().expandPath(libNode.getTreePath());
+		
 		FolderTypeLiteratureRepositoryNode litRepoNode = new FolderTypeLiteratureRepositoryNode();
 		litRepoNode.setSystem(true);		
 		project.getModel().addNodeTo(litRepoNode, root);
@@ -394,6 +398,9 @@ public class DocearProjectLoader extends ProjectLoader {
 				}
 				else if(node instanceof FolderTypeLiteratureRepositoryNode) {
 					project.addExtension(FolderTypeLiteratureRepositoryNode.class, (IWorkspaceProjectExtension) node);
+				}
+				else if(node instanceof LinkTypeIncomingNode) {
+					WorkspaceController.getCurrentModeExtension().getView().expandPath(node.getParent().getTreePath());
 				}
 			}
 		}
