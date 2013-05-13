@@ -209,25 +209,6 @@ public class DocearProjectLoader extends ProjectLoader {
 		trashNode.setName(TextUtils.getText(trashNode.getClass().getName().toLowerCase(Locale.ENGLISH)+".trash.label" ));
 		trashNode.setSystem(true);
 		project.getModel().addNodeTo(trashNode, libNode);
-		
-		LinkTypeReferencesNode defaultRef = new LinkTypeReferencesNode();
-		//use default bib file
-		if(settings != null && settings.getBibTeXLibraryPath() != null) {
-			File file = URIUtils.getFile(settings.getBibTeXLibraryPath());
-			defaultRef.setName(file.getName());
-			defaultRef.setLinkURI(project.getRelativeURI(settings.getBibTeXLibraryPath()));
-		}
-		else {
-			defaultRef.setName(TextUtils.getText(FolderTypeMyFilesNode.class.getPackage().getName().toLowerCase(Locale.ENGLISH)+".refnode.name"));
-			String bibName = "default";
-			if(settings != null && settings.getProjectName() != null) {
-				bibName = settings.getProjectName();
-			}
-			defaultRef.setLinkURI(URIUtils.createURI(libPath.toString()+"/"+bibName+".bib"));
-		}
-		defaultRef.setSystem(true);
-		project.getModel().addNodeTo(defaultRef, root);
-		
 				
 		FolderTypeLiteratureRepositoryNode litRepoNode = new FolderTypeLiteratureRepositoryNode();
 		litRepoNode.setSystem(true);		
@@ -251,6 +232,25 @@ public class DocearProjectLoader extends ProjectLoader {
 			}
 		}		
 		project.addExtension(FolderTypeLiteratureRepositoryNode.class, litRepoNode);
+		
+		LinkTypeReferencesNode defaultRef = new LinkTypeReferencesNode();
+		//use default bib file
+		if(settings != null && settings.getBibTeXLibraryPath() != null) {
+			File file = URIUtils.getFile(settings.getBibTeXLibraryPath());
+			defaultRef.setName(file.getName());
+			defaultRef.setLinkURI(project.getRelativeURI(settings.getBibTeXLibraryPath()));
+		}
+		else {
+			defaultRef.setName(TextUtils.getText(FolderTypeMyFilesNode.class.getPackage().getName().toLowerCase(Locale.ENGLISH)+".refnode.name"));
+			String bibName = "default";
+			if(settings != null && settings.getProjectName() != null) {
+				bibName = settings.getProjectName();
+			}
+			defaultRef.setLinkURI(URIUtils.createURI(libPath.toString()+"/"+bibName+".bib"));
+		}
+		defaultRef.setSystem(true);
+		project.getModel().addNodeTo(defaultRef, root);
+		
 		root.initiateMyFile(project);
 		
 		if(settings != null && settings.includeDemoFiles()) {
@@ -387,14 +387,13 @@ public class DocearProjectLoader extends ProjectLoader {
 					}
 				}
 				//add myFiles after a certain node type
-//				if(node instanceof FolderTypeLibraryNode)
-				if(node instanceof FolderTypeLiteratureRepositoryNode)
-				{
-					project.addExtension(FolderTypeLiteratureRepositoryNode.class, (IWorkspaceProjectExtension) node);
+				if(node instanceof LinkTypeReferencesNode) {
 					if(DocearWorkspaceProject.CURRENT_PROJECT_VERSION.equals(getProject().getVersion())) {
 						((ProjectRootNode) parent.getModel().getRoot()).initiateMyFile(getProject());
 					}
-					
+				}
+				else if(node instanceof FolderTypeLiteratureRepositoryNode) {
+					project.addExtension(FolderTypeLiteratureRepositoryNode.class, (IWorkspaceProjectExtension) node);
 				}
 			}
 		}

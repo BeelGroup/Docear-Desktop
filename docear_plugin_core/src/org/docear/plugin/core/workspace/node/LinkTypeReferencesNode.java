@@ -66,6 +66,9 @@ public class LinkTypeReferencesNode extends LinkTypeFileNode implements IBibtexD
 		if (event.getType() == WorkspaceActionEvent.MOUSE_RIGHT_CLICK) {			
 			showPopup((Component) event.getBaggage(), event.getX(), event.getY());
 		} 
+		else if(event.getType() == WorkspaceActionEvent.MOUSE_LEFT_DBLCLICK) {
+			//do nth.
+		}
 		else {
 			super.handleAction(event);
 		}
