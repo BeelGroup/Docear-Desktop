@@ -165,37 +165,28 @@ public class Compat {
 	final private static String CURRENT_VERSION_DIR= File.separatorChar + "1.3.x";
 	
 	/** the directory *including* the version directory. */
-	public static String getFreeplaneUserDirectory() {
+	public static String getApplicationUserDirectory() {
 		String userFpDir = System.getProperty(PROPERTY_FREEPLANE_USERDIR);
 		
 		if(userFpDir == null) {
-			Properties freeplaneProperties = new Properties();
-			try {
-				freeplaneProperties.load(Compat.class.getClassLoader().getResourceAsStream(ResourceController.FREEPLANE_PROPERTIES));
-			} catch (IOException e) {
-				LogUtils.warn(e);
-			}
-			String applicationName = freeplaneProperties.getProperty("ApplicationName", "Freeplane");
-		
-			if(applicationName.equalsIgnoreCase("freeplane")){
-				userFpDir = getDefaultFreeplaneUserDirectory() + CURRENT_VERSION_DIR;
-			} 
-			else {
-				if(System.getenv("APPDATA") != null && System.getenv("APPDATA").length() > 0){	
-					userFpDir = System.getenv("APPDATA") + File.separator + applicationName;
-				}
-				
-				if(userFpDir == null){						
-					userFpDir = System.getProperty("user.home")+ File.separator + "." + applicationName.toLowerCase();			
-				}
+			userFpDir = getDefaultApplicationUserDirectory();
+			if(userFpDir.endsWith("freeplane")){
+				userFpDir += CURRENT_VERSION_DIR;
 			}
 		}
 		return userFpDir;
 	}
 
 	/** the default FP directory *excluding* the version directory. */
-    public static String getDefaultFreeplaneUserDirectory() {
-        return System.getProperty("user.home")+ File.separator + ".freeplane";
+    public static String getDefaultApplicationUserDirectory() {
+    	Properties freeplaneProperties = new Properties();
+		try {
+			freeplaneProperties.load(Compat.class.getClassLoader().getResourceAsStream(ResourceController.FREEPLANE_PROPERTIES));
+		} catch (IOException e) {
+			LogUtils.warn(e);
+		}
+		String applicationName = freeplaneProperties.getProperty("ApplicationName", "Freeplane");
+        return System.getProperty("user.home")+ File.separator + "."+ applicationName.toLowerCase();
 	}
 
 	static public String smbUri2unc(final URI uri) {
