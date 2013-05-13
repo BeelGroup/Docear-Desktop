@@ -172,14 +172,6 @@ public class DocearWorkspaceProject extends AWorkspaceProject {
 	public URI getProjectHome() {		
 		return home;
 	}
-	
-	@Override
-	public String getProjectName() {
-		if(getModel().getRoot() == null) {
-			return this.getProjectID();
-		}
-		return getModel().getRoot().getName().trim();
-	}
 
 	@Override
 	public String getProjectID() {
@@ -233,9 +225,7 @@ public class DocearWorkspaceProject extends AWorkspaceProject {
 		return CURRENT_PROJECT_VERSION.getVersionString().equals(project.getVersion().getVersionString());
 	}
 
-	public String toString() {
-		return this.getClass().getSimpleName()+"[name="+getProjectName()+";id="+getProjectID()+";home="+getProjectHome()+"]";
-	}	
+	
 	
 	
 }

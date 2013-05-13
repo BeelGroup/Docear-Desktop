@@ -227,12 +227,12 @@ public class CoreConfiguration extends ALanguageController {
 	}
 
 	private void copyInfoIfNecessary() {	
-		File _welcomeFile = new File(URIUtils.getFile(WorkspaceController.getApplicationSettingsHome()), "docear-welcome.mm");
+		File _welcomeFile = new File(URIUtils.getFile(WorkspaceController.getApplicationHome()), "docear-welcome.mm");
 		if(!_welcomeFile.exists()) {
 			createAndCopy(_welcomeFile, "/conf/docear-welcome.mm");			
 		}
 		
-		File _docearLogo = new File(URIUtils.getFile(WorkspaceController.getApplicationSettingsHome()), "docear-logo.png");
+		File _docearLogo = new File(URIUtils.getFile(WorkspaceController.getApplicationHome()), "docear-logo.png");
 		if(!_docearLogo.exists()) {
 			createAndCopy(_docearLogo, "/images/docear_logo.png");			
 		}

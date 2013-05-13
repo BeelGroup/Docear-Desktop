@@ -43,8 +43,6 @@ import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.resources.components.IPropertyControl;
 import org.freeplane.core.resources.components.StringProperty;
 import org.freeplane.core.ui.components.UITools;
-import org.freeplane.core.user.IUserAccount;
-import org.freeplane.core.user.UserAccountController;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.Controller;
@@ -110,28 +108,6 @@ public class CommunicationsController implements PropertyLoadListener, IFreeplan
 		Controller.getCurrentController().getResourceController().addPropertyChangeListener(this);		
 		DocearController.getController().addDocearEventListener(this);
 
-		UserAccountController.getController().setActiveUser(new IUserAccount() {
-			
-			public void setEnabled(boolean enabled) {
-			}
-			
-			public boolean isEnabled() {
-				return true;
-			}
-			
-			public boolean isActive() {
-				return this.equals(UserAccountController.getController().getActiveUser());
-			}
-			
-			public String getName() {
-				return getUserName();
-			}
-			
-			public void activate() {
-				UserAccountController.getController().setActiveUser(this);
-			}
-		});
-		
 		((TreeView)WorkspaceController.getModeExtension(modeController).getView()).addToolBar(connectionBar, TreeView.BOTTOM_TOOLBAR_STACK);
 		propertyChanged(DOCEAR_CONNECTION_TOKEN_PROPERTY, getRegisteredAccessToken(), null);
 	}

@@ -33,7 +33,6 @@ import org.docear.plugin.services.upload.UploadController;
 import org.docear.plugin.services.workspace.DocearWorkspaceModel;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.components.UITools;
-import org.freeplane.core.user.UserAccountController;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.map.IMapLifeCycleListener;
@@ -165,7 +164,7 @@ public class ServiceController extends UploadController {
 		AWorkspaceTreeNode wsRoot = WorkspaceController.getModeExtension(modeController).getModel().getRoot();
 		wsRoot.insertChildNode(new ShowRecommendationsNode(), 0);
 		downloadsNode = new DownloadFolderNode();
-		downloadsFolder = new File( URIUtils.getFile(getUserSettingsHome()),"downloads");
+		downloadsFolder = new File( URIUtils.getFile(WorkspaceController.getApplicationHome()),"downloads");
 		if(!downloadsFolder.exists()) {
 			try {
 				downloadsFolder.mkdirs();
@@ -178,11 +177,6 @@ public class ServiceController extends UploadController {
 		wsRoot.insertChildNode(downloadsNode, 1);	
 	}
 	
-	public URI getUserSettingsHome() {
-		File home = new File(URIUtils.getFile(WorkspaceController.getApplicationSettingsHome()), "/users/"+UserAccountController.getController().getActiveUser().getName());
-		return home.toURI();
-	}
-
 	public URI getDownloadsFolder() {
 		return downloadsFolder.toURI();
 	}

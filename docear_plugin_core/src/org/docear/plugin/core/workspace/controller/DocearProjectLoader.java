@@ -33,6 +33,7 @@ import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.link.LinkController;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.model.AWorkspaceNodeCreator;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.IResultProcessor;
@@ -40,6 +41,7 @@ import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.model.project.IWorkspaceProjectExtension;
 import org.freeplane.plugin.workspace.model.project.ProjectLoader;
 import org.freeplane.plugin.workspace.nodes.FolderTypeMyFilesNode;
+import org.freeplane.plugin.workspace.nodes.FolderVirtualNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
 import org.freeplane.plugin.workspace.nodes.ProjectRootNode;
 
@@ -211,31 +213,17 @@ public class DocearProjectLoader extends ProjectLoader {
 		trashNode.setSystem(true);
 		project.getModel().addNodeTo(trashNode, libNode);
 		
-		// expand library node by default
-		WorkspaceController.getCurrentModeExtension().getView().expandPath(libNode.getTreePath());
-		
-		FolderTypeLiteratureRepositoryNode litRepoNode = new FolderTypeLiteratureRepositoryNode();
-		litRepoNode.setSystem(true);		
-		project.getModel().addNodeTo(litRepoNode, root);
-		
-		LiteratureRepositoryPathNode defaultPathNode = new LiteratureRepositoryPathNode();
-		defaultPathNode.setPath(URIUtils.createURI(project.getProjectHome().toString()+"/literature_repository"));
-		defaultPathNode.setName(TextUtils.getText(defaultPathNode.getClass().getName().toLowerCase(Locale.ENGLISH)+".default.label" ));
-		defaultPathNode.setSystem(true);
-		if(settings != null) { 
-			if(settings.useDefaultRepositoryPath()) {
-				project.getModel().addNodeTo(defaultPathNode, litRepoNode);
+		//DOCEAR - todo: impl own Type (important for DnD handling) -> acts now as if a virtual folder
+		FolderVirtualNode refs = new FolderVirtualNode() {
+			private static final long serialVersionUID = 1L;
+
+			public WorkspacePopupMenu getContextMenu() {
+				return null;
 			}
-			for (URI uri : settings.getRepositoryPathURIs()) {
-				LiteratureRepositoryPathNode pathNode = new LiteratureRepositoryPathNode();
-				File file = URIUtils.getFile(uri);
-				pathNode.setPath(project.getRelativeURI(uri));
-				pathNode.setName(file.getName());
-				pathNode.setSystem(true);
-				project.getModel().addNodeTo(pathNode, litRepoNode);
-			}
-		}		
-		project.addExtension(FolderTypeLiteratureRepositoryNode.class, litRepoNode);
+		};
+		refs.setName(TextUtils.getText(FolderTypeMyFilesNode.class.getPackage().getName().toLowerCase(Locale.ENGLISH)+".refnode.name"));
+		refs.setSystem(true);
+		project.getModel().addNodeTo(refs, root);
 		
 		LinkTypeReferencesNode defaultRef = new LinkTypeReferencesNode();
 		//use default bib file
@@ -253,11 +241,51 @@ public class DocearProjectLoader extends ProjectLoader {
 			defaultRef.setLinkURI(URIUtils.createURI(libPath.toString()+"/"+bibName+".bib"));
 		}
 		defaultRef.setSystem(true);
-		project.getModel().addNodeTo(defaultRef, root);
+		project.getModel().addNodeTo(defaultRef, refs);
 		
+				
+		FolderTypeLiteratureRepositoryNode litRepoNode = new FolderTypeLiteratureRepositoryNode();
+		litRepoNode.setSystem(true);		
+		project.getModel().addNodeTo(litRepoNode, root);
+		if(settings != null) { 
+			if(settings.useDefaultRepositoryPath()) {
+				LiteratureRepositoryPathNode pathNode = new LiteratureRepositoryPathNode();
+				pathNode.setPath(URIUtils.createURI(libPath.toString()+"/literature_repository"));
+				pathNode.setName(TextUtils.getText(pathNode.getClass().getName().toLowerCase(Locale.ENGLISH)+".default.label" ));
+				pathNode.setSystem(true);
+				project.getModel().addNodeTo(pathNode, litRepoNode);
+			}
+			for (URI uri : settings.getRepositoryPathURIs()) {
+				LiteratureRepositoryPathNode pathNode = new LiteratureRepositoryPathNode();
+				File file = URIUtils.getFile(uri);
+				pathNode.setPath(project.getRelativeURI(uri));
+				pathNode.setName(file.getName());
+				pathNode.setSystem(true);
+				project.getModel().addNodeTo(pathNode, litRepoNode);
+			}
+		}		
+		project.addExtension(FolderTypeLiteratureRepositoryNode.class, litRepoNode);
 		root.initiateMyFile(project);
 		
+		FolderVirtualNode misc = new FolderVirtualNode();
+		misc.setName(TextUtils.getText(FolderTypeMyFilesNode.class.getPackage().getName().toLowerCase(Locale.ENGLISH)+".miscnode.name"));
+		project.getModel().addNodeTo(misc, root);
+		
+		File _welcomeFile = new File(URIUtils.getFile(WorkspaceController.getApplicationHome()), "docear-welcome.mm");
+		URI welcomeURI = project.getRelativeURI(_welcomeFile.toURI());
+		LinkTypeFileNode welcomeNode = new LinkTypeFileNode();
+		welcomeNode.setLinkURI(welcomeURI);
+		welcomeNode.setName(_welcomeFile.getName());
+		project.getModel().addNodeTo(welcomeNode, misc);
+		
 		if(settings != null && settings.includeDemoFiles()) {
+			LiteratureRepositoryPathNode pathNode = new LiteratureRepositoryPathNode();
+			URI uri = URIUtils.createURI(libPath.toString()+"/Example%20PDFs");
+			File file = URIUtils.getAbsoluteFile(uri);
+			pathNode.setPath(uri);
+			pathNode.setName(file.getName());
+			pathNode.setSystem(true);
+			project.getModel().addNodeTo(pathNode, litRepoNode);
 			LogUtils.info("copy docear tutorial files");
 			copyDemoFiles(project, URIUtils.getAbsoluteFile(defaultRef.getLinkURI()), (settings.getBibTeXLibraryPath() == null));
 		}
@@ -272,7 +300,7 @@ public class DocearProjectLoader extends ProjectLoader {
 		//prepare paths
 		File defaultFilesPath = URIUtils.getFile(project.getProjectLibraryPath());
 		defaultFilesPath.mkdirs();
-		File repoPath = new File(URIUtils.getFile(project.getProjectHome()), "literature_repository/Example PDFs");
+		File repoPath = new File(defaultFilesPath, "Example PDFs");
 		repoPath.mkdirs();
 		URI relativeRepoPath = project.getRelativeURI(repoPath.toURI());
 		
@@ -391,16 +419,14 @@ public class DocearProjectLoader extends ProjectLoader {
 					}
 				}
 				//add myFiles after a certain node type
-				if(node instanceof LinkTypeReferencesNode) {
+//				if(node instanceof FolderTypeLibraryNode)
+				if(node instanceof FolderTypeLiteratureRepositoryNode)
+				{
+					project.addExtension(FolderTypeLiteratureRepositoryNode.class, (IWorkspaceProjectExtension) node);
 					if(DocearWorkspaceProject.CURRENT_PROJECT_VERSION.equals(getProject().getVersion())) {
 						((ProjectRootNode) parent.getModel().getRoot()).initiateMyFile(getProject());
 					}
-				}
-				else if(node instanceof FolderTypeLiteratureRepositoryNode) {
-					project.addExtension(FolderTypeLiteratureRepositoryNode.class, (IWorkspaceProjectExtension) node);
-				}
-				else if(node instanceof LinkTypeIncomingNode) {
-					WorkspaceController.getCurrentModeExtension().getView().expandPath(node.getParent().getTreePath());
+					
 				}
 			}
 		}

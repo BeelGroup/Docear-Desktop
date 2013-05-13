@@ -6,6 +6,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.freeplane.core.extension.IExtension;
@@ -16,7 +17,6 @@ import org.freeplane.core.resources.ResourceBundles;
 import org.freeplane.core.resources.components.IPropertyControl;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.FreeplaneActionCascade;
-import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.mode.Controller;
@@ -251,8 +251,9 @@ public final class WorkspaceController implements IExtension {
 	}
 	
 	public static URI getApplicationSettingsHome() {
-		File home = new File(Compat.getApplicationUserDirectory());
-		return home.toURI();
+		String appName = Controller.getCurrentController().getResourceController().getProperty("ApplicationName");
+		String homePath = System.getProperty("user.home")+ File.separator + "." + appName.toLowerCase(Locale.ENGLISH);
+		return new File(homePath).toURI();
 	}
 
 	public static AWorkspaceProject getCurrentProject() {

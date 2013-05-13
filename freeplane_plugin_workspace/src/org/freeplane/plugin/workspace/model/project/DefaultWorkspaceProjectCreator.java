@@ -31,14 +31,6 @@ public class DefaultWorkspaceProjectCreator implements IWorkspaceProjectCreater 
 			public URI getProjectHome() {
 				return this.home;
 			}
-			
-			@Override
-			public String getProjectName() {
-				if(getModel().getRoot() == null) {
-					return this.getProjectID();
-				}
-				return getModel().getRoot().getName().trim();
-			}
 
 			@Override
 			public URI getProjectDataPath() {

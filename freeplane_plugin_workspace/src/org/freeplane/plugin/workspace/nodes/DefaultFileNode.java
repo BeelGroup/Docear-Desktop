@@ -1,7 +1,14 @@
 package org.freeplane.plugin.workspace.nodes;
 
 import java.awt.Component;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -13,13 +20,17 @@ import javax.swing.ImageIcon;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
+import org.apache.commons.io.FileExistsException;
+import org.apache.commons.io.FileUtils;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.LogUtils;
+import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mapio.MapIO;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.actions.WorkspaceNewProjectAction;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
 import org.freeplane.plugin.workspace.dnd.IWorkspaceTransferableCreator;
@@ -87,104 +98,102 @@ public class DefaultFileNode extends AWorkspaceTreeNode implements IWorkspaceNod
 		}
 	}
 	
-//	private void copyFileContent(File source, File destination) {
-//		try {
-//			InputStream in = new DataInputStream(new FileInputStream(source));		
-//			DataOutputStream out = new DataOutputStream(new FileOutputStream(destination));
-//			byte[] buffer = new byte[1024];
-//			int len = in.read(buffer);
-//			while (len != -1) {
-//				out.write(buffer, 0, len);
-//				len = in.read(buffer);
-//			}
-//			in.close();
-//			out.close();
-//		}
-//		catch (FileNotFoundException e) {
-//			e.printStackTrace();
-//		}
-//		catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//	}
-//	
-//	protected void copyFileTo(File file, File parentFolder) throws IOException {
-//		if(parentFolder.isDirectory()) {				
-//			File target = new File(parentFolder,file.getName());
-//			if(file.isDirectory()) {
-//				if(target.mkdir()) {
-//					for(File child : file.listFiles()) {
-//						copyFileTo(child, target);
-//					}
-//				}
-//				else {
-//					throw new IOException("Could not create folder: "+target);
-//				}
-//			}
-//			else {
-//				if(target.createNewFile()) {
-//					copyFileContent(file, target);
-//				}
-//				else {
-//					throw new IOException("Could not create file: "+target);
-//				}
-//			}
-//		}
-//		else {
-//			throw new IOException("File "+parentFolder+" is no folder");
-//		}	
-//	}
-//	
-//	/**
-//	 * @param file
-//	 * @throws IOException 
-//	 */
-//	public void copyTo(File destDirectory) throws IOException {
-//		assert(destDirectory != null);
-//		if(getFile().equals(destDirectory)) {
-//			return;
-//		}
-//		
-//		if(destDirectory.isDirectory()) {
-//			try {
-//				if(getFile().isDirectory()) {
-//					FileUtils.copyDirectoryToDirectory(getFile(), destDirectory);
-//				}
-//				else { 
-//					FileUtils.copyFileToDirectory(getFile(), destDirectory);
-//				}
-//			}
-//			catch (FileExistsException e) {
-//				LogUtils.info("Exeption in org.freeplane.plugin.workspace.nodes.DefaultFileNode.copyTo(destDirectory): "+e.getMessage());
-//			}
-//		} 
-//		else {			
-//			copyTo(destDirectory.getParentFile());
-//		}		
-//	}
-//	
-//	public void moveTo(File destDirectory) throws IOException {
-//		assert(destDirectory != null);
-//		if(getFile().equals(destDirectory)) {
-//			return;
-//		}
-//		if(destDirectory.isDirectory()) {
-//			try {
-//				if(getFile().isDirectory()) {				
-//					FileUtils.moveDirectoryToDirectory(getFile(), destDirectory, true);
-//				}
-//				else {
-//					FileUtils.moveFileToDirectory(getFile(), destDirectory, true);
-//				}
-//			}
-//			catch (FileExistsException e) {
-//				LogUtils.info("Exeption in org.freeplane.plugin.workspace.nodes.DefaultFileNode.moveTo(destDirectory)"+e.getMessage());
-//			}
-//		} 
-//		else {
-//			moveTo(destDirectory.getParentFile());
-//		}
-//	}
+	private void copyFileContent(File source, File destination) {
+		try {
+			InputStream in = new DataInputStream(new FileInputStream(source));		
+			DataOutputStream out = new DataOutputStream(new FileOutputStream(destination));
+			byte[] buffer = new byte[1024];
+			int len = in.read(buffer);
+			while (len != -1) {
+				out.write(buffer, 0, len);
+				len = in.read(buffer);
+			}
+			in.close();
+			out.close();
+		}
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	protected void copyFileTo(File file, File parentFolder) throws IOException {
+		if(parentFolder.isDirectory()) {				
+			File target = new File(parentFolder,file.getName());
+			if(file.isDirectory()) {
+				if(target.mkdir()) {
+					for(File child : file.listFiles()) {
+						copyFileTo(child, target);
+					}
+				}
+				else {
+					throw new IOException("Could not create folder: "+target);
+				}
+			}
+			else {
+				if(target.createNewFile()) {
+					copyFileContent(file, target);
+				}
+				else {
+					throw new IOException("Could not create file: "+target);
+				}
+			}
+		}
+		else {
+			throw new IOException("File "+parentFolder+" is no folder");
+		}	
+	}
+	
+	/**
+	 * @param file
+	 * @throws IOException 
+	 */
+	public void copyTo(File destFile) throws IOException {
+		assert(destFile != null);
+		if(getFile().equals(destFile)) {
+			return;
+		}
+		
+		if(destFile.isDirectory()) {
+			try {
+				if(getFile().isDirectory()) {
+					FileUtils.copyDirectoryToDirectory(getFile(), destFile);
+				}
+				else { 
+					FileUtils.copyFileToDirectory(getFile(), destFile);
+				}
+			}
+			catch (FileExistsException e) {
+			}
+		} 
+		else {			
+			copyTo(destFile.getParentFile());
+		}		
+	}
+	
+	public void moveTo(File destFile) throws IOException {
+		assert(destFile != null);
+		if(getFile().equals(destFile)) {
+			return;
+		}
+		if(destFile.isDirectory()) {
+			try {
+				if(getFile().isDirectory()) {				
+					FileUtils.moveDirectoryToDirectory(getFile(), destFile, true);
+				}
+				else {
+					FileUtils.moveFileToDirectory(getFile(), destFile, true);
+				}
+			}
+			catch (FileExistsException e) {
+			}
+		} 
+		else {
+			moveTo(destFile.getParentFile());
+		}
+	}
 	
 	public boolean isEditable() {
 		return false;
@@ -292,11 +301,15 @@ public class DefaultFileNode extends AWorkspaceTreeNode implements IWorkspaceNod
 		if (popupMenu == null) {			
 			popupMenu = new WorkspacePopupMenu();
 			WorkspacePopupMenuBuilder.addActions(popupMenu, new String[] {
+					WorkspacePopupMenuBuilder.createSubMenu(TextUtils.getRawText("workspace.action.new.label")),
+					WorkspaceNewProjectAction.KEY,
+					WorkspacePopupMenuBuilder.endSubMenu(),
 					"workspace.action.node.cut",
 					"workspace.action.node.copy",
 					"workspace.action.node.paste",
 					WorkspacePopupMenuBuilder.SEPARATOR,
 					"workspace.action.node.rename",
+					"workspace.action.node.remove",
 					"workspace.action.file.delete",
 					WorkspacePopupMenuBuilder.SEPARATOR,
 					"workspace.action.node.refresh"

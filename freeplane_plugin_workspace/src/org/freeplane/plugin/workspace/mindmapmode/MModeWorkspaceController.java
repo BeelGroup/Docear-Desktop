@@ -31,9 +31,6 @@ import org.freeplane.core.ui.components.OneTouchCollapseResizer.CollapseDirectio
 import org.freeplane.core.ui.components.OneTouchCollapseResizer.ComponentCollapseListener;
 import org.freeplane.core.ui.components.ResizeEvent;
 import org.freeplane.core.ui.components.ResizerListener;
-import org.freeplane.core.user.IUserAccount;
-import org.freeplane.core.user.LocalUser;
-import org.freeplane.core.user.UserAccountController;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.FileUtils;
 import org.freeplane.core.util.LogUtils;
@@ -72,12 +69,9 @@ import org.freeplane.plugin.workspace.creator.DefaultFileNodeCreator;
 import org.freeplane.plugin.workspace.dnd.WorkspaceTransferable;
 import org.freeplane.plugin.workspace.features.AWorkspaceModeExtension;
 import org.freeplane.plugin.workspace.handler.DefaultFileNodeIconHandler;
-import org.freeplane.plugin.workspace.handler.DirectoryMergeConflictDialog;
-import org.freeplane.plugin.workspace.handler.FileExistsConflictDialog;
 import org.freeplane.plugin.workspace.handler.LinkTypeFileIconHandler;
 import org.freeplane.plugin.workspace.io.AFileNodeCreator;
 import org.freeplane.plugin.workspace.io.FileReadManager;
-import org.freeplane.plugin.workspace.io.FileSystemManager;
 import org.freeplane.plugin.workspace.model.WorkspaceModel;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.model.project.IProjectSelectionListener;
@@ -89,8 +83,6 @@ import org.freeplane.view.swing.ui.mindmapmode.MNodeDropListener;
 
 public class MModeWorkspaceController extends AWorkspaceModeExtension {
 	
-	private static final String USER_SETTINGS_FILENAME = "user.settings";
-
 	abstract class ResizerEventAdapter implements ResizerListener, ComponentCollapseListener {
 	}
 
@@ -176,7 +168,7 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 				final WorkspaceProjectOpenLocationAction openLocAction = new WorkspaceProjectOpenLocationAction();
 				builder.addAction(MENU_PROJECT_KEY, openLocAction, MenuBuilder.AS_CHILD);
 				
-				projectMenu.getPopupMenu().addPopupMenuListener(new PopupMenuListener() {
+				projectMenu.getPopupMenu().addPopupMenuListener(new PopupMenuListener() {					
 					public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
 						rmProjectAction.setEnabled();
 						openLocAction.setEnabled();
@@ -235,8 +227,6 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 	}
 
 	private void setupView(ModeController modeController) {
-		FileSystemManager.setDirectoryConflictHandler(new DirectoryMergeConflictDialog());
-		FileSystemManager.setFileConflictHandler(new FileExistsConflictDialog());
 		boolean expanded = true;
 		try {
 			expanded = !Boolean.parseBoolean(settings.getProperty(WORKSPACE_VIEW_COLLAPSED, "false"));
@@ -285,13 +275,9 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 		modeController.getUserInputListenerFactory().addToolBar("workspace", ViewController.LEFT, resizableTools);
 		getWorkspaceView().setModel(getModel());
 		getView().expandPath(getModel().getRoot().getTreePath());
-		for(AWorkspaceProject project : getModel().getProjects()) {
-			getView().expandPath(project.getModel().getRoot().getTreePath());
-		}
 		
 		getView().getNodeTypeIconManager().addNodeTypeIconHandler(LinkTypeFileNode.class, new LinkTypeFileIconHandler());
-		getView().getNodeTypeIconManager().addNodeTypeIconHandler(DefaultFileNode.class, new DefaultFileNodeIconHandler());
-		getView().refreshView();
+		getView().getNodeTypeIconManager().addNodeTypeIconHandler(DefaultFileNode.class, new DefaultFileNodeIconHandler());				
 	}
 		
 	private void setupActions(ModeController modeController) {
@@ -322,7 +308,7 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 
 	private void loadSettings(String settingsPath) {
 		final File userPropertiesFolder = new File(settingsPath);
-		final File settingsFile = new File(userPropertiesFolder, USER_SETTINGS_FILENAME);
+		final File settingsFile = new File(userPropertiesFolder, "workspace.settings");
 				
 		settings = new Properties();
 		InputStream in = null;
@@ -347,7 +333,7 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 
 	private void saveSettings(String settingsPath) {
 		final File userPropertiesFolder = new File(settingsPath);
-		final File settingsFile = new File(userPropertiesFolder, USER_SETTINGS_FILENAME);
+		final File settingsFile = new File(userPropertiesFolder, "workspace.settings");
 		// clear old settings
 		String[] projectsIds = settings.getProperty(WORKSPACE_MODEL_PROJECTS, "").split(WORKSPACE_MODEL_PROJECTS_SEPARATOR);
 		for (String projectID : projectsIds) {
@@ -362,7 +348,7 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 					continue;
 				}
 				projectIDs.add(project.getProjectID());
-				settings.setProperty(project.getProjectID(), project.getProjectHome().toString());
+				settings.setProperty(project.getProjectID(), project.getProjectHome().toString());			
 			}
 		}
 		StringBuilder sb = new StringBuilder();
@@ -380,10 +366,10 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 				settingsFile.createNewFile();
 			}		
 			os = new FileOutputStream(settingsFile);
-			settings.store(os, "user settings for the workspace");
+			settings.store(os, "user settings for the freeplane workspace");
 		}
 		catch (final Exception ex) {
-			LogUtils.severe("could not store workspace settings.", ex);
+			LogUtils.severe("Workspace settings could not be stored.", ex);
 		}
 		finally {
 			FileUtils.silentlyClose(os);
@@ -405,7 +391,6 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 			this.view.setMinimumSize(new Dimension(100, 40));
 			this.view.setPreferredSize(new Dimension(150, 40));
 			this.view.addProjectSelectionListener(getProjectSelectionListener());
-			getModel();
 		}
 		return this.view;
 	}
@@ -472,20 +457,16 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 		save();
 	}
 	
-	public String getSettingsPath() {
-		IUserAccount user = UserAccountController.getController().getActiveUser();
-		if(user == null) {
-			user = new LocalUser("local");
-			user.activate();
-		}
-		return URIUtils.getAbsoluteFile(WorkspaceController.getApplicationSettingsHome()).getPath() + File.separator + "users"+File.separator+user.getName();
+	private String getSettingsPath() {
+		return URIUtils.getAbsoluteFile(WorkspaceController.getApplicationSettingsHome()).getPath() + File.separator + "users"+File.separator+"default";
 	}
 
 	private IProjectSelectionListener getProjectSelectionListener() {
 		if(this.projectSelectionListener == null) {
 			this.projectSelectionListener = new IProjectSelectionListener() {
 				public void selectionChanged(ProjectSelectionEvent event) {
-					currentSelectedProject = event.getSelectedProject();
+//					LogUtils.info("now selected project: "+ event.getSelectedProject());
+					currentSelectedProject = event.getSelectedProject();				
 				}
 			};
 		}

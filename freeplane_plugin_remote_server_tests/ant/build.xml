@@ -158,8 +158,18 @@
         </exec>
     </target>
 
-	<target name="test">
-		<echo>Dummy Test Target. This needs to be replaced.</echo>
+	<target name="test"  depends="build,ifOSWindows, ifOSNotWindows">
+		<sleep seconds="10"/>
+		<mkdir dir="${report.dir}" />
+		<junit fork="yes" printsummary="yes" failureproperty="junit_test_failed" showoutput="yes">
+			<test name="tests.AkkaTests"/>
+			<classpath refid="freeplane_plugin_remote_tests.classpath" />
+		</junit>
+		<fail if="junit_test_failed">At least one test failed - see the report.</fail>	
+		 <loadfile property="pid"
+		      srcFile="../freeplane_framework/build/RUNNING_PID"/>
+		<antcall target="killTaskIfWindows"/>
+		<antcall target="killTaskIfUnix"/>
 	</target>
 	
 	<target name="junitreport">

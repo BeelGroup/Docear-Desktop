@@ -25,9 +25,6 @@ public abstract class AWorkspaceProject {
 	
 	public abstract URI getRelativeURI(URI uri);
 	
-	public abstract String getProjectName();
-	
-	
 	public ProjectModel getModel() {
 		if(this.model == null) {
 			this.model = new ProjectModel(this);
@@ -113,5 +110,5 @@ public abstract class AWorkspaceProject {
 				
 			}
 		}
-	}
+	}		
 }

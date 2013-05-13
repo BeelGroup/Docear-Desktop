@@ -13,7 +13,6 @@ import javax.swing.tree.TreeNode;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.actions.NodeRefreshAction;
-import org.freeplane.plugin.workspace.actions.WorkspaceImportProjectAction;
 import org.freeplane.plugin.workspace.actions.WorkspaceNewProjectAction;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
@@ -56,9 +55,18 @@ public class WorkspaceRootNode extends AFolderNode implements IWorkspaceNodeActi
 		if (popupMenu == null) {			
 			popupMenu = new WorkspacePopupMenu();
 			WorkspacePopupMenuBuilder.addActions(popupMenu, new String[] {
+					WorkspacePopupMenuBuilder.createSubMenu(TextUtils.getRawText("workspace.action.new.label")),
 					WorkspaceNewProjectAction.KEY,
-					WorkspaceImportProjectAction.KEY,
+					WorkspacePopupMenuBuilder.endSubMenu(),
 					WorkspacePopupMenuBuilder.SEPARATOR,
+//					"workspace.action.location.change",
+					"workspace.action.node.open.location",
+//					//"workspace.action.hide",
+					WorkspacePopupMenuBuilder.SEPARATOR,
+//					"workspace.action.node.cut",
+//					"workspace.action.node.copy",						
+//					"workspace.action.node.paste",
+//					WorkspacePopupMenuBuilder.SEPARATOR, 
 					"workspace.action.all.expand",
 					"workspace.action.all.collapse",					 
 					WorkspacePopupMenuBuilder.SEPARATOR,
@@ -85,7 +93,7 @@ public class WorkspaceRootNode extends AFolderNode implements IWorkspaceNodeActi
 	
 	public String getName() {
 		//WORKSPACE - todo: get name from somewhere or set it somehow
-		return TextUtils.getText("workspace.node.root.name"); 
+		return "default workspace"; 
 	}
 	
 	public void refresh() {
