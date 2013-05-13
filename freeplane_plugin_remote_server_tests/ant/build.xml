@@ -159,7 +159,7 @@
     </target>
 
 	<target name="test">
-		<echo>Dummy Test Target. This needs to be replaced.</echo>
+		<echo>Dummy Test Target. This needs to be replaced later.</echo>
 	</target>
 	
 	<target name="junitreport">

@@ -124,7 +124,7 @@ public class Activator implements BundleActivator{
 
 	private void saveAutoProperties() {
 		//send auto.properties to correct location
-		final String freeplaneDirectory = Compat.getFreeplaneUserDirectory();
+		final String freeplaneDirectory = Compat.getApplicationUserDirectory();
 		final File userPropertiesFolder = new File(freeplaneDirectory);
 		final File autoPropertiesFile = new File(userPropertiesFolder, "auto.properties");
 		Logger.getLogger().info("Activator.start => trying to save auto.properties to '{}'.",autoPropertiesFile.getAbsolutePath());
