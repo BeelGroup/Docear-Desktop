@@ -91,10 +91,10 @@ public class LiteratureRepositoryPathNode extends FolderLinkNode implements Tree
 		if (folder != null && folder.isDirectory()) {
 			WorkspaceController.getFileSystemMgr().scanFileSystem(this, folder, new FileFilter() {
 				public boolean accept(File pathname) {
-					if(pathname.isDirectory() || pathname.getName().toLowerCase().endsWith(".pdf")) {
+//					if(pathname.isDirectory() || pathname.getName().toLowerCase().endsWith(".pdf")) {
 						return true;
-					}
-					return false;
+//					}
+//					return false;
 				}
 			});
 		}
