@@ -29,5 +29,4 @@
 
 	<target name="cleandist" depends="clean, dist">
 	</target>
-
 </project>
