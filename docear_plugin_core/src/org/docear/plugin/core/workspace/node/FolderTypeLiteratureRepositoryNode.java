@@ -16,7 +16,6 @@ import org.docear.plugin.core.workspace.AVirtualDirectory;
 import org.docear.plugin.core.workspace.creator.FolderTypeLiteratureRepositoryPathCreator;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.plugin.workspace.URIUtils;
-import org.freeplane.plugin.workspace.actions.WorkspaceNewProjectAction;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
 import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
@@ -94,11 +93,7 @@ public class FolderTypeLiteratureRepositoryNode extends AFolderNode implements I
 			
 			popupMenu = new WorkspacePopupMenu();
 			WorkspacePopupMenuBuilder.addActions(popupMenu, new String[] {
-					WorkspacePopupMenuBuilder.createSubMenu(TextUtils.getRawText("workspace.action.new.label")),
-					WorkspaceNewProjectAction.KEY,
-					WorkspacePopupMenuBuilder.SEPARATOR,
 					"workspace.action.node.add.repository",
-					WorkspacePopupMenuBuilder.endSubMenu(),
 					WorkspacePopupMenuBuilder.SEPARATOR,
 					"workspace.action.node.paste",
 					"workspace.action.node.physical.sort",

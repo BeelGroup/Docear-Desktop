@@ -1,7 +1,9 @@
 package org.freeplane.plugin.remote.server;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -65,7 +67,14 @@ public class Activator implements BundleActivator{
 		        Logger.getLogger().info("Activator.logGit => Latest commit message '" + commit.getShortMessage()+"'");
 		        repo.close();
 	        } else {
-	        	Logger.getLogger().info("Activator.logGit => No git file to log.");	
+	        	Logger.getLogger().info("Activator.logGit => No local git repos to log. try to find generated git file.");
+	        	File gitFile = new File("./resources/gitinfo.properties");
+	        	if (gitFile.exists()){
+	        		BufferedReader reader = new BufferedReader(new FileReader(gitFile));
+	        		Logger.getLogger().info("Activator.logGit => Latest commit info of current build " + reader.readLine());
+	        	} else {
+	        		Logger.getLogger().info("Activator.logGit => No commit information found.");
+	        	}
 	        }
 		} catch (IOException ex) {
 			Logger.getLogger().error("Activator.logGit => IOException", ex);
@@ -115,7 +124,7 @@ public class Activator implements BundleActivator{
 
 	private void saveAutoProperties() {
 		//send auto.properties to correct location
-		final String freeplaneDirectory = Compat.getFreeplaneUserDirectory();
+		final String freeplaneDirectory = Compat.getApplicationUserDirectory();
 		final File userPropertiesFolder = new File(freeplaneDirectory);
 		final File autoPropertiesFile = new File(userPropertiesFolder, "auto.properties");
 		Logger.getLogger().info("Activator.start => trying to save auto.properties to '{}'.",autoPropertiesFile.getAbsolutePath());
