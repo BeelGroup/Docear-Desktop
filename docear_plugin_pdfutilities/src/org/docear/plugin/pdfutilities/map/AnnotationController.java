@@ -7,10 +7,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import org.apache.commons.io.FileUtils;
 import org.docear.pdf.PdfDataExtractor;
 import org.docear.plugin.core.features.AnnotationID;
 import org.docear.plugin.core.util.HtmlUtils;
@@ -29,6 +31,8 @@ import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.plugin.workspace.URIUtils;
+import org.freeplane.plugin.workspace.model.WorkspaceModelEvent;
+import org.freeplane.plugin.workspace.model.WorkspaceModelEvent.WorkspaceModelEventType;
 
 public class AnnotationController implements IExtension{
 	
@@ -262,15 +266,17 @@ public class AnnotationController implements IExtension{
 	}
 
 	private static void executeHashConfirmation(final File file, final long lastModified) {
-		executor.execute(new Runnable() {
-			public void run() {
-				updateDocumentHashCache(file, lastModified);
-			}
-			
-			public String toString() {
-				return ""+file;
-			}
-		});
+		if(file.exists()) {
+			executor.execute(new Runnable() {
+				public void run() {
+					updateDocumentHashCache(file, lastModified);
+				}
+				
+				public String toString() {
+					return ""+file;
+				}
+			});
+		}
 	}
 	
 	public static String getDocumentHash(URI uri) {
@@ -281,7 +287,7 @@ public class AnnotationController implements IExtension{
 		
 		File file = new File(uri);
 		
-		if(!file.getName().toLowerCase().endsWith(".pdf")) {
+		if(!file.exists() || !file.getName().toLowerCase().endsWith(".pdf")) {
 			return null;
 		}
 		
@@ -348,6 +354,34 @@ public class AnnotationController implements IExtension{
 		}
 		
 		return hashCode;
+	}
+
+	public void updateIndex(WorkspaceModelEvent event) {
+		if(event.getType() == WorkspaceModelEventType.RENAMED || event.getType() == WorkspaceModelEventType.MOVED) {
+			Map<File, File> fileMap = new HashMap<File, File>();
+			if(!((File)event.getNewValue()).isDirectory()){				
+				File oldFile = (File) event.getOldValue();
+				File newFile = (File) event.getNewValue();			
+				fileMap.put(oldFile, newFile);			
+			}
+			else{
+				File oldFile = (File) event.getOldValue();
+				File newFile = (File) event.getNewValue();
+				Collection<File> files = FileUtils.listFiles(newFile, null, true);			
+				for(File file : files){
+					String oldPath = file.getPath().replace(newFile.getPath(), oldFile.getPath());
+					fileMap.put(new File(oldPath), file);				
+				}			
+			}
+			synchronized (documentHashMap) {
+				for(Entry<File, File> entry : fileMap.entrySet()) {
+					if(documentHashMap.containsKey(entry.getKey().toString())) {
+						CachedHashItem hashItem = documentHashMap.remove(entry.getKey().toString());
+						documentHashMap.put(entry.getValue().toString(), hashItem);
+					}
+				}
+			}
+		}
 	}
 
 }

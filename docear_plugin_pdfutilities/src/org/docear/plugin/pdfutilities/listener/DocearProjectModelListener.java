@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.docear.plugin.core.mindmap.MindmapUpdateController;
+import org.docear.plugin.pdfutilities.map.AnnotationController;
 import org.docear.plugin.pdfutilities.map.MindmapFileLinkUpdater;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.plugin.workspace.model.WorkspaceModelEvent;
@@ -33,7 +34,7 @@ public class DocearProjectModelListener implements IProjectModelListener {
 				fileMap.put(new File(oldPath), file);				
 			}			
 		}
-		updateMaps(event, fileMap);
+		updateMaps(event, fileMap); 
 	}
 
 	private void updateMaps(WorkspaceModelEvent event,	Map<File, File> fileMap) {
@@ -45,6 +46,7 @@ public class DocearProjectModelListener implements IProjectModelListener {
 	public void treeNodesChanged(WorkspaceModelEvent event) {
 		if(event.getType() == WorkspaceModelEventType.RENAMED){
 			if(event.getTreePath().getLastPathComponent() instanceof DefaultFileNode){
+				AnnotationController.getController().updateIndex(event);
 				updateMaps(event);
 			}
 		}
@@ -61,6 +63,7 @@ public class DocearProjectModelListener implements IProjectModelListener {
 	public void treeStructureChanged(WorkspaceModelEvent event) {
 		if(event.getType() == WorkspaceModelEventType.MOVED){
 			if(event.getTreePath().getLastPathComponent() instanceof DefaultFileNode || event.getTreePath().getLastPathComponent() instanceof LinkTypeFileNode){
+				AnnotationController.getController().updateIndex(event);
 				updateMaps(event);
 			}
 		}
