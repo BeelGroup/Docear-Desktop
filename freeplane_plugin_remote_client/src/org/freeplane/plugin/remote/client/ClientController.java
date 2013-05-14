@@ -1,6 +1,7 @@
 package org.freeplane.plugin.remote.client;
 
 import java.net.InetAddress;
+import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,8 +41,8 @@ public class ClientController {
 
 	// Temp variables, only for developping
 	public static final String MAP_ID = "5";
-	public static final String USER = "Julius";
-	public static final String PW = "secret";
+	public static final String USER = "online-demo";
+	public static final String AT = "A91AF9EE20D8611666753B8A49296B5A";
 
 	private final ActorSystem system;
 	private final ActorRef listenForUpdatesActor;
@@ -50,6 +51,9 @@ public class ClientController {
 
 	private final WS webservice;
 	private User user = null;
+	private String mapId = null;
+	private Long projectId;
+	private URI uriToMap;
 
 	private final String sourceString;
 	private boolean isUpdating = false;
@@ -107,8 +111,7 @@ public class ClientController {
 
 		this.registerListeners();
 
-		initCollaborationactor.tell(new InitCollaborationActor.Messages.InitCollaborationMode(MAP_ID, USER, PW), null);
-
+	startListeningForMap(USER, AT, MAP_ID);
 		// set back to original class loader
 		Thread.currentThread().setContextClassLoader(contextClassLoader);
 	}
@@ -137,6 +140,26 @@ public class ClientController {
 		}
 
 	}
+
+	public void startListeningForMap(String username, String accessToken, String mapId) {
+		user = new User(username, accessToken);
+		this.mapId = mapId;
+		// this.uriToMap = uriToMap;
+		// this.projectId = projectId;
+
+		initCollaborationactor.tell(new InitCollaborationActor.Messages.InitCollaborationMode(mapId, user), null);
+	}
+
+	// public void startListeningForMap(String username, String accessToken,
+	// Long projectId, URI uriToMap) {
+	// user = new User(username, accessToken);
+	// this.uriToMap = uriToMap;
+	// this.projectId = projectId;
+	//
+	// //initCollaborationactor.tell(new
+	// InitCollaborationActor.Messages.InitCollaborationMode(mapId, username,
+	// password))
+	// }
 
 	/**
 	 * registers all listeners to react on necessary events like created nodes
@@ -213,8 +236,8 @@ public class ClientController {
 		return user;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public String getMapId() {
+		return mapId;
 	}
 
 	public static String loggedInUserName() {

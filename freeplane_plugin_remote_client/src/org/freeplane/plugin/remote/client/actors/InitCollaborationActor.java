@@ -8,6 +8,7 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.Validate;
 import org.freeplane.features.mapio.mindmapmode.MMapIO;
 import org.freeplane.n3.nanoxml.XMLException;
 import org.freeplane.plugin.remote.client.ClientController;
@@ -39,19 +40,11 @@ public class InitCollaborationActor extends FreeplaneClientActor {
 			final InitCollaborationMode msg = (InitCollaborationMode) message;
 			this.mapId = msg.getMapId();
 			final WS ws = getClientController().webservice();
-			final Future<User> loginFuture = ws.login(msg.getUsername(), msg.getPassword());
-			Patterns.pipe(loginFuture, getContext().system().dispatcher()).to(getSelf());
-
-		}
-		// login response
-		else if (message instanceof User) {
-			final User user = (User) message;
-			if (user != null) {
-				getClientController().setUser(user);
-				final WS ws = getClientController().webservice();
-				final Future<JsonNode> mindmapFuture = ws.getMapAsXml(user.getUsername(), user.getAccessToken(), mapId);
-				Patterns.pipe(mindmapFuture, getContext().system().dispatcher()).to(getSelf());
-			}
+			final User user = msg.getUser();
+			Validate.notNull(user);
+			
+			final Future<JsonNode> mindmapFuture = ws.getMapAsXml(user.getUsername(), user.getAccessToken(), mapId);
+			Patterns.pipe(mindmapFuture, getContext().system().dispatcher()).to(getSelf());
 		}
 		// xml mindmap wrapped in json
 		else if (message instanceof JsonNode) {
@@ -92,22 +85,16 @@ public class InitCollaborationActor extends FreeplaneClientActor {
 	public static final class Messages {
 		public static class InitCollaborationMode {
 			private final String mapId;
-			private final String username;
-			private final String password;
+			private final User user;
 
-			public InitCollaborationMode(String mapId, String username, String password) {
+			public InitCollaborationMode(String mapId, User user) {
 				super();
 				this.mapId = mapId;
-				this.username = username;
-				this.password = password;
+				this.user = user;
 			}
 
-			public String getUsername() {
-				return username;
-			}
-
-			public String getPassword() {
-				return password;
+			public User getUser() {
+				return user;
 			}
 
 			public String getMapId() {
