@@ -286,7 +286,7 @@ public class DocearProjectLoader extends ProjectLoader {
 			replaceMapping.put("@LITERATURE_BIB_DEMO@", (new File(relativeBibURI).getPath().replace(File.separator, File.separator+File.separator)/*+File.separator+File.separator+"Example PDFs"*/));
 		}
 		else {
-			replaceMapping.put("@LITERATURE_BIB_DEMO@", relativeBibURI.getPath().replace(":", "\\:")/*+"/Example PDFs"*/);
+			replaceMapping.put("@LITERATURE_BIB_DEMO@", relativeBibURI.getRawPath().replace(":", "\\:")/*+"/Example PDFs"*/);
 		}
 		
 		boolean created = createAndCopy(new File(defaultFilesPath,"incoming.mm"), "/demo/template_incoming.mm", replaceMapping);
@@ -309,6 +309,8 @@ public class DocearProjectLoader extends ProjectLoader {
 		createAndCopy(new File(repoPath, "Information Retrieval on Mind Maps -- What could it be good for.pdf"), "/demo/docear_example_pdfs/Information Retrieval on Mind Maps -- What could it be good for.pdf");
 		createAndCopy(new File(repoPath, "Mr. DLib -- A Machine Readable Digital Library.pdf"), "/demo/docear_example_pdfs/Mr. DLib -- A Machine Readable Digital Library.pdf");
 	}
+	
+	
 	
 	private boolean createAndCopy(File file, String resourcePath) {
 		return createAndCopy(file, resourcePath, false, null);

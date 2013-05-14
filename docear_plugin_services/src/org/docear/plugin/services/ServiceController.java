@@ -41,6 +41,7 @@ import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.mindmapmode.FileFolderDropHandler;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.nodes.FolderLinkNode;
 
@@ -175,7 +176,10 @@ public class ServiceController extends UploadController {
 			}
 		}
 		downloadsNode.setPath(downloadsFolder.toURI());
-		wsRoot.insertChildNode(downloadsNode, 1);	
+		wsRoot.insertChildNode(downloadsNode, 1);
+		
+		WorkspaceController.getModeExtension(modeController).getView().getTransferHandler().registerNodeDropHandler(DownloadFolderNode.class, new FileFolderDropHandler());
+		
 	}
 	
 	public URI getUserSettingsHome() {
