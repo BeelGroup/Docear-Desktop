@@ -41,9 +41,12 @@ public class ClientController {
 
 	// Temp variables, only for developping
 	public static final String MAP_ID = "5";
-	public static final String USER = "online-demo";
-	public static final String AT = "A91AF9EE20D8611666753B8A49296B5A";
+//	public static final String USER = "online-demo";
+//	public static final String AT = "A91AF9EE20D8611666753B8A49296B5A";
 
+	public static final String USER = "Julius";
+	public static final String AT = "Julius-token";
+	
 	private final ActorSystem system;
 	private final ActorRef listenForUpdatesActor;
 	private final ActorRef applyChangeActor;

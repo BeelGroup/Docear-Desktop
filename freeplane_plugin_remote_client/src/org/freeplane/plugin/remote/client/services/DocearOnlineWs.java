@@ -17,6 +17,7 @@ import org.freeplane.core.util.LogUtils;
 import org.freeplane.plugin.remote.client.ClientController;
 import org.freeplane.plugin.remote.client.User;
 import org.freeplane.plugin.remote.v10.model.updates.AddNodeUpdate;
+import org.freeplane.plugin.remote.v10.model.updates.ChangeEdgeAttributeUpdate;
 import org.freeplane.plugin.remote.v10.model.updates.ChangeNodeAttributeUpdate;
 import org.freeplane.plugin.remote.v10.model.updates.DeleteNodeUpdate;
 import org.freeplane.plugin.remote.v10.model.updates.MapUpdate;
@@ -145,7 +146,7 @@ public class DocearOnlineWs implements WS {
 					updates.add(mapper.treeToValue(mapUpdateJson, MoveNodeUpdate.class));
 					break;
 				case ChangeEdgeAttribute:
-					updates.add(mapper.treeToValue(mapUpdateJson, ChangeNodeAttributeUpdate.class));
+					updates.add(mapper.treeToValue(mapUpdateJson, ChangeEdgeAttributeUpdate.class));
 					break;
 
 				}
