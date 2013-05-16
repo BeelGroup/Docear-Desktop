@@ -69,10 +69,9 @@ public final class RemoteUtils {
 		} else if (attribute.equals("isHtml")) {
 			final Boolean isHtml = Boolean.parseBoolean(valueObj);
 			if (isHtml) {
-				// TODO correct handling
-				// freeplaneNode.setXmlText(freeplaneNode.getText());
+				freeplaneNode.setXmlText(freeplaneNode.getText());
 			} else {
-				// freeplaneNode.setText(freeplaneNode.getText());
+				freeplaneNode.setText(freeplaneNode.getText());
 			}
 		} else if (attribute.equals("attributes")) {
 			// remove current extension, because everything is written new
@@ -117,12 +116,7 @@ public final class RemoteUtils {
 				// logger().error("problem saving hyperlink", e);
 			}
 		} else if (attribute.equals("nodeText")) {
-			// TODO handle isHtml correct
-			// MMapController ctrl = null;
-			// MTextController.getController().setNodeObject(freeplaneNode,
-			// valueObj);
 			freeplaneNode.setText(valueObj.toString());
-			freeplaneNode.fireNodeChanged(new NodeChangeEvent(freeplaneNode, "node_text", "", ""));
 		} else if (attribute.equals("note")) {
 			final MNoteController noteController = (MNoteController) MNoteController.getController();
 			if (valueObj == null) {
@@ -132,6 +126,7 @@ public final class RemoteUtils {
 				noteController.setNoteText(freeplaneNode, noteText);
 			}
 		}
+		freeplaneNode.fireNodeChanged(new NodeChangeEvent(freeplaneNode, "node_text", "", ""));
 	}
 
 	public static void changeEdgeAttribute(NodeModel freeplaneNode, String attribute, String valueObj) {
