@@ -18,6 +18,8 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.docear.messages.Messages.AddNodeRequest;
 import org.docear.messages.Messages.AddNodeResponse;
+import org.docear.messages.Messages.ChangeEdgeRequest;
+import org.docear.messages.Messages.ChangeEdgeResponse;
 import org.docear.messages.Messages.ChangeNodeRequest;
 import org.docear.messages.Messages.ChangeNodeResponse;
 import org.docear.messages.Messages.CloseAllOpenMapsRequest;
@@ -44,6 +46,8 @@ import org.docear.messages.Messages.RequestLockResponse;
 import org.docear.messages.exceptions.MapNotFoundException;
 import org.docear.messages.exceptions.NodeNotFoundException;
 import org.fest.assertions.Fail;
+import org.freeplane.features.edge.EdgeStyle;
+import org.freeplane.plugin.remote.v10.model.EdgeModel;
 import org.freeplane.plugin.remote.v10.model.NodeModelDefault;
 import org.freeplane.plugin.remote.v10.model.updates.AddNodeUpdate;
 import org.freeplane.plugin.remote.v10.model.updates.ChangeNodeAttributeUpdate;
@@ -486,7 +490,6 @@ public class AkkaTests {
 
 						remoteActor.tell(request, localActor);
 						ChangeNodeResponse response = expectMsgClass(ChangeNodeResponse.class);
-						
 
 						// release lock
 						releaseLock("5", nodeId, USERNAME1);
@@ -527,6 +530,57 @@ public class AkkaTests {
 
 							// check that everything changed
 							assertThat(notChangedAttributes.size()).isEqualTo(0);
+
+						} catch (JsonMappingException e) {
+							Fail.fail("json mapping error", e);
+						} catch (JsonParseException e) {
+							Fail.fail("json parse error", e);
+						} catch (IOException e) {
+							Fail.fail("json IOException error", e);
+						} finally {
+							closeMindMapOnServer(5);
+						}
+					}
+				};
+			}
+		};
+	}
+
+	/**
+	 * testChangeEdgeRequest change available node to defined attributes. check
+	 * if node got attributes.
+	 */
+	@Test
+	public void testChangeEdgeRequest() {
+		new JavaTestKit(system) {
+			{
+				localActor.tell(getRef(), getRef());
+				new Within(duration("10 seconds")) {
+					protected void run() {
+						sendMindMapToServer(5);
+
+						try {
+							final String nodeId = "ID_1";
+							final EdgeStyle edgeStyle = EdgeStyle.valueOf("EDGESTYLE_SHARP_BEZIER");
+							final Map<String, Object> attributeMap = new HashMap<String, Object>();
+							attributeMap.put("width", 6);
+							attributeMap.put("color", 0xFF00FF00);
+							attributeMap.put("style", "EDGESTYLE_SHARP_BEZIER");
+
+							final ChangeEdgeRequest request = new ChangeEdgeRequest(SOURCE, USERNAME1, "5", nodeId, attributeMap);
+
+							remoteActor.tell(request, localActor);
+							ChangeEdgeResponse response = expectMsgClass(ChangeEdgeResponse.class);
+							assertThat(response.isSuccess()).isEqualTo(true);
+
+							final GetNodeRequest nodeRequest = new GetNodeRequest(SOURCE, USERNAME1, "5", "ID_1", 0);
+							remoteActor.tell(nodeRequest, localActor);
+							GetNodeResponse nodeResponse = expectMsgClass(GetNodeResponse.class);
+							final NodeModelDefault node = new ObjectMapper().readValue(nodeResponse.getNode(), NodeModelDefault.class);
+							final EdgeModel edgeModel = node.edgeStyle;
+							assertThat(edgeModel.width).isEqualTo((Integer) attributeMap.get("width"));
+							assertThat(edgeModel.color).isEqualTo((Integer) attributeMap.get("color"));
+							assertThat(edgeModel.style).isEqualTo(edgeStyle);
 
 						} catch (JsonMappingException e) {
 							Fail.fail("json mapping error", e);
@@ -869,39 +923,38 @@ public class AkkaTests {
 		final JsonNode mapNode = validateSchema(mapJsonString, schemaPath);
 		validateRootNodeSchema(mapNode.get("root").toString());
 	}
-	
+
 	private void validateRootNodeSchema(final String rootNodeJsonString) {
 		final String schemaPath = "/RootNodeSchema.json";
 		final JsonNode rootNode = validateSchema(rootNodeJsonString, schemaPath);
-		
+
 		final Iterator<JsonNode> itRight = rootNode.get("rightChildren").iterator();
-		while(itRight.hasNext()) {
+		while (itRight.hasNext()) {
 			final JsonNode node = itRight.next();
 			validateDefaultNodeSchema(node.toString());
 		}
-		
+
 		final Iterator<JsonNode> itLeft = rootNode.get("leftChildren").iterator();
-		while(itLeft.hasNext()) {
+		while (itLeft.hasNext()) {
 			final JsonNode node = itLeft.next();
 			validateDefaultNodeSchema(node.toString());
 		}
 	}
-	
-	
+
 	private void validateDefaultNodeSchema(final String defaultNodeJsonString) {
 		final String schemaPath = "/DefaultNodeSchema.json";
 		final JsonNode node = validateSchema(defaultNodeJsonString, schemaPath);
-		
-		if(node.has("edgeStyle")) {
+
+		if (node.has("edgeStyle")) {
 			validateEdgeSchema(node.get("edgeStyle").toString());
 		}
 	}
-	
+
 	private void validateEdgeSchema(final String edgeJsonString) {
 		final String schemaPath = "/EdgeSchema.json";
 		validateSchema(edgeJsonString, schemaPath);
 	}
-	
+
 	private JsonNode validateSchema(final String jsonString, final String schemaPath) {
 		final ObjectMapper mapper = new ObjectMapper();
 		try {
@@ -923,7 +976,7 @@ public class AkkaTests {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		
+
 	}
 
 	private static class TheActor extends UntypedActor {
