@@ -368,7 +368,7 @@ public class Actions {
 
 		for (Map.Entry<String, Object> entry : attributeMap.entrySet()) {
 			final String attribute = entry.getKey();
-			final Object valueObj = entry.getValue();
+			final String valueObj = entry.getValue().toString();
 
 			logger().debug("Actions.changeNode => {} changed to {}", attribute, valueObj);
 			updates.add(new ChangeNodeAttributeUpdate(source, username, nodeId, attribute, valueObj));

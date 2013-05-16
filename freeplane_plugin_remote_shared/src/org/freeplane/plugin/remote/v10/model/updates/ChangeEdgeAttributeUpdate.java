@@ -16,7 +16,7 @@ public class ChangeEdgeAttributeUpdate extends MapUpdate {
 	}
 	
 	public ChangeEdgeAttributeUpdate(String source, String username, String nodeId, String attribute, Object value) {
-		super(source, username, Type.ChangeNodeAttribute);
+		super(source, username, Type.ChangeEdgeAttribute);
 		
 		this.nodeId = nodeId;
 		this.attribute = attribute;

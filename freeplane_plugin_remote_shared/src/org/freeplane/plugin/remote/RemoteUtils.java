@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.LinkedList;
-import java.util.List;
 
 import org.docear.messages.exceptions.NodeNotFoundException;
 import org.freeplane.features.attribute.NodeAttributeTableModel;
@@ -62,13 +61,13 @@ public final class RemoteUtils {
 		return freeplaneNode;
 	}
 
-	public static void changeNodeAttribute(NodeModel freeplaneNode, String attribute, Object valueObj) {
+	public static void changeNodeAttribute(NodeModel freeplaneNode, String attribute, String valueObj) {
 		System.out.println("attribute: " + attribute);
 		if (attribute.equals("folded")) {
-			final Boolean value = (Boolean) valueObj;
+			final Boolean value = Boolean.parseBoolean(valueObj);
 			freeplaneNode.setFolded(value);
 		} else if (attribute.equals("isHtml")) {
-			final Boolean isHtml = (Boolean) valueObj;
+			final Boolean isHtml = Boolean.parseBoolean(valueObj);
 			if (isHtml) {
 				// TODO correct handling
 				// freeplaneNode.setXmlText(freeplaneNode.getText());
@@ -80,33 +79,30 @@ public final class RemoteUtils {
 			if (freeplaneNode.getExtension(NodeAttributeTableModel.class) != null)
 				freeplaneNode.removeExtension(NodeAttributeTableModel.class);
 
-			@SuppressWarnings("unchecked")
-			// "Play" sends it as an ArrayList, so I can just grab it
-			final List<String> orderedItems = (List<String>) valueObj;
+			final String[] parts = valueObj.split("%:%");
+			
 
 			NodeAttributeTableModel attrTable;
 			MAttributeController attrController = MAttributeController.getController();
 
-			if (orderedItems.size() > 0) {
+			if (parts.length > 0) {
 				attrTable = attrController.createAttributeTableModel(freeplaneNode);
 
-				for (int i = 0; i < orderedItems.size(); i++) {
-					final String[] parts = orderedItems.get(i).split("%:%");
-					// logger().debug("key: {}; value: {}", parts[0], parts[1]);
-					attrController.performInsertRow(attrTable, i, parts[0], parts[1]);
+				for (int i = 0; i < parts.length; i+=2) {
+					attrController.performInsertRow(attrTable, i/2, parts[i], parts[i+1]);
 				}
 				freeplaneNode.addExtension(attrTable);
 			}
 		} else if (attribute.equals("hGap")) {
-			updateLocationModel(freeplaneNode, (Integer) valueObj, null);
+			updateLocationModel(freeplaneNode, Integer.parseInt(valueObj), null);
 		} else if (attribute.equals("shiftY")) {
-			updateLocationModel(freeplaneNode, null, (Integer) valueObj);
+			updateLocationModel(freeplaneNode, null, Integer.parseInt(valueObj));
 		} else if (attribute.equals("icons")) {
 			// TODO handle
 		} else if (attribute.equals("image")) {
 			// TODO handle
 		} else if (attribute.equals("link")) {
-			final String value = valueObj.toString();
+			final String value = valueObj;
 
 			NodeLinks nodeLinks = freeplaneNode.getExtension(NodeLinks.class);
 
