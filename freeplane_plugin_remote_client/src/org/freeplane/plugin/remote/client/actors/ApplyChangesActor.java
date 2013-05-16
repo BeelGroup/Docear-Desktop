@@ -91,7 +91,7 @@ public class ApplyChangesActor extends FreeplaneClientActor {
 			ClientController.mmapController().nodeChanged(freeplaneNode);
 		} catch (NullPointerException e) {
 			// Do nothing, but happens very often in freeplane view
-			LogUtils.severe("NPE catched! ", e);
+			LogUtils.warn("NPE catched! ", e);
 		}
 	}
 

@@ -27,7 +27,7 @@
 	<classpathentry kind="lib" path="lib/protobuf-java-2.4.1.jar"/>
 	<classpathentry kind="lib" path="lib/scala-library-2.10.0.jar"/>
 	<classpathentry kind="lib" path="lib/uncommons-maths-1.2.2a.jar"/>
-	<classpathentry kind="lib" path="lib/freeplane_remote_shared.jar"/>
+	<classpathentry kind="lib" path="lib/freeplane_remote_shared.jar" sourcepath="/freeplane_plugin_remote_shared/src"/>
 	<classpathentry kind="lib" path="lib/guava-13.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-annotations-2.1.4.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-core-2.1.4.jar"/>
@@ -41,5 +41,6 @@
 	<classpathentry kind="lib" path="lib/joda-time-2.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/freeplane_plugin_remote_server"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/freeplane"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
