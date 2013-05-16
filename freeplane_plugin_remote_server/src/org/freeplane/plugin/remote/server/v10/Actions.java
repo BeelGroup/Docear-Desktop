@@ -415,7 +415,7 @@ public class Actions {
 			logger().debug("Actions.changeEdge => {} changed to {}", attribute, valueObj);
 			updates.add(new ChangeEdgeAttributeUpdate(source, username, nodeId, attribute, valueObj));
 
-			changeEdgeAttribute(freeplaneNode, attribute, valueObj);
+			changeEdgeAttribute(freeplaneNode, attribute, valueObj == null ? null : valueObj.toString());
 		}
 
 		// submit changes and create list for response

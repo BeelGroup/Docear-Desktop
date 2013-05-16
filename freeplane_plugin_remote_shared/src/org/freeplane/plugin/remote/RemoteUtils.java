@@ -134,7 +134,7 @@ public final class RemoteUtils {
 		}
 	}
 
-	public static void changeEdgeAttribute(NodeModel freeplaneNode, String attribute, Object valueObj) {
+	public static void changeEdgeAttribute(NodeModel freeplaneNode, String attribute, String valueObj) {
 		final MEdgeController mEdgeController = (MEdgeController) MEdgeController.getController();
 		System.out.println("attribute: " + attribute);
 		if (attribute.equals("color")) {

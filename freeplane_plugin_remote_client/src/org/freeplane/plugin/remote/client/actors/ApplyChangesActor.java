@@ -102,7 +102,7 @@ public class ApplyChangesActor extends FreeplaneClientActor {
 	private void changeEdgeAttributeUpdate(ChangeEdgeAttributeUpdate update) throws NodeNotFoundException {
 		try {
 			final NodeModel freeplaneNode = getNodeFromOpenMapById(mmapController(), update.getNodeId());
-			changeEdgeAttribute(freeplaneNode, update.getAttribute(), update.getValue());
+			changeEdgeAttribute(freeplaneNode, update.getAttribute(), update.getValue() == null ? null : update.getValue().toString());
 			if (getClientController().selectedNodesMap().containsKey(freeplaneNode)) {
 				getClientController().selectedNodesMap().get(freeplaneNode).updateCurrentState();
 			}
