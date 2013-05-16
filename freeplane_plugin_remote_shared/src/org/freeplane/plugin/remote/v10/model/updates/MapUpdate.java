@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public abstract class MapUpdate {
 	public enum Type {
-		ChangeNodeAttribute, AddNode, DeleteNode, MoveNode
+		ChangeNodeAttribute, ChangeEdgeAttribute, AddNode, DeleteNode, MoveNode
 	}
 
 	private final Type type;

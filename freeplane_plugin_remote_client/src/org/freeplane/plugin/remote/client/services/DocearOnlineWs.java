@@ -77,7 +77,7 @@ public class DocearOnlineWs implements WS {
 		formData.add("password", password);
 		final ClientResponse loginResponse = loginResource.type(MediaType.APPLICATION_FORM_URLENCODED_TYPE).post(ClientResponse.class, formData);
 
-		if(loginResponse.getStatus() == 200) {
+		if (loginResponse.getStatus() == 200) {
 			final User user = new User(username, loginResponse.getEntity(String.class));
 			return Futures.successful(user);
 		} else {
@@ -128,12 +128,11 @@ public class DocearOnlineWs implements WS {
 
 			Iterator<JsonNode> it = json.get("orderedUpdates").iterator();
 			while (it.hasNext()) {
-				final JsonNode mapUpdateJson = mapper.readTree(it.next().asText());
+				final JsonNode mapUpdateJson = it.next();
 
 				final MapUpdate.Type type = MapUpdate.Type.valueOf(mapUpdateJson.get("type").asText());
 				switch (type) {
 				case AddNode:
-					
 					updates.add(mapper.treeToValue(mapUpdateJson, AddNodeUpdate.class));
 					break;
 				case ChangeNodeAttribute:
@@ -144,6 +143,9 @@ public class DocearOnlineWs implements WS {
 					break;
 				case MoveNode:
 					updates.add(mapper.treeToValue(mapUpdateJson, MoveNodeUpdate.class));
+					break;
+				case ChangeEdgeAttribute:
+					updates.add(mapper.treeToValue(mapUpdateJson, ChangeNodeAttributeUpdate.class));
 					break;
 
 				}
@@ -250,7 +252,7 @@ public class DocearOnlineWs implements WS {
 		LogUtils.info("Status: " + response.getStatus());
 		return Futures.successful(response.getStatus() == 200);
 	}
-	
+
 	private WebResource preparedResource(String username, String accessToken) {
 		return restClient.resource(serviceUrl).queryParam("username", username).queryParam("accessToken", accessToken);
 	}

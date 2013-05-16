@@ -1,6 +1,8 @@
 package org.freeplane.plugin.remote.server.v10;
 
-import static org.freeplane.plugin.remote.RemoteUtils.*;
+import static org.freeplane.plugin.remote.RemoteUtils.changeEdgeAttribute;
+import static org.freeplane.plugin.remote.RemoteUtils.changeNodeAttribute;
+import static org.freeplane.plugin.remote.RemoteUtils.getNodeFromOpenMapById;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +20,8 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.docear.messages.Messages.AddNodeRequest;
 import org.docear.messages.Messages.AddNodeResponse;
+import org.docear.messages.Messages.ChangeEdgeRequest;
+import org.docear.messages.Messages.ChangeEdgeResponse;
 import org.docear.messages.Messages.ChangeNodeRequest;
 import org.docear.messages.Messages.ChangeNodeResponse;
 import org.docear.messages.Messages.CloseAllOpenMapsRequest;
@@ -64,6 +68,7 @@ import org.freeplane.plugin.remote.v10.model.LockModel;
 import org.freeplane.plugin.remote.v10.model.MapModel;
 import org.freeplane.plugin.remote.v10.model.NodeModelDefault;
 import org.freeplane.plugin.remote.v10.model.updates.AddNodeUpdate;
+import org.freeplane.plugin.remote.v10.model.updates.ChangeEdgeAttributeUpdate;
 import org.freeplane.plugin.remote.v10.model.updates.ChangeNodeAttributeUpdate;
 import org.freeplane.plugin.remote.v10.model.updates.DeleteNodeUpdate;
 import org.freeplane.plugin.remote.v10.model.updates.MapUpdate;
@@ -383,6 +388,43 @@ public class Actions {
 		}
 
 		return new ChangeNodeResponse(updateJsons);
+	}
+
+	public static ChangeEdgeResponse changeEdge(ChangeEdgeRequest request) throws NodeNotFoundException {
+		final String source = request.getSource();
+		final String username = request.getUsername();
+		final String mapId = request.getMapId();
+		final Map<String, Object> attributeMap = request.getAttributeValueMap();
+		final String nodeId = request.getNodeId();
+		logger().debug("Actions.changeEdge => mapId:'{}'; nodeId:'{}'; username: '{}'; attributes: '{}'", mapId, nodeId, username, attributeMap.toString());
+
+		logger().debug("Actions.changeEdge => selecting map");
+		selectMap(mapId);
+
+		// get node
+		logger().debug("Actions.changeEdge => retrieving node");
+		final NodeModel freeplaneNode = getNodeFromOpenMapById(mmapController(), nodeId);
+
+		// list to collect updates done
+		final List<MapUpdate> updates = new ArrayList<MapUpdate>();
+
+		for (Map.Entry<String, Object> entry : attributeMap.entrySet()) {
+			final String attribute = entry.getKey();
+			final Object valueObj = entry.getValue();
+
+			logger().debug("Actions.changeEdge => {} changed to {}", attribute, valueObj);
+			updates.add(new ChangeEdgeAttributeUpdate(source, username, nodeId, attribute, valueObj));
+
+			changeEdgeAttribute(freeplaneNode, attribute, valueObj);
+		}
+
+		// submit changes and create list for response
+		final OpenMindmapInfo info = getOpenMindMapInfo(mapId);
+		for (MapUpdate update : updates) {
+			info.addUpdate(update);
+		}
+
+		return new ChangeEdgeResponse(true);
 	}
 
 	public static MoveNodeToResponse moveNodeTo(MoveNodeToRequest request) throws NodeNotFoundException {

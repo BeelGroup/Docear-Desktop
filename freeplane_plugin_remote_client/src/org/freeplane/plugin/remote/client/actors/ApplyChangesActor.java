@@ -2,6 +2,7 @@ package org.freeplane.plugin.remote.client.actors;
 
 import static org.freeplane.plugin.remote.RemoteUtils.addNodeToOpenMap;
 import static org.freeplane.plugin.remote.RemoteUtils.changeNodeAttribute;
+import static org.freeplane.plugin.remote.RemoteUtils.changeEdgeAttribute;
 import static org.freeplane.plugin.remote.RemoteUtils.getNodeFromOpenMapById;
 
 import org.docear.messages.exceptions.NodeNotFoundException;
@@ -12,6 +13,7 @@ import org.freeplane.plugin.remote.RemoteUtils;
 import org.freeplane.plugin.remote.client.ClientController;
 import org.freeplane.plugin.remote.v10.model.updates.AddNodeUpdate;
 import org.freeplane.plugin.remote.v10.model.updates.AddNodeUpdate.Side;
+import org.freeplane.plugin.remote.v10.model.updates.ChangeEdgeAttributeUpdate;
 import org.freeplane.plugin.remote.v10.model.updates.ChangeNodeAttributeUpdate;
 import org.freeplane.plugin.remote.v10.model.updates.DeleteNodeUpdate;
 import org.freeplane.plugin.remote.v10.model.updates.MapUpdate;
@@ -52,6 +54,9 @@ public class ApplyChangesActor extends FreeplaneClientActor {
 				final MoveNodeUpdate update = (MoveNodeUpdate) mapUpdate;
 				moveNodeUpdate(update);
 
+			} else if (mapUpdate instanceof ChangeEdgeAttributeUpdate) {
+				final ChangeEdgeAttributeUpdate update = (ChangeEdgeAttributeUpdate) mapUpdate;
+				changeEdgeAttributeUpdate(update);
 			}
 			isUpdating(false);
 		}
@@ -94,6 +99,20 @@ public class ApplyChangesActor extends FreeplaneClientActor {
 		RemoteUtils.moveNodeTo(mmapController(), update.getNewParentNodeId(), update.getNodetoMoveId(), update.getNewIndex());
 	}
 
+	private void changeEdgeAttributeUpdate(ChangeEdgeAttributeUpdate update) throws NodeNotFoundException {
+		try {
+			final NodeModel freeplaneNode = getNodeFromOpenMapById(mmapController(), update.getNodeId());
+			changeEdgeAttribute(freeplaneNode, update.getAttribute(), update.getValue());
+			if (getClientController().selectedNodesMap().containsKey(freeplaneNode)) {
+				getClientController().selectedNodesMap().get(freeplaneNode).updateCurrentState();
+			}
+			//ClientController.mmapController().nodeChanged(freeplaneNode);
+		} catch (NullPointerException e) {
+			// Do nothing, but happens very often in freeplane view
+			LogUtils.severe("NPE catched! ", e);
+		}
+	}
+	
 	private void isUpdating(boolean value) {
 		getClientController().isUpdating(value);
 	}

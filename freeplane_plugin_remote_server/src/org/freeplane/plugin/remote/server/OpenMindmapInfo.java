@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.docear.messages.Messages.ListenToUpdateOccurrenceRespone;
+import org.docear.messages.Messages.ListenToUpdateOccurrenceResponse;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.plugin.remote.v10.model.updates.AddNodeUpdate;
 import org.freeplane.plugin.remote.v10.model.updates.ChangeNodeAttributeUpdate;
@@ -90,7 +90,7 @@ public class OpenMindmapInfo implements Serializable {
 		updateUpdateTime();
 		//tell listeners that change has happened
 		for(ActorRef ref : listeningActors) {
-			ref.tell(new ListenToUpdateOccurrenceRespone(true), null);
+			ref.tell(new ListenToUpdateOccurrenceResponse(true), null);
 		}
 		//empty list, because they have to register again
 		listeningActors.clear();

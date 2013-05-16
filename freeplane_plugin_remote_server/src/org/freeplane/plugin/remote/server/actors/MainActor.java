@@ -1,6 +1,7 @@
 package org.freeplane.plugin.remote.server.actors;
 
 import org.docear.messages.Messages.AddNodeRequest;
+import org.docear.messages.Messages.ChangeEdgeRequest;
 import org.docear.messages.Messages.ChangeNodeRequest;
 import org.docear.messages.Messages.CloseAllOpenMapsRequest;
 import org.docear.messages.Messages.CloseMapRequest;
@@ -23,6 +24,7 @@ import org.docear.messages.exceptions.NodeNotFoundException;
 import org.freeplane.plugin.remote.server.InternalMessages.ReleaseTimedOutLocks;
 import org.freeplane.plugin.remote.server.RemoteController;
 import org.freeplane.plugin.remote.server.v10.Actions;
+import org.freeplane.plugin.remote.v10.model.updates.ChangeEdgeAttributeUpdate;
 import org.slf4j.Logger;
 
 import akka.actor.ActorRef;
@@ -110,6 +112,11 @@ public class MainActor extends UntypedActor {
 			// request lock
 			else if (message instanceof RequestLockRequest) {
 				response = Actions.requestLock((RequestLockRequest) message);
+			}
+			
+			// change edge
+			else if (message instanceof ChangeEdgeRequest) {
+				response = Actions.changeEdge((ChangeEdgeRequest) message);
 			}
 
 			// get updates since specific revision
