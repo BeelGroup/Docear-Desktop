@@ -42,6 +42,7 @@ import org.docear.plugin.core.listeners.WorkspaceOpenDocumentListener;
 import org.docear.plugin.core.logger.DocearLogEvent;
 import org.docear.plugin.core.ui.NotificationBar;
 import org.docear.plugin.core.workspace.actions.DocearAddRepositoryPathAction;
+import org.docear.plugin.core.workspace.actions.DocearImportProjectAction;
 import org.docear.plugin.core.workspace.actions.DocearLibraryNewMindmap;
 import org.docear.plugin.core.workspace.actions.DocearLibraryOpenLocation;
 import org.docear.plugin.core.workspace.actions.DocearNewProjectAction;
@@ -136,7 +137,7 @@ public class CoreConfiguration extends ALanguageController {
 		
 		WorkspaceController.replaceAction(new DocearAboutAction());
 		WorkspaceController.replaceAction(new DocearQuitAction());
-		
+		WorkspaceController.replaceAction(new DocearImportProjectAction());
 		copyInfoIfNecessary();		
 	}
 	

@@ -157,7 +157,7 @@ public class ImportProjectDialogPanel extends JPanel {
 	 **********************************************************************************/
 	
 	
-	protected void setProjectPath(String path) {
+	private void setProjectPath(String path) {
 		txtProjectPath.setText(path);
 		updateProjectVersions();
 	}
@@ -168,7 +168,7 @@ public class ImportProjectDialogPanel extends JPanel {
 		super.paint(g);
 	}
 
-	private void updateProjectVersions() {
+	protected void updateProjectVersions() {
 		File home = new File(txtProjectPath.getText());
 		getComboBoxModel().clear();
 		
@@ -179,7 +179,7 @@ public class ImportProjectDialogPanel extends JPanel {
 		enableControlls(getComboBoxModel().getSize() > 0);
 	}
 
-	private void enableControlls(boolean enabled) {
+	protected void enableControlls(boolean enabled) {
 		if(getComboBoxModel().getSize() > 0) {
 			projectVersions.setSelectedIndex(0); 
 		}
@@ -237,7 +237,7 @@ public class ImportProjectDialogPanel extends JPanel {
 		}
 	}
 	
-	private ProjectVersionsModel getComboBoxModel() {
+	protected ProjectVersionsModel getComboBoxModel() {
 		if(this.versionModel == null) {
 			this.versionModel = new ProjectVersionsModel();
 		}
@@ -261,7 +261,7 @@ public class ImportProjectDialogPanel extends JPanel {
 		return item.getProject();
 	}
 	
-	private URI getProjectPath() {
+	protected URI getProjectPath() {
 		if(txtProjectPath.getText().length()==0) {
 			return null;
 		}
@@ -318,7 +318,7 @@ public class ImportProjectDialogPanel extends JPanel {
 		
 	}
 	
-	class ProjectVersionsModel implements ComboBoxModel {
+	protected class ProjectVersionsModel implements ComboBoxModel {
 		
 		private List<VersionItem> items = new ArrayList<VersionItem>();
 		private List<ListDataListener> listeners = new ArrayList<ListDataListener>();

@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.docear.plugin.core.workspace.compatible.DocearConversionURLHandler;
+import org.docear.plugin.core.workspace.controller.DocearConversionDescriptor;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
@@ -17,11 +20,17 @@ import org.freeplane.plugin.workspace.WorkspaceDependingService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.url.URLConstants;
+import org.osgi.service.url.URLStreamHandlerService;
 
 public class Activator extends WorkspaceDependingService {
 	CoreConfiguration config;
 	
-	public final void startPlugin(BundleContext context, ModeController modeController) {	
+	public final void startPlugin(BundleContext context, ModeController modeController) {
+		Hashtable<String, String[]>properties = new Hashtable<String, String[]>();
+        properties.put(URLConstants.URL_HANDLER_PROTOCOL, new String[] { DocearConversionDescriptor.OLD_WORKSPACE_URL_HANDLE });
+        context.registerService(URLStreamHandlerService.class.getName(), new DocearConversionURLHandler(), properties);
+        
 		getConfig().initMode(modeController);		
 		startPluginServices(context, modeController);
 	}
