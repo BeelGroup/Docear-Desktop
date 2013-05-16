@@ -509,19 +509,19 @@ public class AkkaTests {
 								assertThat(notChangedAttributes.remove(attribute)).describedAs("Is value supposed to change").isEqualTo(true);
 
 								if (attribute.equals("nodeText")) {
-									assertThat(value).isEqualTo(attributeMap.get("nodeText"));
+									assertThat(value).isEqualTo(attributeMap.get("nodeText").toString());
 								} else if (attribute.equals("isHtml")) {
-									assertThat(value).isEqualTo(attributeMap.get("isHtml"));
+									assertThat(value).isEqualTo(attributeMap.get("isHtml").toString());
 								} else if (attribute.equals("folded")) {
-									assertThat(value).isEqualTo(attributeMap.get("folded"));
+									assertThat(value).isEqualTo(attributeMap.get("folded").toString());
 								} else if (attribute.equals("link")) {
-									assertThat(value).isEqualTo(attributeMap.get("link"));
+									assertThat(value).isEqualTo(attributeMap.get("link").toString());
 								} else if (attribute.equals("hGap")) {
-									assertThat(value).isEqualTo(attributeMap.get("hGap"));
+									assertThat(value).isEqualTo(attributeMap.get("hGap").toString());
 								} else if (attribute.equals("shiftY")) {
-									assertThat(value).isEqualTo(attributeMap.get("shiftY"));
+									assertThat(value).isEqualTo(attributeMap.get("shiftY").toString());
 								} else if (attribute.equals("note")) {
-									assertThat(value).isEqualTo(attributeMap.get("note"));
+									assertThat(value).isEqualTo(attributeMap.get("note").toString());
 								}
 							}
 
