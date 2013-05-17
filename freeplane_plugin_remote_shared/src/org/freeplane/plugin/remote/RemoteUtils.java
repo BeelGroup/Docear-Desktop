@@ -100,9 +100,9 @@ public final class RemoteUtils {
 		} else if (attribute.equals("shiftY")) {
 			updateLocationModel(mapController, freeplaneNode, null, Integer.parseInt(valueObj));
 		} else if (attribute.equals("icons")) {
-			// TODO handle
+			// TODO handle (https://github.com/Docear/HTW-Frontend/issues/436)
 		} else if (attribute.equals("image")) {
-			// TODO handle
+			// TODO handle (https://github.com/Docear/HTW-Frontend/issues/437)
 		} else if (attribute.equals("link")) {
 			final String value = valueObj;
 

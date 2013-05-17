@@ -14,6 +14,7 @@ import org.freeplane.features.map.NodeModel;
 import org.freeplane.plugin.remote.client.ClientController;
 import org.freeplane.plugin.remote.client.User;
 import org.freeplane.plugin.remote.client.services.WS;
+import org.freeplane.plugin.remote.v10.model.EdgeModel;
 import org.freeplane.plugin.remote.v10.model.NodeModelDefault;
 import org.freeplane.view.swing.features.filepreview.ExternalResource;
 import org.freeplane.view.swing.map.MapView;
@@ -82,26 +83,9 @@ public class NodeViewListener extends NodeView implements INodeView {
 				if (property.toString().contains("FOLDING")) {
 					LogUtils.info("folding");
 					webservice().changeNode(user().getUsername(), user().getAccessToken(), "5", event.getNode().getID(), "folded", event.getNewValue());
-//					final ListenableFuture<Boolean> future = webservice().changeNode("5", event.getNode().getID(), "folded", event.getNewValue());
-//					Futures.addCallback(future, new FutureCallback<Boolean>() {
-//
-//						@Override
-//						public void onFailure(Throwable t) {
-//							t.printStackTrace();
-//						}
-//
-//						@Override
-//						public void onSuccess(Boolean success) {
-//							if (!success) {
-//								isUpdating(true);
-//								event.getNode().setFolded(!(Boolean) event.getNewValue());
-//								isUpdating(false);
-//							}
-//						}
-//					});
 				}
 				// note
-				else if(property.equals("note_text")) {
+				else if (property.equals("note_text")) {
 					LogUtils.info("note_text");
 					webservice().changeNode(user().getUsername(), user().getAccessToken(), "5", event.getNode().getID(), "note", event.getNewValue());
 				}
@@ -109,24 +93,20 @@ public class NodeViewListener extends NodeView implements INodeView {
 				else if (property.equals(ExternalResource.class)) {
 					LogUtils.info("image");
 					// TODO is not handled by the server side, yet.
-					// use this code when handling is implemented 
-					
-					//final ExternalResource resource = (ExternalResource) event.getNewValue();
-					//webservice().changeNode("5", event.getNode().getID(), "image", resource.getUri().toString());
+					// use this code when handling is implemented
+
+					// final ExternalResource resource = (ExternalResource)
+					// event.getNewValue();
+					// webservice().changeNode("5", event.getNode().getID(),
+					// "image", resource.getUri().toString());
 				}
-				// send all because real change is unknown (only every 5
-				// seconds)
+				// link
+				else if (property.equals("hyperlink_changed")) {
+					LogUtils.info("link");
+					webservice().changeNode(user().getUsername(), user().getAccessToken(), "5", event.getNode().getID(), "link", event.getNewValue());
+				}
 				else if (property.equals(NodeModel.UNKNOWN_PROPERTY)) {
 					// Do nothing, because logic has changed
-//					long nowMillis = System.currentTimeMillis();
-//					if (lastMillis < 0 || nowMillis - lastMillis > 5000) {
-//						lastMillis = nowMillis;
-//						LogUtils.info("unkown property changed, creating diff");
-//						NodeModelDefault now = new NodeModelDefault(event.getNode(), false);
-//						Map<String, Object> attributeValueMap = getChangedAttributes(lastNodeState, now);
-//						lastNodeState = now;
-
-//					}
 				}
 
 			}
@@ -134,44 +114,82 @@ public class NodeViewListener extends NodeView implements INodeView {
 
 	}
 
-//	private long lastMillis = -1;
+	// private long lastMillis = -1;
 	public void updateCurrentState() {
-		lastNodeState = new NodeModelDefault(model,false);
+		lastNodeState = new NodeModelDefault(model, false);
 	}
 
-	public Map<String, Object> getChangedAttributes() {
-		final Map<String, Object> attributes = new HashMap<String, Object>();
-		NodeModelDefault now = new NodeModelDefault(model,false);
+	public NodeChangeData getChangedAttributes() {
+		final NodeChangeData data = new NodeChangeData();
+		NodeModelDefault now = new NodeModelDefault(model, false);
 
-		// nodeText is a recognized change
+		// node text is a recognized change
+		// note text is a recognized change
 		// fold is a recognized change
 
 		// moving is not recognized
 		if (!lastNodeState.hGap.equals(now.hGap)) {
 			LogUtils.info("hGap changed to " + now.hGap);
-			attributes.put("hGap", now.hGap);
+			data.putNodeChange("hGap", now.hGap);
 		}
 		//
 		if (!lastNodeState.shiftY.equals(now.shiftY)) {
 			LogUtils.info("hGap changed to " + now.shiftY);
-			attributes.put("shiftY", now.shiftY);
+			data.putNodeChange("shiftY", now.shiftY);
 		}
-		
-		//links are not recognized
-		if(lastNodeState.link == null && now.link != null) {
-			attributes.put("link",now.link);
-		} else if (lastNodeState.link != null && now.link != null && !lastNodeState.link.equals(now.link)) {
-			attributes.put("link",now.link);
-		} else if(lastNodeState.link != null && now.link == null) {
-			attributes.put("link", null);
+
+		// links are not recognized
+		if(isValueUpdated(lastNodeState.link, now.link)) {
+			data.putNodeChange("link", now.link);
 		}
+
+		// EdgeStyles are not recognized
+		final EdgeModel oldEdge = lastNodeState.edgeStyle;
+		final EdgeModel newEdge = now.edgeStyle;
 		
-		//EdgeStyles are not recognized
 		
 		
 		lastNodeState = now;
 
-		return attributes;
+		return data;
+	}
+
+	private <T> boolean isValueUpdated(T oldValue, T newValue) {
+		if (oldValue == null && newValue != null) {
+			return true;
+		} else if (oldValue != null && newValue != null && !oldValue.equals(newValue)) {
+			return true;
+		} else if (oldValue != null && newValue == null) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public static final class NodeChangeData {
+		private final Map<String, Object> nodeChanges;
+		private final Map<String, Object> edgeChanges;
+
+		public NodeChangeData() {
+			this.nodeChanges = new HashMap<String, Object>();
+			this.edgeChanges = new HashMap<String, Object>();
+		}
+
+		public Map<String, Object> getNodeChanges() {
+			return nodeChanges;
+		}
+
+		public void putNodeChange(String key, Object value) {
+			nodeChanges.put(key, value);
+		}
+
+		public Map<String, Object> getEdgeChanges() {
+			return edgeChanges;
+		}
+
+		public void putEdgeChange(String key, Object value) {
+			edgeChanges.put(key, value);
+		}
 	}
 
 	private WS webservice() {
@@ -181,7 +199,7 @@ public class NodeViewListener extends NodeView implements INodeView {
 	private boolean isUpdating() {
 		return clientController.isUpdating();
 	}
-	
+
 	private User user() {
 		return clientController.getUser();
 	}

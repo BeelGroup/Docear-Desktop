@@ -4,6 +4,10 @@ import org.freeplane.plugin.remote.client.ClientController;
 
 import akka.actor.UntypedActor;
 
+/**
+ * Base actor for actors that require the ClientController
+ *
+ */
 public abstract class FreeplaneClientActor extends UntypedActor {
 
 	private final ClientController clientController;

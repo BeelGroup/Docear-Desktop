@@ -1,7 +1,6 @@
 package org.freeplane.plugin.remote.client;
 
 import java.net.InetAddress;
-import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +19,7 @@ import org.freeplane.plugin.remote.client.actors.ListenForUpdatesActor;
 import org.freeplane.plugin.remote.client.listeners.MapChangeListener;
 import org.freeplane.plugin.remote.client.listeners.NodeChangeListener;
 import org.freeplane.plugin.remote.client.listeners.NodeViewListener;
+import org.freeplane.plugin.remote.client.listeners.NodeViewListener.NodeChangeData;
 import org.freeplane.plugin.remote.client.services.DocearOnlineWs;
 import org.freeplane.plugin.remote.client.services.WS;
 
@@ -53,8 +53,8 @@ public class ClientController {
 	private final WS webservice;
 	private User user = null;
 	private String mapId = null;
-	private Long projectId;
-	private URI uriToMap;
+//	private Long projectId;
+//	private URI uriToMap;
 
 	private final String sourceString;
 	private boolean isUpdating = false;
@@ -129,11 +129,15 @@ public class ClientController {
 		public void run() {
 			final Map<NodeModel, NodeViewListener> selectedNodesMap = clientController.selectedNodesMap();
 			for (Map.Entry<NodeModel, NodeViewListener> nodePair : selectedNodesMap.entrySet()) {
-				final Map<String, Object> attributeValueMap = nodePair.getValue().getChangedAttributes();
+				final NodeChangeData data = nodePair.getValue().getChangedAttributes();
 				final User user = clientController.getUser();
 
-				for (Map.Entry<String, Object> entry : attributeValueMap.entrySet()) {
+				for (Map.Entry<String, Object> entry : data.getNodeChanges().entrySet()) {
 					clientController.webservice().changeNode(user.getUsername(), user.getAccessToken(), "5", nodePair.getKey().getID(), entry.getKey(), entry.getValue());
+				}
+				
+				for (Map.Entry<String, Object> entry : data.getEdgeChanges().entrySet()) {
+					clientController.webservice().changeEdge(user.getUsername(), user.getAccessToken(), "5", nodePair.getKey().getID(), entry.getKey(), entry.getValue());
 				}
 
 				nodePair.getValue().updateCurrentState();
@@ -183,11 +187,14 @@ public class ClientController {
 			public void onDeselect(NodeModel node) {
 				final NodeViewListener listener = selectedNodesMap.remove(node);
 				if (listener != null) {
-					final Map<String, Object> attributeValueMap = listener.getChangedAttributes();
+					final NodeChangeData data = listener.getChangedAttributes();
 
-					for (Map.Entry<String, Object> entry : attributeValueMap.entrySet()) {
+					for (Map.Entry<String, Object> entry : data.getNodeChanges().entrySet()) {
 						webservice().changeNode(user.getUsername(), user.getAccessToken(), "5", node.getID(), entry.getKey(), entry.getValue());
-
+					}
+					
+					for (Map.Entry<String, Object> entry : data.getEdgeChanges().entrySet()) {
+						webservice().changeEdge(user.getUsername(), user.getAccessToken(), "5", node.getID(), entry.getKey(), entry.getValue());
 					}
 
 					node.removeViewer(listener);

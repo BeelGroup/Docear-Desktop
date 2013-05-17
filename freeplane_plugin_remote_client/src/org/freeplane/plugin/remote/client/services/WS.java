@@ -26,6 +26,7 @@ public interface WS {
 	Future<Boolean> moveNodeTo(String username, String accessToken, String mapId, String newParentId, String nodeToMoveId, int newIndex);
 	Future<Boolean> removeNode(String username, String accessToken, String mapId, String nodeId);
 	Future<Boolean> changeNode(String username, String accessToken, String mapId, String nodeId, String attribute, Object value);
+	Future<Boolean> changeEdge(String username, String accessToken, String mapId, String nodeId, String attribute, Object value);
 	
 	
 }

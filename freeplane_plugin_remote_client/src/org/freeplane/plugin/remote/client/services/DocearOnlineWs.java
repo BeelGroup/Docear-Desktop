@@ -3,10 +3,8 @@ package org.freeplane.plugin.remote.client.services;
 import java.io.PrintStream;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Callable;
 
 import javax.ws.rs.core.MediaType;
@@ -210,7 +208,7 @@ public class DocearOnlineWs implements WS {
 			final WebResource resource = preparedResource(username, accessToken).path("map/" + mapId + "/node/change");
 			final MultivaluedMap<String, String> formData = new MultivaluedMapImpl();
 			formData.add("nodeId", nodeId);
-			formData.add(attribute, value.toString());
+			formData.add(attribute, value == null ? null : value.toString());
 
 			LogUtils.info("locking node");
 			// boolean isLocked =
@@ -221,6 +219,26 @@ public class DocearOnlineWs implements WS {
 			ClientResponse response = resource.post(ClientResponse.class, formData);
 			LogUtils.info("releasing node");
 			releaseNode(username, accessToken, mapId, nodeId);
+
+			LogUtils.info("Status: " + response.getStatus());
+			return Futures.successful(response.getStatus() == 200);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Futures.failed(e);
+		}
+	}
+
+	@Override
+	public Future<Boolean> changeEdge(String username, String accessToken, String mapId, String nodeId, String attribute, Object value) {
+		try {
+			final WebResource resource = preparedResource(username, accessToken).path("map/" + mapId + "/node/changeEdge");
+			final MultivaluedMap<String, String> formData = new MultivaluedMapImpl();
+			formData.add("nodeId", nodeId);
+			formData.add(attribute, value.toString());
+			
+			LogUtils.info("changing");
+			ClientResponse response = resource.post(ClientResponse.class, formData);
 
 			LogUtils.info("Status: " + response.getStatus());
 			return Futures.successful(response.getStatus() == 200);
