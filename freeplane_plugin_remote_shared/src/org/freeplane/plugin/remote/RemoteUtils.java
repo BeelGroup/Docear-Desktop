@@ -16,7 +16,9 @@ import org.freeplane.features.map.NodeChangeEvent;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.map.mindmapmode.MMapController;
 import org.freeplane.features.nodelocation.LocationModel;
+import org.freeplane.features.nodelocation.mindmapmode.MLocationController;
 import org.freeplane.features.note.mindmapmode.MNoteController;
+import org.freeplane.features.text.mindmapmode.MTextController;
 import org.freeplane.plugin.remote.v10.model.NodeModelBase;
 
 public final class RemoteUtils {
@@ -61,7 +63,7 @@ public final class RemoteUtils {
 		return freeplaneNode;
 	}
 
-	public static void changeNodeAttribute(NodeModel freeplaneNode, String attribute, String valueObj) {
+	public static void changeNodeAttribute(MMapController mapController, NodeModel freeplaneNode, String attribute, String valueObj) {
 		System.out.println("attribute: " + attribute);
 		if (attribute.equals("folded")) {
 			final Boolean value = Boolean.parseBoolean(valueObj);
@@ -94,9 +96,9 @@ public final class RemoteUtils {
 				freeplaneNode.addExtension(attrTable);
 			}
 		} else if (attribute.equals("hGap")) {
-			updateLocationModel(freeplaneNode, Integer.parseInt(valueObj), null);
+			updateLocationModel(mapController, freeplaneNode, Integer.parseInt(valueObj), null);
 		} else if (attribute.equals("shiftY")) {
-			updateLocationModel(freeplaneNode, null, Integer.parseInt(valueObj));
+			updateLocationModel(mapController, freeplaneNode, null, Integer.parseInt(valueObj));
 		} else if (attribute.equals("icons")) {
 			// TODO handle
 		} else if (attribute.equals("image")) {
@@ -121,8 +123,9 @@ public final class RemoteUtils {
 			// MMapController ctrl = null;
 			// MTextController.getController().setNodeObject(freeplaneNode,
 			// valueObj);
-			freeplaneNode.setText(valueObj.toString());
-			freeplaneNode.fireNodeChanged(new NodeChangeEvent(freeplaneNode, "node_text", "", ""));
+			MTextController.getController().setNodeObject(freeplaneNode, valueObj);
+//			freeplaneNode.setText(valueObj.toString());
+//			freeplaneNode.fireNodeChanged(new NodeChangeEvent(freeplaneNode, "node_text", "", ""));
 		} else if (attribute.equals("note")) {
 			final MNoteController noteController = (MNoteController) MNoteController.getController();
 			if (valueObj == null) {
@@ -171,19 +174,15 @@ public final class RemoteUtils {
 		nodeToMove.setLeft(parentNode.isLeft());
 	}
 
-	private static void updateLocationModel(NodeModel freeplaneNode, Integer hGap, Integer Shifty) {
+	private static void updateLocationModel(MMapController mapController, NodeModel freeplaneNode, Integer hGap, Integer shiftY) {
 		System.out.println("changing location");
-		int oldhGap = 0;
-		int oldshiftY = 0;
-
-		LocationModel lm = freeplaneNode.getExtension(LocationModel.class);
-		if (lm != null) {
-			oldhGap = lm.getHGap();
-			oldshiftY = lm.getShiftY();
-		}
-		LocationModel model = LocationModel.createLocationModel(freeplaneNode);
-		model.setHGap(hGap != null ? hGap : oldhGap);
-		model.setShiftY(Shifty != null ? Shifty : oldshiftY);
+		final MLocationController locationController = (MLocationController)MLocationController.getController();
+		final LocationModel lm = LocationModel.getModel(freeplaneNode);
+		final int newHGap = hGap != null ? hGap : lm.getHGap();
+		final int newShiftY = shiftY != null ? shiftY : lm.getShiftY();
+		final int parentVGap = LocationModel.getModel(freeplaneNode.getParentNode()).getVGap();
+		
+		locationController.moveNodePosition(freeplaneNode, parentVGap, newHGap, newShiftY);
 	}
 
 }

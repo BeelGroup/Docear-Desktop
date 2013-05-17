@@ -84,11 +84,11 @@ public class ApplyChangesActor extends FreeplaneClientActor {
 	private void changeNodeAttributeUpdate(ChangeNodeAttributeUpdate update) throws NodeNotFoundException {
 		try {
 			final NodeModel freeplaneNode = getNodeFromOpenMapById(mmapController(), update.getNodeId());
-			changeNodeAttribute(freeplaneNode, update.getAttribute(), update.getValue().toString());
+			final String value = update.getValue() == null ? null : update.getValue().toString();
+			changeNodeAttribute(mmapController(), freeplaneNode, update.getAttribute(), value);
 			if (getClientController().selectedNodesMap().containsKey(freeplaneNode)) {
 				getClientController().selectedNodesMap().get(freeplaneNode).updateCurrentState();
 			}
-			ClientController.mmapController().nodeChanged(freeplaneNode);
 		} catch (NullPointerException e) {
 			// Do nothing, but happens very often in freeplane view
 			LogUtils.warn("NPE catched! ", e);
@@ -106,13 +106,13 @@ public class ApplyChangesActor extends FreeplaneClientActor {
 			if (getClientController().selectedNodesMap().containsKey(freeplaneNode)) {
 				getClientController().selectedNodesMap().get(freeplaneNode).updateCurrentState();
 			}
-			//ClientController.mmapController().nodeChanged(freeplaneNode);
+			// ClientController.mmapController().nodeChanged(freeplaneNode);
 		} catch (NullPointerException e) {
 			// Do nothing, but happens very often in freeplane view
 			LogUtils.severe("NPE catched! ", e);
 		}
 	}
-	
+
 	private void isUpdating(boolean value) {
 		getClientController().isUpdating(value);
 	}

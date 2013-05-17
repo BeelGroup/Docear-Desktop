@@ -210,9 +210,7 @@ public class DocearOnlineWs implements WS {
 			final WebResource resource = preparedResource(username, accessToken).path("map/" + mapId + "/node/change");
 			final MultivaluedMap<String, String> formData = new MultivaluedMapImpl();
 			formData.add("nodeId", nodeId);
-			Map<String, Object> attributeValueMap = new HashMap<String, Object>();
-			attributeValueMap.put(attribute, value);
-			formData.add("AttributeValueMapJson", new ObjectMapper().writeValueAsString(attributeValueMap));
+			formData.add(attribute, value.toString());
 
 			LogUtils.info("locking node");
 			// boolean isLocked =

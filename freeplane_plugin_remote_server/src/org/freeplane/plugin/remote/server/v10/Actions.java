@@ -373,7 +373,7 @@ public class Actions {
 			logger().debug("Actions.changeNode => {} changed to {}", attribute, valueObj);
 			updates.add(new ChangeNodeAttributeUpdate(source, username, nodeId, attribute, valueObj));
 
-			changeNodeAttribute(freeplaneNode, attribute, valueObj);
+			changeNodeAttribute(mmapController(), freeplaneNode, attribute, valueObj);
 		}
 
 		logger().debug("Actions.changeNode => refreshing lock access time");
