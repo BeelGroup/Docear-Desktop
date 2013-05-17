@@ -467,6 +467,92 @@ public class AkkaTests {
 		};
 	}
 
+
+	/**
+	 * testChangeNodeXMLRequest change available node to defined attributes. check
+	 * if node got attributes.
+	 */
+	@Test
+	public void testChangeNodeXMLRequest() {
+		new JavaTestKit(system) {
+			{
+				localActor.tell(getRef(), getRef());
+				new Within(duration("10 seconds")) {
+					protected void run() {
+						sendMindMapToServer(5);
+
+						final String nodeId = "ID_1";
+						final String newNodeText = "This is a new <br>bold</br> nodeText";
+						final Boolean isHtml = true;
+
+						Map<String, Object> attributeMap = new HashMap<String, Object>();
+						attributeMap.put("nodeText", newNodeText);
+						attributeMap.put("isHtml", isHtml);
+
+						final ChangeNodeRequest request = new ChangeNodeRequest(SOURCE, USERNAME1, "5", nodeId, attributeMap);
+
+						// requesting lock on node
+						requestLock("5", nodeId, USERNAME1);
+
+						remoteActor.tell(request, localActor);
+						ChangeNodeResponse response = expectMsgClass(ChangeNodeResponse.class);
+						
+
+						// release lock
+						releaseLock("5", nodeId, USERNAME1);
+
+						try {
+							final List<String> mapUpdates = response.getMapUpdates();
+
+							// Set with attributes that have to be changed
+							final Set<String> notChangedAttributes = new HashSet<String>(Arrays.asList(new String[] { "nodeText", "isHtml", "folded", "link", "hGap", "shiftY", "attributes", "icons",
+									"note" }));
+
+							for (String updateJson : mapUpdates) {
+								final ChangeNodeAttributeUpdate update = new ObjectMapper().readValue(updateJson, ChangeNodeAttributeUpdate.class);
+								assertThat(update.getType()).isEqualTo(MapUpdate.Type.ChangeNodeAttribute);
+
+								final String attribute = update.getAttribute();
+								final Object value = update.getValue();
+
+								// remove from not changed list and assert
+								assertThat(notChangedAttributes.remove(attribute)).describedAs("Is value supposed to change").isEqualTo(true);
+
+								if (attribute.equals("nodeText")) {
+									assertThat(value).isEqualTo(attributeMap.get("nodeText"));
+								} else if (attribute.equals("isHtml")) {
+									assertThat(value).isEqualTo(attributeMap.get("isHtml"));
+								} else if (attribute.equals("folded")) {
+									assertThat(value).isEqualTo(attributeMap.get("folded"));
+								} else if (attribute.equals("link")) {
+									assertThat(value).isEqualTo(attributeMap.get("link"));
+								} else if (attribute.equals("hGap")) {
+									assertThat(value).isEqualTo(attributeMap.get("hGap"));
+								} else if (attribute.equals("shiftY")) {
+									assertThat(value).isEqualTo(attributeMap.get("shiftY"));
+								} else if (attribute.equals("note")) {
+									assertThat(value).isEqualTo(attributeMap.get("note"));
+								}
+							}
+
+							// check that everything changed
+							assertThat(notChangedAttributes.size()).isEqualTo(0);
+
+						} catch (JsonMappingException e) {
+							Fail.fail("json mapping error", e);
+						} catch (JsonParseException e) {
+							Fail.fail("json parse error", e);
+						} catch (IOException e) {
+							Fail.fail("json IOException error", e);
+						} finally {
+							closeMindMapOnServer(5);
+						}
+					}
+				};
+			}
+		};
+	}
+	
 	/**
 	 * testChangeNodeRequest change available node to defined attributes. check
 	 * if node got attributes.
@@ -507,7 +593,7 @@ public class AkkaTests {
 
 								final String attribute = update.getAttribute();
 								final Object value = update.getValue();
-
+								
 								// remove from not changed list and assert
 								assertThat(notChangedAttributes.remove(attribute)).describedAs("Is value supposed to change").isEqualTo(true);
 
