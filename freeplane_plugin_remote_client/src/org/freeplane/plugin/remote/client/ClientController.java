@@ -1,16 +1,25 @@
 package org.freeplane.plugin.remote.client;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+
+import org.freeplane.core.extension.IExtension;
+import org.freeplane.core.ui.IMenuContributor;
+import org.freeplane.core.ui.MenuBuilder;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.INodeSelectionListener;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.map.mindmapmode.MMapController;
 import org.freeplane.features.mapio.MapIO;
+import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.plugin.remote.client.actors.ApplyChangesActor;
@@ -37,14 +46,14 @@ import akka.util.Timeout;
 
 import com.typesafe.config.ConfigFactory;
 
-public class ClientController {
+public class ClientController implements IExtension {
 
 	// Temp variables, only for developping
 	public static final String MAP_ID = "5";
 
 	public static final String USER = "Julius";
 	public static final String AT = "Julius-token";
-	
+
 	private final ActorSystem system;
 	private final ActorRef listenForUpdatesActor;
 	private final ActorRef applyChangeActor;
@@ -53,8 +62,8 @@ public class ClientController {
 	private final WS webservice;
 	private User user = null;
 	private String mapId = null;
-//	private Long projectId;
-//	private URI uriToMap;
+	// private Long projectId;
+	// private URI uriToMap;
 
 	private final String sourceString;
 	private boolean isUpdating = false;
@@ -62,6 +71,7 @@ public class ClientController {
 	private final Map<NodeModel, NodeViewListener> selectedNodesMap = new HashMap<NodeModel, NodeViewListener>();
 
 	@SuppressWarnings("serial")
+	// UntypedActorFactories
 	public ClientController() {
 
 		// set sourceString, used to identify for updates
@@ -112,9 +122,31 @@ public class ClientController {
 
 		this.registerListeners();
 
-	startListeningForMap(USER, AT, MAP_ID);
 		// set back to original class loader
 		Thread.currentThread().setContextClassLoader(contextClassLoader);
+
+		final Controller controller = Controller.getCurrentController();
+		controller.addExtension(ClientController.class, this);
+
+		final JMenuItem button = new JMenuItem("start listening");
+		button.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				controller.selectMode("MindMap");
+				startListeningForMap(USER, AT, MAP_ID);
+			}
+		});
+		
+		final JMenuBar bar = new JMenuBar();
+		bar.add(button);
+		controller.getModeController().addMenuContributor(new IMenuContributor() {
+			
+			@Override
+			public void updateMenus(ModeController modeController, MenuBuilder builder) {
+				builder.addMenuItem("/menu_bar/help",button,"test",1);
+			}
+		});
 	}
 
 	public static final class CheckForChangesRunnable implements Runnable {
@@ -135,7 +167,7 @@ public class ClientController {
 				for (Map.Entry<String, Object> entry : data.getNodeChanges().entrySet()) {
 					clientController.webservice().changeNode(user.getUsername(), user.getAccessToken(), "5", nodePair.getKey().getID(), entry.getKey(), entry.getValue());
 				}
-				
+
 				for (Map.Entry<String, Object> entry : data.getEdgeChanges().entrySet()) {
 					clientController.webservice().changeEdge(user.getUsername(), user.getAccessToken(), "5", nodePair.getKey().getID(), entry.getKey(), entry.getValue());
 				}
@@ -192,7 +224,7 @@ public class ClientController {
 					for (Map.Entry<String, Object> entry : data.getNodeChanges().entrySet()) {
 						webservice().changeNode(user.getUsername(), user.getAccessToken(), "5", node.getID(), entry.getKey(), entry.getValue());
 					}
-					
+
 					for (Map.Entry<String, Object> entry : data.getEdgeChanges().entrySet()) {
 						webservice().changeEdge(user.getUsername(), user.getAccessToken(), "5", node.getID(), entry.getKey(), entry.getValue());
 					}
