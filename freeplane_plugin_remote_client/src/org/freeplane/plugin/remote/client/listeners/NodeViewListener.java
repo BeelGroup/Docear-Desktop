@@ -146,6 +146,16 @@ public class NodeViewListener extends NodeView implements INodeView {
 		// EdgeStyles are not recognized
 		final EdgeModel oldEdge = lastNodeState.edgeStyle;
 		final EdgeModel newEdge = now.edgeStyle;
+		if(isValueUpdated(oldEdge.color, newEdge.color)) {
+			data.putEdgeChange("color", newEdge.color);
+		}
+		if(isValueUpdated(oldEdge.width, newEdge.width)) {
+			data.putEdgeChange("width", newEdge.width);
+		}
+		if(isValueUpdated(oldEdge.style, newEdge.style)) {
+			data.putEdgeChange("style", newEdge.style);
+		}
+		
 		
 		
 		

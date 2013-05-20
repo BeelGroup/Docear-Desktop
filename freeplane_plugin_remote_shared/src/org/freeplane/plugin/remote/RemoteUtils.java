@@ -155,7 +155,7 @@ public final class RemoteUtils {
 				mEdgeController.setStyle(freeplaneNode, null);
 			} else {
 				final String styleString = valueObj.toString();
-				final EdgeStyle style = EdgeStyle.valueOf(styleString);
+				final EdgeStyle style = EdgeStyle.getStyle(styleString);
 				mEdgeController.setStyle(freeplaneNode, style);
 			}
 		}
