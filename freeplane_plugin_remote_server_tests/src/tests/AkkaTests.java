@@ -483,7 +483,7 @@ public class AkkaTests {
 
 						final String nodeId = "ID_1";
 						final String newNodeText = "This is a new <br>bold</br> nodeText";
-						final Boolean isHtml = true;
+						final boolean isHtml = true;
 
 						Map<String, Object> attributeMap = new HashMap<String, Object>();
 						attributeMap.put("nodeText", newNodeText);
@@ -505,8 +505,7 @@ public class AkkaTests {
 							final List<String> mapUpdates = response.getMapUpdates();
 
 							// Set with attributes that have to be changed
-							final Set<String> notChangedAttributes = new HashSet<String>(Arrays.asList(new String[] { "nodeText", "isHtml", "folded", "link", "hGap", "shiftY", "attributes", "icons",
-									"note" }));
+							final Set<String> notChangedAttributes = new HashSet<String>(Arrays.asList(new String[] { "nodeText", "isHtml"}));
 
 							for (String updateJson : mapUpdates) {
 								final ChangeNodeAttributeUpdate update = new ObjectMapper().readValue(updateJson, ChangeNodeAttributeUpdate.class);
@@ -521,7 +520,7 @@ public class AkkaTests {
 								if (attribute.equals("nodeText")) {
 									assertThat(value).isEqualTo(attributeMap.get("nodeText"));
 								} else if (attribute.equals("isHtml")) {
-									assertThat(value).isEqualTo(attributeMap.get("isHtml"));
+									assertThat(Boolean.parseBoolean(value.toString())).isEqualTo(Boolean.parseBoolean(attributeMap.get("isHtml").toString()));
 								} else if (attribute.equals("folded")) {
 									assertThat(value).isEqualTo(attributeMap.get("folded"));
 								} else if (attribute.equals("link")) {
