@@ -144,7 +144,7 @@
         </exec>
     </target>
 
-	<target name="test"  depends="build">
+	<target name="test">
 		<delete file="../freeplane_framework/build/RUNNING_PID"  failonerror="false"/>
 		<exec executable="bash" dir="../freeplane_framework/build/">
 			<arg value="silent_freeplane-server.sh"/>
