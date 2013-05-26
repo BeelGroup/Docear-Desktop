@@ -1,3 +1,3 @@
 #!/bin/sh
 echo "starting freeplane server"
-./freeplane-server.sh start &
+sudo ./freeplane-server.sh start &

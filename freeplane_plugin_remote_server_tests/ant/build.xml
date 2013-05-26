@@ -134,6 +134,7 @@
 			<arg value="/PID"/>
 			<arg value="${pid}"/>
 		</exec>	
+		<delete file="../freeplane_framework/build/RUNNING_PID"  failonerror="false"/>
     </target>
 
     <target name="killTaskIfUnix" if="isOSUnix">
@@ -142,9 +143,10 @@
 			<arg value="kill -15"/>
         	<arg value="${pid}"/>
         </exec>
+    	<delete file="../freeplane_framework/build/RUNNING_PID"  failonerror="false"/>
     </target>
 
-	<target name="test">
+	<target name="test" >
 		<delete file="../freeplane_framework/build/RUNNING_PID"  failonerror="false"/>
 		<exec executable="bash" dir="../freeplane_framework/build/">
 			<arg value="silent_freeplane-server.sh"/>
