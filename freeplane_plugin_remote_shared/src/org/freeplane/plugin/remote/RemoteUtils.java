@@ -119,7 +119,11 @@ public final class RemoteUtils {
 				LogUtils.severe("problem saving hyperlink", e);
 			}
 		} else if (attribute.equals("nodeText")) {
-			MTextController.getController().setNodeObject(freeplaneNode, valueObj);
+			if (freeplaneNode.getXmlText() != null){
+				freeplaneNode.setXmlText(valueObj);
+			} else {
+				freeplaneNode.setText(valueObj);
+			}
 		} else if (attribute.equals("note")) {
 			final MNoteController noteController = (MNoteController) MNoteController.getController();
 			if (valueObj == null) {
