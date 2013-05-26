@@ -253,6 +253,8 @@
 				<include name="${license}" />
 			</zipfileset>
 		</zip>
+		<chmod file="${build}/freeplane-server.sh" perm="777"/>
+		<chmod file="${build}/silent_freeplane-server.sh" perm="777"/>
 	</target>
 
 	<target name="srczip" depends="mkdistdir, git_version_info">
