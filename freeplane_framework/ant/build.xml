@@ -247,8 +247,8 @@
 				<exclude name="**/*-sources.jar" />
 				<exclude name="plugins/org.freeplane.plugin.remote.client/**" />
 			</zipfileset>
-			<zipfileset file="${build}/freeplane-server.sh" filemode="775" prefix="freeplane" />
-			<zipfileset file="${build}/silent_freeplane-server.sh" filemode="775" prefix="freeplane" />
+			<zipfileset file="${build}/freeplane-server.sh" filemode="777" prefix="freeplane" />
+			<zipfileset file="${build}/silent_freeplane-server.sh" filemode="777" prefix="freeplane" />
 			<zipfileset dir="${root}" prefix="freeplane">
 				<include name="${license}" />
 			</zipfileset>
