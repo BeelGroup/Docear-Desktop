@@ -12,6 +12,9 @@ import org.freeplane.features.attribute.mindmapmode.MAttributeController;
 import org.freeplane.features.edge.EdgeModel;
 import org.freeplane.features.edge.EdgeStyle;
 import org.freeplane.features.edge.mindmapmode.MEdgeController;
+import org.freeplane.features.icon.MindIcon;
+import org.freeplane.features.icon.factory.MindIconFactory;
+import org.freeplane.features.icon.mindmapmode.MIconController;
 import org.freeplane.features.link.NodeLinks;
 import org.freeplane.features.map.NodeChangeEvent;
 import org.freeplane.features.map.NodeModel;
@@ -100,8 +103,16 @@ public final class RemoteUtils {
 		} else if (attribute.equals("shiftY")) {
 			updateLocationModel(mapController, freeplaneNode, null, Integer.parseInt(valueObj));
 		} else if (attribute.equals("icons")) {
-			// TODO handle (https://github.com/Docear/HTW-Frontend/issues/436)
+			final String[] icons = valueObj.toString().split("%:%");
+			
+			final MIconController iconCtrl = (MIconController)MIconController.getController();
+			iconCtrl.removeAllIcons(freeplaneNode);
+			
+			for(String icon: icons) {
+				iconCtrl.addIcon(freeplaneNode, new MindIcon(icon));
+			}
 		} else if (attribute.equals("image")) {
+			
 			// TODO handle (https://github.com/Docear/HTW-Frontend/issues/437)
 		} else if (attribute.equals("link")) {
 			final String value = valueObj;

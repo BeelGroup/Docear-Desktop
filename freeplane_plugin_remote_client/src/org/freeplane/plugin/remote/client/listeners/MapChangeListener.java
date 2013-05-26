@@ -5,18 +5,13 @@ import org.freeplane.features.map.IMapChangeListener;
 import org.freeplane.features.map.MapChangeEvent;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.plugin.remote.client.ClientController;
-import org.freeplane.plugin.remote.client.User;
-import org.freeplane.plugin.remote.client.services.WS;
 
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
 
-public class MapChangeListener implements IMapChangeListener {
-	private final ClientController clientController;
-
+public class MapChangeListener extends BaseListener implements IMapChangeListener {
 	public MapChangeListener(ClientController clientController) {
-		super();
-		this.clientController = clientController;
+		super(clientController);
 	}
 
 	@Override
@@ -33,7 +28,7 @@ public class MapChangeListener implements IMapChangeListener {
 
 	@Override
 	public void onNodeMoved(NodeModel oldParent, int oldIndex, NodeModel newParent, NodeModel child, int newIndex) {
-		if (!isUpdating()) {
+		if (!isUpdating() && isListening()) {
 			LogUtils.info("Node Moved. Sending to Webservice");
 			webservice().moveNodeTo(user().getUsername(), user().getAccessToken(), "5", newParent.getID(), child.getID(), newIndex);
 		}
@@ -41,7 +36,7 @@ public class MapChangeListener implements IMapChangeListener {
 
 	@Override
 	public void onNodeInserted(NodeModel parent, NodeModel child, int newIndex) {
-		if (!isUpdating()) {
+		if (!isUpdating() && isListening()) {
 			LogUtils.info("Node Added. Sending to Webservice");
 			try {
 				final String newNodeId = Await.result(webservice().createNode(user().getUsername(), user().getAccessToken(), "5", parent.getID()), Duration.create("10 seconds"));
@@ -55,7 +50,7 @@ public class MapChangeListener implements IMapChangeListener {
 
 	@Override
 	public void onNodeDeleted(NodeModel parent, NodeModel child, int index) {
-		if (!isUpdating()) {
+		if (!isUpdating() && isListening()) {
 			LogUtils.info("Node Deleted. Sending to Webservice");
 			webservice().removeNode(user().getUsername(), user().getAccessToken(), "5", child.getID());
 		}
@@ -67,15 +62,5 @@ public class MapChangeListener implements IMapChangeListener {
 
 	}
 
-	private WS webservice() {
-		return clientController.webservice();
-	}
-
-	private boolean isUpdating() {
-		return clientController.isUpdating();
-	}
-
-	private User user() {
-		return clientController.getUser();
-	}
+	
 }

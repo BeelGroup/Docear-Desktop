@@ -72,7 +72,7 @@ public class NodeViewListener extends NodeView implements INodeView {
 	public void nodeChanged(final NodeChangeEvent event) {
 
 		LogUtils.info("nodeChange called");
-		if (!isUpdating()) {
+		if (!isUpdating() && clientController.isListening()) {
 			if (event != null && event.getProperty() != null)
 				LogUtils.info("attribute: " + event.getProperty().toString());
 			if (event != null && event.getNewValue() != null)

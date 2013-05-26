@@ -62,6 +62,7 @@ public class ClientController implements IExtension {
 	private final WS webservice;
 	private User user = null;
 	private String mapId = null;
+	private boolean isListening = false;
 	// private Long projectId;
 	// private URI uriToMap;
 
@@ -137,14 +138,14 @@ public class ClientController implements IExtension {
 				startListeningForMap(USER, AT, MAP_ID);
 			}
 		});
-		
+
 		final JMenuBar bar = new JMenuBar();
 		bar.add(button);
 		controller.getModeController().addMenuContributor(new IMenuContributor() {
-			
+
 			@Override
 			public void updateMenus(ModeController modeController, MenuBuilder builder) {
-				builder.addMenuItem("/menu_bar/help",button,"test",1);
+				builder.addMenuItem("/menu_bar/help", button, "test", 1);
 			}
 		});
 	}
@@ -159,20 +160,22 @@ public class ClientController implements IExtension {
 
 		@Override
 		public void run() {
-			final Map<NodeModel, NodeViewListener> selectedNodesMap = clientController.selectedNodesMap();
-			for (Map.Entry<NodeModel, NodeViewListener> nodePair : selectedNodesMap.entrySet()) {
-				final NodeChangeData data = nodePair.getValue().getChangedAttributes();
-				final User user = clientController.getUser();
+			if (clientController.isListening) {
+				final Map<NodeModel, NodeViewListener> selectedNodesMap = clientController.selectedNodesMap();
+				for (Map.Entry<NodeModel, NodeViewListener> nodePair : selectedNodesMap.entrySet()) {
+					final NodeChangeData data = nodePair.getValue().getChangedAttributes();
+					final User user = clientController.getUser();
 
-				for (Map.Entry<String, Object> entry : data.getNodeChanges().entrySet()) {
-					clientController.webservice().changeNode(user.getUsername(), user.getAccessToken(), "5", nodePair.getKey().getID(), entry.getKey(), entry.getValue());
+					for (Map.Entry<String, Object> entry : data.getNodeChanges().entrySet()) {
+						clientController.webservice().changeNode(user.getUsername(), user.getAccessToken(), "5", nodePair.getKey().getID(), entry.getKey(), entry.getValue());
+					}
+
+					for (Map.Entry<String, Object> entry : data.getEdgeChanges().entrySet()) {
+						clientController.webservice().changeEdge(user.getUsername(), user.getAccessToken(), "5", nodePair.getKey().getID(), entry.getKey(), entry.getValue());
+					}
+
+					nodePair.getValue().updateCurrentState();
 				}
-
-				for (Map.Entry<String, Object> entry : data.getEdgeChanges().entrySet()) {
-					clientController.webservice().changeEdge(user.getUsername(), user.getAccessToken(), "5", nodePair.getKey().getID(), entry.getKey(), entry.getValue());
-				}
-
-				nodePair.getValue().updateCurrentState();
 			}
 		}
 
@@ -185,6 +188,7 @@ public class ClientController implements IExtension {
 		// this.projectId = projectId;
 
 		initCollaborationactor.tell(new InitCollaborationActor.Messages.InitCollaborationMode(mapId, user), null);
+		isListening = true;
 	}
 
 	// public void startListeningForMap(String username, String accessToken,
@@ -218,7 +222,7 @@ public class ClientController implements IExtension {
 			@Override
 			public void onDeselect(NodeModel node) {
 				final NodeViewListener listener = selectedNodesMap.remove(node);
-				if (listener != null) {
+				if (listener != null && isListening) {
 					final NodeChangeData data = listener.getChangedAttributes();
 
 					for (Map.Entry<String, Object> entry : data.getNodeChanges().entrySet()) {
@@ -298,6 +302,10 @@ public class ClientController implements IExtension {
 
 	public ActorSystem system() {
 		return system;
+	}
+
+	public boolean isListening() {
+		return isListening;
 	}
 
 }
