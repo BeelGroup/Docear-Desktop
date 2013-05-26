@@ -57,6 +57,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import scala.concurrent.Await;
@@ -253,6 +254,7 @@ public class AkkaTests {
 	 * testAddNodeRequest Open Map. Add new node to root node.
 	 */
 	@Test
+	@Ignore
 	public void testAddNodeRequest() {
 		new JavaTestKit(system) {
 			{
@@ -394,6 +396,7 @@ public class AkkaTests {
 	 * check if node with id isn't available any more.
 	 */
 	@Test
+	@Ignore
 	public void testRemoveNodeRequest() {
 		new JavaTestKit(system) {
 			{
@@ -708,6 +711,7 @@ public class AkkaTests {
 	}
 
 	@Test
+	@Ignore
 	public void testMoveNodeToAnotherPosition() {
 		new JavaTestKit(system) {
 			{
