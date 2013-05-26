@@ -130,7 +130,11 @@ public final class RemoteUtils {
 				LogUtils.severe("problem saving hyperlink", e);
 			}
 		} else if (attribute.equals("nodeText")) {
-			MTextController.getController().setNodeObject(freeplaneNode, valueObj);
+			if (freeplaneNode.getXmlText() != null){
+				freeplaneNode.setXmlText(valueObj);
+			} else {
+				freeplaneNode.setText(valueObj);
+			}
 		} else if (attribute.equals("note")) {
 			final MNoteController noteController = (MNoteController) MNoteController.getController();
 			if (valueObj == null) {
@@ -166,7 +170,7 @@ public final class RemoteUtils {
 				mEdgeController.setStyle(freeplaneNode, null);
 			} else {
 				final String styleString = valueObj.toString();
-				final EdgeStyle style = EdgeStyle.getStyle(styleString);
+				final EdgeStyle style = EdgeStyle.valueOf(styleString);
 				mEdgeController.setStyle(freeplaneNode, style);
 			}
 		}

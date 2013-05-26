@@ -15,8 +15,8 @@
 	<property name="jar.dir" value="${build.dir}/jar" />
 	<property name="src.tests" value="${src.dir}/tests" />
 	<property name="report.dir" value="${root}/report" />
-	<property name="dist.osgi.dir" value="${dist}/org.freeplane.plugin.remote" />
-	<property name="freeplaneplugin.jar" value="${dist}/org.freeplane.plugin.remote.jar" />
+	<property name="dist.osgi.dir" value="${dist}/org.freeplane.plugin.remote.server" />
+	<property name="freeplaneplugin.jar" value="${dist}/org.freeplane.plugin.remote.server.jar" />
 	<property name="debug" value="on" />
 	<property name="java_source_version" value="1.5" />
 	<property name="java_target_version" value="1.5" />
@@ -27,7 +27,7 @@
 	<property name="ivy.jar.file" value="${ivy.jar.dir}/ivy.jar" />
 	<property name="JOrtho_0.4_freeplane.location" value="${root}/../JOrtho_0.4_freeplane" />
 	<property name="freeplane.location" value="${root}/../freeplane" />
-	<property name="freeplane_plugin_remote.location" value="${root}/../freeplane_plugin_remote" />
+	<property name="freeplane_plugin_remote_server.location" value="${root}/../freeplane_plugin_remote_server" />
 	<property name="freeplane.remote.shared.location" value="${root}/../freeplane_plugin_remote_shared" />
 	<!-- END PROPERTIES -->
 
@@ -40,18 +40,18 @@
 		<pathelement location="${freeplane.location}/bin/classes" />
 		<path refid="JOrtho_0.4_freeplane.classpath" />
 	</path>
-	<path id="freeplane_plugin_remote.classpath">
-		<pathelement location="${freeplane_plugin_remote.location}/bin" />
-		<pathelement location="${freeplane_plugin_remote.location}/ivy/ivy.jar" />
-		<fileset dir="${freeplane_plugin_remote.location}/lib/" includes="**.jar"/>
+	<path id="freeplane_plugin_remote_server.classpath">
+		<pathelement location="${freeplane_plugin_remote_server.location}/bin" />
+		<pathelement location="${freeplane_plugin_remote_server.location}/ivy/ivy.jar" />
+		<fileset dir="${freeplane_plugin_remote_server.location}/lib/" includes="**.jar"/>
 		<path refid="freeplane.classpath" />
 	</path>
-	<path id="freeplane_plugin_remote_tests.classpath">
+	<path id="freeplane_plugin_remote_server_tests.classpath">
 		<pathelement location="bin" />
 		<pathelement location="ivy/ivy.jar" />
 		<fileset dir="${root}/lib/" includes="**.jar"/>
 		<path refid="freeplane.classpath" />
-		<path refid="freeplane_plugin_remote.classpath" />
+		<path refid="freeplane_plugin_remote_server.classpath" />
 	</path>
 	<!-- END PATH -->
 
@@ -84,7 +84,7 @@
 	<target name="cleanall" depends="clean">
 		<ant antfile="build.xml" dir="${JOrtho_0.4_freeplane.location}" inheritAll="false" target="clean" />
 		<ant antfile="build.xml" dir="${freeplane.location}/ant" inheritAll="false" target="clean" />
-		<ant antfile="build.xml" dir="${freeplane_plugin_remote.location}/ant" inheritAll="false" target="clean" />
+		<ant antfile="build.xml" dir="${freeplane_plugin_remote_server.location}/ant" inheritAll="false" target="clean" />
 	</target>
 
 	<target name="dist" depends="resolve, resolve-remote-shared">
@@ -109,14 +109,14 @@
 		<javac debug="true" destdir="bin" includeantruntime="false">
 			<src path="src/tests" />
 			<src path="resources" />
-			<classpath refid="freeplane_plugin_remote_tests.classpath" />
+			<classpath refid="freeplane_plugin_remote_server_tests.classpath" />
 		</javac>
 	</target>
 
 	<target name="build-freeplane">
 		<ant antfile="build.xml" dir="${JOrtho_0.4_freeplane.location}" />
 		<ant antfile="ant/build.xml" dir="${freeplane.location}" inheritAll="false" target="build" />
-		<ant antfile="ant/build.xml" dir="${freeplane_plugin_remote.location}" inheritAll="false" target="build" />
+		<ant antfile="ant/build.xml" dir="${freeplane_plugin_remote_server.location}" inheritAll="false" target="build" />
 	</target>
 	
     <condition property="isOSUnix">
@@ -127,13 +127,6 @@
         <os family="windows" />
     </condition>
 	
-	<target name="ifOSWindows" if="isOSWindows">
-		<echo>Starting Freeplane</echo>
-		<exec dir="../freeplane_framework/build/" executable="cmd" >
-			<arg line="/K freeplane.bat"/>
-	    </exec>
-    </target>
-	
 	<target name="killTaskIfWindows" if="isOSWindows">	
 		<echo>Killing Freeplane</echo>
 		<exec executable="taskkill">
@@ -141,25 +134,34 @@
 			<arg value="/PID"/>
 			<arg value="${pid}"/>
 		</exec>	
+		<delete file="../freeplane_framework/build/RUNNING_PID"  failonerror="false"/>
     </target>
 
-	<target name="ifOSNotWindows" if="isOSUnix">
-		<echo>Starting Freeplane</echo>
-		<exec dir="resources/" executable="bash">
-		    <arg value="runFreeplane.sh"/>
-		</exec>
-    </target>
-	
     <target name="killTaskIfUnix" if="isOSUnix">
     	<echo>Killing Freeplane</echo>
         <exec executable="bash">
 			<arg value="kill -15"/>
         	<arg value="${pid}"/>
         </exec>
+    	<delete file="../freeplane_framework/build/RUNNING_PID"  failonerror="false"/>
     </target>
 
-	<target name="test">
-		<echo>Dummy Test Target. This needs to be replaced later.</echo>
+	<target name="test" >
+		<delete file="../freeplane_framework/build/RUNNING_PID"  failonerror="false"/>
+		<exec executable="bash" dir="../freeplane_framework/build/">
+			<arg value="silent_freeplane-server.sh"/>
+		</exec>
+		<sleep seconds="10"/>
+		<mkdir dir="${report.dir}" />
+		<junit fork="yes" printsummary="yes" haltonerror="yes" haltonfailure="no" showoutput="yes" failureproperty="junit.failure">
+			<test name="tests.AkkaTests" todir="${report.dir}"/>
+			<formatter type="xml"/>
+			<classpath refid="freeplane_plugin_remote_server_tests.classpath" />
+		</junit>
+		<fail if="junit.failure" message="Unit test(s) failed.  See reports!"/>
+		<loadfile property="pid" srcFile="../freeplane_framework/build/RUNNING_PID"/>
+		<antcall target="killTaskIfWindows"/>
+		<antcall target="killTaskIfUnix"/>
 	</target>
 	
 	<target name="junitreport">
