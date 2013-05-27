@@ -87,6 +87,9 @@
 		<ant antfile="build.xml" dir="${freeplane_plugin_remote_server.location}/ant" inheritAll="false" target="clean" />
 	</target>
 
+	<target name="dist" depends="resolve, resolve-remote-shared">
+	</target>
+
 	<target name="init">
 		<mkdir dir="bin" />
 		<copy includeemptydirs="false" todir="bin">
@@ -101,13 +104,19 @@
 		</copy>
 	</target>
 
-	<target name="build" depends="resolve,init">
+	<target name="build" depends="build-freeplane,resolve,init">
 		<echo message="${ant.project.name}: ${ant.file}" />
 		<javac debug="true" destdir="bin" includeantruntime="false">
 			<src path="src/tests" />
 			<src path="resources" />
 			<classpath refid="freeplane_plugin_remote_server_tests.classpath" />
 		</javac>
+	</target>
+
+	<target name="build-freeplane">
+		<ant antfile="build.xml" dir="${JOrtho_0.4_freeplane.location}" />
+		<ant antfile="ant/build.xml" dir="${freeplane.location}" inheritAll="false" target="build" />
+		<ant antfile="ant/build.xml" dir="${freeplane_plugin_remote_server.location}" inheritAll="false" target="build" />
 	</target>
 	
     <condition property="isOSUnix">
