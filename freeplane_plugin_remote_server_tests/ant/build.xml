@@ -1,4 +1,4 @@
-<project name="docear_remote_tests" default="dist" basedir=".." xmlns:ivy="antlib:org.apache.ivy.ant">
+<project name="docear_remote_tests" default="test" basedir=".." xmlns:ivy="antlib:org.apache.ivy.ant">
 	<property name="workspace" location=".." />
 	<property name="src" value="src" />
 	<property name="resources" value="resources" />
@@ -87,9 +87,6 @@
 		<ant antfile="build.xml" dir="${freeplane_plugin_remote_server.location}/ant" inheritAll="false" target="clean" />
 	</target>
 
-	<target name="dist" depends="resolve, resolve-remote-shared">
-	</target>
-
 	<target name="init">
 		<mkdir dir="bin" />
 		<copy includeemptydirs="false" todir="bin">
@@ -111,12 +108,6 @@
 			<src path="resources" />
 			<classpath refid="freeplane_plugin_remote_server_tests.classpath" />
 		</javac>
-	</target>
-
-	<target name="build-freeplane">
-		<ant antfile="build.xml" dir="${JOrtho_0.4_freeplane.location}" />
-		<ant antfile="ant/build.xml" dir="${freeplane.location}" inheritAll="false" target="build" />
-		<ant antfile="ant/build.xml" dir="${freeplane_plugin_remote_server.location}" inheritAll="false" target="build" />
 	</target>
 	
     <condition property="isOSUnix">
@@ -146,7 +137,7 @@
     	<delete file="../freeplane_framework/build/RUNNING_PID"  failonerror="false"/>
     </target>
 
-	<target name="test" >
+	<target name="test" depends="build">
 		<delete file="../freeplane_framework/build/RUNNING_PID"  failonerror="false"/>
 		<exec executable="bash" dir="../freeplane_framework/build/" spawn="true">
 			<arg value="silent_freeplane-server.sh"/>
