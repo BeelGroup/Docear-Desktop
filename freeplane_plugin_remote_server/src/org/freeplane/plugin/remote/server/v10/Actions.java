@@ -79,6 +79,7 @@ import akka.actor.ActorRef;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Actions {
@@ -338,7 +339,7 @@ public class Actions {
 		final NodeModel node = RemoteUtils.addNodeToOpenMap(mmapController(), parentNode);
 
 		logger().debug("Actions.addNode => returning response with new node as json");
-		final String nodeJson = new NodeModelDefault(node, false).toJsonString();
+		final JsonNode nodeJson = new ObjectMapper().valueToTree(new NodeModelDefault(node, false));
 		final AddNodeUpdate update = new AddNodeUpdate(source, username, parentNodeId, node.getID(), nodeJson);
 		getOpenMindMapInfo(mapId).addUpdate(update);
 		return new AddNodeResponse(update.toJson());

@@ -1,5 +1,7 @@
 package org.freeplane.plugin.remote.v10.model.updates;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 public class AddNodeUpdate extends MapUpdate {
 	public enum Side {
 		Left, Right
@@ -7,7 +9,7 @@ public class AddNodeUpdate extends MapUpdate {
 
 	private final String parentNodeId;
 	private final String newNodeId;
-	private final String nodeAsJson;
+	private final JsonNode nodeAsJson;
 	private final Side side;
 
 	// Do not remove! Needed for jackson (in testing project)
@@ -19,7 +21,7 @@ public class AddNodeUpdate extends MapUpdate {
 	/**
 	 * Constructor for default nodes (don't need side)
 	 */
-	public AddNodeUpdate(String source, String username, String parentNodeId, String newNodeId, String nodeAsJson) {
+	public AddNodeUpdate(String source, String username, String parentNodeId, String newNodeId, JsonNode nodeAsJson) {
 		this(source, username, parentNodeId, newNodeId, nodeAsJson, null);
 	}
 
@@ -29,7 +31,7 @@ public class AddNodeUpdate extends MapUpdate {
 	 * @param side
 	 *            only required at root node level
 	 */
-	public AddNodeUpdate(String source, String username, String parentNodeId, String newNodeId, String nodeAsJson, Side side) {
+	public AddNodeUpdate(String source, String username, String parentNodeId, String newNodeId, JsonNode nodeAsJson, Side side) {
 		super(source, username, Type.AddNode);
 		this.parentNodeId = parentNodeId;
 		this.nodeAsJson = nodeAsJson;
@@ -41,7 +43,7 @@ public class AddNodeUpdate extends MapUpdate {
 		return side;
 	}
 
-	public String getNodeAsJson() {
+	public JsonNode getNodeAsJson() {
 		return nodeAsJson;
 	}
 
