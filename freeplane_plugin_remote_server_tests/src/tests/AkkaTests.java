@@ -45,6 +45,8 @@ import org.docear.messages.Messages.RequestLockRequest;
 import org.docear.messages.Messages.RequestLockResponse;
 import org.docear.messages.exceptions.MapNotFoundException;
 import org.docear.messages.exceptions.NodeNotFoundException;
+import org.docear.messages.models.MapIdentifier;
+import org.docear.messages.models.UserIdentifier;
 import org.fest.assertions.Fail;
 import org.freeplane.features.edge.EdgeStyle;
 import org.freeplane.plugin.remote.v10.model.EdgeModel;
@@ -110,7 +112,7 @@ public class AkkaTests {
 			try {
 				remoteActor = system.actorFor("akka://freeplaneRemote@127.0.0.1:2553/user/main");
 
-				Future<Object> future = Patterns.ask(remoteActor, new MindmapAsJsonRequest(SOURCE, USERNAME1, "NOT_EXISTING"), 2000);
+				Future<Object> future = Patterns.ask(remoteActor, new MindmapAsJsonRequest(new UserIdentifier(SOURCE, USERNAME1),new MapIdentifier("-1", "NOT_EXISTING")), 2000);
 				Await.result(future, Duration.create("2 second"));
 			} catch (MapNotFoundException e) {
 				// expected, good
@@ -142,7 +144,7 @@ public class AkkaTests {
 
 	@After
 	public void tearDown() throws Exception {
-		remoteActor.tell(new CloseAllOpenMapsRequest(SOURCE, USERNAME1), localActor);
+		remoteActor.tell(new CloseAllOpenMapsRequest(new UserIdentifier(SOURCE, USERNAME1)), localActor);
 	}
 
 	public void testSkeleton() {
@@ -166,7 +168,7 @@ public class AkkaTests {
 					@Override
 					protected void run() {
 						sendMindMapToServer(5);
-						remoteActor.tell(new MindmapAsJsonRequest(SOURCE, USERNAME1, "5"), getRef());
+						remoteActor.tell(new MindmapAsJsonRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "5")), getRef());
 
 						MindmapAsJsonReponse response = expectMsgClass(MindmapAsJsonReponse.class);
 						String jsonString = response.getJsonString();
@@ -192,7 +194,7 @@ public class AkkaTests {
 				localActor.tell(getRef(), getRef());
 				new Within(duration("3 seconds")) {
 					protected void run() {
-						remoteActor.tell(new MindmapAsJsonRequest(SOURCE, USERNAME1, "6"), getRef());
+						remoteActor.tell(new MindmapAsJsonRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "6")), getRef());
 						Failure response = expectMsgClass(Failure.class);
 						System.out.println(response.cause());
 						assertThat(response.cause() instanceof MapNotFoundException).isTrue();
@@ -214,7 +216,7 @@ public class AkkaTests {
 					protected void run() {
 						sendMindMapToServer(5);
 
-						remoteActor.tell(new MindmapAsXmlRequest(SOURCE, USERNAME1, "5"), localActor);
+						remoteActor.tell(new MindmapAsXmlRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "5")), localActor);
 
 						MindmapAsXmlResponse response = expectMsgClass(MindmapAsXmlResponse.class);
 						assertThat(response.getXmlString())
@@ -239,7 +241,7 @@ public class AkkaTests {
 				new Within(duration("3 seconds")) {
 					protected void run() {
 						localActor.tell(getRef(), getRef());
-						remoteActor.tell(new MindmapAsXmlRequest(SOURCE, USERNAME1, "5"), localActor);
+						remoteActor.tell(new MindmapAsXmlRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "5")), localActor);
 
 						Failure response = expectMsgClass(Failure.class);
 						assertThat(response.cause() instanceof MapNotFoundException).isTrue();
@@ -263,7 +265,7 @@ public class AkkaTests {
 					protected void run() {
 						try {
 							sendMindMapToServer(5);
-							remoteActor.tell(new AddNodeRequest(SOURCE, USERNAME1, "5", "ID_0"), localActor);
+							remoteActor.tell(new AddNodeRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "5"), "ID_0"), localActor);
 							// expectMsgClass(Failure.class).cause().printStackTrace();
 							final AddNodeResponse response = expectMsgClass(AddNodeResponse.class);
 
@@ -300,7 +302,7 @@ public class AkkaTests {
 				new Within(duration("3 seconds")) {
 					protected void run() {
 						sendMindMapToServer(5);
-						remoteActor.tell(new AddNodeRequest(SOURCE, USERNAME1, "5", "ID_FAIL"), localActor);
+						remoteActor.tell(new AddNodeRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "5"), "ID_FAIL"), localActor);
 
 						Failure response = expectMsgClass(Failure.class);
 						assertThat(response.cause() instanceof NodeNotFoundException).isTrue();
@@ -322,7 +324,7 @@ public class AkkaTests {
 				localActor.tell(getRef(), getRef());
 				new Within(duration("3 seconds")) {
 					protected void run() {
-						remoteActor.tell(new AddNodeRequest(SOURCE, USERNAME1, "16", "ID_FAIL"), localActor);
+						remoteActor.tell(new AddNodeRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "16"), "ID_FAIL"), localActor);
 
 						Failure response = expectMsgClass(Failure.class);
 						assertThat(response.cause() instanceof MapNotFoundException).isTrue();
@@ -344,7 +346,7 @@ public class AkkaTests {
 					protected void run() {
 						try {
 							sendMindMapToServer(5);
-							remoteActor.tell(new GetNodeRequest(SOURCE, USERNAME1, "5", "ID_1", 1), localActor);
+							remoteActor.tell(new GetNodeRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "5"), "ID_1", 1), localActor);
 
 							GetNodeResponse response = expectMsgClass(GetNodeResponse.class);
 							validateDefaultNodeSchema(response.getNode());
@@ -380,7 +382,7 @@ public class AkkaTests {
 				new Within(duration("3 seconds")) {
 					protected void run() {
 						sendMindMapToServer(5);
-						remoteActor.tell(new GetNodeRequest(SOURCE, USERNAME1, "5", "ID_FAIL", 1), localActor);
+						remoteActor.tell(new GetNodeRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "5"), "ID_FAIL", 1), localActor);
 
 						Failure response = expectMsgClass(Failure.class);
 						assertThat(response.cause() instanceof NodeNotFoundException).isTrue();
@@ -404,11 +406,11 @@ public class AkkaTests {
 				new Within(duration("3 seconds")) {
 					protected void run() {
 						sendMindMapToServer(5);
-						remoteActor.tell(new RemoveNodeRequest(SOURCE, USERNAME1, "5", "ID_1"), localActor);
+						remoteActor.tell(new RemoveNodeRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "5"), "ID_1"), localActor);
 						RemoveNodeResponse rmNodeResponse = expectMsgClass(RemoveNodeResponse.class);
 						assertThat(rmNodeResponse.getDeleted()).isEqualTo(true);
 
-						remoteActor.tell(new GetNodeRequest(SOURCE, USERNAME1, "5", "ID_1", 1), localActor);
+						remoteActor.tell(new GetNodeRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "5"), "ID_1", 1), localActor);
 						Failure response = expectMsgClass(Failure.class);
 						assertThat(response.cause() instanceof NodeNotFoundException).isTrue();
 
@@ -431,7 +433,7 @@ public class AkkaTests {
 				new Within(duration("3 seconds")) {
 					protected void run() {
 						sendMindMapToServer(5);
-						remoteActor.tell(new RemoveNodeRequest(SOURCE, USERNAME1, "5", "ID_FAIL"), localActor);
+						remoteActor.tell(new RemoveNodeRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "5"), "ID_FAIL"), localActor);
 
 						Failure response = expectMsgClass(Failure.class);
 						assertThat(response.cause() instanceof NodeNotFoundException).isTrue();
@@ -457,8 +459,8 @@ public class AkkaTests {
 				new Within(duration("3 seconds")) {
 					protected void run() {
 						sendMindMapToServer(5);
-						requestLock("5", "ID_2", USERNAME2);
-						remoteActor.tell(new RemoveNodeRequest(SOURCE, USERNAME1, "5", "ID_1"), localActor);
+						requestLock(new MapIdentifier("-1", "5"), "ID_2", USERNAME2);
+						remoteActor.tell(new RemoveNodeRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "5"), "ID_1"), localActor);
 
 						RemoveNodeResponse response = expectMsgClass(RemoveNodeResponse.class);
 						assertThat(response.getDeleted()).isEqualTo(false);
@@ -492,17 +494,17 @@ public class AkkaTests {
 						attributeMap.put("nodeText", newNodeText);
 						attributeMap.put("isHtml", isHtml);
 
-						final ChangeNodeRequest request = new ChangeNodeRequest(SOURCE, USERNAME1, "5", nodeId, attributeMap);
+						final ChangeNodeRequest request = new ChangeNodeRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "5"), nodeId, attributeMap);
 
 						// requesting lock on node
-						requestLock("5", nodeId, USERNAME1);
+						requestLock(new MapIdentifier("-1", "5"), nodeId, USERNAME1);
 
 						remoteActor.tell(request, localActor);
 						ChangeNodeResponse response = expectMsgClass(ChangeNodeResponse.class);
 						
 
 						// release lock
-						releaseLock("5", nodeId, USERNAME1);
+						releaseLock(new MapIdentifier("-1", "5"), nodeId, USERNAME1);
 
 						try {
 							final List<String> mapUpdates = response.getMapUpdates();
@@ -571,16 +573,16 @@ public class AkkaTests {
 						final String nodeId = "ID_1";
 						final Map<String, Object> attributeMap = getNewAttributesForNode();
 
-						final ChangeNodeRequest request = new ChangeNodeRequest(SOURCE, USERNAME1, "5", nodeId, attributeMap);
+						final ChangeNodeRequest request = new ChangeNodeRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "5"), nodeId, attributeMap);
 
 						// requesting lock on node
-						requestLock("5", nodeId, USERNAME1);
+						requestLock(new MapIdentifier("-1", "5"), nodeId, USERNAME1);
 
 						remoteActor.tell(request, localActor);
 						ChangeNodeResponse response = expectMsgClass(ChangeNodeResponse.class);
 
 						// release lock
-						releaseLock("5", nodeId, USERNAME1);
+						releaseLock(new MapIdentifier("-1", "5"), nodeId, USERNAME1);
 
 						try {
 							final List<String> mapUpdates = response.getMapUpdates();
@@ -655,13 +657,13 @@ public class AkkaTests {
 							attributeMap.put("color", 0xFF00FF00);
 							attributeMap.put("style", "EDGESTYLE_SHARP_BEZIER");
 
-							final ChangeEdgeRequest request = new ChangeEdgeRequest(SOURCE, USERNAME1, "5", nodeId, attributeMap);
+							final ChangeEdgeRequest request = new ChangeEdgeRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "5"), nodeId, attributeMap);
 
 							remoteActor.tell(request, localActor);
 							ChangeEdgeResponse response = expectMsgClass(ChangeEdgeResponse.class);
 							assertThat(response.isSuccess()).isEqualTo(true);
 
-							final GetNodeRequest nodeRequest = new GetNodeRequest(SOURCE, USERNAME1, "5", "ID_1", 0);
+							final GetNodeRequest nodeRequest = new GetNodeRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "5"), "ID_1", 0);
 							remoteActor.tell(nodeRequest, localActor);
 							GetNodeResponse nodeResponse = expectMsgClass(GetNodeResponse.class);
 							final NodeModelDefault node = new ObjectMapper().readValue(nodeResponse.getNode(), NodeModelDefault.class);
@@ -698,7 +700,7 @@ public class AkkaTests {
 					protected void run() {
 						sendMindMapToServer(5);
 
-						remoteActor.tell(new ChangeNodeRequest(SOURCE, USERNAME1, "5", "ID_FAIL", new HashMap<String, Object>()), localActor);
+						remoteActor.tell(new ChangeNodeRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "5"), "ID_FAIL", new HashMap<String, Object>()), localActor);
 
 						Failure response = expectMsgClass(Failure.class);
 
@@ -721,11 +723,11 @@ public class AkkaTests {
 						sendMindMapToServer(5);
 
 						// also checks that switching sides is no problem
-						final MoveNodeToRequest moveRequest = new MoveNodeToRequest(SOURCE, USERNAME1, "5", "ID_505304847", "ID_1", 1);
+						final MoveNodeToRequest moveRequest = new MoveNodeToRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "5"), "ID_505304847", "ID_1", 1);
 						remoteActor.tell(moveRequest, localActor);
 						assertThat(expectMsgClass(MoveNodeToResponse.class).getSuccess()).isEqualTo(true);
 
-						final GetNodeRequest getNodeRequest = new GetNodeRequest(SOURCE, USERNAME1, "5", "ID_505304847", 0);
+						final GetNodeRequest getNodeRequest = new GetNodeRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "5"), "ID_505304847", 0);
 						remoteActor.tell(getNodeRequest, localActor);
 						final String parentNodeJson = expectMsgClass(GetNodeResponse.class).getNode();
 
@@ -750,7 +752,7 @@ public class AkkaTests {
 					public void run() {
 						sendMindMapToServer(5);
 
-						remoteActor.tell(new MindmapAsJsonRequest(SOURCE, USERNAME1, "5"), getRef());
+						remoteActor.tell(new MindmapAsJsonRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "5")), getRef());
 
 						MindmapAsJsonReponse response = expectMsgClass(MindmapAsJsonReponse.class);
 						System.out.println(response.getJsonString());
@@ -777,7 +779,7 @@ public class AkkaTests {
 					public void run() {
 						sendMindMapToServer(5);
 
-						remoteActor.tell(new MindmapAsJsonRequest(SOURCE, USERNAME1, "5"), localActor);
+						remoteActor.tell(new MindmapAsJsonRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "5")), localActor);
 
 						MindmapAsJsonReponse response = expectMsgClass(MindmapAsJsonReponse.class);
 						System.out.println(response.getJsonString());
@@ -812,10 +814,10 @@ public class AkkaTests {
 							e.printStackTrace();
 						}
 						// close maps that haven't been used for 1 ms
-						remoteActor.tell(new CloseUnusedMaps(SOURCE, USERNAME1, 10), localActor);
+						remoteActor.tell(new CloseUnusedMaps(new UserIdentifier(SOURCE, USERNAME1), 10), localActor);
 						// expectNoMsg();
 
-						remoteActor.tell(new MindmapAsJsonRequest(SOURCE, USERNAME1, "5"), localActor);
+						remoteActor.tell(new MindmapAsJsonRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "5")), localActor);
 						Failure response = expectMsgClass(Failure.class);
 						assertThat(response.cause()).isInstanceOf(MapNotFoundException.class);
 
@@ -837,13 +839,13 @@ public class AkkaTests {
 					public void run() {
 
 						sendMindMapToServer(5);
-						requestLock("5", "ID_1", USERNAME1);
-						remoteActor.tell(new ChangeNodeRequest(SOURCE, USERNAME1, "5", "ID_1", getNewAttributesForNode()), localActor);
+						requestLock(new MapIdentifier("-1", "5"), "ID_1", USERNAME1);
+						remoteActor.tell(new ChangeNodeRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "5"), "ID_1", getNewAttributesForNode()), localActor);
 						final ChangeNodeResponse changeResponse = expectMsgClass(ChangeNodeResponse.class);
 						System.out.println(changeResponse.getMapUpdates());
-						releaseLock("5", "ID_1", USERNAME1);
+						releaseLock(new MapIdentifier("-1", "5"), "ID_1", USERNAME1);
 
-						remoteActor.tell(new FetchMindmapUpdatesRequest(SOURCE, USERNAME1, "5", 0), localActor);
+						remoteActor.tell(new FetchMindmapUpdatesRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "5"), 0), localActor);
 						FetchMindmapUpdatesResponse response = expectMsgClass(FetchMindmapUpdatesResponse.class);
 						final List<String> updates = response.getOrderedUpdates();
 						// assertThat(updates.get(0)).doesNotContain(")
@@ -877,10 +879,10 @@ public class AkkaTests {
 						sendMindMapToServer(3);
 						sendMindMapToServer(5);
 
-						remoteActor.tell(new MindmapAsJsonRequest(SOURCE, USERNAME1, "3", 5), localActor);
-						remoteActor.tell(new MindmapAsJsonRequest(SOURCE, USERNAME1, "2", 5), localActor);
-						remoteActor.tell(new MindmapAsJsonRequest(SOURCE, USERNAME1, "5", 5), localActor);
-						remoteActor.tell(new MindmapAsJsonRequest(SOURCE, USERNAME1, "1", 5), localActor);
+						remoteActor.tell(new MindmapAsJsonRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "3"), 5), localActor);
+						remoteActor.tell(new MindmapAsJsonRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "2"), 5), localActor);
+						remoteActor.tell(new MindmapAsJsonRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "5"), 5), localActor);
+						remoteActor.tell(new MindmapAsJsonRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "1"), 5), localActor);
 
 						MindmapAsJsonReponse response = null;
 						String mapAsJson = null;
@@ -919,7 +921,7 @@ public class AkkaTests {
 		try {
 			final File f = new File(pathURL.toURI());
 			String mapContent = FileUtils.readFileToString(f);
-			final OpenMindMapRequest request = new OpenMindMapRequest(SOURCE, USERNAME1, id + "", mapContent, id + ".mm");
+			final OpenMindMapRequest request = new OpenMindMapRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", id + ""), mapContent, id + ".mm");
 
 			assertThat(f).isNotNull();
 
@@ -946,19 +948,19 @@ public class AkkaTests {
 			{
 				new Within(duration("2 seconds")) {
 					public void run() {
-						remoteActor.tell(new CloseMapRequest(SOURCE, USERNAME1, id + ""), localActor);
+						remoteActor.tell(new CloseMapRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", id + "")), localActor);
 					}
 				};
 			}
 		};
 	}
 
-	public void requestLock(final String mapId, final String nodeId, final String username) {
+	public void requestLock(final MapIdentifier mapIdentifier, final String nodeId, final String username) {
 		new JavaTestKit(system) {
 			{
 				new Within(duration("2 seconds")) {
 					public void run() {
-						remoteActor.tell(new RequestLockRequest(SOURCE, USERNAME1, mapId, nodeId), getRef());
+						remoteActor.tell(new RequestLockRequest(new UserIdentifier(SOURCE, USERNAME1), mapIdentifier, nodeId), getRef());
 						RequestLockResponse requestResponse = expectMsgClass(RequestLockResponse.class);
 						assertThat(requestResponse.getLockGained()).isEqualTo(true);
 					}
@@ -967,12 +969,12 @@ public class AkkaTests {
 		};
 	}
 
-	public void releaseLock(final String mapId, final String nodeId, final String username) {
+	public void releaseLock(final MapIdentifier mapIdentifier, final String nodeId, final String username) {
 		new JavaTestKit(system) {
 			{
 				new Within(duration("2 seconds")) {
 					public void run() {
-						remoteActor.tell(new ReleaseLockRequest(SOURCE, USERNAME1, "5", nodeId), getRef());
+						remoteActor.tell(new ReleaseLockRequest(new UserIdentifier(SOURCE, USERNAME1), mapIdentifier, nodeId), getRef());
 						ReleaseLockResponse releaseResponse = expectMsgClass(ReleaseLockResponse.class);
 						assertThat(releaseResponse.getLockReleased()).isEqualTo(true);
 					}

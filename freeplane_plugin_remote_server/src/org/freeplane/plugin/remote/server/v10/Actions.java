@@ -52,6 +52,8 @@ import org.docear.messages.exceptions.MapNotFoundException;
 import org.docear.messages.exceptions.NodeAlreadyLockedException;
 import org.docear.messages.exceptions.NodeNotFoundException;
 import org.docear.messages.exceptions.NodeNotLockedByUserException;
+import org.docear.messages.models.MapIdentifier;
+import org.docear.messages.models.UserIdentifier;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.MapWriter;
 import org.freeplane.features.map.NodeModel;
@@ -85,7 +87,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class Actions {
 
 	private static final ObjectMapper objectMapper = new ObjectMapper();
-	private static String currentSelectedMapId = null;
+	private static MapIdentifier currentSelectedMapId = null;
 
 	/**
 	 * returns a map as a JSON-Object
@@ -100,15 +102,15 @@ public class Actions {
 	public static MindmapAsJsonReponse getMapModelJson(MindmapAsJsonRequest request) throws MapNotFoundException {
 
 		final int nodeCount = request.getNodeCount();
-		final String mapId = request.getMapId();
+		final MapIdentifier mapIdentifier = request.getMapIdentifier();
 
 		final boolean loadAllNodes = nodeCount == -1;
 
-		logger().debug("Actions.getMapModelJson => mapId:'{}'; nodeCount:{}; loadAllNodes:{}", mapId, nodeCount, loadAllNodes);
+		logger().debug("Actions.getMapModelJson => mapId:'{}'; nodeCount:{}; loadAllNodes:{}", mapIdentifier.getMapId(), nodeCount, loadAllNodes);
 		final ModeController modeController = modeController();
 
 		logger().debug("Actions.getMapModelJson => selecting map");
-		selectMap(mapId);
+		selectMap(mapIdentifier);
 
 		logger().debug("Actions.getMapModelJson => retrieving freeplane map");
 		org.freeplane.features.map.MapModel freeplaneMap = modeController.getController().getMap();
@@ -119,7 +121,7 @@ public class Actions {
 
 		// create the MapModel for JSON
 		logger().debug("Actions.getMapModelJson => creating mapmodel for JSON-convertion");
-		final OpenMindmapInfo info = RemoteController.getMapIdInfoMap().get(mapId);
+		final OpenMindmapInfo info = RemoteController.getMapIdentifierInfoMap().get(request.getMapIdentifier());
 		final String mapName = info.getName();
 		final int revision = info.getCurrentRevision();
 		MapModel mm = new MapModel(freeplaneMap, mapName, revision, loadAllNodes);
@@ -148,11 +150,11 @@ public class Actions {
 	 * @throws IOException
 	 */
 	public static MindmapAsXmlResponse getMapModelXml(final MindmapAsXmlRequest request) throws MapNotFoundException, IOException {
-		final String mapId = request.getMapId();
-		logger().debug("Actions.getMapModelXml => mapId:'{}'", mapId);
+		final MapIdentifier mapIdentifier = request.getMapIdentifier();
+		logger().debug("Actions.getMapModelXml => mapId:'{}'", mapIdentifier.getMapId());
 
 		logger().debug("Actions.getMapModelXml => selecting map");
-		selectMap(mapId);
+		selectMap(mapIdentifier);
 
 		final ModeController modeController = modeController();
 		final org.freeplane.features.map.MapModel freeplaneMap = modeController.getController().getMap();
@@ -165,7 +167,7 @@ public class Actions {
 		final StringWriter writer = new StringWriter();
 		modeController.getMapController().getMapWriter().writeMapAsXml(freeplaneMap, writer, MapWriter.Mode.EXPORT, true, true);
 
-		final int currentRevision = getOpenMindMapInfo(mapId).getCurrentRevision();
+		final int currentRevision = getOpenMindMapInfo(request.getMapIdentifier()).getCurrentRevision();
 		logger().debug("Actions.getMapModelXml => returning map as XML string");
 		return new MindmapAsXmlResponse(writer.toString(), currentRevision);
 	}
@@ -177,26 +179,26 @@ public class Actions {
 	 * @return
 	 */
 	public static void closeMap(final CloseMapRequest request) throws MapNotFoundException {
-		final String mapId = request.getMapId();
+		final MapIdentifier mapIdentifier = request.getMapIdentifier();
 		logger().debug("Actions.closeMap => mapId:'{}'", request.getMapId());
 
 		// select map
 		logger().debug("Actions.closeMap => selecting map");
-		selectMap(mapId);
+		selectMap(mapIdentifier);
 
 		// close and remove map
 		logger().debug("Actions.closeMap => closing map");
 		modeController().getController().close(true);
 
 		logger().debug("Actions.closeMap => removing map info from MapIdInfoMap");
-		openMindmapInfoMap().remove(mapId);
+		openMindmapInfoMap().remove(mapIdentifier);
 	}
 
 	public static OpenMindMapResponse openMindmap(final OpenMindMapRequest request) {
-		final String mapId = request.getMapId();
+		final MapIdentifier mapIdentifier = request.getMapIdentifier();
 		final String mapContent = request.getMindmapFileContent();
 		final String mapName = request.getMindmapFileName();
-		logger().debug("Actions.openMindmap => mapId: {}; mapName: {}; content:'{}...'", mapId, mapName, mapContent.substring(0, Math.min(mapContent.length(), 20)));
+		logger().debug("Actions.openMindmap => mapId: {}; mapName: {}; content:'{}...'", mapIdentifier.getMapId(), mapName, mapContent.substring(0, Math.min(mapContent.length(), 20)));
 
 		// create file
 		final Random ran = new Random();
@@ -212,8 +214,8 @@ public class Actions {
 			// put map in openMap Collection
 			final URL pathURL = file.toURI().toURL();
 			final OpenMindmapInfo info = new OpenMindmapInfo(pathURL, mapName);
-			openMindmapInfoMap().put(mapId, info);
-			logger().debug("Actions.openMindmap => mindmap was put into openMindmapInfoMap ({} => {})", mapId, info.getMapUrl());
+			openMindmapInfoMap().put(request.getMapIdentifier(), info);
+			logger().debug("Actions.openMindmap => mindmap was put into openMindmapInfoMap ({} => {})", mapIdentifier.getMapId(), info.getMapUrl());
 
 			// open map
 			logger().debug("Actions.openMindmap => opening mindmap...");
@@ -235,13 +237,13 @@ public class Actions {
 	}
 
 	public static FetchMindmapUpdatesResponse fetchUpdatesSinceRevision(FetchMindmapUpdatesRequest request) throws MapNotFoundException {
-		final String mapId = request.getMapId();
+		final MapIdentifier mapIdentifier = request.getMapIdentifier();
 		final Integer sinceRevision = request.getRevisionId();
-		logger().debug("Actions.getUpdatesSinceRevision => mapId: {}; sinceRevision: {}", mapId, sinceRevision);
+		logger().debug("Actions.getUpdatesSinceRevision => mapId: {}; sinceRevision: {}", mapIdentifier.getMapId(), sinceRevision);
 
-		final OpenMindmapInfo info = getOpenMindMapInfo(mapId);
+		final OpenMindmapInfo info = getOpenMindMapInfo(request.getMapIdentifier());
 		if (info == null) {
-			throw new MapNotFoundException("Map with id " + mapId + " was not found", mapId);
+			throw new MapNotFoundException("Map with id " + mapIdentifier.getMapId() + " was not found", request.getMapIdentifier());
 		}
 
 		List<String> list = info.getUpdateListAsJson(sinceRevision);
@@ -249,10 +251,10 @@ public class Actions {
 	}
 
 	public static void listenIfUpdateOccurs(ListenToUpdateOccurrenceRequest request, ActorRef sender) throws MapNotFoundException {
-		final String mapId = request.getMapId();
-		final OpenMindmapInfo info = getOpenMindMapInfo(mapId);
+		final MapIdentifier mapIdentifier = request.getMapIdentifier();
+		final OpenMindmapInfo info = getOpenMindMapInfo(mapIdentifier);
 		if (info == null)
-			throw new MapNotFoundException("Map with id " + mapId + " was not present", mapId);
+			throw new MapNotFoundException("Map with id " + mapIdentifier.getMapId() + " was not present", request.getMapIdentifier());
 
 		info.registerUpdateListener(sender);
 	}
@@ -261,7 +263,7 @@ public class Actions {
 		logger().debug("Actions.closeServer => no parameters");
 
 		logger().debug("Actions.closeServer => closing open maps");
-		closeAllOpenMaps(new CloseAllOpenMapsRequest(request.getSource(), request.getUsername()));
+		closeAllOpenMaps(new CloseAllOpenMapsRequest(request.getUserIdentifier()));
 
 		logger().debug("Actions.closeServer => Starting Thread to shutdown App in 2 seconds");
 		new Thread(new Runnable() {
@@ -298,15 +300,15 @@ public class Actions {
 	 * @throws JsonGenerationException
 	 */
 	public static GetNodeResponse getNode(final GetNodeRequest request) throws MapNotFoundException, NodeNotFoundException, JsonGenerationException, JsonMappingException, IOException {
-		final String mapId = request.getMapId();
+		final MapIdentifier mapIdentifier = request.getMapIdentifier();
 		final String nodeId = request.getNodeId();
 		final int nodeCount = request.getNodeCount();
 		final boolean loadAllNodes = nodeCount == -1;
 
-		logger().debug("Actions.getNode => mapId:'{}'; nodeId:'{}'; nodeCount:{}; loadAllNodes:{}", mapId, nodeId, nodeCount, loadAllNodes);
+		logger().debug("Actions.getNode => mapId:'{}'; nodeId:'{}'; nodeCount:{}; loadAllNodes:{}", mapIdentifier.getMapId(), nodeId, nodeCount, loadAllNodes);
 
 		logger().debug("Actions.getNode => selecting map");
-		selectMap(mapId);
+		selectMap(mapIdentifier);
 
 		logger().debug("Actions.getNode => retrieving freeplane node");
 		final NodeModel freeplaneNode = getNodeFromOpenMapById(mmapController(), nodeId);
@@ -324,12 +326,12 @@ public class Actions {
 	public static AddNodeResponse addNode(AddNodeRequest request) throws MapNotFoundException, NodeNotFoundException, JsonGenerationException, JsonMappingException, IOException {
 		final String source = request.getSource();
 		final String username = request.getUsername();
-		final String mapId = request.getMapId();
+		final MapIdentifier mapIdentifier = request.getMapIdentifier();
 		final String parentNodeId = request.getParentNodeId();
-		logger().debug("Actions.addNode => mapId:'{}'; parentNodeId:'{}'", mapId, parentNodeId);
+		logger().debug("Actions.addNode => mapId:'{}'; parentNodeId:'{}'", mapIdentifier.getMapId(), parentNodeId);
 
 		logger().debug("Actions.addNode => selecting map");
-		selectMap(mapId);
+		selectMap(mapIdentifier);
 
 		// get parent Node
 		logger().debug("Actions.addNode => retrieving freeplane parent node");
@@ -341,26 +343,26 @@ public class Actions {
 		logger().debug("Actions.addNode => returning response with new node as json");
 		final JsonNode nodeJson = new ObjectMapper().valueToTree(new NodeModelDefault(node, false));
 		final AddNodeUpdate update = new AddNodeUpdate(source, username, parentNodeId, node.getID(), nodeJson);
-		getOpenMindMapInfo(mapId).addUpdate(update);
+		getOpenMindMapInfo(request.getMapIdentifier()).addUpdate(update);
 		return new AddNodeResponse(update.toJson());
 	}
 
 	public static ChangeNodeResponse changeNode(final ChangeNodeRequest request) throws MapNotFoundException, NodeNotFoundException, NodeNotLockedByUserException {
 		final String source = request.getSource();
 		final String username = request.getUsername();
-		final String mapId = request.getMapId();
+		final MapIdentifier mapIdentifier = request.getMapIdentifier();
 		final Map<String, Object> attributeMap = request.getAttributeValueMap();
 		final String nodeId = request.getNodeId();
-		logger().debug("Actions.changeNode => mapId:'{}'; nodeId:'{}'; username: '{}'; attributes: '{}'", mapId, nodeId, username, attributeMap.toString());
+		logger().debug("Actions.changeNode => mapId:'{}'; nodeId:'{}'; username: '{}'; attributes: '{}'", mapIdentifier.getMapId(), nodeId, username, attributeMap.toString());
 
 		logger().debug("Actions.changeNode => selecting map");
-		selectMap(mapId);
+		selectMap(mapIdentifier);
 
 		// get node
 		logger().debug("Actions.changeNode => retrieving node");
 		final NodeModel freeplaneNode = getNodeFromOpenMapById(mmapController(), nodeId);
 		// check if user has lock
-		if (!hasUserLockOnNode(mapId, freeplaneNode, username)) {
+		if (!hasUserLockOnNode(freeplaneNode, username)) {
 			throw new NodeNotLockedByUserException("User has no lock on node");
 		}
 
@@ -381,7 +383,7 @@ public class Actions {
 		refreshLockAccessTime(freeplaneNode);
 
 		// submit changes and create list for response
-		final OpenMindmapInfo info = getOpenMindMapInfo(mapId);
+		final OpenMindmapInfo info = getOpenMindMapInfo(request.getMapIdentifier());
 		final List<String> updateJsons = new ArrayList<String>();
 		for (MapUpdate update : updates) {
 			info.addUpdate(update);
@@ -394,13 +396,13 @@ public class Actions {
 	public static ChangeEdgeResponse changeEdge(ChangeEdgeRequest request) throws NodeNotFoundException {
 		final String source = request.getSource();
 		final String username = request.getUsername();
-		final String mapId = request.getMapId();
+		final MapIdentifier mapIdentifier = request.getMapIdentifier();
 		final Map<String, Object> attributeMap = request.getAttributeValueMap();
 		final String nodeId = request.getNodeId();
-		logger().debug("Actions.changeEdge => mapId:'{}'; nodeId:'{}'; username: '{}'; attributes: '{}'", mapId, nodeId, username, attributeMap.toString());
+		logger().debug("Actions.changeEdge => mapId:'{}'; nodeId:'{}'; username: '{}'; attributes: '{}'", mapIdentifier.getMapId(), nodeId, username, attributeMap.toString());
 
 		logger().debug("Actions.changeEdge => selecting map");
-		selectMap(mapId);
+		selectMap(mapIdentifier);
 
 		// get node
 		logger().debug("Actions.changeEdge => retrieving node");
@@ -420,7 +422,7 @@ public class Actions {
 		}
 
 		// submit changes and create list for response
-		final OpenMindmapInfo info = getOpenMindMapInfo(mapId);
+		final OpenMindmapInfo info = getOpenMindMapInfo(request.getMapIdentifier());
 		for (MapUpdate update : updates) {
 			info.addUpdate(update);
 		}
@@ -431,14 +433,14 @@ public class Actions {
 	public static MoveNodeToResponse moveNodeTo(MoveNodeToRequest request) throws NodeNotFoundException {
 		final String source = request.getSource();
 		final String username = request.getUsername();
-		final String mapId = request.getMapId();
+		final MapIdentifier mapIdentifier = request.getMapIdentifier();
 		final String newParentNodeId = request.getNewParentNodeId();
 		final String nodeId = request.getNodeToMoveId();
 		final Integer index = request.getNewIndex();
 
-		selectMap(mapId);
+		selectMap(mapIdentifier);
 		RemoteUtils.moveNodeTo(mmapController(), newParentNodeId, nodeId, index);
-		addUpdateForMap(mapId, new MoveNodeUpdate(source, username, newParentNodeId, nodeId, index));
+		addUpdateForMap(mapIdentifier, new MoveNodeUpdate(source, username, newParentNodeId, nodeId, index));
 
 		return new MoveNodeToResponse(true);
 	}
@@ -446,12 +448,12 @@ public class Actions {
 	public static RemoveNodeResponse removeNode(RemoveNodeRequest request) throws NodeNotFoundException, MapNotFoundException {
 		final String source = request.getSource();
 		final String username = request.getUsername();
-		final String mapId = request.getMapId();
+		final MapIdentifier mapIdentifier = request.getMapIdentifier();
 		final String nodeId = request.getNodeId();
-		logger().debug("Actions.removeNode => mapId:'{}'; nodeId:'{}'; username:'{}'", mapId, nodeId, username);
+		logger().debug("Actions.removeNode => mapId:'{}'; nodeId:'{}'; username:'{}'", mapIdentifier.getMapId(), nodeId, username);
 
 		logger().debug("Actions.removeNode => selecting map");
-		selectMap(request.getMapId());
+		selectMap(mapIdentifier);
 
 		logger().debug("Actions.removeNode => retrieving node");
 		final MMapController mapController = (MMapController) modeController().getMapController();
@@ -465,7 +467,7 @@ public class Actions {
 		logger().debug("Actions.removeNode => deleting node");
 		mapController.deleteNode(node);
 
-		final OpenMindmapInfo info = getOpenMindMapInfo(mapId);
+		final OpenMindmapInfo info = getOpenMindMapInfo(request.getMapIdentifier());
 		info.addUpdate(new DeleteNodeUpdate(source, username, nodeId));
 
 		return new RemoveNodeResponse(true);
@@ -488,14 +490,13 @@ public class Actions {
 	}
 
 	public static RequestLockResponse requestLock(RequestLockRequest request) throws MapNotFoundException, NodeAlreadyLockedException, NodeNotFoundException {
-		final String mapId = request.getMapId();
+		final MapIdentifier mapIdentifier = request.getMapIdentifier();
 		final String nodeId = request.getNodeId();
-		final String username = request.getUsername();
-		final String source = request.getSource();
-		logger().debug("Actions.requestLock => mapId:'{}'; nodeId:'{}'; username:'{}'", mapId, nodeId, username);
+		final UserIdentifier userIdentifier = request.getUserIdentifier();
+		logger().debug("Actions.requestLock => mapId:'{}'; nodeId:'{}'; username:'{}'", mapIdentifier.getMapId(), nodeId, userIdentifier.getUsername());
 
 		logger().debug("Actions.requestLock => selecting map");
-		selectMap(mapId);
+		selectMap(mapIdentifier);
 
 		logger().debug("Actions.requestLock => retrieving freeplane node");
 		final NodeModel node = getNodeFromOpenMapById(mmapController(), nodeId);
@@ -505,9 +506,9 @@ public class Actions {
 
 		if (lockModel == null) { // no lock present
 			logger().debug("Actions.requestLock => no lock on node, creating lock...");
-			final String mapUpdateJson = addLockToNode(source, username, mapId, node);
+			final String mapUpdateJson = addLockToNode(userIdentifier, mapIdentifier, node);
 			return new RequestLockResponse(true, mapUpdateJson);
-		} else if (username.equals(lockModel.getUsername())) { // refresh from
+		} else if (userIdentifier.getUsername().equals(lockModel.getUsername())) { // refresh from
 			// locking user
 			refreshLockAccessTime(node);
 			return new RequestLockResponse(true, null);
@@ -517,14 +518,13 @@ public class Actions {
 	}
 
 	public static ReleaseLockResponse releaseLock(ReleaseLockRequest request) throws MapNotFoundException, LockNotFoundException, NodeNotFoundException {
-		final String mapId = request.getMapId();
+		final MapIdentifier mapIdentifier = request.getMapIdentifier();
 		final String nodeId = request.getNodeId();
 		final String username = request.getUsername();
-		final String source = request.getSource();
-		logger().debug("Actions.releaseLock => mapId:'{}'; nodeId:'{}'; username: {}", mapId, nodeId, username);
+		logger().debug("Actions.releaseLock => mapId:'{}'; nodeId:'{}'; username: {}", mapIdentifier.getMapId(), nodeId, username);
 
 		logger().debug("Actions.releaseLock => selecting map");
-		selectMap(mapId);
+		selectMap(mapIdentifier);
 
 		logger().debug("Actions.releaseLock => retrieving node");
 		final NodeModel node = getNodeFromOpenMapById(mmapController(), nodeId);
@@ -543,7 +543,7 @@ public class Actions {
 		if (username.equals(lm.getUsername())) {
 			// release lock
 			logger().debug("Actions.releaseLock => releasing lock");
-			final String updateJson = releaseLockFromNode(source, username, mapId, node);
+			final String updateJson = releaseLockFromNode(request.getUserIdentifier(), request.getMapIdentifier(), node);
 
 			return new ReleaseLockResponse(true, updateJson);
 		} else {
@@ -554,8 +554,8 @@ public class Actions {
 	public static void releaseTimedOutLocks(ReleaseTimedOutLocks request) throws MapNotFoundException, JsonGenerationException, JsonMappingException, IOException {
 		final Long millisSinceRequest = request.getMillisecondsSinceRequest();
 
-		for (Entry<String, OpenMindmapInfo> entry : openMindmapInfoMap().entrySet()) {
-			final String mapId = entry.getKey();
+		for (Entry<MapIdentifier, OpenMindmapInfo> entry : openMindmapInfoMap().entrySet()) {
+			final MapIdentifier mapIdentifier = entry.getKey();
 			final OpenMindmapInfo info = entry.getValue();
 			final Set<NodeModel> lockedNodes = new HashSet<NodeModel>(info.getLockedNodes());
 
@@ -563,7 +563,7 @@ public class Actions {
 				LockModel lock = lockedNode.getExtension(LockModel.class);
 				long timeDiff = System.currentTimeMillis() - lock.getLastAccess();
 				if (timeDiff > millisSinceRequest) {
-					releaseLockFromNode("server", "server", mapId, lockedNode);
+					releaseLockFromNode(new UserIdentifier("server", "server"), mapIdentifier, lockedNode);
 				}
 			}
 
@@ -572,12 +572,12 @@ public class Actions {
 
 	public static void closeAllOpenMaps(CloseAllOpenMapsRequest request) {
 		logger().debug("Actions.closeAllOpenMaps => no parameters");
-		Set<String> ids = new HashSet<String>(openMindmapInfoMap().keySet());
-		for (String mapId : ids) {
+		Set<MapIdentifier> mapIds = new HashSet<MapIdentifier>(openMindmapInfoMap().keySet());
+		for (MapIdentifier mapId : mapIds) {
 			logger().debug("Actions.closeAllOpenMaps => closing map with id '{}'", mapId);
 			// silent fail
 			try {
-				closeMap(new CloseMapRequest(request.getSource(), request.getUsername(), mapId));
+				closeMap(new CloseMapRequest(request.getUserIdentifier(), mapId));
 			} catch (MapNotFoundException e) {
 			}
 		}
@@ -585,12 +585,10 @@ public class Actions {
 
 	public static void closeUnusedMaps(CloseUnusedMaps request) throws Exception {
 		final long allowedMsSinceLastAccess = request.getUnusedSinceInMs();
-		final String source = request.getSource();
-		final String username = request.getUsername();
 		logger().debug("Actions.closeUnusedMaps => max ms since last access:'{}'", allowedMsSinceLastAccess);
 
 		final long now = System.currentTimeMillis();
-		for (final String mapId : new HashSet<String>(openMindmapInfoMap().keySet())) {
+		for (final MapIdentifier mapId : new HashSet<MapIdentifier>(openMindmapInfoMap().keySet())) {
 			final OpenMindmapInfo omi = getOpenMindMapInfo(mapId);
 			final long lastAccessTime = omi.getLastAccessTime();
 			final long sinceLastAccess = now - lastAccessTime;
@@ -599,27 +597,11 @@ public class Actions {
 
 			if (sinceLastAccess > allowedMsSinceLastAccess) {
 				// TODO tell ZooKeeper and save to hadoop
-				closeMap(new CloseMapRequest(source, username, mapId));
+				closeMap(new CloseMapRequest(request.getUserIdentifier(), mapId));
 				logger().info("Actions.closeUnusedMaps => map was closed, because it havent been used for about {} minutes.", sinceLastAccessInMinutes);
 			}
 		}
 	}
-
-	// private static org.freeplane.features.map.NodeModel
-	// getNodeFromOpenMapById(final String nodeId) throws NodeNotFoundException
-	// {
-	// logger().debug("Actions.getNodeFromOpenMapById => nodeId: {}", nodeId);
-	// final NodeModel freeplaneNode =
-	// modeController().getMapController().getNodeFromID(nodeId);
-	//
-	// if (freeplaneNode == null) {
-	// logger().error("Actions.getNodeFromOpenMapById => requested node not found; throwing exception");
-	// throw new NodeNotFoundException("Node with id '" + nodeId +
-	// "' not found.");
-	// }
-	//
-	// return freeplaneNode;
-	// }
 
 	/**
 	 * Select Map so getMapController() has right map.
@@ -628,29 +610,29 @@ public class Actions {
 	 *            Id of Map
 	 * @throws MapNotFoundException
 	 */
-	private static void selectMap(String mapId) throws MapNotFoundException {
-		logger().debug("Actions.selectMap => mapId:'{}'", mapId);
+	private static void selectMap(MapIdentifier mapIdentifier) throws MapNotFoundException {
+		logger().debug("Actions.selectMap => mapId:'{}'", mapIdentifier.getMapId());
 
 		// check if map is already selected
-		if (currentSelectedMapId == mapId) {
+		if (currentSelectedMapId == mapIdentifier) {
 			return;
 		}
 
-		if (!isMapPresent(mapId)) {
+		if (!isMapPresent(mapIdentifier)) {
 			logger().error("Actions.selectMap => map not found");
-			throw new MapNotFoundException("Map with id " + mapId + " is not present.", mapId);
+			throw new MapNotFoundException("Map with id " + mapIdentifier.getMapId() + " is not present.", mapIdentifier);
 		}
 
-		logger().debug("Actions.selectMap => Changing map to '{}'", mapId);
-		final URL pathURL = getOpenMindMapInfo(mapId).getMapUrl();
+		logger().debug("Actions.selectMap => Changing map to '{}'", mapIdentifier.getMapId());
+		final URL pathURL = getOpenMindMapInfo(mapIdentifier).getMapUrl();
 
 		try {
 			final MapIO mio = RemoteController.getMapIO();
 			mio.newMap(pathURL);
 			logger().debug("Actions.selectMap => Map succesfully selected");
 		} catch (Exception e) {
-			logger().error("Actions.selectMap => Error while selecting map with id '{}'", mapId);
-			throw new MapNotFoundException("Could not open Map with id " + mapId, e, mapId);
+			logger().error("Actions.selectMap => Error while selecting map with id '{}'", mapIdentifier.getMapId());
+			throw new MapNotFoundException("Could not open Map with id " + mapIdentifier.getMapId(), e, mapIdentifier);
 		}
 	}
 
@@ -667,10 +649,10 @@ public class Actions {
 		}
 	}
 
-	private static String addLockToNode(String source, String username, String mapId, NodeModel freeplaneNode) {
-		final OpenMindmapInfo info = getOpenMindMapInfo(mapId);
+	private static String addLockToNode(UserIdentifier userIdentifier, MapIdentifier mapIdentifier, NodeModel freeplaneNode) {
+		final OpenMindmapInfo info = getOpenMindMapInfo(mapIdentifier);
 		if (freeplaneNode.getExtension(LockModel.class) == null) {
-			final LockModel lockModel = new LockModel(username, System.currentTimeMillis());
+			final LockModel lockModel = new LockModel(userIdentifier.getUsername(), System.currentTimeMillis());
 
 			// add node to locked list
 			logger().debug("Actions.addLockToNode => adding node to locked node list");
@@ -678,7 +660,7 @@ public class Actions {
 			// add lock
 			freeplaneNode.addExtension(lockModel);
 
-			final ChangeNodeAttributeUpdate update = new ChangeNodeAttributeUpdate(source, username, freeplaneNode.getID(), "locked", username);
+			final ChangeNodeAttributeUpdate update = new ChangeNodeAttributeUpdate(userIdentifier.getSource(), userIdentifier.getUsername(), freeplaneNode.getID(), "locked", userIdentifier.getUsername());
 			// add change to revision list
 			info.addUpdate(update);
 			return update.toJson();
@@ -687,8 +669,8 @@ public class Actions {
 		}
 	}
 
-	private static String releaseLockFromNode(String source, String username, String mapId, NodeModel freeplaneNode) {
-		final OpenMindmapInfo info = getOpenMindMapInfo(mapId);
+	private static String releaseLockFromNode(UserIdentifier userIdentifier, MapIdentifier mapIdentifier, NodeModel freeplaneNode) {
+		final OpenMindmapInfo info = getOpenMindMapInfo(mapIdentifier);
 		if (freeplaneNode.getExtension(LockModel.class) != null) {
 
 			// remove node from locked list
@@ -697,7 +679,7 @@ public class Actions {
 			// remove lock
 			freeplaneNode.removeExtension(LockModel.class);
 
-			final ChangeNodeAttributeUpdate update = new ChangeNodeAttributeUpdate(source, username, freeplaneNode.getID(), "locked", null);
+			final ChangeNodeAttributeUpdate update = new ChangeNodeAttributeUpdate(userIdentifier.getSource(), userIdentifier.getUsername(), freeplaneNode.getID(), "locked", null);
 			// add change to revision list
 			info.addUpdate(update);
 			return update.toJson();
@@ -706,7 +688,7 @@ public class Actions {
 		}
 	}
 
-	private static boolean hasUserLockOnNode(String mapId, NodeModel node, String userName) {
+	private static boolean hasUserLockOnNode(NodeModel node, String userName) {
 		LockModel lm = node.getExtension(LockModel.class);
 		if (lm == null) { // no lock at all
 			return false;
@@ -717,20 +699,20 @@ public class Actions {
 		}
 	}
 
-	private static OpenMindmapInfo getOpenMindMapInfo(String mapId) {
-		final Map<String, OpenMindmapInfo> map = openMindmapInfoMap();
-		if (!map.containsKey(mapId)) {
+	private static OpenMindmapInfo getOpenMindMapInfo(MapIdentifier mapIdentifier) {
+		final Map<MapIdentifier, OpenMindmapInfo> map = openMindmapInfoMap();
+		if (!map.containsKey(mapIdentifier)) {
 			return null;
 		}
-		return map.get(mapId);
+		return map.get(mapIdentifier);
 	}
 
-	private static boolean isMapPresent(String mapId) {
-		return (getOpenMindMapInfo(mapId) != null);
+	private static boolean isMapPresent(MapIdentifier mapIdentifier) {
+		return (getOpenMindMapInfo(mapIdentifier) != null);
 	}
 
-	private static void addUpdateForMap(String mapId, MapUpdate update) {
-		final OpenMindmapInfo info = getOpenMindMapInfo(mapId);
+	private static void addUpdateForMap(MapIdentifier mapIdentifier, MapUpdate update) {
+		final OpenMindmapInfo info = getOpenMindMapInfo(mapIdentifier);
 		if (info == null)
 			throw new NullPointerException();
 		info.addUpdate(update);
@@ -749,8 +731,8 @@ public class Actions {
 		return result;
 	}
 
-	private static Map<String, OpenMindmapInfo> openMindmapInfoMap() {
-		return RemoteController.getMapIdInfoMap();
+	private static Map<MapIdentifier, OpenMindmapInfo> openMindmapInfoMap() {
+		return RemoteController.getMapIdentifierInfoMap();
 	}
 
 	private static ModeController modeController() {

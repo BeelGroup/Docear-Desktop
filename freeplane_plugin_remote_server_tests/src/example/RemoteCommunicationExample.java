@@ -2,6 +2,8 @@ package example;
 
 import org.docear.messages.Messages.MindmapAsJsonReponse;
 import org.docear.messages.Messages.MindmapAsJsonRequest;
+import org.docear.messages.models.MapIdentifier;
+import org.docear.messages.models.UserIdentifier;
 
 import scala.concurrent.Future;
 import akka.actor.ActorRef;
@@ -28,7 +30,7 @@ public class RemoteCommunicationExample {
 		remoteActor = system.actorFor("akka://freeplaneRemote@127.0.0.1:2553/user/main");
 		localActor = system.actorOf(new Props(MyActor.class), "local");
 
-		final MindmapAsJsonRequest request = new MindmapAsJsonRequest("source", "username", "<id of the map>");
+		final MindmapAsJsonRequest request = new MindmapAsJsonRequest(new UserIdentifier("source", "username"),new MapIdentifier("projectId", "<id of the map>"));
 		//Asynch call with own actor to handle (preferred)
 		remoteActor.tell(request, localActor);
 

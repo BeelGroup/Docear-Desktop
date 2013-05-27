@@ -6,6 +6,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.docear.messages.Messages.CloseAllOpenMapsRequest;
 import org.docear.messages.Messages.CloseUnusedMaps;
+import org.docear.messages.models.MapIdentifier;
+import org.docear.messages.models.UserIdentifier;
 import org.freeplane.features.mapio.MapIO;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.mode.mindmapmode.MModeController;
@@ -30,7 +32,7 @@ public class RemoteController {
 	private final ActorRef mainActor;
 	private final Cancellable closeUnusedMapsJob;
 	private final Cancellable releaseExpiredLocksJob;
-	private final Map<String, OpenMindmapInfo> mapIdInfoMap = new HashMap<String, OpenMindmapInfo>();
+	private final Map<MapIdentifier, OpenMindmapInfo> mapIdentifierInfoMap = new HashMap<MapIdentifier, OpenMindmapInfo>();
 	
 	private static RemoteController instance;
 	public static RemoteController getInstance() throws ChannelException{
@@ -60,7 +62,7 @@ public class RemoteController {
 							@Override
 							public void run() {
 								logger.trace("Scheduling closing of unused maps.");
-								mainActor.tell(new CloseUnusedMaps("self", "", 600000), null); // ten minutes
+								mainActor.tell(new CloseUnusedMaps(new UserIdentifier("self", ""), 600000), null); // ten minutes
 							}
 						}, system.dispatcher());
 		
@@ -96,7 +98,7 @@ public class RemoteController {
 	}
 	
 	private void closeMaps() {
-		Actions.closeAllOpenMaps(new CloseAllOpenMapsRequest("self", ""));
+		Actions.closeAllOpenMaps(new CloseAllOpenMapsRequest(new UserIdentifier("self", "")));
 	}
 
 	public static ModeController getModeController() {
@@ -107,8 +109,8 @@ public class RemoteController {
 		return getModeController().getExtension(MapIO.class);
 	}
 
-	public static Map<String, OpenMindmapInfo> getMapIdInfoMap() {
-		return getInstance().mapIdInfoMap;
+	public static Map<MapIdentifier, OpenMindmapInfo> getMapIdentifierInfoMap() {
+		return getInstance().mapIdentifierInfoMap;
 	}
 	
 	public static Logger getLogger() {
