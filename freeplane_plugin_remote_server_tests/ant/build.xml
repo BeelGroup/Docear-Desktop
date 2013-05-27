@@ -1,4 +1,4 @@
-<project name="docear_remote_tests" default="dist" basedir=".." xmlns:ivy="antlib:org.apache.ivy.ant">
+<project name="docear_remote_tests" default="test" basedir=".." xmlns:ivy="antlib:org.apache.ivy.ant">
 	<property name="workspace" location=".." />
 	<property name="src" value="src" />
 	<property name="resources" value="resources" />
@@ -104,7 +104,7 @@
 		</copy>
 	</target>
 
-	<target name="build" depends="resolve,init">
+	<target name="build" depends="build-freeplane,resolve,init">
 		<echo message="${ant.project.name}: ${ant.file}" />
 		<javac debug="true" destdir="bin" includeantruntime="false">
 			<src path="src/tests" />
@@ -146,9 +146,9 @@
     	<delete file="../freeplane_framework/build/RUNNING_PID"  failonerror="false"/>
     </target>
 
-	<target name="test" >
+	<target name="test" depends="build">
 		<delete file="../freeplane_framework/build/RUNNING_PID"  failonerror="false"/>
-		<exec executable="bash" dir="../freeplane_framework/build/">
+		<exec executable="bash" dir="../freeplane_framework/build/" spawn="true">
 			<arg value="silent_freeplane-server.sh"/>
 		</exec>
 		<sleep seconds="10"/>
