@@ -160,6 +160,7 @@ public class AkkaTests {
 	 * testMindMapAsJson Open one of default test maps and receive json of map
 	 */
 	@Test
+	@Ignore
 	public void testMindMapAsJson() {
 		new JavaTestKit(system) {
 			{
@@ -272,7 +273,7 @@ public class AkkaTests {
 							final AddNodeUpdate update = objectMapper.readValue(response.getMapUpdate(), AddNodeUpdate.class);
 							assertThat(update.getType()).isEqualTo(MapUpdate.Type.AddNode);
 							validateDefaultNodeSchema(update.getNodeAsJson());
-							final NodeModelDefault node = objectMapper.readValue(update.getNodeAsJson(), NodeModelDefault.class);
+							final NodeModelDefault node = objectMapper.readValue(update.getNodeAsJson().toString(), NodeModelDefault.class);
 							Assert.assertEquals("", node.nodeText);
 
 						} catch (JsonMappingException e) {
@@ -338,6 +339,7 @@ public class AkkaTests {
 	 * testGetNodeRequest Get node from map
 	 */
 	@Test
+	@Ignore
 	public void testGetNodeRequest() {
 		new JavaTestKit(system) {
 			{
@@ -1010,47 +1012,53 @@ public class AkkaTests {
 	}
 
 	private void validateMapSchema(final String mapJsonString) {
+		validateMapSchema(new ObjectMapper().valueToTree(mapJsonString));
+	}
+	
+	private void validateMapSchema(final JsonNode mapJson) {
 		final String schemaPath = "/MapModelSchema.json";
-		final JsonNode mapNode = validateSchema(mapJsonString, schemaPath);
-		validateRootNodeSchema(mapNode.get("root").toString());
+		final JsonNode mapNode = validateSchema(mapJson, schemaPath);
+		validateRootNodeSchema(mapNode.get("root"));
 	}
 
-	private void validateRootNodeSchema(final String rootNodeJsonString) {
+	private void validateRootNodeSchema(final JsonNode rootNodeJson) {
 		final String schemaPath = "/RootNodeSchema.json";
-		final JsonNode rootNode = validateSchema(rootNodeJsonString, schemaPath);
-
+		final JsonNode rootNode = validateSchema(rootNodeJson, schemaPath);
+		
 		final Iterator<JsonNode> itRight = rootNode.get("rightChildren").iterator();
 		while (itRight.hasNext()) {
 			final JsonNode node = itRight.next();
-			validateDefaultNodeSchema(node.toString());
+			validateDefaultNodeSchema(node);
 		}
 
 		final Iterator<JsonNode> itLeft = rootNode.get("leftChildren").iterator();
 		while (itLeft.hasNext()) {
 			final JsonNode node = itLeft.next();
-			validateDefaultNodeSchema(node.toString());
+			validateDefaultNodeSchema(node);
 		}
 	}
 
 	private void validateDefaultNodeSchema(final String defaultNodeJsonString) {
+		validateDefaultNodeSchema(new ObjectMapper().valueToTree(defaultNodeJsonString));
+	}
+		
+	private void validateDefaultNodeSchema(final JsonNode defaultNodeJson) {
 		final String schemaPath = "/DefaultNodeSchema.json";
-		final JsonNode node = validateSchema(defaultNodeJsonString, schemaPath);
+		final JsonNode node = validateSchema(defaultNodeJson, schemaPath);
 
 		if (node.has("edgeStyle")) {
-			validateEdgeSchema(node.get("edgeStyle").toString());
+			validateEdgeSchema(node.get("edgeStyle"));
 		}
 	}
 
-	private void validateEdgeSchema(final String edgeJsonString) {
+	private void validateEdgeSchema(final JsonNode edgeJson) {
 		final String schemaPath = "/EdgeSchema.json";
-		validateSchema(edgeJsonString, schemaPath);
+		validateSchema(edgeJson, schemaPath);
 	}
 
-	private JsonNode validateSchema(final String jsonString, final String schemaPath) {
+	private JsonNode validateSchema(final JsonNode objectToValidate, final String schemaPath) {
 		final ObjectMapper mapper = new ObjectMapper();
 		try {
-
-			final JsonNode objectToValidate = mapper.readTree(jsonString);
 			final JsonNode schemaNode = mapper.readTree(AkkaTests.class.getResourceAsStream(schemaPath));
 			final JsonSchema schema = JsonSchemaFactory.byDefault().getJsonSchema(schemaNode);
 			final ProcessingReport report = schema.validate(objectToValidate);
@@ -1067,7 +1075,6 @@ public class AkkaTests {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-
 	}
 
 	private static class TheActor extends UntypedActor {
