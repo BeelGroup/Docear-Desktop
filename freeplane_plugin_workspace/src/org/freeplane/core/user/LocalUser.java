@@ -1,7 +1,12 @@
 package org.freeplane.core.user;
 
-public class LocalUser implements IUserAccount {
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.List;
 
+public class LocalUser implements IUserAccount {
+	private final List<PropertyChangeListener> listeners = new ArrayList<PropertyChangeListener>();
 	private final String name;
 	private boolean enabled = true;
 
@@ -31,6 +36,39 @@ public class LocalUser implements IUserAccount {
 	
 	public String toString() {
 		return "LocalUser["+getName()+(isActive() ? ";active":"")+"]";
+	}
+
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
+		if(listener == null) {
+			return;
+		}
+		synchronized (listeners) {
+			if(!listeners.contains(listener)) {
+				listeners.add(0, listener);
+			}
+		}
+	}
+
+	public void removePropertyChangeListener(PropertyChangeListener listener) {
+		if(listener == null) {
+			return;
+		}
+		synchronized (listeners) {
+			listeners.remove(listener);
+		}
+	}
+	
+	protected void firePropertyChanged(String propertyName, Object oldValue, Object newValue) {
+		PropertyChangeEvent evt = new PropertyChangeEvent(this, propertyName, oldValue, newValue);
+		firePropertyChangedEvent(evt);
+	}
+	
+	protected void firePropertyChangedEvent(PropertyChangeEvent event) {
+		synchronized (listeners) {
+			for (PropertyChangeListener listener : listeners) {
+				listener.propertyChange(event);
+			}
+		}
 	}
 
 }
