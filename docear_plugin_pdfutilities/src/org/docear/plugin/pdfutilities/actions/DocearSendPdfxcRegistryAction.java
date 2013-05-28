@@ -14,7 +14,7 @@ import java.util.zip.ZipOutputStream;
 import javax.swing.JOptionPane;
 
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
-import org.docear.plugin.services.communications.CommunicationsController;
+import org.docear.plugin.services.ServiceController;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.util.Compat;
@@ -60,9 +60,9 @@ public class DocearSendPdfxcRegistryAction extends AFreeplaneAction {
 						URI mailtoUri;
 						StringBuilder uriString = new StringBuilder();
 						uriString.append("mailto:help@docear.org?subject=PDFXCV Settings Problem&body=");
-						if(CommunicationsController.getController().getUserName() != null){
+						if(ServiceController.getUser().getUsername() != null){
 							uriString.append("Username:");
-							uriString.append(CommunicationsController.getController().getUserName());
+							uriString.append(ServiceController.getUser().getUsername());
 						}						
 						uriString.append("%0D%0A%0D%0A");
 						uriString.append(TextUtils.getRawText("docear.pdfxcv.settings.mail.text"));

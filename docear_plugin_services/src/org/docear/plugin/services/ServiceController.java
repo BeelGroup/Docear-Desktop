@@ -1,5 +1,7 @@
 package org.docear.plugin.services;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
@@ -15,14 +17,19 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.event.DocearEvent;
 import org.docear.plugin.core.event.DocearEventType;
+import org.docear.plugin.core.event.IDocearEventListener;
 import org.docear.plugin.core.logging.DocearLogger;
 import org.docear.plugin.services.actions.DocearAllowUploadChooserAction;
 import org.docear.plugin.services.actions.DocearCheckForUpdatesAction;
 import org.docear.plugin.services.actions.DocearClearUserDataAction;
-import org.docear.plugin.services.communications.CommunicationsController;
+import org.docear.plugin.services.actions.DocearSetupWizardAction;
+import org.docear.plugin.services.communications.components.WorkspaceDocearServiceConnectionBar;
+import org.docear.plugin.services.communications.components.WorkspaceDocearServiceConnectionBar.CONNECTION_STATE;
+import org.docear.plugin.services.communications.features.DocearConnectionProvider;
+import org.docear.plugin.services.communications.features.DocearUserController;
+import org.docear.plugin.services.features.IDocearServiceFeature;
 import org.docear.plugin.services.features.UpdateCheck;
 import org.docear.plugin.services.features.elements.Application;
-import org.docear.plugin.services.listeners.DocearEventListener;
 import org.docear.plugin.services.listeners.MapLifeCycleListener;
 import org.docear.plugin.services.listeners.ServiceWindowListener;
 import org.docear.plugin.services.recommendations.RecommendationEntry;
@@ -30,6 +37,7 @@ import org.docear.plugin.services.recommendations.RecommendationsController;
 import org.docear.plugin.services.recommendations.actions.ShowRecommendationsAction;
 import org.docear.plugin.services.recommendations.workspace.ShowRecommendationsNode;
 import org.docear.plugin.services.upload.UploadController;
+import org.docear.plugin.services.user.DocearUser;
 import org.docear.plugin.services.workspace.DocearWorkspaceModel;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.components.UITools;
@@ -41,6 +49,7 @@ import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.components.TreeView;
 import org.freeplane.plugin.workspace.mindmapmode.FileFolderDropHandler;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.nodes.FolderLinkNode;
@@ -82,8 +91,6 @@ public class ServiceController extends UploadController {
 		}
 
 		public void treeCollapsed(TreeExpansionEvent event) {
-			// TODO Auto-generated method stub
-			
 		}
 	}
 
@@ -94,26 +101,27 @@ public class ServiceController extends UploadController {
 
 
 	private static ServiceController serviceController;
+	private static DocearConnectionProvider connectionProvider = new DocearConnectionProvider();
 
 	private final IMapLifeCycleListener mapLifeCycleListener = new MapLifeCycleListener();
-	public static final int ALLOW_RECOMMENDATIONS = 8;
-	public static final int ALLOW_USAGE_MINING = 4;
-	public static final int ALLOW_INFORMATION_RETRIEVAL = 2;
-	public static final int ALLOW_RESEARCH = 1;
 	
-
 	private Application application;
 	private Collection<RecommendationEntry> autoRecommendations;
 	private Boolean AUTO_RECOMMENDATIONS_LOCK = false;
 
 	private File downloadsFolder;
 	private FolderLinkNode downloadsNode;
-	
+	private final WorkspaceDocearServiceConnectionBar connectionBar = new WorkspaceDocearServiceConnectionBar();
 
-	
+	private PropertyChangeListener userPropertyListener;	
 
 	private ServiceController(ModeController modeController) {
+		registerFeatureController(new DocearConnectionProvider());
+		registerFeatureController(DocearUserController.getController());
+		
 		WorkspaceController.getModeExtension(modeController).setModel(new DocearWorkspaceModel());
+		
+		((TreeView)WorkspaceController.getModeExtension(modeController).getView()).addToolBar(connectionBar, TreeView.BOTTOM_TOOLBAR_STACK);
 		initListeners(modeController);
 
 		new ServiceConfiguration(modeController);
@@ -130,9 +138,10 @@ public class ServiceController extends UploadController {
 	protected static void initialize(ModeController modeController) {
 		if (serviceController == null) {
 			serviceController = new ServiceController(modeController);
+			new DocearSetupWizardAction().actionPerformed(null);
 			if (DocearController.getController().isLicenseDialogNecessary())
 			{
-				DocearController.getController().dispatchDocearEvent(new DocearEvent(DocearController.getController(), null, DocearEventType.SHOW_LICENSES));
+				new DocearSetupWizardAction().actionPerformed(null);
 			}			
 			serviceController.startRecommendationsMode();
 			SwingUtilities.invokeLater(new Runnable() {
@@ -150,12 +159,103 @@ public class ServiceController extends UploadController {
 	}
 
 	private void initListeners(ModeController modeController) {
-		DocearController.getController().addDocearEventListener(new DocearEventListener());
+		DocearController.getController().addDocearEventListener(new IDocearEventListener() {
+
+			public void handleEvent(DocearEvent event) {
+				if (event.getType() == DocearEventType.APPLICATION_CLOSING) {
+					shutdown();
+				}
+				else if (event.getType() == DocearEventType.FINISH_THREADS) {
+					finishThreads();
+				}
+				else if (event.getSource().equals(connectionBar)
+						&& WorkspaceDocearServiceConnectionBar.ACTION_COMMAND_TOGGLE_CONNECTION_STATE.equals(event.getEventObject())) {
+					DocearUser user = getUser();
+					user.toggleTransmissionEnabled();
+				}
+//				else if(ServiceController.CONNECTION_BAR_CLICKED.equals(event.getSource()) ) {
+//					DocearAllowUploadChooserAction.showDialog(false);
+//				}
+			}
+		});
 		modeController.getMapController().addMapLifeCycleListener(mapLifeCycleListener);
+		
+		//DOCEAR - todo: add Listener for user account changes
+//		UserAccountController.getController().addUserAccountChangeListener(new IUserAccountChangeListener() {
+//			public void deactivatedUser(UserAccountChangeEvent event) {
+//					if(event.getUser() instanceof DocearUser) {
+						//DOCEAR - ToDo: clear up all user account links
+//						((DocearUser)event.getUser()).setOnline(false);
+//					}
+//					event.getUserAccount().removePropertyChangeListener(getUserPropertyChangeListener());
+//				}
+//			}
+//			public void activatedUser(UserAccountChangeEvent event) {
+//				if(event.getUser() instanceof DocearUser) {
+					//DOCEAR - ToDo: react on the new user
+//					event.getUser().addPropertyChangeListener(getUserPropertyChangeListener());
+					
+//				}
+//				else {
+//					getUser().activate();
+//				}
+//			}
+//		});
+	}
+	
+
+	private void loadUserFiles() {
+		File[] files = getUploadPackages();
+		if(files == null) {
+			return;
+		}
+		for(File file : files) {
+			addToBuffer(file);
+		}
+	}
+	
+	private PropertyChangeListener getUserPropertyChangeListener() {
+		if(userPropertyListener == null) {
+			userPropertyListener = new PropertyChangeListener() {
+				public void propertyChange(PropertyChangeEvent evt) {
+					DocearUser user = getUser();
+					if (DocearUser.USERNAME_PROPERTY.equals(evt.getPropertyName())) {
+						connectionBar.setUsername(String.valueOf(evt.getNewValue()));
+					}
+					else if (DocearUser.TRANSMISSION_PROPERTY.equals(evt.getPropertyName())) {
+						connectionBar.allowTransmission(user.isTransmissionEnabled());
+					}
+					adjustInfoBarConnectionState(user);
+				}
+			};
+		}
+		return userPropertyListener;
+	}
+
+	private void adjustInfoBarConnectionState(DocearUser user) {
+		if (user.getAccessToken() != null && user.getAccessToken().trim().length() > 0) {
+			connectionBar.setUsername(user.getName());
+			connectionBar.setEnabled(true);
+			if (user.isTransmissionEnabled()) {
+				connectionBar.setConnectionState(CONNECTION_STATE.CONNECTED);
+			}
+			else {
+				connectionBar.setConnectionState(CONNECTION_STATE.DISABLED);
+			}
+		}
+		else {
+			connectionBar.setUsername("");
+			connectionBar.setConnectionState(CONNECTION_STATE.NO_CREDENTIALS);
+			connectionBar.setEnabled(false);
+		}
 	}
 
 	public static ServiceController getController() {
 		return serviceController;
+	}
+	
+	public void registerFeatureController(IDocearServiceFeature feature) {
+		
 	}
 
 	private void addPluginDefaults(ModeController modeController) {
@@ -182,6 +282,13 @@ public class ServiceController extends UploadController {
 		
 	}
 	
+	public URI getOnlineServiceUri() {
+		if (System.getProperty("org.docear.localhost", "false").equals("true")) {
+			return URI.create("http://127.0.0.1:8080/");
+		}
+		return URI.create("https://api.docear.org/");
+	}
+	
 	public URI getUserSettingsHome() {
 		File home = new File(URIUtils.getFile(WorkspaceController.getApplicationSettingsHome()), "/users/"+UserAccountController.getController().getActiveUser().getName());
 		return home.toURI();
@@ -197,49 +304,15 @@ public class ServiceController extends UploadController {
 	}
 
 	public boolean isBackupEnabled() {
-		return ResourceController.getResourceController().getBooleanProperty(DOCEAR_SAVE_BACKUP);
+		DocearUser userSettings = getUser();
+		return userSettings.isBackupEnabled() && userSettings.isTransmissionEnabled() && userSettings.isValid();
 	}
 
-	public void setBackupEnabled(boolean b) {
-		ResourceController.getResourceController().setProperty(DOCEAR_SAVE_BACKUP, b);
-	}
+	public boolean isUploadEnabled() {
+		DocearUser user = getUser();
+		boolean needUser = user.getEnabledServicesCode() > 0 && user.isTransmissionEnabled();
 
-	public int getInformationRetrievalCode() {
-		return Integer.parseInt(ResourceController.getResourceController().getProperty(DOCEAR_INFORMATION_RETRIEVAL, "0"));
-	}
-
-	public boolean isResearchAllowed() {
-		return (getInformationRetrievalCode() & ALLOW_RESEARCH) > 0;
-	}
-
-	public boolean isInformationRetrievalSelected() {
-		return (getInformationRetrievalCode() & ALLOW_INFORMATION_RETRIEVAL) > 0;
-	}
-
-	public boolean isUsageMiningAllowed() {
-		return (getInformationRetrievalCode() & ALLOW_USAGE_MINING) > 0;
-	}
-
-	public boolean isRecommendationsAllowed() {
-		return (getInformationRetrievalCode() & ALLOW_RECOMMENDATIONS) > 0;
-	}
-
-	public void setInformationRetrievalCode(int code) {
-		ResourceController.getResourceController().setProperty(DOCEAR_INFORMATION_RETRIEVAL, "" + code);
-	}
-
-	
-
-	public boolean isBackupAllowed() {
-		CommunicationsController commCtrl = CommunicationsController.getController();
-		return isBackupEnabled() && commCtrl.allowTransmission() && !isEmpty(commCtrl.getRegisteredAccessToken()) && !isEmpty(commCtrl.getRegisteredUserName());
-	}
-
-	public boolean isInformationRetrievalAllowed() {
-		CommunicationsController commCtrl = CommunicationsController.getController();
-		boolean needUser = getInformationRetrievalCode() > 0 && commCtrl.allowTransmission();
-
-		return needUser && (!isEmpty(commCtrl.getAccessToken()) || !isEmpty(commCtrl.getUserName()));
+		return needUser && user.isValid();
 	}
 
 	private boolean isEmpty(String s) {
@@ -285,10 +358,10 @@ public class ServiceController extends UploadController {
 	
 	private void startRecommendationsMode() {
 		long lastShowTime = Controller.getCurrentController().getResourceController().getLongProperty("docear.recommendations.last_auto_show", 0);
-		
+		DocearUser user = getUser();
 		if(((System.currentTimeMillis()-lastShowTime) > RECOMMENDATIONS_AUTOSHOW_INTERVAL) 
-				&& isRecommendationsAllowed()
-				&& !isEmpty(CommunicationsController.getController().getUserName())) {
+				&& user.isRecommendationsEnabled()
+				&& !isEmpty(user.getUsername())) {
 			LogUtils.info("automatically requesting recommendations");
 			UITools.getFrame().addWindowListener(new ServiceWindowListener());
 						
@@ -350,5 +423,30 @@ public class ServiceController extends UploadController {
 		}
 	}
 
+	public static DocearUser getUser() {
+		if(UserAccountController.getController().getActiveUser() instanceof DocearUser) {
+			return (DocearUser) UserAccountController.getController().getActiveUser();
+		}
+		else {
+			return new DocearUser(UserAccountController.getController().getActiveUser());
+		}
+	}
+
+	public static DocearConnectionProvider getConnectionController() {
+		return connectionProvider;
+	}
+
+	public File getUploadBufferPath() {
+		return new File(URIUtils.getFile(getUserSettingsHome()), "queue");
+	}
+	
+	@Override
+	public File getUploadDirectory()  {
+		File uploadBufferDirectory = new File(getUploadBufferPath(), "mindmaps");
+		if (!uploadBufferDirectory.exists()) {
+			uploadBufferDirectory.mkdirs();
+		}
+		return uploadBufferDirectory;
+	}
 	
 }

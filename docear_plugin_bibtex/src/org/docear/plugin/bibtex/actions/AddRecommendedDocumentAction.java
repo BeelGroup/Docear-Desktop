@@ -25,7 +25,6 @@ import org.docear.plugin.core.event.IDocearEventListener;
 import org.docear.plugin.core.util.FileUtilities;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.docear.plugin.services.ServiceController;
-import org.docear.plugin.services.communications.CommunicationsController;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;
@@ -117,8 +116,7 @@ public class AddRecommendedDocumentAction extends AFreeplaneAction implements ID
 
 			public void run() {
 				try {
-					CommunicationsController commController = CommunicationsController.getController();
-					InputStream inStream = commController.getDownloadStream(uri);					
+					InputStream inStream = ServiceController.getConnectionController().getDownloadStream(uri);					
 					FileUtils.copyInputStreamToFile(inStream, partFile);
 										
 					if (destinationFile.exists()) {

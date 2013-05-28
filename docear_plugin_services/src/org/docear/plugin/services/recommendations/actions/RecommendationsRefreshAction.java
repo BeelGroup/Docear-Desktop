@@ -5,7 +5,6 @@ import java.awt.event.ActionEvent;
 import javax.swing.ImageIcon;
 
 import org.docear.plugin.services.ServiceController;
-import org.docear.plugin.services.communications.CommunicationsController;
 import org.docear.plugin.services.recommendations.RecommendationsController;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.util.TextUtils;
@@ -22,7 +21,7 @@ public class RecommendationsRefreshAction extends AFreeplaneAction {
 	}
 
 	public void setEnabled() {
-		if (ServiceController.getController().isRecommendationsAllowed() && CommunicationsController.getController().getUserName() != null) {
+		if (ServiceController.getUser().isRecommendationsEnabled() && ServiceController.getUser().isValid()) {
 			setEnabled(true);
 		}
 		else {

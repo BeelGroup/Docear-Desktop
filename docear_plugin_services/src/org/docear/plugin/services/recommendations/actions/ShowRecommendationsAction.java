@@ -3,7 +3,6 @@ package org.docear.plugin.services.recommendations.actions;
 import java.awt.event.ActionEvent;
 
 import org.docear.plugin.services.ServiceController;
-import org.docear.plugin.services.communications.CommunicationsController;
 import org.docear.plugin.services.recommendations.RecommendationsController;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.plugin.workspace.components.menu.CheckEnableOnPopup;
@@ -19,7 +18,7 @@ public class ShowRecommendationsAction extends AFreeplaneAction {
 	}
 
 	public void setEnabled() {
-		if (ServiceController.getController().isRecommendationsAllowed() && CommunicationsController.getController().getUserName() != null ) {
+		if (ServiceController.getUser().isRecommendationsEnabled() && ServiceController.getUser().isValid()) {
 			setEnabled(true);
 		}
 		else {

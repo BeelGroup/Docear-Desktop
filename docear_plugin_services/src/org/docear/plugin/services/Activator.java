@@ -8,9 +8,7 @@ import java.util.List;
 
 import org.docear.plugin.core.DocearService;
 import org.docear.plugin.core.IDocearControllerExtension;
-import org.docear.plugin.services.communications.CommunicationsController;
-import org.docear.plugin.services.communications.DocearAuthenticator;
-import org.docear.plugin.services.communications.components.dialog.ProxyAuthenticationDialog;
+import org.docear.plugin.services.communications.components.dialog.DocearProxyAuthenticator;
 import org.freeplane.core.resources.IFreeplanePropertyListener;
 import org.freeplane.core.resources.OptionPanelController;
 import org.freeplane.core.resources.OptionPanelController.PropertyLoadListener;
@@ -28,7 +26,6 @@ public class Activator extends DocearService {
 	}
 
 	public void startService(BundleContext context, ModeController modeController) {
-		CommunicationsController.initialize(modeController);
 		ServiceController.initialize(modeController);
 	}
 
@@ -57,10 +54,9 @@ public class Activator extends DocearService {
 				});
 				
 				//proxy server handling
-				Authenticator.setDefault(new DocearAuthenticator());
-				if(Boolean.parseBoolean(controller.getResourceController().getProperty(CommunicationsController.DOCEAR_USE_PROXY, "false"))) {
-					ProxyAuthenticationDialog dialog =  new ProxyAuthenticationDialog();
-					dialog.showDialog();
+				Authenticator.setDefault(new DocearProxyAuthenticator());
+				if(DocearProxyAuthenticator.useProxyServer()) {
+					DocearProxyAuthenticator.requestAuthenticationData();
 				}
 				LogUtils.info("Docear Services controller extension initiated.");
 			}

@@ -1,4 +1,4 @@
-package org.docear.plugin.services.communications;
+package org.docear.plugin.services.communications.features;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,8 +8,9 @@ import javax.ws.rs.core.MediaType;
 
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.event.DocearEvent;
-import org.docear.plugin.services.communications.features.DocearServiceException;
-import org.docear.plugin.services.communications.features.DocearServiceException.DocearServiceExceptionType;
+import org.docear.plugin.services.DocearServiceException;
+import org.docear.plugin.services.DocearServiceException.DocearServiceExceptionType;
+import org.docear.plugin.services.ServiceController;
 import org.freeplane.core.util.LogUtils;
 
 import com.sun.jersey.api.client.ClientHandlerException;
@@ -29,12 +30,12 @@ public class FiletransferClient {
 	private WebResource serviceResource;
 	
 	public FiletransferClient(String restPath) {
-		serviceResource = CommunicationsController.getController().getServiceResource();
-		serviceResource = serviceResource.path("/user/" + CommunicationsController.getController().getUserName() + "/" + restPath);
+		serviceResource = ServiceController.getConnectionController().getServiceResource();
+		serviceResource = serviceResource.path("/user/" + ServiceController.getUser().getUsername() + "/" + restPath);
 	}
 	
 	public boolean sendFile(File file, boolean deleteIfTransferred) throws DocearServiceException {
-		if (!CommunicationsController.getController().transmissionPrepared() || file == null) {
+		if (!ServiceController.getUser().isTransmissionEnabled() || ServiceController.getUser().isOnline() || file == null) {
 			return false;
 		}
 		DocearController.getController().dispatchDocearEvent(new DocearEvent(this.getClass(), START_UPLOAD));
@@ -47,7 +48,7 @@ public class FiletransferClient {
 				FormDataMultiPart formDataMultiPart = new FormDataMultiPart();
 				formDataMultiPart.field("file", data, MediaType.APPLICATION_OCTET_STREAM_TYPE);					
 				
-				ClientResponse response = CommunicationsController.getController().post(serviceResource.type(MediaType.MULTIPART_FORM_DATA_TYPE), formDataMultiPart);
+				ClientResponse response = ServiceController.getConnectionController().post(serviceResource.type(MediaType.MULTIPART_FORM_DATA_TYPE), formDataMultiPart);
 				try {
 					if(response==null || !response.getClientResponseStatus().equals(ClientResponse.Status.OK)) {
 						//System.out.println(response.getEntity(String.class));
@@ -94,7 +95,7 @@ public class FiletransferClient {
 	
 	public boolean sendFiles(File[] files, boolean deleteIfTransferred) throws DocearServiceException {
 		for(File file : files) {
-			if(!CommunicationsController.getController().allowTransmission()) {
+			if(!ServiceController.getUser().isTransmissionEnabled()) {
 				break;
 			}
 			if(!sendFile(file, deleteIfTransferred)) {

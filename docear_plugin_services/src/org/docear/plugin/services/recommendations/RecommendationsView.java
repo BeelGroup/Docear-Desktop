@@ -33,8 +33,8 @@ import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.event.DocearEvent;
 import org.docear.plugin.core.event.DocearEventType;
 import org.docear.plugin.core.io.IOTools;
+import org.docear.plugin.services.ServiceController;
 import org.docear.plugin.services.actions.DocearAllowUploadChooserAction;
-import org.docear.plugin.services.communications.CommunicationsController;
 import org.docear.plugin.services.recommendations.dialog.RecommendationEntryComponent;
 import org.docear.plugin.services.recommendations.model.RecommendationsModel;
 import org.docear.plugin.services.recommendations.model.RecommendationsModelNode;
@@ -126,7 +126,7 @@ public class RecommendationsView extends JPanel {
 	}
 	
 	public void updateTitle() {
-		String label = CommunicationsController.getController().getRegisteredUserName();
+		String label = ServiceController.getUser().getName();
 		if(label != null && label.trim().length() > 0) {
 			setName(TextUtils.format("recommendations.map.label.forUser", label));
 		} 
@@ -228,7 +228,7 @@ public class RecommendationsView extends JPanel {
 				if(connection instanceof HttpURLConnection) {
 					HttpURLConnection hconn = (HttpURLConnection) connection;							
 				    hconn.setInstanceFollowRedirects(false);
-				    String accessToken = CommunicationsController.getController().getAccessToken();
+				    String accessToken = ServiceController.getUser().getAccessToken();
 				    hconn.addRequestProperty("accessToken", accessToken);
 				    
 				    int response = hconn.getResponseCode();

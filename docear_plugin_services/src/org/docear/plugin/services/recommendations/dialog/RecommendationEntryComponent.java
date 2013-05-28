@@ -17,7 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 
-import org.docear.plugin.services.communications.CommunicationsController;
+import org.docear.plugin.services.communications.components.dialog.DocearProxyAuthenticator;
 import org.docear.plugin.services.recommendations.RecommendationEntry;
 import org.freeplane.core.util.TextUtils;
 
@@ -108,7 +108,7 @@ public class RecommendationEntryComponent extends JPanel {
 			}			
 		};
 		if("ftp".equals(recommendation.getLink().getProtocol().toLowerCase())) {
-			if(!CommunicationsController.useProxyServer()) {		
+			if(!DocearProxyAuthenticator.useProxyServer()) {		
 				lblImportButton.addMouseListener(downloadMouseListener);
 			}
 			else {

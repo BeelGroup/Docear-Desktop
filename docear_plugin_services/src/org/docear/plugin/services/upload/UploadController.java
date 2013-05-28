@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import org.docear.plugin.core.DocearController;
@@ -20,12 +21,11 @@ import org.docear.plugin.core.features.DocearMapModelExtension;
 import org.docear.plugin.core.io.DirectoryObserver;
 import org.docear.plugin.core.logging.DocearLogger;
 import org.docear.plugin.services.ServiceController;
-import org.docear.plugin.services.communications.CommunicationsController;
+import org.docear.plugin.services.user.DocearUser;
+import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.MapModel;
 
 public abstract class UploadController {
-	private final File uploadBufferDirectory = new File(CommunicationsController.getController().getCommunicationsQueuePath(), "mindmaps");
-	
 	private static FileFilter zipFilter = new FileFilter() {
 		public boolean accept(File f) {
 			return (f != null && f.getName().toLowerCase().endsWith(".zip"));
@@ -46,16 +46,16 @@ public abstract class UploadController {
 	
 	private final UploadThread uploadThread = new UploadThread(this);
 	
-	
+	private final Set<File> uploadFiles = new HashSet<File>();
 	/**
 	 * @return
 	 */
-	public abstract boolean isInformationRetrievalAllowed();
+	public abstract boolean isUploadEnabled();
 
 	/**
 	 * @return
 	 */
-	public abstract boolean isBackupAllowed();
+	public abstract boolean isBackupEnabled();
 	
 	/**
 	 * Provides the time in minutes until the next upload cycle should be started
@@ -67,28 +67,58 @@ public abstract class UploadController {
 	/**
 	 * @return
 	 */
-	public File[] getUploadPackages() {
-		return getUploadDirectory().listFiles(zipFilter);
+	public abstract File getUploadDirectory();
+	
+	
+	public void addToBuffer(File file) {
+		if(file == null) {
+			return;
+		}
+		synchronized (uploadFiles) {
+			try {
+				new ZipFile(file);
+				uploadFiles.add(file);
+			}
+			catch(Exception e) {
+				LogUtils.warn("org.docear.plugin.services.upload.UploadThread.fileCreated -> corrupted ZipFile: "+file.getAbsolutePath());
+				file.delete();				
+			}			
+		}
 	}
 
+	public void fileFinished(File file) {
+		if(file == null) {
+			return;
+		}
+		synchronized (uploadFiles) {
+			uploadFiles.remove(file);
+		}
+	}
+	
+	public boolean hasBufferedFiles() {
+		synchronized (uploadFiles) {
+			return uploadFiles.iterator().hasNext();
+		}
+	}
+	public File getNextBufferedFile() {
+		synchronized (uploadFiles) {
+			return uploadFiles.iterator().next();
+		}
+	}
 	/**
 	 * @return
 	 */
-	public File getUploadDirectory() {
-		if (!uploadBufferDirectory.exists()) {
-			uploadBufferDirectory.mkdirs();
-		}
-		return uploadBufferDirectory;
+	public File[] getUploadPackages() {
+		return getUploadDirectory().listFiles(zipFilter);
 	}
 	
 	/**
 	 * @param map
 	 */
 	public void addMapToUpload(MapModel map) {
-		boolean backup = isBackupAllowed();
-		boolean ir = isInformationRetrievalAllowed();
+		boolean backup = isBackupEnabled();
 		File file = map.getFile();
-		if(file == null || (!backup && !ir)) {
+		if(file == null || (!backup && !isUploadEnabled())) {
 			return;
 		}
 		DocearMapModelExtension mapExt = map.getExtension(DocearMapModelExtension.class);
@@ -235,8 +265,8 @@ public abstract class UploadController {
 	 * @return
 	 */
 	private Properties getMapProperties(MapModel map) {
-		ServiceController serviceController = ServiceController.getController();
-		DocearController docearController = DocearController.getController();
+		DocearUser userSettings = ServiceController.getUser();
+ 		DocearController docearController = DocearController.getController();
 				
 		DocearMapModelExtension dmme = map.getExtension(DocearMapModelExtension.class);
 		if (dmme == null) {
@@ -251,11 +281,13 @@ public abstract class UploadController {
 		properties.put("mindmap_id", dmme.getMapId());
 		properties.put("timestamp", ""+System.currentTimeMillis());
 		properties.put("is_library_map", new Boolean(isLibraryMap).toString());
-		properties.put("backup", new Boolean(serviceController.isBackupAllowed()).toString());
-		properties.put("allow_content_research", new Boolean(serviceController.isResearchAllowed()).toString());
-		properties.put("allow_information_retrieval", new Boolean(serviceController.isInformationRetrievalSelected()).toString());		
-		properties.put("allow_usage_research", new Boolean(serviceController.isUsageMiningAllowed()).toString());
-		properties.put("allow_recommendations", new Boolean(serviceController.isRecommendationsAllowed()).toString());
+		properties.put("backup", new Boolean(userSettings.isBackupEnabled()).toString());
+		properties.put("allow_content_research", new Boolean(false).toString());
+		properties.put("allow_information_retrieval", new Boolean(false).toString());		
+		properties.put("allow_usage_research", new Boolean(false).toString());
+		properties.put("allow_recommendations", new Boolean(userSettings.isRecommendationsEnabled()).toString());
+		properties.put("enable_synchronization", new Boolean(userSettings.isSynchronizationEnabled()).toString());
+		properties.put("enable_collaboration", new Boolean(userSettings.isCollaborationEnabled()).toString());
 		
 		if (typeName != null && typeName.trim().length()>0) {
 			properties.put("map_type", typeName);

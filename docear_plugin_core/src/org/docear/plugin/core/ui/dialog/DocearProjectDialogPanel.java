@@ -74,20 +74,20 @@ public class DocearProjectDialogPanel extends JPanel {
 	private JLabel lblBibWarn;
 	
 	public DocearProjectDialogPanel() {
-		confirmButton = new Component() {
-			private static final long serialVersionUID = 1L;
-			private Component confirmButton;
-
-			@Override
-			public void setEnabled(boolean b) {
-				if(confirmButton == null) {
-					findButton();
-				}
-				if(confirmButton != null) {
-					confirmButton.setEnabled(b);
-				}
-			}		
-		};
+//		confirmButton = new Component() {
+//			private static final long serialVersionUID = 1L;
+//			private Component confirmButton;
+//
+//			@Override
+//			public void setEnabled(boolean b) {
+//				if(confirmButton == null) {
+//					findButton();
+//				}
+//				if(confirmButton != null) {
+//					confirmButton.setEnabled(b);
+//				}
+//			}		
+//		};
 		setPreferredSize(new Dimension(480, 440));
 		setLayout(new FormLayout(new ColumnSpec[] {
 				FormFactory.RELATED_GAP_COLSPEC,

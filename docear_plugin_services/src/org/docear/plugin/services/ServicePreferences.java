@@ -5,7 +5,7 @@ import java.beans.PropertyChangeListener;
 import java.net.URL;
 import java.util.Collection;
 
-import org.docear.plugin.services.communications.CommunicationsController;
+import org.docear.plugin.services.communications.components.dialog.DocearProxyAuthenticator;
 import org.freeplane.core.resources.OptionPanelController;
 import org.freeplane.core.resources.OptionPanelController.PropertyLoadListener;
 import org.freeplane.core.resources.components.BooleanProperty;
@@ -33,16 +33,16 @@ public class ServicePreferences {
 		optionController.addPropertyLoadListener(new PropertyLoadListener() {
 			public void propertiesLoaded(Collection<IPropertyControl> properties) {
 				for(IPropertyControl property : properties){
-					if(property != null && property.getName() != null && property.getName().equalsIgnoreCase(CommunicationsController.DOCEAR_USE_PROXY)){
-						((IPropertyControl) optionController.getPropertyControl(CommunicationsController.DOCEAR_PROXY_HOST)).setEnabled(((BooleanProperty)property).getBooleanValue());			
-						((IPropertyControl) optionController.getPropertyControl(CommunicationsController.DOCEAR_PROXY_PORT)).setEnabled(((BooleanProperty)property).getBooleanValue());						
+					if(property != null && property.getName() != null && property.getName().equalsIgnoreCase(DocearProxyAuthenticator.DOCEAR_USE_PROXY)){
+						((IPropertyControl) optionController.getPropertyControl(DocearProxyAuthenticator.DOCEAR_PROXY_HOST)).setEnabled(((BooleanProperty)property).getBooleanValue());			
+						((IPropertyControl) optionController.getPropertyControl(DocearProxyAuthenticator.DOCEAR_PROXY_PORT)).setEnabled(((BooleanProperty)property).getBooleanValue());						
 					}
 				}
-				((BooleanProperty) optionController.getPropertyControl(CommunicationsController.DOCEAR_USE_PROXY))
+				((BooleanProperty) optionController.getPropertyControl(DocearProxyAuthenticator.DOCEAR_USE_PROXY))
 						.addPropertyChangeListener(new PropertyChangeListener() {
 							public void propertyChange(PropertyChangeEvent evt) {
-								((IPropertyControl) optionController.getPropertyControl(CommunicationsController.DOCEAR_PROXY_HOST)).setEnabled(Boolean.parseBoolean(evt.getNewValue().toString()));			
-								((IPropertyControl) optionController.getPropertyControl(CommunicationsController.DOCEAR_PROXY_PORT)).setEnabled(Boolean.parseBoolean(evt.getNewValue().toString()));								
+								((IPropertyControl) optionController.getPropertyControl(DocearProxyAuthenticator.DOCEAR_PROXY_HOST)).setEnabled(Boolean.parseBoolean(evt.getNewValue().toString()));			
+								((IPropertyControl) optionController.getPropertyControl(DocearProxyAuthenticator.DOCEAR_PROXY_PORT)).setEnabled(Boolean.parseBoolean(evt.getNewValue().toString()));								
 							}
 						});				
 			}

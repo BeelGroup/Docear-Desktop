@@ -1,12 +1,9 @@
-package org.docear.plugin.services.workspace;
+package org.docear.plugin.core.ui.wizard;
 
-import org.docear.plugin.services.ServiceController;
-import org.freeplane.core.util.TextUtils;
-import org.freeplane.plugin.workspace.nodes.WorkspaceRootNode;
+import java.util.Stack;
 
-public class DocearWorkspaceRootNode extends WorkspaceRootNode {
-
-	private static final long serialVersionUID = 4058474904352649840L;
+public class WizardTraverseLog {
+	Stack<Object> pageTraverseLog = new Stack<Object>();
 	
 	/***********************************************************************************
 	 * CONSTRUCTORS
@@ -15,14 +12,21 @@ public class DocearWorkspaceRootNode extends WorkspaceRootNode {
 	/***********************************************************************************
 	 * METHODS
 	 **********************************************************************************/
-	public String getName() {
-		String text = TextUtils.getText("docear.node.root.default");
-		String name = ServiceController.getUser().getUsername();
-		if(name != null) {
-			text = TextUtils.format("docear.node.root.name", name);
+
+	public void add(WizardPageDescriptor desc) {
+		if(!desc.getPage().skipOnBack() && (pageTraverseLog.isEmpty() || !desc.getIdentifier().equals(pageTraverseLog.peek()))) {
+			pageTraverseLog.push(desc.getIdentifier());
 		}
-		return text; 
 	}
+	
+	public WizardPageDescriptor getPreviousPage(WizardContext context) {
+		try {
+			return context.getModel().getPage(pageTraverseLog.pop());
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
 	 **********************************************************************************/

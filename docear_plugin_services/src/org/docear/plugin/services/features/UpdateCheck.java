@@ -4,11 +4,12 @@ import java.io.StringReader;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import javax.ws.rs.core.MultivaluedMap;
 
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.Version;
 import org.docear.plugin.services.ServiceController;
-import org.docear.plugin.services.communications.CommunicationsController;
+import org.docear.plugin.services.communications.features.DocearServiceResponse;
 import org.docear.plugin.services.components.dialog.UpdateCheckerDialogPanel;
 import org.docear.plugin.services.features.creators.ApplicationCreator;
 import org.docear.plugin.services.features.creators.BuildNumberCreator;
@@ -29,6 +30,9 @@ import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
+
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 public class UpdateCheck {
 	public static final String DOCEAR_UPDATE_CHECKER_DISABLE = "docear.update_checker.disable";
@@ -78,7 +82,7 @@ public class UpdateCheck {
 			else {
 				minStatus = Version.StatusName.stable.name();
 			}				
-			xml = CommunicationsController.getController().getLatestVersionXml(minStatus);
+			xml = requestLatestVersionXml(minStatus);
 			load(xml);
 			application = getApplication();
 			
@@ -115,6 +119,19 @@ public class UpdateCheck {
 		}		
 	}
 	
+	private String requestLatestVersionXml(String minStatus) throws Exception {
+		if (minStatus == null) {
+			return null;
+		}
+		MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+		queryParams.putSingle("minStatus", minStatus);
+		DocearServiceResponse response = ServiceController.getConnectionController().get("/applications/docear/versions/latest", queryParams);
+		if(DocearServiceResponse.Status.OK.equals(response.getStatus())) {
+			return response.getContentAsString();
+		}
+		return null;
+	}
+
 	private boolean showUpdateCheckerDialog(int compCode, String choice) {
 		if (choice.equals(DOCEAR_UPDATE_CHECKER_ALL) && compCode >= Version.CompareCode.DEVEL.code) {
 			return true;

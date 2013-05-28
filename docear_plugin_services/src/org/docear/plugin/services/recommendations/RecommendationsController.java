@@ -21,7 +21,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.apache.commons.lang.NullArgumentException;
 import org.docear.plugin.core.util.CoreUtils;
 import org.docear.plugin.services.ServiceController;
-import org.docear.plugin.services.communications.CommunicationsController;
+import org.docear.plugin.services.communications.features.DocearConnectionProvider;
 import org.docear.plugin.services.communications.features.DocearServiceResponse;
 import org.docear.plugin.services.communications.features.DocearServiceResponse.Status;
 import org.docear.plugin.services.recommendations.model.RecommendationsModel;
@@ -78,7 +78,7 @@ public abstract class RecommendationsController {
 	
 	private static RecommendationsModel requestRecommendations() throws AlreadyInUseException {
 		RecommendationsModel model = null;		
-		if (ServiceController.getController().isRecommendationsAllowed()) {
+		if (ServiceController.getUser().isRecommendationsEnabled()) {
 			final ProgressMonitor monitor = new ProgressMonitor(UITools.getFrame(), TextUtils.getText("recommendations.request.wait.text"), null, 0, 100);
 			monitor.setMillisToDecideToPopup(0);
 			monitor.setMillisToPopup(0);
@@ -99,7 +99,7 @@ public abstract class RecommendationsController {
 					}
 					
 				});
-				model = task.get(CommunicationsController.CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
+				model = task.get(DocearConnectionProvider.CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
 			}
 			catch (Exception e) {
 				executor.shutdownNow();
@@ -142,13 +142,13 @@ public abstract class RecommendationsController {
 			LogUtils.info("requesting recommendations");
 		}
 		try {
-			String name = CommunicationsController.getController().getUserName();
+			String name = ServiceController.getUser().getUsername();
 			if (!CoreUtils.isEmpty(name)) {
 				MultivaluedMap<String,String> params = new StringKeyStringValueIgnoreCaseMultivaluedMap();
 				if(!userRequest) {
 					params.add("auto", "true");
 				}
-				DocearServiceResponse response = CommunicationsController.getController().get("/user/" + name + "/recommendations/documents", params);
+				DocearServiceResponse response = ServiceController.getConnectionController().get("/user/" + name + "/recommendations/documents", params);
 	
 				if (response.getStatus() == Status.OK) {
 					try {

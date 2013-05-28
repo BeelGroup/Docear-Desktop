@@ -1,38 +1,18 @@
 package org.docear.plugin.services.upload;
 
 import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.zip.ZipFile;
 
 import org.docear.plugin.core.features.DocearThread;
-import org.docear.plugin.core.io.DirectoryObserver;
 import org.docear.plugin.core.logging.DocearLogger;
-import org.docear.plugin.services.communications.CommunicationsController;
-import org.docear.plugin.services.communications.FiletransferClient;
-import org.freeplane.core.util.LogUtils;
+import org.docear.plugin.services.communications.features.FiletransferClient;
 
-public class UploadThread extends DocearThread implements DirectoryObserver {
+public class UploadThread extends DocearThread {
 	
 	private final UploadController uploadCtrl;
-	
-	private Set<File> uploadFiles = new HashSet<File>();
 	
 	public UploadThread(UploadController controller) {
 		super("Docear Upload-Thread");
 		uploadCtrl = controller;
-		uploadCtrl.addUploadDirectoryObserver(this);
-		loadOldFiles();
-	}
-	
-	private void loadOldFiles() {
-		File[] files = uploadCtrl.getUploadPackages();
-		if(files == null) {
-			return;
-		}
-		for(File file : files) {
-			fileCreated(file);
-		}
 	}
 
 	public void execute() {
@@ -40,31 +20,26 @@ public class UploadThread extends DocearThread implements DirectoryObserver {
 			DocearLogger.info(this+" running.");
 			int backupMinutes = uploadCtrl.getUploadInterval();
 			try {
-				if (uploadCtrl.isBackupAllowed() || uploadCtrl.isInformationRetrievalAllowed()) {
+				if (uploadCtrl.isBackupEnabled() || uploadCtrl.isUploadEnabled()) {
 					DocearLogger.info(this.toString()+": uploading packages to the server ...");
-					File[] files;
-					synchronized (uploadFiles) {
-						files = uploadFiles.toArray(new File[]{}); //uploadCtrl.getUploadPackages();
-					}
-					if (files != null && files.length>0) {
-						FiletransferClient client = CommunicationsController.getController().getFileTransferClient("mindmaps");
-						for(File file : files) {
-							//boolean success = CommunicationsController.getController().postFileToDocearService("mindmaps", file, true);
-							if(!file.exists()) {
-								fileRemoved(file);
+					if (uploadCtrl.hasBufferedFiles()) {
+						FiletransferClient client = new FiletransferClient("mindmaps");
+						while(uploadCtrl.hasBufferedFiles()) {
+							File file = uploadCtrl.getNextBufferedFile();
+							if(file == null || !file.exists()) {
+								uploadCtrl.fileFinished(file);
 								continue;
 							}
 							boolean success = false;
 							try {
-								//DOCEAR - debug: 
-								success = true; fileRemoved(file);//client.sendFile(file, true);
+								success = client.sendFile(file, true);
 							}
 							catch(Exception e) {
 								DocearLogger.warn("org.docear.plugin.services.upload.UploadThread.execute() -> sendFile: "+e.getMessage());
 							}
 							if (success) {
 								DocearLogger.info(this.toString()+": synchronizing '"+file+"' successfull");
-								fileRemoved(file);
+								uploadCtrl.fileFinished(file);
 							}
 							else {
 								DocearLogger.info(this.toString()+": synchronizing '"+file+"' failed");
@@ -87,25 +62,4 @@ public class UploadThread extends DocearThread implements DirectoryObserver {
 		}
 
 	}
-
-	public void fileCreated(File file) {
-		synchronized (uploadFiles) {
-			try {
-				new ZipFile(file);
-				uploadFiles.add(file);
-			}
-			catch(Exception e) {
-				LogUtils.warn("org.docear.plugin.services.upload.UploadThread.fileCreated -> corrupted ZipFile: "+file.getAbsolutePath());
-				file.delete();				
-			}			
-		}
-	}
-
-	public void fileRemoved(File file) {
-		synchronized (uploadFiles) {
-			uploadFiles.remove(file);
-		}
-	}
-	
-
 }

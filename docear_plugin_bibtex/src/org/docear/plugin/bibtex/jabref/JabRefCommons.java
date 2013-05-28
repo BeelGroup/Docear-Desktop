@@ -48,7 +48,7 @@ import org.docear.plugin.bibtex.dialogs.PdfMetadataListDialog;
 import org.docear.plugin.bibtex.dialogs.PdfTitleQuestionDialog;
 import org.docear.plugin.core.mindmap.MindmapUpdateController;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
-import org.docear.plugin.services.communications.CommunicationsController;
+import org.docear.plugin.services.ServiceController;
 import org.docear.plugin.services.communications.features.DocearServiceResponse;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;
@@ -304,7 +304,7 @@ public abstract class JabRefCommons {
 	}
 	
 	public static void showMetadataDialog(URI uri) throws InterruptedException, ExecutionException, IOException {
-		String userName = CommunicationsController.getController().getUserName();
+		String userName = ServiceController.getController().getUser().getUsername();
 //		if (userName == null) {
 //			JOptionPane.showMessageDialog(UITools.getFrame(), TextUtils.getText("docear.metadata.import.requirement_failed"));
 //			return;
@@ -355,7 +355,7 @@ public abstract class JabRefCommons {
 	}
 	
 	public static void showMetadataUpdateDialog(URI uri, BibtexEntry oldEntry) throws InterruptedException, ExecutionException, IOException {
-		String userName = CommunicationsController.getController().getUserName();
+		String userName = ServiceController.getController().getUser().getUsername();
 //		if (userName == null) {
 //			JOptionPane.showMessageDialog(UITools.getFrame(), TextUtils.getText("docear.metadata.import.requirement_failed"));
 //			return;
@@ -421,7 +421,7 @@ public abstract class JabRefCommons {
 					params.add("username", userName);
 					params.add("commit", "true");
 					params.add("id", bibtexID);
-					DocearServiceResponse serviceResponse = CommunicationsController.getController().put("/internal/documents/" + hash + "/metadata", params);
+					DocearServiceResponse serviceResponse = ServiceController.getConnectionController().put("/internal/documents/" + hash + "/metadata", params);
 					if (serviceResponse.getStatus() != DocearServiceResponse.Status.OK) {
 						LogUtils.info("org.docear.plugin.bibtex.actions.ImportMetadateForNodeLink.commit().TASK: " + serviceResponse.getContentAsString());
 					}
@@ -450,7 +450,7 @@ public abstract class JabRefCommons {
 					MultivaluedMap<String, String> params = new StringKeyStringValueIgnoreCaseMultivaluedMap();
 					params.add("username", userName);
 					params.add("commit", "false");
-					DocearServiceResponse serviceResponse = CommunicationsController.getController().put("/internal/documents/" + hash + "/metadata", params);
+					DocearServiceResponse serviceResponse = ServiceController.getConnectionController().put("/internal/documents/" + hash + "/metadata", params);
 					if (serviceResponse.getStatus() != DocearServiceResponse.Status.OK) {
 						LogUtils.info("org.docear.plugin.bibtex.actions.ImportMetadateForNodeLink.rejectAll().TASK: " + serviceResponse.getContentAsString());
 					}
@@ -478,7 +478,7 @@ public abstract class JabRefCommons {
 			public void run() {
 				try {
 					StringBuilder sb = new StringBuilder();
-					DocearServiceResponse serviceResponse = CommunicationsController.getController().get("/internal/documents/" + hash + "/metadata", params);
+					DocearServiceResponse serviceResponse = ServiceController.getConnectionController().get("/internal/documents/" + hash + "/metadata", params);
 					if (serviceResponse.getStatus() == DocearServiceResponse.Status.FAILURE) {
 						// JOptionPane.showMessageDialog(UITools.getFrame(),
 						// serviceResponse.getContentAsString(),

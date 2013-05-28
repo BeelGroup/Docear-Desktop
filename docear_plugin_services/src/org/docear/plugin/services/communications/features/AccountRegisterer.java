@@ -11,11 +11,9 @@ import java.util.concurrent.TimeoutException;
 
 import javax.ws.rs.core.MultivaluedMap;
 
-import org.docear.plugin.core.util.CoreUtils;
+import org.docear.plugin.services.DocearServiceException;
+import org.docear.plugin.services.DocearServiceException.DocearServiceExceptionType;
 import org.docear.plugin.services.ServiceController;
-import org.docear.plugin.services.communications.CommunicationsController;
-import org.docear.plugin.services.communications.features.DocearServiceException.DocearServiceExceptionType;
-import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.omg.CORBA.portable.UnknownException;
@@ -28,7 +26,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 public class AccountRegisterer {
 	private static final int USER_TYPE_REGISTERED = 2;
-	private static final int USER_TYPE_ANONYMOUS = 3;
+//	private static final int USER_TYPE_ANONYMOUS = 3;
 	
 	private class TaskState {
 		public Exception ex = null;
@@ -38,19 +36,12 @@ public class AccountRegisterer {
 
 	}
 
-	public void createAnonymousUser() throws DocearServiceException, URISyntaxException, CancellationException {
-		if (ServiceController.getController().getInformationRetrievalCode() > 0) {
-			String name = createAnonymousUserName();
-			createUser(name, null, USER_TYPE_ANONYMOUS, null, null, false, null);
-			CommunicationsController.getController().tryToConnect(name, null, false, true);
-		}
-	}
-
 	public void createRegisteredUser(String name, String password, String email, Integer birthYear, Boolean newsLetter, Boolean isMale)
 			throws DocearServiceException, URISyntaxException, CancellationException {
 		createUser(name, password, USER_TYPE_REGISTERED, email, birthYear, newsLetter, isMale);
-		ResourceController.getResourceController().setProperty(CommunicationsController.DOCEAR_CONNECTION_USERNAME_PROPERTY, name);
-		CommunicationsController.getController().tryToConnect(name, password, true, true);
+		//DOCEAR - ToDo: 
+		//ResourceController.getResourceController().setProperty(CommunicationsController.DOCEAR_CONNECTION_USERNAME_PROPERTY, name);
+		//CommunicationsController.getController().tryToConnect(name, password, true, true);
 
 	}
 
@@ -78,16 +69,16 @@ public class AccountRegisterer {
 					queryParams.add("generalNewsLetter", newsLetter == null ? null : newsLetter.toString());
 					queryParams.add("isMale", isMale == null ? null : isMale.toString());
 		
-					WebResource res = CommunicationsController.getController().getServiceResource().path("/user/" + name);
+					WebResource res = ServiceController.getConnectionController().getServiceResource().path("/user/" + name);
 					long time = System.currentTimeMillis();
-					ClientResponse response = CommunicationsController.getController().post(res, queryParams);
-					LogUtils.info("user creation took (ms): "+(System.currentTimeMillis()-time));
+					ClientResponse response = ServiceController.getConnectionController().post(res, queryParams);
+					LogUtils.info("user registration took (ms): "+(System.currentTimeMillis()-time));
 					if(Thread.interrupted()) {
 						throw new DocearServiceException("request aborted");
 					}
 					try {
 						if (response.getClientResponseStatus() != Status.OK) {
-							throw new DocearServiceException(CommunicationsController.getErrorMessageString(response));
+							throw new DocearServiceException(DocearConnectionProvider.getErrorMessageString(response));
 						}
 					}
 					finally {
@@ -114,7 +105,7 @@ public class AccountRegisterer {
 		}, state);
 		long time = System.currentTimeMillis();
 		try {			
-			future.get(CommunicationsController.CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
+			future.get(DocearConnectionProvider.CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {
 			future.cancel(true);
 			execSrv.shutdown();
@@ -143,15 +134,7 @@ public class AccountRegisterer {
 
 	}
 
-	private String createAnonymousUserName() {
-		return System.currentTimeMillis() + "_" + CoreUtils.createRandomString(5);
-	}
-
-	// public static void main(String[] args) {
-	// AccountRegisterer registerer = new AccountRegisterer();
-	//
-	// //registerer.registerUser("stefan", "qvii-c", "", null, false);
-	// response = registerer.createAnonymousUser();
-	// }
-
+//	private String createAnonymousUserName() {
+//		return System.currentTimeMillis() + "_" + CoreUtils.createRandomString(5);
+//	}
 }

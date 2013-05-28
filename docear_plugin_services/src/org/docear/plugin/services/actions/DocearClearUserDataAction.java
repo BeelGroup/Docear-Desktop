@@ -2,7 +2,6 @@ package org.docear.plugin.services.actions;
 
 import java.awt.event.ActionEvent;
 
-import org.docear.plugin.services.communications.CommunicationsController;
 import org.freeplane.core.ui.AFreeplaneAction;
 
 public class DocearClearUserDataAction extends AFreeplaneAction {
@@ -16,7 +15,7 @@ public class DocearClearUserDataAction extends AFreeplaneAction {
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		CommunicationsController.getController().resetRegisteredUser();
+		//CommunicationsController.getController().resetRegisteredUser();
 	}
 
 }

@@ -9,11 +9,10 @@ import java.util.concurrent.CancellationException;
 import javax.swing.JOptionPane;
 
 import org.docear.plugin.core.DocearController;
+import org.docear.plugin.services.DocearServiceException;
+import org.docear.plugin.services.DocearServiceException.DocearServiceExceptionType;
 import org.docear.plugin.services.ServiceController;
-import org.docear.plugin.services.communications.CommunicationsController;
 import org.docear.plugin.services.communications.features.AccountRegisterer;
-import org.docear.plugin.services.communications.features.DocearServiceException;
-import org.docear.plugin.services.communications.features.DocearServiceException.DocearServiceExceptionType;
 import org.docear.plugin.services.components.dialog.DocearIRChoiceDialogPanel;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.LogUtils;
@@ -90,11 +89,11 @@ public class DocearServiceSettingsDialogListener implements ActionListener {
 			}
 			else {
 				try {
-					DocearController.getController().getSemaphoreController().lock(CommunicationsController.CREATING_USER);
-					accountRegisterer.createRegisteredUser(settings.getUserName(), settings.getPassword(), settings.getEmail(), settings.getBirthYear(), settings.wantsNewsletter(), settings.isMale());
+					//DocearController.getController().getSemaphoreController().lock(CommunicationsController.CREATING_USER);
+					//accountRegisterer.createRegisteredUser(settings.getUserName(), settings.getPassword(), settings.getEmail(), settings.getBirthYear(), settings.wantsNewsletter(), settings.isMale());
 				}
 				finally {
-					DocearController.getController().getSemaphoreController().unlock(CommunicationsController.CREATING_USER);
+					//DocearController.getController().getSemaphoreController().unlock(CommunicationsController.CREATING_USER);
 				}
 			}
 		}
@@ -102,10 +101,10 @@ public class DocearServiceSettingsDialogListener implements ActionListener {
 			if (!isEmpty(settings.getUserName()) && !isEmpty(settings.getPassword())
 					|| "".equals(ResourceController.getResourceController().getProperty("docear.service.connect.username","")) && !isEmpty(settings.getUserName())
 					) {			
-				CommunicationsController.getController().tryToConnect(settings.getUserName(), settings.getPassword(), true, false);
+				//CommunicationsController.getController().tryToConnect(settings.getUserName(), settings.getPassword(), true, false);
 				
 				
-				if (ServiceController.getController().isBackupAllowed()) {
+				if (ServiceController.getController().isBackupEnabled()) {
 					return true;
 				}
 				else {
@@ -118,23 +117,23 @@ public class DocearServiceSettingsDialogListener implements ActionListener {
 		if (code > 0) {
 			//if user name is empty --> create anonymous user automatically when the information retrieval action runs 
 			if (!isEmpty(settings.getUserName())) {
-				if(!isEmpty(CommunicationsController.getController().getRegisteredAccessToken())) {
-					return true;
-				}
-				if (isEmpty(settings.getPassword())) {
-					//JOptionPane.showMessageDialog(UITools.getFrame(), TextUtils.getText("docear.uploadchooser.warning.nopassword"), TextUtils.getText("docear.uploadchooser.warning.nopassword.title"), JOptionPane.WARNING_MESSAGE);
-					throw new DocearServiceException(TextUtils.getText("docear.uploadchooser.warning.nopassword"));
-					//return false;
-				}
-				else {
-					CommunicationsController.getController().tryToConnect(settings.getUserName(), settings.getPassword(), true, false);
-					if (!isEmpty(CommunicationsController.getController().getRegisteredAccessToken())) {
-						return true;
-					}
-					else {
-						return false;
-					}
-				}
+//				if(!isEmpty(CommunicationsController.getController().getRegisteredAccessToken())) {
+//					return true;
+//				}
+//				if (isEmpty(settings.getPassword())) {
+//					//JOptionPane.showMessageDialog(UITools.getFrame(), TextUtils.getText("docear.uploadchooser.warning.nopassword"), TextUtils.getText("docear.uploadchooser.warning.nopassword.title"), JOptionPane.WARNING_MESSAGE);
+//					throw new DocearServiceException(TextUtils.getText("docear.uploadchooser.warning.nopassword"));
+//					//return false;
+//				}
+//				else {
+//					CommunicationsController.getController().tryToConnect(settings.getUserName(), settings.getPassword(), true, false);
+//					if (!isEmpty(CommunicationsController.getController().getRegisteredAccessToken())) {
+//						return true;
+//					}
+//					else {
+//						return false;
+//					}
+//				}
 			}
 			else {
 				//if user name is empty --> create anonymous user automatically when the information retrieval action runs 

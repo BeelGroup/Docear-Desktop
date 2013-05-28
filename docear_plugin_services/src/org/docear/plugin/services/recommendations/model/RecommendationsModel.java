@@ -5,7 +5,6 @@ import java.util.Collection;
 import javax.swing.event.TreeModelListener;
 
 import org.docear.plugin.services.ServiceController;
-import org.docear.plugin.services.communications.CommunicationsController;
 import org.docear.plugin.services.recommendations.RecommendationEntry;
 import org.freeplane.core.util.TextUtils;
 
@@ -24,7 +23,7 @@ public class RecommendationsModel {
 	
 	private void parseRecommendations(Collection<RecommendationEntry> recommendations) {		
 		if(recommendations == null) {
-			if(ServiceController.getController().isRecommendationsAllowed()) {
+			if(ServiceController.getUser().isRecommendationsEnabled()) {
 				setRoot(RecommendationsModelNode.createNoRecommendationsNode(TextUtils.getText("recommendations.error.no_recommendations")));
 			}
 			else {
@@ -44,7 +43,7 @@ public class RecommendationsModel {
 	}
 	
 	public String getTitle() {
-		String label = CommunicationsController.getController().getRegisteredUserName();
+		String label = ServiceController.getUser().getName();
 		if(label != null && label.trim().length() > 0) {
 			return TextUtils.format("recommendations.map.label.forUser", label);
 		}

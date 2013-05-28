@@ -43,8 +43,8 @@ public class DocearAllowUploadChooserAction extends AFreeplaneAction {
 		
 		int result = JOptionPane.showOptionDialog(UITools.getFrame(), chooser, TextUtils.getText("docear.uploadchooser.title"), JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, dialogButtons, 1);
 		if (result == 0) {			
-			ServiceController.getController().setBackupEnabled(chooser.allowBackup());
-			ServiceController.getController().setInformationRetrievalCode(chooser.getIrCode());
+//			ServiceController.getController().setBackupEnabled(chooser.allowBackup());
+//			ServiceController.getController().setInformationRetrievalCode(chooser.getIrCode());
 			return true;
 		} 
 		else {

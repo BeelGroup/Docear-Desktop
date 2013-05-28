@@ -5,19 +5,19 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import javax.swing.JPanel;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
-import com.jgoodies.forms.factories.FormFactory;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
-import javax.swing.JTextField;
+import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 
-import org.docear.plugin.services.communications.CommunicationsController;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.TextUtils;
-import javax.swing.JCheckBox;
+
+import com.jgoodies.forms.factories.FormFactory;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.RowSpec;
 
 public class ProxyAuthenticationPanel extends JPanel {
 	/**
@@ -64,21 +64,21 @@ public class ProxyAuthenticationPanel extends JPanel {
 		JLabel lblHost = new JLabel(TextUtils.getText("docear.proxy.connect.host.label") + ":");
 		add(lblHost, "2, 6, right, default");
 		
-		hostField = new JTextField(ResourceController.getResourceController().getProperty(CommunicationsController.DOCEAR_PROXY_HOST, ""));
+		hostField = new JTextField(ResourceController.getResourceController().getProperty(DocearProxyAuthenticator.DOCEAR_PROXY_HOST, ""));
 		add(hostField, "4, 6, fill, default");
 		hostField.setColumns(10);
 		
 		JLabel lblPort = new JLabel(TextUtils.getText("docear.proxy.connect.port.label") + ":");
 		add(lblPort, "2, 8, right, default");
 		
-		portField = new JTextField(ResourceController.getResourceController().getProperty(CommunicationsController.DOCEAR_PROXY_PORT, ""));
+		portField = new JTextField(ResourceController.getResourceController().getProperty(DocearProxyAuthenticator.DOCEAR_PROXY_PORT, ""));
 		add(portField, "4, 8, fill, default");
 		portField.setColumns(10);
 		
 		JLabel lblUsername = new JLabel(TextUtils.getText("docear.proxy.connect.username.label") + ":");
 		add(lblUsername, "2, 10, right, default");
 		
-		usernameField = new JTextField(ResourceController.getResourceController().getProperty(CommunicationsController.DOCEAR_PROXY_USERNAME, ""));
+		usernameField = new JTextField(ResourceController.getResourceController().getProperty(DocearProxyAuthenticator.DOCEAR_PROXY_USERNAME, ""));
 		add(usernameField, "4, 10, fill, default");
 		usernameField.setColumns(10);
 		
@@ -98,7 +98,7 @@ public class ProxyAuthenticationPanel extends JPanel {
 			}
 		});
 		
-		chckbxUseProxy.setSelected(ResourceController.getResourceController().getBooleanProperty(CommunicationsController.DOCEAR_USE_PROXY));
+		chckbxUseProxy.setSelected(ResourceController.getResourceController().getBooleanProperty(DocearProxyAuthenticator.DOCEAR_USE_PROXY));
 		
 		portField.addKeyListener(new KeyListener(	) {
 			

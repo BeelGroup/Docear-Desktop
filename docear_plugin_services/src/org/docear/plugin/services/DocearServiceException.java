@@ -1,4 +1,4 @@
-package org.docear.plugin.services.communications.features;
+package org.docear.plugin.services;
 
 public class DocearServiceException extends Exception {
 

@@ -19,7 +19,6 @@ import javax.swing.border.EmptyBorder;
 
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.event.DocearEvent;
-import org.docear.plugin.services.communications.CommunicationsController;
 import org.freeplane.core.util.TextUtils;
 
 public class WorkspaceDocearServiceConnectionBar extends JToolBar {
@@ -34,6 +33,7 @@ public class WorkspaceDocearServiceConnectionBar extends JToolBar {
 
 	private static final long serialVersionUID = 1L;
 	public static final String ACTION_COMMAND_TOGGLE_CONNECTION_STATE = "toggle_connection_state";
+	public static final String CONNECTION_BAR_CLICKED = "CONNECTION_BAR_CLICKED";
 	
 	protected static Insets nullInsets = new Insets(0, 0, 0, 0);
 	protected static Insets marginInsets = new Insets(2, 2, 2, 2);
@@ -54,7 +54,7 @@ public class WorkspaceDocearServiceConnectionBar extends JToolBar {
 		public void mouseEntered(MouseEvent e) {}
 		
 		public void mouseClicked(MouseEvent e) {
-			DocearController.getController().dispatchDocearEvent(new DocearEvent(CommunicationsController.CONNECTION_BAR_CLICKED, e));
+			DocearController.getController().dispatchDocearEvent(new DocearEvent(CONNECTION_BAR_CLICKED, e));
 		}
 	}; 
 	
