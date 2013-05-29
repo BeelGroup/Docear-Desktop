@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.docear.plugin.core.DocearService;
 import org.docear.plugin.core.IDocearControllerExtension;
-import org.docear.plugin.services.communications.components.dialog.DocearProxyAuthenticator;
+import org.docear.plugin.services.features.io.DocearProxyAuthenticator;
 import org.freeplane.core.resources.IFreeplanePropertyListener;
 import org.freeplane.core.resources.OptionPanelController;
 import org.freeplane.core.resources.OptionPanelController.PropertyLoadListener;

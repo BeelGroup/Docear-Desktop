@@ -49,7 +49,7 @@ import org.docear.plugin.bibtex.dialogs.PdfTitleQuestionDialog;
 import org.docear.plugin.core.mindmap.MindmapUpdateController;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
 import org.docear.plugin.services.ServiceController;
-import org.docear.plugin.services.communications.features.DocearServiceResponse;
+import org.docear.plugin.services.features.io.DocearServiceResponse;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;

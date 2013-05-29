@@ -13,7 +13,10 @@ public class ProjectURLHandler extends AbstractURLStreamHandlerService {
 
 	public URLConnection openConnection(URL url) throws IOException {
 		//WORKSPACE - todo: extend with meaningful exception messages
-		AWorkspaceProject project = WorkspaceController.getCurrentModel().getProject(url.getAuthority());		 
+		AWorkspaceProject project = WorkspaceController.getCurrentModel().getProject(url.getAuthority());
+		if(project == null) {
+			throw new IOException("project with id="+url.getAuthority()+" is missing");
+		}
 		URL absolutePath = resolve(project, url);
 		return absolutePath.openConnection();
 	}
@@ -27,7 +30,7 @@ public class ProjectURLHandler extends AbstractURLStreamHandlerService {
 	 */
 	public static URL resolve(AWorkspaceProject project, URL url) throws IOException {
 		if(project == null) {
-			throw new IOException("project id is missing");
+			throw new IOException("project is NULL");
 		}
 		
 		URL absolutePath = url;

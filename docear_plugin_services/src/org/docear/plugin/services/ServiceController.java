@@ -19,28 +19,29 @@ import org.docear.plugin.core.event.DocearEvent;
 import org.docear.plugin.core.event.DocearEventType;
 import org.docear.plugin.core.event.IDocearEventListener;
 import org.docear.plugin.core.logging.DocearLogger;
-import org.docear.plugin.services.actions.DocearAllowUploadChooserAction;
-import org.docear.plugin.services.actions.DocearCheckForUpdatesAction;
-import org.docear.plugin.services.actions.DocearClearUserDataAction;
-import org.docear.plugin.services.actions.DocearSetupWizardAction;
-import org.docear.plugin.services.communications.components.WorkspaceDocearServiceConnectionBar;
-import org.docear.plugin.services.communications.components.WorkspaceDocearServiceConnectionBar.CONNECTION_STATE;
-import org.docear.plugin.services.communications.features.DocearConnectionProvider;
-import org.docear.plugin.services.communications.features.DocearUserController;
 import org.docear.plugin.services.features.IDocearServiceFeature;
-import org.docear.plugin.services.features.UpdateCheck;
-import org.docear.plugin.services.features.elements.Application;
-import org.docear.plugin.services.listeners.MapLifeCycleListener;
-import org.docear.plugin.services.listeners.ServiceWindowListener;
-import org.docear.plugin.services.recommendations.RecommendationEntry;
-import org.docear.plugin.services.recommendations.RecommendationsController;
-import org.docear.plugin.services.recommendations.actions.ShowRecommendationsAction;
-import org.docear.plugin.services.recommendations.workspace.ShowRecommendationsNode;
-import org.docear.plugin.services.upload.UploadController;
-import org.docear.plugin.services.user.DocearUser;
+import org.docear.plugin.services.features.io.DocearConnectionProvider;
+import org.docear.plugin.services.features.recommendations.RecommendationsController;
+import org.docear.plugin.services.features.recommendations.actions.ShowRecommendationsAction;
+import org.docear.plugin.services.features.recommendations.model.RecommendationEntry;
+import org.docear.plugin.services.features.recommendations.view.ServiceWindowListener;
+import org.docear.plugin.services.features.recommendations.workspace.ShowRecommendationsNode;
+import org.docear.plugin.services.features.setup.action.DocearSetupWizardAction;
+import org.docear.plugin.services.features.update.UpdateCheck;
+import org.docear.plugin.services.features.update.action.DocearCheckForUpdatesAction;
+import org.docear.plugin.services.features.upload.MapLifeCycleListener;
+import org.docear.plugin.services.features.upload.UploadController;
+import org.docear.plugin.services.features.user.DocearUser;
+import org.docear.plugin.services.features.user.DocearUserController;
+import org.docear.plugin.services.features.user.action.DocearClearUserDataAction;
+import org.docear.plugin.services.features.user.view.WorkspaceDocearServiceConnectionBar;
+import org.docear.plugin.services.features.user.view.WorkspaceDocearServiceConnectionBar.CONNECTION_STATE;
 import org.docear.plugin.services.workspace.DocearWorkspaceModel;
+import org.docear.plugin.services.xml.elements.Application;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.components.UITools;
+import org.freeplane.core.user.IUserAccountChangeListener;
+import org.freeplane.core.user.UserAccountChangeEvent;
 import org.freeplane.core.user.UserAccountController;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
@@ -125,12 +126,10 @@ public class ServiceController extends UploadController {
 		initListeners(modeController);
 
 		new ServiceConfiguration(modeController);
-		new ServicePreferences(modeController);
 
 		addPluginDefaults(modeController);
 		addMenuEntries(modeController);
 		Controller.getCurrentController().addAction(new DocearClearUserDataAction());
-		Controller.getCurrentController().addAction(new DocearAllowUploadChooserAction());
 		Controller.getCurrentController().addAction(new DocearCheckForUpdatesAction());
 		Controller.getCurrentController().addAction(new ShowRecommendationsAction());
 	}
@@ -180,38 +179,28 @@ public class ServiceController extends UploadController {
 		});
 		modeController.getMapController().addMapLifeCycleListener(mapLifeCycleListener);
 		
-		//DOCEAR - todo: add Listener for user account changes
-//		UserAccountController.getController().addUserAccountChangeListener(new IUserAccountChangeListener() {
-//			public void deactivatedUser(UserAccountChangeEvent event) {
-//					if(event.getUser() instanceof DocearUser) {
-						//DOCEAR - ToDo: clear up all user account links
-//						((DocearUser)event.getUser()).setOnline(false);
-//					}
-//					event.getUserAccount().removePropertyChangeListener(getUserPropertyChangeListener());
-//				}
-//			}
-//			public void activatedUser(UserAccountChangeEvent event) {
-//				if(event.getUser() instanceof DocearUser) {
-					//DOCEAR - ToDo: react on the new user
-//					event.getUser().addPropertyChangeListener(getUserPropertyChangeListener());
-					
-//				}
-//				else {
-//					getUser().activate();
-//				}
-//			}
-//		});
-	}
-	
 
-	private void loadUserFiles() {
-		File[] files = getUploadPackages();
-		if(files == null) {
-			return;
-		}
-		for(File file : files) {
-			addToBuffer(file);
-		}
+		UserAccountController.getController().addUserAccountChangeListener(new IUserAccountChangeListener() {
+			
+			public void activated(UserAccountChangeEvent event) {
+				if(event.getUser() instanceof DocearUser) {
+					event.getUser().addPropertyChangeListener(getUserPropertyChangeListener());
+					refreshUploadBuffer();
+					//DOCEAR - ToDo: attach all links
+				}
+				else {
+					getUser().activate();
+				}
+			}
+			
+			public void aboutToDeactivate(UserAccountChangeEvent event) {
+				if(event.getUser() instanceof DocearUser) {
+					//DOCEAR - ToDo: clear up all user account links
+					((DocearUser)event.getUser()).setOnline(false);
+				}
+				event.getUser().removePropertyChangeListener(getUserPropertyChangeListener());
+			}
+		});
 	}
 	
 	private PropertyChangeListener getUserPropertyChangeListener() {
@@ -310,7 +299,7 @@ public class ServiceController extends UploadController {
 
 	public boolean isUploadEnabled() {
 		DocearUser user = getUser();
-		boolean needUser = user.getEnabledServicesCode() > 0 && user.isTransmissionEnabled();
+		boolean needUser = user.getEnabledServicesCode() > 0 && user.isTransmissionEnabled() && user.isOnline();
 
 		return needUser && user.isValid();
 	}

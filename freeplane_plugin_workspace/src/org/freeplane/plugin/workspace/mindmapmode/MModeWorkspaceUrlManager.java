@@ -115,7 +115,7 @@ public class MModeWorkspaceUrlManager extends MFileManager {
 			return base.toURL();
 		}
 		URI preResolved = getAbsoluteURI(uri);
-		if(base == null) {
+		if(base == null || preResolved == null) {
 			if(preResolved != null) {
 				return preResolved.toURL();
 			}
@@ -131,7 +131,7 @@ public class MModeWorkspaceUrlManager extends MFileManager {
     		}
     		return uri.toURL().openConnection().getURL().toURI();
     	} catch (IOException ex) {
-    		LogUtils.warn(ex);
+    		LogUtils.warn("Exception in org.freeplane.plugin.workspace.mindmapmode.MModeWorkspaceUrlManager.getAbsoluteURI(uri): "+ex.getMessage());
     		return null;
     	} catch (URISyntaxException ex) {
     		LogUtils.warn(ex);
