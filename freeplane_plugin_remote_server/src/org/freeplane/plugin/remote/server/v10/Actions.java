@@ -70,6 +70,7 @@ import org.freeplane.plugin.remote.v10.model.LockModel;
 import org.freeplane.plugin.remote.v10.model.MapModel;
 import org.freeplane.plugin.remote.v10.model.NodeModelDefault;
 import org.freeplane.plugin.remote.v10.model.updates.AddNodeUpdate;
+import org.freeplane.plugin.remote.v10.model.updates.AddNodeUpdate.Side;
 import org.freeplane.plugin.remote.v10.model.updates.ChangeEdgeAttributeUpdate;
 import org.freeplane.plugin.remote.v10.model.updates.ChangeNodeAttributeUpdate;
 import org.freeplane.plugin.remote.v10.model.updates.DeleteNodeUpdate;
@@ -328,7 +329,8 @@ public class Actions {
 		final String username = request.getUsername();
 		final MapIdentifier mapIdentifier = request.getMapIdentifier();
 		final String parentNodeId = request.getParentNodeId();
-		logger().debug("Actions.addNode => mapId:'{}'; parentNodeId:'{}'", mapIdentifier.getMapId(), parentNodeId);
+		final Side side = request.getSide() == null ? null : Side.valueOf(request.getSide());
+		logger().debug("Actions.addNode => mapId:'{}'; parentNodeId:'{}'; side:'{}'", mapIdentifier.getMapId(), parentNodeId, side);
 
 		logger().debug("Actions.addNode => selecting map");
 		selectMap(mapIdentifier);
@@ -338,11 +340,11 @@ public class Actions {
 		final NodeModel parentNode = getNodeFromOpenMapById(mmapController(), parentNodeId);
 
 		// create new node
-		final NodeModel node = RemoteUtils.addNodeToOpenMap(mmapController(), parentNode);
+		final NodeModel node = RemoteUtils.addNodeToOpenMap(mmapController(), parentNode, side);
 
 		logger().debug("Actions.addNode => returning response with new node as json");
 		final JsonNode nodeJson = new ObjectMapper().valueToTree(new NodeModelDefault(node, false));
-		final AddNodeUpdate update = new AddNodeUpdate(source, username, parentNodeId, node.getID(), nodeJson);
+		final AddNodeUpdate update = new AddNodeUpdate(source, username, parentNodeId, node.getID(), nodeJson, side);
 		getOpenMindMapInfo(request.getMapIdentifier()).addUpdate(update);
 		return new AddNodeResponse(update.toJson());
 	}

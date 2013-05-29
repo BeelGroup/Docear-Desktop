@@ -13,7 +13,6 @@ import org.freeplane.features.edge.EdgeModel;
 import org.freeplane.features.edge.EdgeStyle;
 import org.freeplane.features.edge.mindmapmode.MEdgeController;
 import org.freeplane.features.icon.MindIcon;
-import org.freeplane.features.icon.factory.MindIconFactory;
 import org.freeplane.features.icon.mindmapmode.MIconController;
 import org.freeplane.features.link.NodeLinks;
 import org.freeplane.features.map.NodeChangeEvent;
@@ -22,8 +21,8 @@ import org.freeplane.features.map.mindmapmode.MMapController;
 import org.freeplane.features.nodelocation.LocationModel;
 import org.freeplane.features.nodelocation.mindmapmode.MLocationController;
 import org.freeplane.features.note.mindmapmode.MNoteController;
-import org.freeplane.features.text.mindmapmode.MTextController;
 import org.freeplane.plugin.remote.v10.model.NodeModelBase;
+import org.freeplane.plugin.remote.v10.model.updates.AddNodeUpdate.Side;
 
 public final class RemoteUtils {
 
@@ -40,13 +39,20 @@ public final class RemoteUtils {
 		}
 	}
 
-	public static NodeModel addNodeToOpenMap(MMapController mapController, NodeModel parentNode) {
+	public static NodeModel addNodeToOpenMap(MMapController mapController, NodeModel parentNode, Side side) {
 		// logger().debug("Actions.addNode => creating new node");
 		NodeModel node = mapController.newNode("", parentNode.getMap());
 
 		// insert node
 		// logger().debug("Actions.addNode => inserting new node");
-		mapController.insertNode(node, parentNode);
+		if (mapController.getRootNode().getID().equals(parentNode.getID())){
+			// insert new node to root node
+			boolean isLeft = side != null && side.equals(Side.Left);
+			mapController.insertNode(node, parentNode, false, isLeft, isLeft);
+		} else {
+			// insert new node to normal node
+			mapController.insertNode(node, parentNode);
+		}
 
 		node.createID();
 		// logger().debug("Actions.addNode => node with id '{}' successfully created",

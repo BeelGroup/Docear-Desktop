@@ -65,10 +65,11 @@ public class ApplyChangesActor extends FreeplaneClientActor {
 	private void addNodeUpdate(AddNodeUpdate update) throws NodeNotFoundException {
 		final String newNodeId = update.getNewNodeId();
 		final String parentNodeId = update.getParentNodeId();
+		final Side side = update.getSide();
 		LogUtils.info("adding node with Id: " + newNodeId);
 		final NodeModel parentNode = getNodeFromOpenMapById(mmapController(), parentNodeId);
 
-		final NodeModel newNode = addNodeToOpenMap(mmapController(), parentNode);
+		final NodeModel newNode = addNodeToOpenMap(mmapController(), parentNode, side);
 		newNode.setID(newNodeId);
 		if (update.getSide() != null) {
 			newNode.setLeft(update.getSide() == Side.Left);
