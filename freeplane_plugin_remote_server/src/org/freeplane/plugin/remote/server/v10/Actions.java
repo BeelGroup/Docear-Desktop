@@ -338,13 +338,20 @@ public class Actions {
 		// get parent Node
 		logger().debug("Actions.addNode => retrieving freeplane parent node");
 		final NodeModel parentNode = getNodeFromOpenMapById(mmapController(), parentNodeId);
+		
+		Side sideAdjusted = side;
+		if (parentNode.isRoot()){
+			sideAdjusted = side == null ? Side.Left : side;
+		} else {
+			sideAdjusted = null;
+		}
 
 		// create new node
-		final NodeModel node = RemoteUtils.addNodeToOpenMap(mmapController(), parentNode, side);
+		final NodeModel node = RemoteUtils.addNodeToOpenMap(mmapController(), parentNode, sideAdjusted);
 
 		logger().debug("Actions.addNode => returning response with new node as json");
 		final JsonNode nodeJson = new ObjectMapper().valueToTree(new NodeModelDefault(node, false));
-		final AddNodeUpdate update = new AddNodeUpdate(source, username, parentNodeId, node.getID(), nodeJson, side);
+		final AddNodeUpdate update = new AddNodeUpdate(source, username, parentNodeId, node.getID(), nodeJson, sideAdjusted);
 		getOpenMindMapInfo(request.getMapIdentifier()).addUpdate(update);
 		return new AddNodeResponse(update.toJson());
 	}
