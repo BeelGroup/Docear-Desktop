@@ -1,6 +1,8 @@
 package org.freeplane.plugin.remote.client.actors;
 
+import org.docear.messages.models.MapIdentifier;
 import org.freeplane.plugin.remote.client.ClientController;
+import org.freeplane.plugin.remote.client.User;
 
 import akka.actor.UntypedActor;
 
@@ -19,6 +21,14 @@ public abstract class FreeplaneClientActor extends UntypedActor {
 
 	public ClientController getClientController() {
 		return clientController;
+	}
+	
+	protected User user() {
+		return clientController.getUser();
+	}
+	
+	protected MapIdentifier mapIdentifier() {
+		return clientController.getMapIdentifier();
 	}
 
 }

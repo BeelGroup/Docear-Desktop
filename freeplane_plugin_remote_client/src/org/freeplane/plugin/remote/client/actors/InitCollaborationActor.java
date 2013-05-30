@@ -63,7 +63,6 @@ public class InitCollaborationActor extends FreeplaneClientActor {
 				final URL pathURL = file.toURI().toURL();
 
 				final MMapIO mio = (MMapIO) ClientController.getMapIO();
-				Thread.sleep(1000); // FIXME hack, will be changed later
 				mio.newMap(pathURL);
 			} catch (IOException e) {
 				throw new AssertionError(e);

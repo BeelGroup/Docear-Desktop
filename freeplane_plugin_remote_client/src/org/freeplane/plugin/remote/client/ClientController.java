@@ -1,26 +1,18 @@
 package org.freeplane.plugin.remote.client;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-
 import org.docear.messages.models.MapIdentifier;
 import org.freeplane.core.extension.IExtension;
-import org.freeplane.core.ui.IMenuContributor;
-import org.freeplane.core.ui.MenuBuilder;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.map.mindmapmode.MMapController;
 import org.freeplane.features.mapio.MapIO;
 import org.freeplane.features.mode.Controller;
-import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.plugin.remote.client.actors.ApplyChangesActor;
 import org.freeplane.plugin.remote.client.actors.InitCollaborationActor;
@@ -49,12 +41,6 @@ import com.typesafe.config.ConfigFactory;
 
 public class ClientController implements IExtension {
 
-	// Temp variables, only for developping
-	public static final MapIdentifier MAP_IDENTIFIER = new MapIdentifier("-1", "5");
-
-	public static final String USER = "Julius";
-	public static final String AT = "Julius-token";
-
 	private final ActorSystem system;
 	private final ActorRef listenForUpdatesActor;
 	private final ActorRef applyChangeActor;
@@ -64,8 +50,6 @@ public class ClientController implements IExtension {
 	private User user = null;
 	private MapIdentifier mapIdentifier = null;
 	private boolean isListening = false;
-	// private Long projectId;
-	// private URI uriToMap;
 
 	private final String sourceString;
 	private boolean isUpdating = false;
@@ -73,7 +57,6 @@ public class ClientController implements IExtension {
 	private final Map<NodeModel, NodeViewListener> selectedNodesMap = new HashMap<NodeModel, NodeViewListener>();
 
 	@SuppressWarnings("serial")
-	// UntypedActorFactories
 	public ClientController() {
 
 		// set sourceString, used to identify for updates
@@ -83,10 +66,6 @@ public class ClientController implements IExtension {
 		} catch (UnknownHostException e) {
 			throw new RuntimeException(e);
 		}
-
-		// create Threadpool
-		// executor =
-		// MoreExecutors.listeningDecorator(Executors.newScheduledThreadPool(10));
 
 		// change class loader
 		final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
@@ -127,28 +106,12 @@ public class ClientController implements IExtension {
 		// set back to original class loader
 		Thread.currentThread().setContextClassLoader(contextClassLoader);
 
-		final Controller controller = Controller.getCurrentController();
-		controller.addExtension(ClientController.class, this);
+		// install on MModeController
+		MModeController.getMModeController().addExtension(ClientController.class, this);
+	}
 
-		final JMenuItem button = new JMenuItem("start listening");
-		button.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				controller.selectMode("MindMap");
-				startListeningForMap(USER, AT, MAP_IDENTIFIER);
-			}
-		});
-
-		final JMenuBar bar = new JMenuBar();
-		bar.add(button);
-		controller.getModeController().addMenuContributor(new IMenuContributor() {
-
-			@Override
-			public void updateMenus(ModeController modeController, MenuBuilder builder) {
-				builder.addMenuItem("/menu_bar/help", button, "test", 1);
-			}
-		});
+	public static ClientController getClientController() {
+		return MModeController.getMModeController().getExtension(ClientController.class);
 	}
 
 	public static final class CheckForChangesRunnable implements Runnable {
@@ -183,8 +146,10 @@ public class ClientController implements IExtension {
 
 	}
 
-	public void startListeningForMap(String username, String accessToken, MapIdentifier mapIdentifier) {
-		this.user = new User(username, accessToken);
+	public void startListeningForMap(final User user, final MapIdentifier mapIdentifier) {
+		Controller.getCurrentController().selectMode("MindMap");
+		
+		this.user = user;
 		this.mapIdentifier = mapIdentifier;
 
 		initCollaborationactor.tell(new InitCollaborationActor.Messages.InitCollaborationMode(mapIdentifier, user), null);
@@ -209,8 +174,8 @@ public class ClientController implements IExtension {
 		system.shutdown();
 	}
 
-	public static ModeController getModeController() {
-		return MModeController.getMModeController();
+	public static MModeController getModeController() {
+		return (MModeController) MModeController.getMModeController();
 	}
 
 	public static MapIO getMapIO() {
@@ -243,10 +208,6 @@ public class ClientController implements IExtension {
 
 	public MapIdentifier getMapIdentifier() {
 		return mapIdentifier;
-	}
-
-	public static String loggedInUserName() {
-		return USER;
 	}
 
 	public ActorRef applyChangesActor() {

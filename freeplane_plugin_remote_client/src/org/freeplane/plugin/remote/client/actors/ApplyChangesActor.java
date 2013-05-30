@@ -30,9 +30,9 @@ public class ApplyChangesActor extends FreeplaneClientActor {
 		if (message instanceof MapUpdate) {
 			final MapUpdate mapUpdate = (MapUpdate) message;
 
-			LogUtils.info("my System:  " + loggedInUser() + "@" + source());
+			LogUtils.info("my System:  " + user().getUsername() + "@" + source());
 			LogUtils.info("remote sys: " + mapUpdate.getUsername() + "@" + mapUpdate.getSource());
-			if (mapUpdate.getUsername().equals(loggedInUser()) && mapUpdate.getSource().equals(source())) {
+			if (mapUpdate.getUsername().equals(user().getUsername()) && mapUpdate.getSource().equals(source())) {
 				// update was done by this instance
 				return;
 			}
@@ -121,11 +121,7 @@ public class ApplyChangesActor extends FreeplaneClientActor {
 	private MMapController mmapController() {
 		return ClientController.mmapController();
 	}
-
-	private String loggedInUser() {
-		return ClientController.loggedInUserName();
-	}
-
+	
 	private String source() {
 		return getClientController().source();
 	}
