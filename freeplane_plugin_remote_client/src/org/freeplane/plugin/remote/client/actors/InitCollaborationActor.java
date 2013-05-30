@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.Validate;
 import org.docear.messages.models.MapIdentifier;
+import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.mapio.mindmapmode.MMapIO;
 import org.freeplane.n3.nanoxml.XMLException;
 import org.freeplane.plugin.remote.client.ClientController;
@@ -70,6 +71,8 @@ public class InitCollaborationActor extends FreeplaneClientActor {
 				throw new AssertionError(e);
 			} catch (XMLException e) {
 				throw new AssertionError(e);
+			} catch (NullPointerException e) {
+				LogUtils.warn("NPE catched!", e);
 			} finally {
 				file.delete();
 			}

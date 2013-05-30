@@ -1,6 +1,8 @@
 package org.freeplane.plugin.remote.client;
 
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
+import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
@@ -148,11 +150,16 @@ public class ClientController implements IExtension {
 
 	public void startListeningForMap(final User user, final MapIdentifier mapIdentifier) {
 		Controller.getCurrentController().selectMode("MindMap");
-		
-		this.user = user;
-		this.mapIdentifier = mapIdentifier;
+		try {
+			final String mapId = URLEncoder.encode(mapIdentifier.getMapId().replace('\\', '/'), "UTF-8");
+			LogUtils.info(mapId);
+			this.user = user;
+			this.mapIdentifier = new MapIdentifier(mapIdentifier.getProjectId(), mapId);
+		} catch (UnsupportedEncodingException e) {
+			throw new AssertionError("UTF-8 not recognized");
+		}
 
-		initCollaborationactor.tell(new InitCollaborationActor.Messages.InitCollaborationMode(mapIdentifier, user), null);
+		initCollaborationactor.tell(new InitCollaborationActor.Messages.InitCollaborationMode(this.mapIdentifier, user), null);
 		isListening = true;
 	}
 

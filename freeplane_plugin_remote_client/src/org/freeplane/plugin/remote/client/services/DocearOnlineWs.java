@@ -2,6 +2,7 @@ package org.freeplane.plugin.remote.client.services;
 
 import java.io.PrintStream;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -103,7 +104,7 @@ public class DocearOnlineWs implements WS {
 
 	@Override
 	public Future<JsonNode> getMapAsXml(final User user, final MapIdentifier mapIdentifier) {
-
+		
 		try {
 			final WebResource mapAsXmlResource = preparedResource(user).path("project/" + mapIdentifier.getProjectId() + "/map/" + mapIdentifier.getMapId() + "/xml");
 			final JsonNode response = new ObjectMapper().readTree(mapAsXmlResource.get(String.class));
