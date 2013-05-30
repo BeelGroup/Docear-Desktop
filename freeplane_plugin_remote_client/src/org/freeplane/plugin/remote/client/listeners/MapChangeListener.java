@@ -16,13 +16,13 @@ public class MapChangeListener extends BaseListener implements IMapChangeListene
 
 	@Override
 	public void onPreNodeMoved(NodeModel oldParent, int oldIndex, NodeModel newParent, NodeModel child, int newIndex) {
-		// TODO Auto-generated method stub
+		// nothing to do
 
 	}
 
 	@Override
 	public void onPreNodeDelete(NodeModel oldParent, NodeModel selectedNode, int index) {
-		// TODO Auto-generated method stub
+		// nothing to do
 
 	}
 
@@ -30,7 +30,7 @@ public class MapChangeListener extends BaseListener implements IMapChangeListene
 	public void onNodeMoved(NodeModel oldParent, int oldIndex, NodeModel newParent, NodeModel child, int newIndex) {
 		if (!isUpdating() && isListening()) {
 			LogUtils.info("Node Moved. Sending to Webservice");
-			webservice().moveNodeTo(user().getUsername(), user().getAccessToken(), "5", newParent.getID(), child.getID(), newIndex);
+			webservice().moveNodeTo(user(), mapIdentifier(), newParent.getID(), child.getID(), newIndex);
 		}
 	}
 
@@ -39,7 +39,7 @@ public class MapChangeListener extends BaseListener implements IMapChangeListene
 		if (!isUpdating() && isListening()) {
 			LogUtils.info("Node Added. Sending to Webservice");
 			try {
-				final String newNodeId = Await.result(webservice().createNode(user().getUsername(), user().getAccessToken(), "5", parent.getID()), Duration.create("10 seconds"));
+				final String newNodeId = Await.result(webservice().createNode(user(), mapIdentifier(), parent.getID()), Duration.create("10 seconds"));
 				child.setID(newNodeId);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -52,7 +52,7 @@ public class MapChangeListener extends BaseListener implements IMapChangeListene
 	public void onNodeDeleted(NodeModel parent, NodeModel child, int index) {
 		if (!isUpdating() && isListening()) {
 			LogUtils.info("Node Deleted. Sending to Webservice");
-			webservice().removeNode(user().getUsername(), user().getAccessToken(), "5", child.getID());
+			webservice().removeNode(user(), mapIdentifier(), child.getID());
 		}
 
 	}

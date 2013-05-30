@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.Validate;
+import org.docear.messages.models.MapIdentifier;
 import org.freeplane.features.mapio.mindmapmode.MMapIO;
 import org.freeplane.n3.nanoxml.XMLException;
 import org.freeplane.plugin.remote.client.ClientController;
@@ -28,7 +29,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public class InitCollaborationActor extends FreeplaneClientActor {
 
-	private String mapId = null;
+	private MapIdentifier mapIdentifier = null;
 
 	public InitCollaborationActor(ClientController clientController) {
 		super(clientController);
@@ -38,12 +39,13 @@ public class InitCollaborationActor extends FreeplaneClientActor {
 	public void onReceive(Object message) throws Exception {
 		if (message instanceof InitCollaborationMode) {
 			final InitCollaborationMode msg = (InitCollaborationMode) message;
-			this.mapId = msg.getMapId();
+			
+			this.mapIdentifier = msg.getMapIdentifier();
 			final WS ws = getClientController().webservice();
 			final User user = msg.getUser();
 			Validate.notNull(user);
-			
-			final Future<JsonNode> mindmapFuture = ws.getMapAsXml(user.getUsername(), user.getAccessToken(), mapId);
+
+			final Future<JsonNode> mindmapFuture = ws.getMapAsXml(user, mapIdentifier);
 			Patterns.pipe(mindmapFuture, getContext().system().dispatcher()).to(getSelf());
 		}
 		// xml mindmap wrapped in json
@@ -61,7 +63,7 @@ public class InitCollaborationActor extends FreeplaneClientActor {
 				final URL pathURL = file.toURI().toURL();
 
 				final MMapIO mio = (MMapIO) ClientController.getMapIO();
-				Thread.sleep(1000); //FIXME hack, will be changed later
+				Thread.sleep(1000); // FIXME hack, will be changed later
 				mio.newMap(pathURL);
 			} catch (IOException e) {
 				throw new AssertionError(e);
@@ -74,7 +76,7 @@ public class InitCollaborationActor extends FreeplaneClientActor {
 			}
 
 			final ActorRef listenForUpdatesActor = getClientController().listenForUpdatesActor();
-			listenForUpdatesActor.tell(new SetMapAndRevision(mapId, currentRevision), getSelf());
+			listenForUpdatesActor.tell(new SetMapAndRevision(mapIdentifier, currentRevision), getSelf());
 			listenForUpdatesActor.tell("listen", getSelf());
 
 			final ActorSystem system = getContext().system();
@@ -85,21 +87,21 @@ public class InitCollaborationActor extends FreeplaneClientActor {
 
 	public static final class Messages {
 		public static class InitCollaborationMode {
-			private final String mapId;
+			private final MapIdentifier mapIdentifier;
 			private final User user;
 
-			public InitCollaborationMode(String mapId, User user) {
+			public InitCollaborationMode(MapIdentifier mapIdentifier, User user) {
 				super();
-				this.mapId = mapId;
+				this.mapIdentifier = mapIdentifier;
 				this.user = user;
+			}
+
+			public MapIdentifier getMapIdentifier() {
+				return mapIdentifier;
 			}
 
 			public User getUser() {
 				return user;
-			}
-
-			public String getMapId() {
-				return mapId;
 			}
 
 		}

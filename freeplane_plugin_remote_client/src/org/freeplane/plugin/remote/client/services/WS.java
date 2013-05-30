@@ -1,5 +1,6 @@
 package org.freeplane.plugin.remote.client.services;
 
+import org.docear.messages.models.MapIdentifier;
 import org.freeplane.plugin.remote.client.User;
 
 import scala.concurrent.Future;
@@ -8,25 +9,26 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public interface WS {
 	/**
-	 * 
+	 * @deprecated Should not be necessary, because user credentials come from docear
 	 * @param username
 	 * @param password
 	 * @return User or null on failure
 	 */
+	@Deprecated
 	Future<User> login(String username, String password);
 	
-	Future<Boolean> listenIfUpdatesOccur(String username, String accessToken, String mapId);
+	Future<Boolean> listenIfUpdatesOccur(User user, MapIdentifier mapIdentifier);
 	
-	Future<JsonNode> getMapAsXml(String username, String accessToken, String mapId);
+	Future<JsonNode> getMapAsXml(User user, MapIdentifier mapIdentifier);
 	
-	Future<GetUpdatesResponse> getUpdatesSinceRevision(String username, String accessToken, String mapId, int sinceRevision);
+	Future<GetUpdatesResponse> getUpdatesSinceRevision(User user, MapIdentifier mapIdentifier, int sinceRevision);
 	
-	Future<String> createNode(String username, String accessToken, String mapId, String parentNodeId);
+	Future<String> createNode(User user, MapIdentifier mapIdentifier, String parentNodeId);
 	
-	Future<Boolean> moveNodeTo(String username, String accessToken, String mapId, String newParentId, String nodeToMoveId, int newIndex);
-	Future<Boolean> removeNode(String username, String accessToken, String mapId, String nodeId);
-	Future<Boolean> changeNode(String username, String accessToken, String mapId, String nodeId, String attribute, Object value);
-	Future<Boolean> changeEdge(String username, String accessToken, String mapId, String nodeId, String attribute, Object value);
+	Future<Boolean> moveNodeTo(User user, MapIdentifier mapIdentifier, String newParentId, String nodeToMoveId, int newIndex);
+	Future<Boolean> removeNode(User user, MapIdentifier mapIdentifier, String nodeId);
+	Future<Boolean> changeNode(User user, MapIdentifier mapIdentifier, String nodeId, String attribute, Object value);
+	Future<Boolean> changeEdge(User user, MapIdentifier mapIdentifier, String nodeId, String attribute, Object value);
 	
 	
 }

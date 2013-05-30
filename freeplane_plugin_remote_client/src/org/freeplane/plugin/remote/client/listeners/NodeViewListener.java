@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.swing.JComponent;
 
+import org.docear.messages.models.MapIdentifier;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.INodeView;
 import org.freeplane.features.map.MapChangeEvent;
@@ -82,12 +83,12 @@ public class NodeViewListener extends NodeView implements INodeView {
 				final Object property = event.getProperty();
 				if (property.toString().contains("FOLDING")) {
 					LogUtils.info("folding");
-					webservice().changeNode(user().getUsername(), user().getAccessToken(), "5", event.getNode().getID(), "folded", event.getNewValue());
+					webservice().changeNode(user(), mapIdentifier(), event.getNode().getID(), "folded", event.getNewValue());
 				}
 				// note
 				else if (property.equals("note_text")) {
 					LogUtils.info("note_text");
-					webservice().changeNode(user().getUsername(), user().getAccessToken(), "5", event.getNode().getID(), "note", event.getNewValue());
+					webservice().changeNode(user(), mapIdentifier(), event.getNode().getID(), "note", event.getNewValue());
 				}
 				// images
 				else if (property.equals(ExternalResource.class)) {
@@ -103,12 +104,8 @@ public class NodeViewListener extends NodeView implements INodeView {
 				// link
 				else if (property.equals("hyperlink_changed")) {
 					LogUtils.info("link");
-					webservice().changeNode(user().getUsername(), user().getAccessToken(), "5", event.getNode().getID(), "link", event.getNewValue());
+					webservice().changeNode(user(), mapIdentifier(), event.getNode().getID(), "link", event.getNewValue());
 				}
-				else if (property.equals(NodeModel.UNKNOWN_PROPERTY)) {
-					// Do nothing, because logic has changed
-				}
-
 			}
 		}
 
@@ -139,26 +136,26 @@ public class NodeViewListener extends NodeView implements INodeView {
 		}
 
 		// links are not recognized
-		if(isValueUpdated(lastNodeState.link, now.link)) {
+		if (isValueUpdated(lastNodeState.link, now.link)) {
 			data.putNodeChange("link", now.link);
 		}
 
 		// EdgeStyles are not recognized
 		final EdgeModel oldEdge = lastNodeState.edgeStyle;
 		final EdgeModel newEdge = now.edgeStyle;
-		if(isValueUpdated(oldEdge.color, newEdge.color)) {
-			data.putEdgeChange("color", newEdge.color);
+
+		if (!(oldEdge == null && newEdge == null)) {
+			if (oldEdge == null || (isValueUpdated(oldEdge.color, newEdge.color))) {
+				data.putEdgeChange("color", newEdge.color);
+			}
+			if (oldEdge == null || isValueUpdated(oldEdge.width, newEdge.width)) {
+				data.putEdgeChange("width", newEdge.width);
+			}
+			if (oldEdge == null || isValueUpdated(oldEdge.style, newEdge.style)) {
+				data.putEdgeChange("style", newEdge.style);
+			}
 		}
-		if(isValueUpdated(oldEdge.width, newEdge.width)) {
-			data.putEdgeChange("width", newEdge.width);
-		}
-		if(isValueUpdated(oldEdge.style, newEdge.style)) {
-			data.putEdgeChange("style", newEdge.style);
-		}
-		
-		
-		
-		
+
 		lastNodeState = now;
 
 		return data;
@@ -172,10 +169,10 @@ public class NodeViewListener extends NodeView implements INodeView {
 		} else if (oldValue != null && newValue == null) {
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	public static final class NodeChangeData {
 		private final Map<String, Object> nodeChanges;
 		private final Map<String, Object> edgeChanges;
@@ -212,5 +209,9 @@ public class NodeViewListener extends NodeView implements INodeView {
 
 	private User user() {
 		return clientController.getUser();
+	}
+
+	private MapIdentifier mapIdentifier() {
+		return clientController.getMapIdentifier();
 	}
 }

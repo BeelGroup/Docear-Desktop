@@ -357,12 +357,13 @@ public class Actions {
 	}
 
 	public static ChangeNodeResponse changeNode(final ChangeNodeRequest request) throws MapNotFoundException, NodeNotFoundException, NodeNotLockedByUserException {
+		final UserIdentifier userIdentifier = request.getUserIdentifier();
 		final String source = request.getSource();
 		final String username = request.getUsername();
 		final MapIdentifier mapIdentifier = request.getMapIdentifier();
 		final Map<String, Object> attributeMap = request.getAttributeValueMap();
 		final String nodeId = request.getNodeId();
-		logger().debug("Actions.changeNode => mapId:'{}'; nodeId:'{}'; username: '{}'; attributes: '{}'", mapIdentifier.getMapId(), nodeId, username, attributeMap.toString());
+		logger().debug("Actions.changeNode => mapIdentifier:'{}'; userIdentifier: '{}'; attributes: '{}'", mapIdentifier, userIdentifier, attributeMap.toString());
 
 		logger().debug("Actions.changeNode => selecting map");
 		selectMap(mapIdentifier);

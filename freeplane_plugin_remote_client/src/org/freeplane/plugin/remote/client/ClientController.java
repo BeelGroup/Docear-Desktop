@@ -11,11 +11,11 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
+import org.docear.messages.models.MapIdentifier;
 import org.freeplane.core.extension.IExtension;
 import org.freeplane.core.ui.IMenuContributor;
 import org.freeplane.core.ui.MenuBuilder;
 import org.freeplane.core.util.LogUtils;
-import org.freeplane.features.map.INodeSelectionListener;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.map.mindmapmode.MMapController;
 import org.freeplane.features.mapio.MapIO;
@@ -27,6 +27,7 @@ import org.freeplane.plugin.remote.client.actors.InitCollaborationActor;
 import org.freeplane.plugin.remote.client.actors.ListenForUpdatesActor;
 import org.freeplane.plugin.remote.client.listeners.MapChangeListener;
 import org.freeplane.plugin.remote.client.listeners.NodeChangeListener;
+import org.freeplane.plugin.remote.client.listeners.NodeSelectionListener;
 import org.freeplane.plugin.remote.client.listeners.NodeViewListener;
 import org.freeplane.plugin.remote.client.listeners.NodeViewListener.NodeChangeData;
 import org.freeplane.plugin.remote.client.services.DocearOnlineWs;
@@ -49,7 +50,7 @@ import com.typesafe.config.ConfigFactory;
 public class ClientController implements IExtension {
 
 	// Temp variables, only for developping
-	public static final String MAP_ID = "5";
+	public static final MapIdentifier MAP_IDENTIFIER = new MapIdentifier("-1", "5");
 
 	public static final String USER = "Julius";
 	public static final String AT = "Julius-token";
@@ -61,7 +62,7 @@ public class ClientController implements IExtension {
 
 	private final WS webservice;
 	private User user = null;
-	private String mapId = null;
+	private MapIdentifier mapIdentifier = null;
 	private boolean isListening = false;
 	// private Long projectId;
 	// private URI uriToMap;
@@ -135,7 +136,7 @@ public class ClientController implements IExtension {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				controller.selectMode("MindMap");
-				startListeningForMap(USER, AT, MAP_ID);
+				startListeningForMap(USER, AT, MAP_IDENTIFIER);
 			}
 		});
 
@@ -165,13 +166,14 @@ public class ClientController implements IExtension {
 				for (Map.Entry<NodeModel, NodeViewListener> nodePair : selectedNodesMap.entrySet()) {
 					final NodeChangeData data = nodePair.getValue().getChangedAttributes();
 					final User user = clientController.getUser();
+					final MapIdentifier mapIdentifier = clientController.getMapIdentifier();
 
 					for (Map.Entry<String, Object> entry : data.getNodeChanges().entrySet()) {
-						clientController.webservice().changeNode(user.getUsername(), user.getAccessToken(), "5", nodePair.getKey().getID(), entry.getKey(), entry.getValue());
+						clientController.webservice().changeNode(user, mapIdentifier, nodePair.getKey().getID(), entry.getKey(), entry.getValue());
 					}
 
 					for (Map.Entry<String, Object> entry : data.getEdgeChanges().entrySet()) {
-						clientController.webservice().changeEdge(user.getUsername(), user.getAccessToken(), "5", nodePair.getKey().getID(), entry.getKey(), entry.getValue());
+						clientController.webservice().changeEdge(user, mapIdentifier, nodePair.getKey().getID(), entry.getKey(), entry.getValue());
 					}
 
 					nodePair.getValue().updateCurrentState();
@@ -181,63 +183,22 @@ public class ClientController implements IExtension {
 
 	}
 
-	public void startListeningForMap(String username, String accessToken, String mapId) {
-		user = new User(username, accessToken);
-		this.mapId = mapId;
-		// this.uriToMap = uriToMap;
-		// this.projectId = projectId;
+	public void startListeningForMap(String username, String accessToken, MapIdentifier mapIdentifier) {
+		this.user = new User(username, accessToken);
+		this.mapIdentifier = mapIdentifier;
 
-		initCollaborationactor.tell(new InitCollaborationActor.Messages.InitCollaborationMode(mapId, user), null);
+		initCollaborationactor.tell(new InitCollaborationActor.Messages.InitCollaborationMode(mapIdentifier, user), null);
 		isListening = true;
 	}
-
-	// public void startListeningForMap(String username, String accessToken,
-	// Long projectId, URI uriToMap) {
-	// user = new User(username, accessToken);
-	// this.uriToMap = uriToMap;
-	// this.projectId = projectId;
-	//
-	// //initCollaborationactor.tell(new
-	// InitCollaborationActor.Messages.InitCollaborationMode(mapId, username,
-	// password))
-	// }
 
 	/**
 	 * registers all listeners to react on necessary events like created nodes
 	 * Might belong into a new plugin, which sends changes to the server
 	 */
 	private void registerListeners() {
-		// mmapController().addMapLifeCycleListener(new MapLifeCycleListener());
 		mmapController().addMapChangeListener(new MapChangeListener(this));
 		mmapController().addNodeChangeListener(new NodeChangeListener(this));
-		mmapController().addNodeSelectionListener(new INodeSelectionListener() {
-
-			@Override
-			public void onSelect(NodeModel node) {
-				final NodeViewListener listener = new NodeViewListener(ClientController.this, node, null, null);
-				node.addViewer(listener);
-				selectedNodesMap.put(node, listener);
-			}
-
-			@Override
-			public void onDeselect(NodeModel node) {
-				final NodeViewListener listener = selectedNodesMap.remove(node);
-				if (listener != null && isListening) {
-					final NodeChangeData data = listener.getChangedAttributes();
-
-					for (Map.Entry<String, Object> entry : data.getNodeChanges().entrySet()) {
-						webservice().changeNode(user.getUsername(), user.getAccessToken(), "5", node.getID(), entry.getKey(), entry.getValue());
-					}
-
-					for (Map.Entry<String, Object> entry : data.getEdgeChanges().entrySet()) {
-						webservice().changeEdge(user.getUsername(), user.getAccessToken(), "5", node.getID(), entry.getKey(), entry.getValue());
-					}
-
-					node.removeViewer(listener);
-				}
-
-			}
-		});
+		mmapController().addNodeSelectionListener(new NodeSelectionListener(this));
 	}
 
 	public void stop() {
@@ -280,8 +241,8 @@ public class ClientController implements IExtension {
 		return user;
 	}
 
-	public String getMapId() {
-		return mapId;
+	public MapIdentifier getMapIdentifier() {
+		return mapIdentifier;
 	}
 
 	public static String loggedInUserName() {

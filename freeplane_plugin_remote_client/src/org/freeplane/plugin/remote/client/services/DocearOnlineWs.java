@@ -11,6 +11,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.commons.io.output.NullOutputStream;
+import org.docear.messages.models.MapIdentifier;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.plugin.remote.client.ClientController;
 import org.freeplane.plugin.remote.client.User;
@@ -40,7 +41,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 public class DocearOnlineWs implements WS {
 	private final ClientController clientController;
-	private final String serviceUrl = "http://localhost:9000";
+	private final String serviceUrl = "http://localhost:9000/api/v1";
 	// private final String serviceUrl = "https://staging.my.docear.org";
 	private final Client restClient;
 
@@ -69,6 +70,7 @@ public class DocearOnlineWs implements WS {
 	}
 
 	@Override
+	@Deprecated
 	public Future<User> login(final String username, final String password) {
 		final WebResource loginResource = restClient.resource(serviceUrl).path("user/login");
 		MultivaluedMap<String, String> formData = new MultivaluedMapImpl();
@@ -85,12 +87,12 @@ public class DocearOnlineWs implements WS {
 	}
 
 	@Override
-	public Future<Boolean> listenIfUpdatesOccur(final String username, final String accessToken, final String mapId) {
+	public Future<Boolean> listenIfUpdatesOccur(final User user, final MapIdentifier mapIdentifier) {
 		return Futures.future(new Callable<Boolean>() {
 
 			@Override
 			public Boolean call() throws Exception {
-				final WebResource resource = preparedResource(username, accessToken).path("map/" + mapId + "/listen");
+				final WebResource resource = preparedResource(user).path("project/" + mapIdentifier.getProjectId() + "/map/" + mapIdentifier.getMapId() + "/listen");
 
 				final ClientResponse loginResponse = resource.get(ClientResponse.class);
 				return loginResponse.getStatus() == 200;
@@ -100,10 +102,10 @@ public class DocearOnlineWs implements WS {
 	}
 
 	@Override
-	public Future<JsonNode> getMapAsXml(String username, String accessToken, final String mapId) {
+	public Future<JsonNode> getMapAsXml(final User user, final MapIdentifier mapIdentifier) {
 
 		try {
-			final WebResource mapAsXmlResource = preparedResource(username, accessToken).path("map/" + mapId + "/xml");
+			final WebResource mapAsXmlResource = preparedResource(user).path("project/" + mapIdentifier.getProjectId() + "/map/" + mapIdentifier.getMapId() + "/xml");
 			final JsonNode response = new ObjectMapper().readTree(mapAsXmlResource.get(String.class));
 			return Futures.successful(response);
 		} catch (Exception e) {
@@ -114,11 +116,11 @@ public class DocearOnlineWs implements WS {
 	}
 
 	@Override
-	public Future<GetUpdatesResponse> getUpdatesSinceRevision(String username, String accessToken, final String mapId, final int sinceRevision) {
+	public Future<GetUpdatesResponse> getUpdatesSinceRevision(final User user, final MapIdentifier mapIdentifier, final int sinceRevision) {
 
 		int currentRevision = -1;
 		List<MapUpdate> updates = new ArrayList<MapUpdate>();
-		final WebResource fetchUpdates = preparedResource(username, accessToken).path("map/" + mapId + "/updates/" + sinceRevision);
+		final WebResource fetchUpdates = preparedResource(user).path("project/" + mapIdentifier.getProjectId() + "/map/" + mapIdentifier.getMapId() + "/updates/" + sinceRevision);
 		final ClientResponse response = fetchUpdates.get(ClientResponse.class);
 		final ObjectMapper mapper = new ObjectMapper();
 		try {
@@ -158,9 +160,9 @@ public class DocearOnlineWs implements WS {
 	}
 
 	@Override
-	public Future<String> createNode(String username, String accessToken, final String mapId, final String parentNodeId) {
+	public Future<String> createNode(final User user, final MapIdentifier mapIdentifier, final String parentNodeId) {
 
-		final WebResource resource = preparedResource(username, accessToken).path("map/" + mapId + "/node/create");
+		final WebResource resource = preparedResource(user).path("project/" + mapIdentifier.getProjectId() + "/map/" + mapIdentifier.getMapId() + "/node/create");
 		final MultivaluedMap<String, String> formData = new MultivaluedMapImpl();
 		formData.add("parentNodeId", parentNodeId);
 
@@ -175,8 +177,8 @@ public class DocearOnlineWs implements WS {
 	}
 
 	@Override
-	public Future<Boolean> moveNodeTo(String username, String accessToken, final String mapId, final String newParentId, final String nodeToMoveId, final int newIndex) {
-		final WebResource resource = preparedResource(username, accessToken).path("map/" + mapId + "/node/move");
+	public Future<Boolean> moveNodeTo(final User user, final MapIdentifier mapIdentifier, final String newParentId, final String nodeToMoveId, final int newIndex) {
+		final WebResource resource = preparedResource(user).path("project/" + mapIdentifier.getProjectId() + "/map/" + mapIdentifier.getMapId() + "/node/move");
 		final MultivaluedMap<String, String> formData = new MultivaluedMapImpl();
 		formData.add("newParentNodeId", newParentId);
 		formData.add("nodetoMoveId", nodeToMoveId);
@@ -189,9 +191,9 @@ public class DocearOnlineWs implements WS {
 	}
 
 	@Override
-	public Future<Boolean> removeNode(String username, String accessToken, final String mapId, final String nodeId) {
+	public Future<Boolean> removeNode(final User user, final MapIdentifier mapIdentifier, final String nodeId) {
 
-		final WebResource resource = preparedResource(username, accessToken).path("map/" + mapId + "/node/delete");
+		final WebResource resource = preparedResource(user).path("project/" + mapIdentifier.getProjectId() + "/map/" + mapIdentifier.getMapId() + "/node/delete");
 		final MultivaluedMap<String, String> formData = new MultivaluedMapImpl();
 		formData.add("nodeId", nodeId);
 
@@ -203,22 +205,22 @@ public class DocearOnlineWs implements WS {
 	}
 
 	@Override
-	public Future<Boolean> changeNode(String username, String accessToken, final String mapId, final String nodeId, final String attribute, final Object value) {
+	public Future<Boolean> changeNode(final User user, final MapIdentifier mapIdentifier, final String nodeId, final String attribute, final Object value) {
 		try {
-			final WebResource resource = preparedResource(username, accessToken).path("map/" + mapId + "/node/change");
+			final WebResource resource = preparedResource(user).path("project/" + mapIdentifier.getProjectId() + "/map/" + mapIdentifier.getMapId() + "/node/change");
 			final MultivaluedMap<String, String> formData = new MultivaluedMapImpl();
 			formData.add("nodeId", nodeId);
 			formData.add(attribute, value == null ? null : value.toString());
 
 			LogUtils.info("locking node");
 			// boolean isLocked =
-			boolean isLocked = Await.result(lockNode(username, accessToken, mapId, nodeId), Duration.create("5 seconds"));
+			boolean isLocked = Await.result(lockNode(user, mapIdentifier, nodeId), Duration.create("5 seconds"));
 			if (!isLocked)
 				return Futures.successful(false);
 			LogUtils.info("changing");
 			ClientResponse response = resource.post(ClientResponse.class, formData);
 			LogUtils.info("releasing node");
-			releaseNode(username, accessToken, mapId, nodeId);
+			releaseNode(user, mapIdentifier, nodeId);
 
 			LogUtils.info("Status: " + response.getStatus());
 			return Futures.successful(response.getStatus() == 200);
@@ -230,13 +232,13 @@ public class DocearOnlineWs implements WS {
 	}
 
 	@Override
-	public Future<Boolean> changeEdge(String username, String accessToken, String mapId, String nodeId, String attribute, Object value) {
+	public Future<Boolean> changeEdge(final User user, final MapIdentifier mapIdentifier, String nodeId, String attribute, Object value) {
 		try {
-			final WebResource resource = preparedResource(username, accessToken).path("map/" + mapId + "/node/changeEdge");
+			final WebResource resource = preparedResource(user).path("project/" + mapIdentifier.getProjectId() + "/map/" + mapIdentifier.getMapId() + "/node/changeEdge");
 			final MultivaluedMap<String, String> formData = new MultivaluedMapImpl();
 			formData.add("nodeId", nodeId);
 			formData.add(attribute, value.toString());
-			
+
 			LogUtils.info("changing");
 			ClientResponse response = resource.post(ClientResponse.class, formData);
 
@@ -249,8 +251,8 @@ public class DocearOnlineWs implements WS {
 		}
 	}
 
-	private Future<Boolean> lockNode(String username, String accessToken, final String mapId, final String nodeId) {
-		final WebResource resource = preparedResource(username, accessToken).path("map/" + mapId + "/node/requestLock");
+	private Future<Boolean> lockNode(final User user, final MapIdentifier mapIdentifier, final String nodeId) {
+		final WebResource resource = preparedResource(user).path("project/" + mapIdentifier.getProjectId() + "/map/" + mapIdentifier.getMapId() + "/node/requestLock");
 		final MultivaluedMap<String, String> formData = new MultivaluedMapImpl();
 		formData.add("nodeId", nodeId);
 
@@ -259,8 +261,8 @@ public class DocearOnlineWs implements WS {
 		return Futures.successful(response.getStatus() == 200);
 	}
 
-	private Future<Boolean> releaseNode(String username, String accessToken, final String mapId, final String nodeId) {
-		final WebResource resource = preparedResource(username, accessToken).path("map/" + mapId + "/node/releaseLock");
+	private Future<Boolean> releaseNode(final User user, final MapIdentifier mapIdentifier, final String nodeId) {
+		final WebResource resource = preparedResource(user).path("project/" + mapIdentifier.getProjectId() + "/map/" + mapIdentifier.getMapId() + "/node/releaseLock");
 		final MultivaluedMap<String, String> formData = new MultivaluedMapImpl();
 		formData.add("nodeId", nodeId);
 
@@ -270,7 +272,7 @@ public class DocearOnlineWs implements WS {
 		return Futures.successful(response.getStatus() == 200);
 	}
 
-	private WebResource preparedResource(String username, String accessToken) {
-		return restClient.resource(serviceUrl).queryParam("username", username).queryParam("accessToken", accessToken);
+	private WebResource preparedResource(final User user) {
+		return restClient.resource(serviceUrl).queryParam("username", user.getUsername()).queryParam("accessToken", user.getAccessToken());
 	}
 }

@@ -21,7 +21,7 @@ public class NodeChangeListener extends BaseListener implements INodeChangeListe
 
 			if (event.getProperty() != null && event.getProperty().equals("node_text")) {
 				LogUtils.info("node_text");
-				webservice().changeNode(user().getUsername(), user().getAccessToken(), "5", event.getNode().getID(), "nodeText", event.getNewValue());
+				webservice().changeNode(user(), mapIdentifier(), event.getNode().getID(), "nodeText", event.getNewValue());
 			}
 		}
 	}
