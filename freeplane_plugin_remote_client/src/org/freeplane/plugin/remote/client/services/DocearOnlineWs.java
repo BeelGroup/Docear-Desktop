@@ -48,9 +48,12 @@ public class DocearOnlineWs implements WS {
 
 	public DocearOnlineWs(ClientController clientController) {
 		this.clientController = clientController;
-		// com.google.common.util.concurrent.
+		
+		/**
+		 * important! WS does not run properly without the logging filter.
+		 * Why? No Idea...
+		 */
 		PrintStream stream = new PrintStream(new NullOutputStream());
-		// disableCertificateValidation();
 		restClient = ApacheHttpClient.create();
 		restClient.addFilter(new LoggingFilter(stream));
 

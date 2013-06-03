@@ -44,19 +44,23 @@ public final class RemoteUtils {
 		NodeModel node = mapController.newNode("", parentNode.getMap());
 
 		// insert node
-		// logger().debug("Actions.addNode => inserting new node");
-		if (mapController.getRootNode().getID().equals(parentNode.getID())){
-			// insert new node to root node
-			boolean isLeft = side != null && side.equals(Side.Left);
-			mapController.insertNode(node, parentNode, false, isLeft, isLeft);
-		} else {
-			// insert new node to normal node
-			mapController.insertNode(node, parentNode);
-		}
+		try {
+			if (mapController.getRootNode().getID().equals(parentNode.getID())) {
+				// insert new node to root node
+				boolean isLeft = side != null && side.equals(Side.Left);
+				mapController.insertNode(node, parentNode, false, isLeft, isLeft);
+			} else {
+				// insert new node to normal node
+				mapController.insertNode(node, parentNode);
+			}
 
-		node.createID();
+			node.createID();
+		} catch (NullPointerException e) {
+			//TODO do something useful
+			
+		}
 		// logger().debug("Actions.addNode => node with id '{}' successfully created",
-		// node.getID());
+
 		return node;
 	}
 
@@ -91,7 +95,6 @@ public final class RemoteUtils {
 				freeplaneNode.removeExtension(NodeAttributeTableModel.class);
 
 			final String[] parts = valueObj.split("%:%");
-			
 
 			NodeAttributeTableModel attrTable;
 			MAttributeController attrController = MAttributeController.getController();
@@ -99,8 +102,8 @@ public final class RemoteUtils {
 			if (parts.length > 0) {
 				attrTable = attrController.createAttributeTableModel(freeplaneNode);
 
-				for (int i = 0; i < parts.length; i+=2) {
-					attrController.performInsertRow(attrTable, i/2, parts[i], parts[i+1]);
+				for (int i = 0; i < parts.length; i += 2) {
+					attrController.performInsertRow(attrTable, i / 2, parts[i], parts[i + 1]);
 				}
 				freeplaneNode.addExtension(attrTable);
 			}
@@ -110,15 +113,15 @@ public final class RemoteUtils {
 			updateLocationModel(mapController, freeplaneNode, null, Integer.parseInt(valueObj));
 		} else if (attribute.equals("icons")) {
 			final String[] icons = valueObj.toString().split("%:%");
-			
-			final MIconController iconCtrl = (MIconController)MIconController.getController();
+
+			final MIconController iconCtrl = (MIconController) MIconController.getController();
 			iconCtrl.removeAllIcons(freeplaneNode);
-			
-			for(String icon: icons) {
+
+			for (String icon : icons) {
 				iconCtrl.addIcon(freeplaneNode, new MindIcon(icon));
 			}
 		} else if (attribute.equals("image")) {
-			
+
 			// TODO handle (https://github.com/Docear/HTW-Frontend/issues/437)
 		} else if (attribute.equals("link")) {
 			final String value = valueObj;
@@ -136,7 +139,7 @@ public final class RemoteUtils {
 				LogUtils.severe("problem saving hyperlink", e);
 			}
 		} else if (attribute.equals("nodeText")) {
-			if (freeplaneNode.getXmlText() != null){
+			if (freeplaneNode.getXmlText() != null) {
 				freeplaneNode.setXmlText(valueObj);
 			} else {
 				freeplaneNode.setText(valueObj);
@@ -192,12 +195,12 @@ public final class RemoteUtils {
 
 	private static void updateLocationModel(MMapController mapController, NodeModel freeplaneNode, Integer hGap, Integer shiftY) {
 		System.out.println("changing location");
-		final MLocationController locationController = (MLocationController)MLocationController.getController();
+		final MLocationController locationController = (MLocationController) MLocationController.getController();
 		final LocationModel lm = LocationModel.getModel(freeplaneNode);
 		final int newHGap = hGap != null ? hGap : lm.getHGap();
 		final int newShiftY = shiftY != null ? shiftY : lm.getShiftY();
 		final int parentVGap = LocationModel.getModel(freeplaneNode.getParentNode()).getVGap();
-		
+
 		locationController.moveNodePosition(freeplaneNode, parentVGap, newHGap, newShiftY);
 	}
 

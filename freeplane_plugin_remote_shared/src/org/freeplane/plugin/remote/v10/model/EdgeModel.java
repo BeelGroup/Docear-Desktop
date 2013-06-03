@@ -26,7 +26,13 @@ public class EdgeModel implements Serializable {
 	public EdgeModel(NodeModel freeplaneNode) {
 		MEdgeController edgeController = (MEdgeController)MEdgeController.getController();
 		this.width = edgeController.getWidth(freeplaneNode, false);
-		final Color color = edgeController.getColor(freeplaneNode, false);
+		
+		Color color = null;
+		try {
+			color = edgeController.getColor(freeplaneNode, false);
+		} catch (NullPointerException e) {
+			//TODO do something useful
+		}
 		this.color = color != null ? color.getRGB() : null;
 		this.style = edgeController.getStyle(freeplaneNode, false);
 	}
