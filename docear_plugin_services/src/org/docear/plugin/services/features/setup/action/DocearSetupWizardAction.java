@@ -127,7 +127,7 @@ public class DocearSetupWizardAction extends AFreeplaneAction {
 		wizard.registerWizardPanel(desc);
 		
 		//registration verification
-		desc = new WizardPageDescriptor("page.verify.registration", new VerifyServicePagePanel("Registration", getRegistrationVerificationTask(), true)) {
+		desc = new WizardPageDescriptor("page.verify.registration", new VerifyServicePagePanel("Registration", getRegistrationVerificationTask(), false)) {
 			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
 					context.getTraversalLog().getPreviousPage(context);
 					return context.getModel().getPage("page.project.create");

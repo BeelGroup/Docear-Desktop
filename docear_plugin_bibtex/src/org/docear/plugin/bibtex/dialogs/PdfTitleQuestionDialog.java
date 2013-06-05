@@ -11,9 +11,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.ui.MultiLineActionLabel;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
-import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 
@@ -62,7 +62,7 @@ public class PdfTitleQuestionDialog extends JPanel {
 				if("open_document_link".equals(e.getActionCommand()) ){
 					try {
 //						Controller.getCurrentController().getViewController().openDocument(uri);
-						boolean openOnPage = ResourceController.getResourceController().getBooleanProperty(PdfUtilitiesController.OPEN_PDF_VIEWER_ON_PAGE_KEY);		
+						boolean openOnPage = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.OPEN_PDF_VIEWER_ON_PAGE_KEY);		
 						
 						if (openOnPage) {
 							PdfUtilitiesController.getController().openPdfOnPage(uri, 1);

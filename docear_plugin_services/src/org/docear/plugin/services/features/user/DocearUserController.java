@@ -15,7 +15,7 @@ import org.docear.plugin.services.ServiceController;
 import org.docear.plugin.services.features.io.DocearConnectionProvider;
 import org.docear.plugin.services.features.user.view.WorkspaceDocearServiceConnectionBar;
 import org.docear.plugin.services.features.user.view.WorkspaceDocearServiceConnectionBar.CONNECTION_STATE;
-import org.freeplane.core.resources.ResourceController;
+import org.docear.plugin.services.features.user.workspace.DocearWorkspaceSettings;
 import org.freeplane.core.user.IUserAccountChangeListener;
 import org.freeplane.core.user.UserAccountChangeEvent;
 import org.freeplane.core.user.UserAccountController;
@@ -37,7 +37,6 @@ public class DocearUserController extends ADocearServiceFeature {
 
 	
 	public final static String DOCEAR_CONNECTION_USERNAME_PROPERTY = "docear.service.connect.username";
-	public final static String DOCEAR_CONNECTION_TOKEN_PROPERTY = "docear.service.connect.token";
 	
 	private final WorkspaceDocearServiceConnectionBar connectionBar = new WorkspaceDocearServiceConnectionBar();
 
@@ -46,7 +45,7 @@ public class DocearUserController extends ADocearServiceFeature {
 	 **********************************************************************************/
 	public DocearUserController() {
 		initListeners();
-		String name = ResourceController.getResourceController().getProperty(DOCEAR_CONNECTION_USERNAME_PROPERTY);
+		String name = DocearController.getPropertiesController().getProperty(DOCEAR_CONNECTION_USERNAME_PROPERTY);//ResourceController.getResourceController().getProperty(DOCEAR_CONNECTION_USERNAME_PROPERTY);
 		DocearUser user = loadUser(name);
 		user.activate();
 	}
@@ -66,6 +65,7 @@ public class DocearUserController extends ADocearServiceFeature {
 		}
 		if(user.isValid()) {
 			user.setOnline(true);
+			ServiceController.getConnectionController().setDefaultHeader("accessToken", user.getAccessToken());
 			return;
 		}
 		MultivaluedMap<String, String> formParams = new MultivaluedMapImpl();
@@ -158,9 +158,20 @@ public class DocearUserController extends ADocearServiceFeature {
 				if(event.getUser() instanceof DocearUser) {
 					event.getUser().addPropertyChangeListener(getUserPropertyChangeListener());
 					try {
+						try {
+							ServiceController.getFeature(DocearWorkspaceSettings.class).loadUser((DocearUser) event.getUser());
+						} catch (IOException e) {
+							LogUtils.severe("Exception in org.docear.plugin.services.features.user.DocearUserController.loadUser(name):"+e.getMessage());
+						}
 						loginUser((DocearUser) event.getUser());
 					} catch (DocearServiceException e) {
 						e.printStackTrace();
+					}
+					if(event.getUser() instanceof DocearLocalUser) {
+						DocearController.getPropertiesController().setProperty(DOCEAR_CONNECTION_USERNAME_PROPERTY, "");
+					}
+					else {
+						DocearController.getPropertiesController().setProperty(DOCEAR_CONNECTION_USERNAME_PROPERTY, event.getUser().getName());
 					}
 				}
 				else {
@@ -218,8 +229,11 @@ public class DocearUserController extends ADocearServiceFeature {
 			DocearUser user = new DocearUser();
 			user.setUsername(name);
 			user.setEnabled(true);
-			String token = ResourceController.getResourceController().getProperty(DOCEAR_CONNECTION_TOKEN_PROPERTY);
-			user.setAccessToken(token);
+			try {
+				ServiceController.getFeature(DocearWorkspaceSettings.class).loadUser(user);
+			} catch (IOException e) {
+				LogUtils.severe("Exception in org.docear.plugin.services.features.user.DocearUserController.loadUser(name):"+e.getMessage());
+			}
 			return user;
 		}
 	}
@@ -227,15 +241,11 @@ public class DocearUserController extends ADocearServiceFeature {
 
 	@Override
 	protected void installDefaults(ModeController modeController) {
-		// TODO Auto-generated method stub
-		
 	}
 
 
 	@Override
 	public void shutdown() {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	/***********************************************************************************

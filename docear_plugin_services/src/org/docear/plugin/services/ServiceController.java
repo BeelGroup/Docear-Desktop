@@ -7,6 +7,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.docear.plugin.core.DocearController;
+import org.docear.plugin.core.event.DocearEvent;
+import org.docear.plugin.core.event.DocearEventType;
+import org.docear.plugin.core.event.IDocearEventListener;
 import org.docear.plugin.services.features.io.DocearConnectionProvider;
 import org.docear.plugin.services.features.recommendations.RecommendationsController;
 import org.docear.plugin.services.features.recommendations.actions.ShowRecommendationsAction;
@@ -18,6 +21,7 @@ import org.docear.plugin.services.features.upload.UploadController;
 import org.docear.plugin.services.features.user.DocearUser;
 import org.docear.plugin.services.features.user.DocearUserController;
 import org.docear.plugin.services.features.user.action.DocearClearUserDataAction;
+import org.docear.plugin.services.features.user.workspace.DocearWorkspaceSettings;
 import org.docear.plugin.services.workspace.DocearWorkspaceModel;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.user.UserAccountController;
@@ -41,7 +45,6 @@ public class ServiceController {
 	
 	private ServiceController(ModeController modeController) {
 		WorkspaceController.getModeExtension(modeController).setModel(new DocearWorkspaceModel());
-		
 		initListeners(modeController);
 
 		new ServiceConfiguration(modeController);
@@ -57,7 +60,9 @@ public class ServiceController {
 		if (serviceController == null) {
 			serviceController = new ServiceController(modeController);
 			
+			serviceController.installFeature(new DocearWorkspaceSettings());
 			serviceController.installFeature(new DocearConnectionProvider());
+			ServiceController.getConnectionController().setDefaultHeader("version", Integer.toString(DocearController.getController().getApplicationBuildNumber()));
 			serviceController.installFeature(new DocearUserController());
 			
 			if (DocearController.getController().isLicenseDialogNecessary()) {
@@ -66,6 +71,9 @@ public class ServiceController {
 			serviceController.installFeature(new UploadController());
 			serviceController.installFeature(new RecommendationsController());
 			serviceController.installFeature(new UpdateCheck());
+			
+			ServiceController.getFeature(DocearUserController.class).installView(modeController);
+			
 		}
 	}
 	
@@ -113,6 +121,14 @@ public class ServiceController {
 		final URL defaults = this.getClass().getResource(ResourceController.PLUGIN_DEFAULTS_RESOURCE);
 		if (defaults == null) throw new RuntimeException("cannot open " + ResourceController.PLUGIN_DEFAULTS_RESOURCE);
 		Controller.getCurrentController().getResourceController().addDefaults(defaults);
+		
+		DocearController.getController().addDocearEventListener(new IDocearEventListener() {		
+			public void handleEvent(DocearEvent event) {
+				if (event.getType() == DocearEventType.APPLICATION_CLOSING) {
+					shutdown();
+				}
+			}
+		});
 	}
 	
 	public URI getOnlineServiceUri() {
@@ -131,4 +147,9 @@ public class ServiceController {
 	public static DocearConnectionProvider getConnectionController() {
 		return getFeature(DocearConnectionProvider.class);
 	}	
+	
+	private void shutdown() {
+		
+	}
+
 }

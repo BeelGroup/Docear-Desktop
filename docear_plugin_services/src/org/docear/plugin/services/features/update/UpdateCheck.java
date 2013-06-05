@@ -100,12 +100,12 @@ public class UpdateCheck extends ADocearServiceFeature {
 			
 			if (showUpdateCheckerDialog(compCode, choice)) {
 				// don't show Dialog again if latestVersionFromServer was already announced to the user
-				String lastLatestVersionString = ResourceController.getResourceController().getProperty("docer.update_checker.savedLatestVersion", "");
+				String lastLatestVersionString = DocearController.getPropertiesController().getProperty("docer.update_checker.savedLatestVersion", "");
 				final String latestVersionString = latestVersion.toString();
 				if (lastLatestVersionString.equals(latestVersionString)) {
 					return;
 				}
-				ResourceController.getResourceController().setProperty("docer.update_checker.savedLatestVersion", latestVersionString);
+				DocearController.getPropertiesController().setProperty("docer.update_checker.savedLatestVersion", latestVersionString);
 				System.out.println(latestVersion.getStatus());
 				System.out.println(latestVersion.getStatusNumber());
 				SwingUtilities.invokeLater(new Runnable() {					
@@ -113,7 +113,7 @@ public class UpdateCheck extends ADocearServiceFeature {
 						try {
 							UpdateCheckerDialogPanel dialogPanel = new UpdateCheckerDialogPanel("", runningVersion.toString(), latestVersionString, latestVersion.getStatus());				
 							JOptionPane.showMessageDialog(UITools.getFrame(), dialogPanel, TextUtils.getText("docear.new_version_available.title"), JOptionPane.INFORMATION_MESSAGE);
-							ResourceController.getResourceController().setProperty("docear.update_checker.options", dialogPanel.getChoice());
+							DocearController.getPropertiesController().setProperty("docear.update_checker.options", dialogPanel.getChoice());
 						}
 						catch (Exception e) {
 							LogUtils.warn("org.docear.plugin.services.features.update.UpdateCheck.checkForUpdates(): "+e.getMessage());

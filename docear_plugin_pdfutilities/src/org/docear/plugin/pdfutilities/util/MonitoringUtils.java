@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Stack;
 
 import org.docear.plugin.core.CoreConfiguration;
+import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.features.AnnotationID;
 import org.docear.plugin.core.util.NodeUtilities;
 import org.docear.plugin.core.workspace.AVirtualDirectory;
@@ -25,7 +26,6 @@ import org.docear.plugin.pdfutilities.features.IAnnotation;
 import org.docear.plugin.pdfutilities.features.IAnnotation.AnnotationType;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
 import org.docear.plugin.pdfutilities.pdf.PdfFileFilter;
-import org.freeplane.core.resources.ResourceController;
 import org.freeplane.features.attribute.AttributeController;
 import org.freeplane.features.attribute.NodeAttributeTableModel;
 import org.freeplane.features.link.LinkController;
@@ -142,7 +142,7 @@ public abstract class MonitoringUtils {
 				return true;				
 				
 			case 2:
-				return ResourceController.getResourceController().getBooleanProperty("docear_auto_monitoring"); //$NON-NLS-1$
+				return DocearController.getPropertiesController().getBooleanProperty("docear_auto_monitoring"); //$NON-NLS-1$
 				
 			default:
 				return false;

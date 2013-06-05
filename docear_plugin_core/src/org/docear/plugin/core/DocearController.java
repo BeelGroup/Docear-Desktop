@@ -11,7 +11,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
-import java.util.regex.Pattern;
 
 import org.docear.plugin.core.event.DocearEvent;
 import org.docear.plugin.core.event.DocearEventType;
@@ -29,10 +28,6 @@ import org.freeplane.features.mode.Controller;
  * 
  */
 public class DocearController implements IDocearEventListener {
-
-	private final static String PLACEHOLDER_PROFILENAME = "@@PROFILENAME@@";
-	private static final String DEFAULT_LIBRARY_PATH = "workspace:/"+PLACEHOLDER_PROFILENAME+"/library";
-	private final static Pattern PATTERN = Pattern.compile(PLACEHOLDER_PROFILENAME);
 	static final String DOCEAR_FIRST_RUN_PROPERTY = "docear.already_initialized";
 	
 	private final static String DOCEAR_VERSION_NUMBER = "docear.version.number";
@@ -319,6 +314,10 @@ public class DocearController implements IDocearEventListener {
 		}
 	}
 	
+	public static ResourceController getPropertiesController() {
+		return ResourceController.getResourceController();
+	}
+	
 	
 	
 	/***********************************************************************************
@@ -352,8 +351,4 @@ public class DocearController implements IDocearEventListener {
 //		}
 		return false;
 	}
-	
-	
-
-	
 }

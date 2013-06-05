@@ -7,6 +7,7 @@ import java.net.PasswordAuthentication;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import org.docear.plugin.core.DocearController;
 import org.docear.plugin.services.features.io.view.ProxyAuthenticationPanel;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.LogUtils;
@@ -37,10 +38,10 @@ public class DocearProxyAuthenticator extends Authenticator {
 			boolean wasSelected = panel.getChckbxUseProxy().isSelected();
 			int result = JOptionPane.showConfirmDialog(null, panel, TextUtils.getText("docear.proxy.connect.dialog.title"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 			if(result == JOptionPane.OK_OPTION){
-				ResourceController.getResourceController().setProperty(DocearProxyAuthenticator.DOCEAR_USE_PROXY, panel.getChckbxUseProxy().isSelected());
-				ResourceController.getResourceController().setProperty(DocearProxyAuthenticator.DOCEAR_PROXY_HOST, panel.getHostField().getText());
-				ResourceController.getResourceController().setProperty(DocearProxyAuthenticator.DOCEAR_PROXY_PORT, panel.getPortField().getText());
-				ResourceController.getResourceController().setProperty(DocearProxyAuthenticator.DOCEAR_PROXY_USERNAME, panel.getUsernameField().getText());
+				DocearController.getPropertiesController().setProperty(DocearProxyAuthenticator.DOCEAR_USE_PROXY, panel.getChckbxUseProxy().isSelected());
+				DocearController.getPropertiesController().setProperty(DocearProxyAuthenticator.DOCEAR_PROXY_HOST, panel.getHostField().getText());
+				DocearController.getPropertiesController().setProperty(DocearProxyAuthenticator.DOCEAR_PROXY_PORT, panel.getPortField().getText());
+				DocearController.getPropertiesController().setProperty(DocearProxyAuthenticator.DOCEAR_PROXY_USERNAME, panel.getUsernameField().getText());
 				setPassword(panel.getPasswordField().getPassword());
 				if(wasSelected!=panel.getChckbxUseProxy().isSelected()) {
 					

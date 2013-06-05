@@ -232,8 +232,7 @@ public class DocearUser implements IUserAccount {
 	}
 
 	public boolean isTransmissionEnabled() {
-		return false;
-		//return this.transmissionEnabled;
+		return this.transmissionEnabled;
 	}
 	
 	public void toggleTransmissionEnabled() {

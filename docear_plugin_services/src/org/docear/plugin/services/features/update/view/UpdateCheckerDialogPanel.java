@@ -9,9 +9,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.Version;
 import org.docear.plugin.services.features.update.UpdateCheck;
-import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.swingplus.JHyperlink;
@@ -119,7 +119,7 @@ public class UpdateCheckerDialogPanel extends JPanel {
 		});
 		optionsComboBox.setEditable(false);
 		
-		String choice = ResourceController.getResourceController().getProperty("docear.update_checker.options");
+		String choice = DocearController.getPropertiesController().getProperty("docear.update_checker.options");
 		try {
 			optionsComboBox.setSelectedItem(optionsMap.get(choice));
 		}
