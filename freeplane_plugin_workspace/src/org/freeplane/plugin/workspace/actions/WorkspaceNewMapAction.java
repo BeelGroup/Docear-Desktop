@@ -90,7 +90,7 @@ public class WorkspaceNewMapAction extends AFreeplaneAction {
 		if(f != null) {
 			Controller.getCurrentController().close(true);
 			try {
-				mapIO.newMap(f.toURI().toURL());
+				mapIO.newMap(Compat.fileToUrl(f));
 			} catch (Exception e) {
 				LogUtils.severe(e);
 			}

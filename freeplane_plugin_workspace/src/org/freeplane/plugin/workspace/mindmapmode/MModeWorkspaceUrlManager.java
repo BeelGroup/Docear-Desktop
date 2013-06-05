@@ -98,7 +98,7 @@ public class MModeWorkspaceUrlManager extends MFileManager {
 		try {
 			URI baseUri = null;
 			if(map != null && map.getURL() != null) {
-				baseUri = map.getURL().toURI();
+				baseUri = Compat.urlToFile(map.getURL()).toURI();
 			}
 			return getAbsoluteUrl(baseUri, uri);
 		} catch (URISyntaxException e) {
