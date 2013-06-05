@@ -82,6 +82,9 @@ public class MModeWorkspaceLinkController extends MLinkController {
 			if (linkType == LINK_RELATIVE_TO_PROJECT) {
 				return WorkspaceController.getCurrentProject().getRelativeURI(input.getAbsoluteFile().toURI());
 			}
+			if (map == null) {
+				return input.toURI().normalize();
+			}
 			else {
 				return super.createRelativeURI(map, input, linkType);
 			}
