@@ -26,6 +26,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import org.freeplane.core.util.TextUtils;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.RowSpec;
 
 /***
  * 
@@ -89,7 +92,8 @@ public class Wizard {
 		wizardModel.registerPage(page.getIdentifier(), page);
 	}
 
-	public void setCurrentPage(Object id) {		
+	public void setCurrentPage(Object id) {
+		resetControls();
 		WizardPageDescriptor oldPageDescriptor = wizardModel.getCurrentPageDescriptor();
 
 		if (oldPageDescriptor != null) {
@@ -98,8 +102,13 @@ public class Wizard {
 
 		wizardModel.setCurrentPage(id);
 		wizardModel.getCurrentPageDescriptor().aboutToDisplayPage(getContext());
-		cardLayout.show(cardPanel, id.toString());
-		wizardModel.getCurrentPageDescriptor().displayingPage(getContext());
+		if(wizardModel.getCurrentPageDescriptor().getPage().isPageDisplayable()) {
+			cardLayout.show(cardPanel, id.toString());
+			wizardModel.getCurrentPageDescriptor().displayingPage(getContext());
+		}
+		else {
+			nextButton.doClick();
+		}
 	}
 	
 	public void setCancelEnabled(boolean enabled) {
@@ -217,6 +226,7 @@ public class Wizard {
 		JPanel headControls = new JPanel();
 		JPanel titlePanel = new JPanel();
 		titleComponent = new JEditorPane();
+		titleComponent.setBackground(Color.WHITE);
 		
 		final LineBorder lineBorder = new LineBorder(new Color(0,0,0,196), 1);
 		
@@ -229,7 +239,7 @@ public class Wizard {
 		headPanel.setLayout(new BorderLayout());
 		headPanel.setBackground(Color.WHITE);
 		headPanel.setPreferredSize(new Dimension(0, 60));
-		headPanel.setBorder(new EmptyBorder(new Insets(0, 10, 10, 10)));		
+		headPanel.setBorder(new EmptyBorder(0, 10, 5, 10));		
 		
 		closeButton = new JButton(new ImageIcon(Wizard.class.getResource("/images/window-close.png")));
 		closeButton.setPreferredSize(new Dimension(35, 25));
@@ -239,14 +249,16 @@ public class Wizard {
 		headControls.setBorder(new EmptyBorder(-6, 0, 0, 0));
 		headControls.setBackground(Color.WHITE);
 		headControls.add(closeButton, BorderLayout.NORTH);
-		
-		titlePanel.setLayout(new BorderLayout());
 		titlePanel.setBackground(Color.WHITE);
-		titlePanel.setBorder(new EmptyBorder(0, 0, 0, 5));
+		titlePanel.setBorder(null);
+		titlePanel.setLayout(new FormLayout(new ColumnSpec[] {
+				ColumnSpec.decode("388px:grow"),},
+			new RowSpec[] {
+				RowSpec.decode("50px:grow"),}));
 		
 		titleComponent.setEditable(false);
 		titleComponent.setFont(titleComponent.getFont().deriveFont(Font.BOLD, 14f));
-		titlePanel.add(titleComponent, BorderLayout.CENTER);
+		titlePanel.add(titleComponent, "1, 1, fill, center");
 		
 		headPanel.add(headControls, BorderLayout.EAST);
 		headPanel.add(titlePanel, BorderLayout.CENTER);
@@ -330,7 +342,6 @@ public class Wizard {
 					} catch (InterruptedException e) {
 						returnCode = CANCEL_OPTION;
 					}
-					
 				}
 			};
 			returnCodeObserver = new Thread(observer);
@@ -343,6 +354,7 @@ public class Wizard {
 			nextButton.setEnabled(true);
 			nextButton.setText(TextUtils.getText("docear.setup.wizard.controls.next"));
 			nextButton.setDefaultCapable(true);
+			wizard.getRootPane().setDefaultButton(nextButton);
 		}
 		if(backButton != null) {
 			backButton.setVisible(true);

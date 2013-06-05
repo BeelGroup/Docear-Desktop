@@ -59,7 +59,7 @@ public class DefaultFileNode extends AWorkspaceTreeNode implements IWorkspaceNod
 		super("physical_file");
 		this.setName(name);
 		this.file = file;
-		icon = WorkspaceController.getCurrentModeExtension().getView().getNodeTypeIconManager().getIconForNode(this);
+		//icon = WorkspaceController.getCurrentModeExtension().getView().getNodeTypeIconManager().getIconForNode(this);
 	}
 
 	/***********************************************************************************
@@ -87,105 +87,6 @@ public class DefaultFileNode extends AWorkspaceTreeNode implements IWorkspaceNod
 		}
 	}
 	
-//	private void copyFileContent(File source, File destination) {
-//		try {
-//			InputStream in = new DataInputStream(new FileInputStream(source));		
-//			DataOutputStream out = new DataOutputStream(new FileOutputStream(destination));
-//			byte[] buffer = new byte[1024];
-//			int len = in.read(buffer);
-//			while (len != -1) {
-//				out.write(buffer, 0, len);
-//				len = in.read(buffer);
-//			}
-//			in.close();
-//			out.close();
-//		}
-//		catch (FileNotFoundException e) {
-//			e.printStackTrace();
-//		}
-//		catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//	}
-//	
-//	protected void copyFileTo(File file, File parentFolder) throws IOException {
-//		if(parentFolder.isDirectory()) {				
-//			File target = new File(parentFolder,file.getName());
-//			if(file.isDirectory()) {
-//				if(target.mkdir()) {
-//					for(File child : file.listFiles()) {
-//						copyFileTo(child, target);
-//					}
-//				}
-//				else {
-//					throw new IOException("Could not create folder: "+target);
-//				}
-//			}
-//			else {
-//				if(target.createNewFile()) {
-//					copyFileContent(file, target);
-//				}
-//				else {
-//					throw new IOException("Could not create file: "+target);
-//				}
-//			}
-//		}
-//		else {
-//			throw new IOException("File "+parentFolder+" is no folder");
-//		}	
-//	}
-//	
-//	/**
-//	 * @param file
-//	 * @throws IOException 
-//	 */
-//	public void copyTo(File destDirectory) throws IOException {
-//		assert(destDirectory != null);
-//		if(getFile().equals(destDirectory)) {
-//			return;
-//		}
-//		
-//		if(destDirectory.isDirectory()) {
-//			try {
-//				if(getFile().isDirectory()) {
-//					FileUtils.copyDirectoryToDirectory(getFile(), destDirectory);
-//				}
-//				else { 
-//					FileUtils.copyFileToDirectory(getFile(), destDirectory);
-//				}
-//			}
-//			catch (FileExistsException e) {
-//				LogUtils.info("Exeption in org.freeplane.plugin.workspace.nodes.DefaultFileNode.copyTo(destDirectory): "+e.getMessage());
-//			}
-//		} 
-//		else {			
-//			copyTo(destDirectory.getParentFile());
-//		}		
-//	}
-//	
-//	public void moveTo(File destDirectory) throws IOException {
-//		assert(destDirectory != null);
-//		if(getFile().equals(destDirectory)) {
-//			return;
-//		}
-//		if(destDirectory.isDirectory()) {
-//			try {
-//				if(getFile().isDirectory()) {				
-//					FileUtils.moveDirectoryToDirectory(getFile(), destDirectory, true);
-//				}
-//				else {
-//					FileUtils.moveFileToDirectory(getFile(), destDirectory, true);
-//				}
-//			}
-//			catch (FileExistsException e) {
-//				LogUtils.info("Exeption in org.freeplane.plugin.workspace.nodes.DefaultFileNode.moveTo(destDirectory)"+e.getMessage());
-//			}
-//		} 
-//		else {
-//			moveTo(destDirectory.getParentFile());
-//		}
-//	}
-	
 	public boolean isEditable() {
 		return false;
 	}
@@ -197,7 +98,7 @@ public class DefaultFileNode extends AWorkspaceTreeNode implements IWorkspaceNod
 			renderer.setClosedIcon(NOT_EXISTING);
 			return true;
 		}		
-		
+		icon = WorkspaceController.getCurrentModeExtension().getView().getNodeTypeIconManager().getIconForNode(this);
 		if(icon == null) {
 			icon = FileSystemView.getFileSystemView().getSystemIcon(getFile());
 			renderer.setLeafIcon(icon);

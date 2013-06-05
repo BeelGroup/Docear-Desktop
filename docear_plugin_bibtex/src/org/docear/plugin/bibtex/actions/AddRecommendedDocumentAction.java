@@ -25,6 +25,7 @@ import org.docear.plugin.core.event.IDocearEventListener;
 import org.docear.plugin.core.util.FileUtilities;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.docear.plugin.services.ServiceController;
+import org.docear.plugin.services.features.recommendations.RecommendationsController;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;
@@ -86,7 +87,7 @@ public class AddRecommendedDocumentAction extends AFreeplaneAction implements ID
 
 	public File getDestinationFile(DocearWorkspaceProject project, final URI uri, String defaultFileName) throws URISyntaxException, MalformedURLException {
 		//WORKSPACE - DOCEAR todo: find one repository directory or handle multiple repository directories
-		File defaultFile = new File(URIUtils.getFile(ServiceController.getController().getDownloadsFolder()), defaultFileName);
+		File defaultFile = new File(URIUtils.getFile(ServiceController.getFeature(RecommendationsController.class).getDownloadsFolder()), defaultFileName);
 
 		final JFileChooser fc = new JFileChooser();
 		fc.approveSelection();
@@ -133,8 +134,7 @@ public class AddRecommendedDocumentAction extends AFreeplaneAction implements ID
 						@Override
 						public void run() {
 							addFileToLibrary(destinationFile);
-							//WORKSPACE - DOCEAR todo: refresh the download destination
-							ServiceController.getController().refreshDownloadsFolder();
+							ServiceController.getFeature(RecommendationsController.class).refreshDownloadsFolder();
 						}
 					});
 				}

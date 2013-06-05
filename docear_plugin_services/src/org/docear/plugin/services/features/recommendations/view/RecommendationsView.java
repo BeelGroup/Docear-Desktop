@@ -126,7 +126,7 @@ public class RecommendationsView extends JPanel {
 	}
 	
 	public void updateTitle() {
-		String label = ServiceController.getUser().getName();
+		String label = ServiceController.getCurrentUser().getName();
 		if(label != null && label.trim().length() > 0) {
 			setName(TextUtils.format("recommendations.map.label.forUser", label));
 		} 
@@ -228,7 +228,7 @@ public class RecommendationsView extends JPanel {
 				if(connection instanceof HttpURLConnection) {
 					HttpURLConnection hconn = (HttpURLConnection) connection;							
 				    hconn.setInstanceFollowRedirects(false);
-				    String accessToken = ServiceController.getUser().getAccessToken();
+				    String accessToken = ServiceController.getCurrentUser().getAccessToken();
 				    hconn.addRequestProperty("accessToken", accessToken);
 				    
 				    int response = hconn.getResponseCode();

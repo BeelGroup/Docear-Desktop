@@ -3,6 +3,8 @@ package org.docear.plugin.services.features.setup.view;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -12,6 +14,7 @@ import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -21,6 +24,7 @@ import javax.swing.event.ChangeListener;
 
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.ui.MultiLineActionLabel;
+import org.docear.plugin.core.ui.components.DocearLicensePanel;
 import org.docear.plugin.core.ui.components.LabeledPasswordField;
 import org.docear.plugin.core.ui.components.LabeledTextField;
 import org.docear.plugin.core.ui.wizard.AWizardPage;
@@ -51,7 +55,7 @@ public class RegistrationPagePanel extends AWizardPage {
 	private JCheckBox chckbxOnlineBackup;
 	private JCheckBox chckbxSynchronization;
 	private JCheckBox chckbxRecommendations;
-	private JPanel lblPrivacyTerms;
+	private JPanel lblProcessingTerms;
 	private JPanel lblToS;
 	private JPanel panel_1;
 	private JPanel panel_2;
@@ -85,8 +89,8 @@ public class RegistrationPagePanel extends AWizardPage {
 				FormFactory.PARAGRAPH_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
-				RowSpec.decode("fill:default"),
-				RowSpec.decode("fill:default"),
+				RowSpec.decode("top:default"),
+				RowSpec.decode("top:default"),
 				FormFactory.UNRELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,}));
 		
@@ -331,7 +335,7 @@ public class RegistrationPagePanel extends AWizardPage {
 			}
 		});
 		
-		JLabel lblAndTheFine = new JLabel(TextUtils.getText("docear.setup.wizard.register.terms.title"));
+		JLabel lblAndTheFine = new JLabel(TextUtils.getText("docear.setup.wizard.docear.terms.title"));
 		lblAndTheFine.setFont(new Font("Tahoma", Font.BOLD, 11));
 		add(lblAndTheFine, "2, 11, 3, 1");
 		
@@ -344,11 +348,21 @@ public class RegistrationPagePanel extends AWizardPage {
 				}
 			}
 		});
-		add(chckbxAcceptUsageTerms, "2, 13");
+		add(chckbxAcceptUsageTerms, "2, 13, default, top");
 		
-		lblPrivacyTerms = new MultiLineActionLabel(TextUtils.getText("docear.setup.wizard.register.terms.privacy"));
-		lblPrivacyTerms.setBackground(Color.WHITE);
-		add(lblPrivacyTerms, "4, 13, fill, fill");
+		final DocearLicensePanel licenseText = new DocearLicensePanel();
+		
+		lblProcessingTerms = new MultiLineActionLabel(TextUtils.getText("docear.setup.wizard.docear.terms.processing"));
+		lblProcessingTerms.setBackground(Color.WHITE);
+		((MultiLineActionLabel) lblProcessingTerms).addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if("top".equals(e.getActionCommand())) {
+					licenseText.setLicenseText(DocearController.getController().getDataProcessingTerms());
+					JOptionPane.showConfirmDialog(getRootPane(), licenseText, TextUtils.getText("docear.license.data_processing.title"), JOptionPane.PLAIN_MESSAGE, JOptionPane.PLAIN_MESSAGE, null);
+				}
+			}
+		});
+		add(lblProcessingTerms, "4, 13, fill, fill");
 		
 		chckbxAcceptTOS = new JCheckBox();
 		chckbxAcceptTOS.setBackground(Color.WHITE);
@@ -361,14 +375,40 @@ public class RegistrationPagePanel extends AWizardPage {
 		});
 		
 		
-		add(chckbxAcceptTOS, "2, 14");
+		add(chckbxAcceptTOS, "2, 14, default, top");
 		
-		lblToS = new MultiLineActionLabel(TextUtils.getText("docear.setup.wizard.register.terms.service"));
+		lblToS = new MultiLineActionLabel(TextUtils.getText("docear.setup.wizard.docear.terms.service"));
 		lblToS.setBackground(Color.WHITE);
+		((MultiLineActionLabel) lblToS).addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if("tos".equals(e.getActionCommand())) {
+					licenseText.setLicenseText(DocearController.getController().getTermsOfService());
+					JOptionPane.showConfirmDialog(getRootPane(), licenseText, TextUtils.getText("docear.license.terms_of_use.title"), JOptionPane.PLAIN_MESSAGE, JOptionPane.PLAIN_MESSAGE, null);
+					return;
+				}
+				if("dps".equals(e.getActionCommand())) {
+					licenseText.setLicenseText(DocearController.getController().getDataPrivacyTerms());
+					JOptionPane.showConfirmDialog(getRootPane(), licenseText, TextUtils.getText("docear.license.data_privacy.title"), JOptionPane.PLAIN_MESSAGE, JOptionPane.PLAIN_MESSAGE, null);
+					return;
+				}
+			}
+		});
 		add(lblToS, "4, 14, fill, fill");
 		
 		chckbxNewsletter = new JCheckBox(TextUtils.getText("docear.setup.wizard.register.newsletter"));
 		chckbxNewsletter.setBackground(Color.WHITE);
+		chckbxNewsletter.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				if (cachedContext != null) {
+					DocearUser settings = cachedContext.get(DocearUser.class);
+					if (settings == null) {
+						settings = new DocearUser();
+						cachedContext.set(DocearUser.class, settings);
+					}
+					settings.setNewsletterEnabled(chckbxNewsletter.isSelected());
+				}
+			}
+		});
 		add(chckbxNewsletter, "2, 16, 3, 1");
 	}
 	
@@ -387,12 +427,9 @@ public class RegistrationPagePanel extends AWizardPage {
 					&& pwdRetypedPassword.getPassword().length > 0) {
 				
 				context.getNextButton().setEnabled(true);
-				//lblAdvice.setForeground(new Color(0x00000000, true));
 			}
 			else {
-				
 				context.getNextButton().setEnabled(false);
-				//lblAdvice.setForeground(new Color(0xFFFF0000, true));
 			}
 		}
 		
@@ -435,6 +472,26 @@ public class RegistrationPagePanel extends AWizardPage {
 		};
 	}
 	
+	private void initFields(DocearUser user) {
+		txtEmail.setText("");
+		txtUsername.setText("");
+		pwdPassword.setText("");
+		pwdRetypedPassword.setText("");
+		chckbxAcceptTOS.setSelected(false);
+		chckbxAcceptUsageTerms.setSelected(false);
+		chckbxNewsletter.setSelected(false);
+		chckbxCollaboration.setSelected(true);
+		chckbxRecommendations.setSelected(true);
+		chckbxOnlineBackup.setSelected(true);
+		chckbxSynchronization.setSelected(true);
+		
+		if(user != null) {
+			txtUsername.setText(user.getUsername() == null ? "" : user.getUsername());
+			txtEmail.setText(user.getEmail() == null ? "" : user.getEmail());
+		}
+		
+	}
+	
 	public String getUsername() {
 		String name = txtUsername.getText();
 		if (name.isEmpty()) {
@@ -466,6 +523,30 @@ public class RegistrationPagePanel extends AWizardPage {
 		}
 		return mail;
 	}
+	
+	public boolean isNewsletterEnabled() {
+		return chckbxNewsletter.isSelected();
+	}
+	
+	public boolean isOnlineBackupEnabled() {
+		return chckbxOnlineBackup.isSelected();
+	}
+	
+	public boolean isRecommendationsEnabled() {
+		return chckbxRecommendations.isSelected();
+	}
+	
+	public boolean isCollaborationEnabled() {
+		return chckbxCollaboration.isSelected();
+	}
+	
+	public boolean isSynchronizationEnabled() {
+		return chckbxSynchronization.isSelected();
+	}
+	
+	public boolean isTermsAccepted() {
+		return chckbxAcceptTOS.isSelected() && chckbxAcceptUsageTerms.isSelected();
+	}
 
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
@@ -478,9 +559,10 @@ public class RegistrationPagePanel extends AWizardPage {
 	@Override
 	public void preparePage(WizardContext context) {
 		this.cachedContext = context;
+		initFields(context.get(DocearUser.class));
+		setSkipOnBack(false);
 		context.setWizardTitle(getTitle());
 		context.getNextButton().setText(TextUtils.getText("docear.setup.wizard.register.button"));
 		enableControls(context);
 	}
-	
 }

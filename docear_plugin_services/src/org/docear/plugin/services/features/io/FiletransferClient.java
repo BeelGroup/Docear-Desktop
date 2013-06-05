@@ -31,11 +31,11 @@ public class FiletransferClient {
 	
 	public FiletransferClient(String restPath) {
 		serviceResource = ServiceController.getConnectionController().getServiceResource();
-		serviceResource = serviceResource.path("/user/" + ServiceController.getUser().getUsername() + "/" + restPath);
+		serviceResource = serviceResource.path("/user/" + ServiceController.getCurrentUser().getUsername() + "/" + restPath);
 	}
 	
 	public boolean sendFile(File file, boolean deleteIfTransferred) throws DocearServiceException {
-		if (!ServiceController.getUser().isTransmissionEnabled() || ServiceController.getUser().isOnline() || file == null) {
+		if (!ServiceController.getCurrentUser().isTransmissionEnabled() || ServiceController.getCurrentUser().isOnline() || file == null) {
 			return false;
 		}
 		DocearController.getController().dispatchDocearEvent(new DocearEvent(this.getClass(), START_UPLOAD));
@@ -95,7 +95,7 @@ public class FiletransferClient {
 	
 	public boolean sendFiles(File[] files, boolean deleteIfTransferred) throws DocearServiceException {
 		for(File file : files) {
-			if(!ServiceController.getUser().isTransmissionEnabled()) {
+			if(!ServiceController.getCurrentUser().isTransmissionEnabled()) {
 				break;
 			}
 			if(!sendFile(file, deleteIfTransferred)) {

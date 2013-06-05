@@ -73,6 +73,7 @@ import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
 import org.freeplane.plugin.workspace.features.ProjectURLHandler;
 import org.freeplane.plugin.workspace.model.WorkspaceModelEvent;
 import org.freeplane.plugin.workspace.model.WorkspaceModelListener;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.model.project.IProjectSelectionListener;
 import org.freeplane.plugin.workspace.model.project.ProjectSelectionEvent;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
@@ -268,6 +269,12 @@ public class ReferencesController extends ALanguageController implements IDocear
 				}
 			}
 		});
+		for(AWorkspaceProject project : WorkspaceController.getModeExtension(modeController).getModel().getProjects()) {
+			if(project instanceof DocearWorkspaceProject) {
+				((DocearWorkspaceProject) project).addProjectListener(getProjectListener());
+				loadDatabase((DocearWorkspaceProject)project);
+			}
+		}
 		
 		//insert some extra actions to file nodes
 		SwingUtilities.invokeLater(new Runnable() {
@@ -331,24 +338,27 @@ public class ReferencesController extends ALanguageController implements IDocear
 				@Override
 				public void changed(DocearProjectChangedEvent event) {					
 					if(DocearEventType.LIBRARY_CHANGED.equals(event.getDescriptor()) && event.getObject() instanceof IBibtexDatabase) {
-						final File file = URIUtils.getAbsoluteFile(((IBibtexDatabase)event.getObject()).getUri());
-						if(file == null) {
-							return;
-						}
-						final DocearWorkspaceProject project = event.getSource();
-						SwingUtilities.invokeLater(new Runnable() {
-							public void run() {								
-								ReferencesController contr = ReferencesController.getController();
-								JabrefWrapper wrapper = contr.getJabrefWrapper();								
-								JabRefBaseHandle handle = wrapper.openDatabase(file, true);
-								addOrUpdateProjectExtension(project, handle);
-							}
-						});
+						loadDatabase(event.getSource());
 					}
 				}
 			};
 		}
 		return projectListener;
+	}
+	
+	private void loadDatabase(final DocearWorkspaceProject project) {
+		final File file = URIUtils.getAbsoluteFile(project.getBibtexDatabase());
+		if(file == null) {
+			return;
+		}
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {								
+				ReferencesController contr = ReferencesController.getController();
+				JabrefWrapper wrapper = contr.getJabrefWrapper();								
+				JabRefBaseHandle handle = wrapper.openDatabase(file, true);
+				addOrUpdateProjectExtension(project, handle);
+			}
+		});
 	}
 	
 	private IProjectSelectionListener getProjectSelectionListener() {

@@ -3,13 +3,19 @@ package org.docear.plugin.services.xml.creators;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.docear.plugin.services.ServiceController;
 import org.docear.plugin.services.xml.elements.Application;
 import org.freeplane.core.io.IElementDOMHandler;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.n3.nanoxml.XMLElement;
 
 public class ApplicationCreator implements IElementDOMHandler {
+	
+	private IXMLNodeProcessor resultProcessor;
+
+	public void setResultProcessor(IXMLNodeProcessor processor) {
+		this.resultProcessor = processor;
+	}
+	
 	public Object createElement(Object parent, String tag, XMLElement attributes) {
 		if (attributes == null) {
 			return null;
@@ -29,8 +35,9 @@ public class ApplicationCreator implements IElementDOMHandler {
 		}
 		
 		Application application = new Application(id, name, href);
-		ServiceController.getController().setApplication(application);
-		
+		if(resultProcessor != null) {
+			resultProcessor.process(application, parent);
+		}		
 		return application;
 	}
 

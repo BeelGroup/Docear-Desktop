@@ -60,9 +60,9 @@ public class DocearSendPdfxcRegistryAction extends AFreeplaneAction {
 						URI mailtoUri;
 						StringBuilder uriString = new StringBuilder();
 						uriString.append("mailto:help@docear.org?subject=PDFXCV Settings Problem&body=");
-						if(ServiceController.getUser().getUsername() != null){
+						if(ServiceController.getCurrentUser().getUsername() != null){
 							uriString.append("Username:");
-							uriString.append(ServiceController.getUser().getUsername());
+							uriString.append(ServiceController.getCurrentUser().getUsername());
 						}						
 						uriString.append("%0D%0A%0D%0A");
 						uriString.append(TextUtils.getRawText("docear.pdfxcv.settings.mail.text"));

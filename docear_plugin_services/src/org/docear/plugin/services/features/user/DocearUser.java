@@ -14,8 +14,10 @@ public class DocearUser implements IUserAccount {
 	public static final String BACKUP_PROPERTY = "BACKUP";
 	public static final String COLLABORATION_PROPERTY = "COLLABORATION";
 	public static final String TRANSMISSION_PROPERTY = "TRANSMISSION";
+	public static final String NEWSLETTER_PROPERTY = "NEWSLETTER";
 	public static final String IS_VALID_PROPERTY = "IS_VALID";
 	public static final String IS_ONLINE_PROPERTY = "IS_ONLINE";
+	public static final String ENABLED_PROPERTY = "ENABLED";
 	public static final String EMAIL_PROPERTY = "EMAIL";
 	public static final String PASSWORD_PROPERTY = "PASSWORD";
 	public static final String USERNAME_PROPERTY = "USERNAME";
@@ -41,17 +43,18 @@ public class DocearUser implements IUserAccount {
 	private boolean synchronizationEnabled = false;
 	private boolean backupEnabled = false;
 	private boolean transmissionEnabled = false;
+	private boolean isNewsletterEnabled = false;
 	
 	private boolean valid = false;
 	private List<PropertyChangeListener> listeners = new ArrayList<PropertyChangeListener>();
 	private boolean isOnline;
+	private boolean enabled = true;
 	
 	/***********************************************************************************
 	 * CONSTRUCTORS
 	 **********************************************************************************/
 
 	public DocearUser() {
-		activate();
 	}
 	
 	public DocearUser(IUserAccount user) {
@@ -230,6 +233,7 @@ public class DocearUser implements IUserAccount {
 
 	public boolean isTransmissionEnabled() {
 		return false;
+		//return this.transmissionEnabled;
 	}
 	
 	public void toggleTransmissionEnabled() {
@@ -247,6 +251,17 @@ public class DocearUser implements IUserAccount {
 	public boolean isOnline() {
 		return this.isOnline;
 	}
+	
+	public void setNewsletterEnabled(boolean enabled) {
+		if(isNewsletterEnabled != enabled) {
+			isNewsletterEnabled = enabled;
+			firePropertyChanged(NEWSLETTER_PROPERTY, enabled, !enabled);
+		}
+	}
+	
+	public boolean isNewsletterEnabled() {
+		return false;
+	}	
 
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
@@ -257,7 +272,7 @@ public class DocearUser implements IUserAccount {
 	}
 
 	public boolean isEnabled() {
-		return true;
+		return this.enabled;
 	}
 
 	public boolean isActive() {
@@ -269,5 +284,11 @@ public class DocearUser implements IUserAccount {
 	}
 
 	public void setEnabled(boolean enabled) {
-	}	
+		if(this.enabled != enabled) {
+			this.enabled  = enabled;
+			firePropertyChanged(ENABLED_PROPERTY, enabled, !enabled);
+		}
+	}
+
+	
 }

@@ -3,6 +3,7 @@ package org.docear.plugin.core;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -81,6 +82,7 @@ import org.freeplane.plugin.workspace.actions.AWorkspaceAction;
 import org.freeplane.plugin.workspace.components.IWorkspaceView;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.mindmapmode.FileFolderDropHandler;
+import org.freeplane.plugin.workspace.mindmapmode.MModeWorkspaceController;
 import org.freeplane.plugin.workspace.mindmapmode.VirtualFolderDropHandler;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
@@ -115,6 +117,7 @@ public class CoreConfiguration extends ALanguageController {
 	public static final String LIBRARY_PATH = "@@library_mindmaps@@";
 	private IControllerExecuteExtension docearExecutor; 
 
+	private Properties settings;
 	
 	public CoreConfiguration() {			
 		LogUtils.info("org.docear.plugin.core.CoreConfiguration() initializing...");
@@ -139,6 +142,24 @@ public class CoreConfiguration extends ALanguageController {
 		WorkspaceController.replaceAction(new DocearQuitAction());
 		WorkspaceController.replaceAction(new DocearImportProjectAction());
 		copyInfoIfNecessary();		
+	}
+	
+	private void loadSettings() {
+		final File userPropertiesFolder = new File(((MModeWorkspaceController) WorkspaceController.getCurrentModeExtension()).getSettingsPath());
+		final File settingsFile = new File(userPropertiesFolder, "user.settings");
+		
+		settings = new Properties();
+		InputStream in = null;
+		try {
+			in = new FileInputStream(settingsFile);
+			settings.load(in);
+		}
+		catch (final Exception ex) {
+			LogUtils.info("Workspace settings not found, create new file");
+		}
+		finally {
+			org.freeplane.core.util.FileUtils.silentlyClose(in);
+		}
 	}
 	
 

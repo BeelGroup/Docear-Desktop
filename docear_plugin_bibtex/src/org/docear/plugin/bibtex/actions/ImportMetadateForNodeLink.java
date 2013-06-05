@@ -52,7 +52,7 @@ public class ImportMetadateForNodeLink extends AFreeplaneAction {
 	}
 
 	public void setEnabled() {
-		String userName = ServiceController.getController().getUser().getUsername();
+		String userName = ServiceController.getController().getCurrentUser().getUsername();
 		NodeModel node = Controller.getCurrentModeController().getMapController().getSelectedNode();
 
 		if (userName == null || node == null) {

@@ -1,5 +1,6 @@
 package org.docear.plugin.core.ui;
 
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -22,6 +23,7 @@ import javax.swing.Icon;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.plaf.basic.BasicHTML;
 import javax.swing.text.View;
 
@@ -42,13 +44,66 @@ public class MultiLineActionLabel extends JPanel implements SwingConstants, Acce
 	private Rectangle paintIconR = new Rectangle();
 	
 	private List<ActionListener> actionListeners = new ArrayList<ActionListener>();
-	private List<MultiLineActionLabel.ActionLabelItem> actionItems = new ArrayList<MultiLineActionLabel.ActionLabelItem>();
+	private List<ActionLabelItem> actionItems = new ArrayList<ActionLabelItem>();
+	private List<TextToken> textTokens = new ArrayList<TextToken>();
+	
+	private ActionLabelItem mouseHotspot = null;
+	
 	private final MouseAdapter mouseAdapter = new MouseAdapter();
+
+	private Color actionColor = Color.blue.darker().darker();
+
+	private boolean underline = true;
 	
 	public MultiLineActionLabel(String text) {
 		setText(text);
 		addMouseListener(mouseAdapter);
 		addMouseMotionListener(mouseAdapter);
+	}
+	public Insets getInsets() {
+		return getInsets(null);
+	}
+	
+	public Insets getInsets(Insets insets) {
+		Insets ins = super.getInsets(insets);
+		Insets margin = UIManager.getInsets("EditorPane.margin");
+		if(margin == null) {
+			margin = UIManager.getInsets("EditorPane.contentMargins");
+		}
+		if(margin == null) {
+			margin = new Insets(3, 3, 3, 3);
+		}
+		//ins.top += margin.top;
+		//ins.bottom += margin.bottom;
+		ins.left += margin.left;
+		ins.right += margin.right;
+		return ins;
+	}
+	
+	@Override
+	public void setEnabled(boolean enabled) {
+		boolean oldEnabled = isEnabled();
+		super.setEnabled(enabled);
+		if (enabled != oldEnabled) {
+			if(enabled) {
+				setForeground(UIManager.getColor("Label.foreground"));
+			}
+			else {
+				Color col = UIManager.getColor("Label.disabledForeground");
+				if(col == null) {
+					col = UIManager.getColor("Label.disabledText");
+				}
+				if(col == null) {
+					col = Color.BLACK;
+				}
+				this.setForeground(col);
+			}
+			
+			BasicHTML.updateRenderer(this, getText());
+			
+			repaint();
+		}
+		
 	}
 
 	public void setText(String text) {
@@ -59,8 +114,10 @@ public class MultiLineActionLabel extends JPanel implements SwingConstants, Acce
 		}
 
 		String oldValue = this.text;
-
-		this.text = parsedString(text);
+		
+		this.text = text;
+		
+		parsedString(text);
 		
 		BasicHTML.updateRenderer(this, getText());
 
@@ -74,42 +131,93 @@ public class MultiLineActionLabel extends JPanel implements SwingConstants, Acce
 			repaint();
 		}
 	}
-
-	private String parsedString(final String str) {
-		StringBuilder builder = new StringBuilder();
-		if (!BasicHTML.isHTMLString(text)) {
-			builder.append("<html><body>");
+	
+	public void setActionColor(Color col) {
+		if(col == null) {
+			actionColor = Color.blue;
 		}
+		this.actionColor = col;
+	}
+	
+	public Color getActionColor() {
+		return this.actionColor;
+	}
+	
+	public String getActionColorHex() {
+		String r,g,b;
+		if(isEnabled()) {
+			r = Integer.toHexString(actionColor.getRed());
+			g = Integer.toHexString(actionColor.getGreen());
+			b = Integer.toHexString(actionColor.getBlue());
+		}
+		else {
+			Color disabledColor = getForeground();
+			r = Integer.toHexString(disabledColor.getRed());
+			g = Integer.toHexString(disabledColor.getGreen());
+			b = Integer.toHexString(disabledColor.getBlue());
+		}
+		
+		StringBuffer buffer = new StringBuffer();
+		if(r.length() == 1) {
+			buffer.append("0");
+		}
+		buffer.append(r);
+		if(g.length() == 1) {
+			buffer.append("0");
+		}
+		buffer.append(g);
+		if(b.length() == 1) {
+			buffer.append("0");
+		}
+		buffer.append(b);
+		return buffer.toString();
+	}
+	
+	public void setActionUnderline(boolean underline) {
+		this.underline = underline;
+	}
+	
+	public boolean isActionUnderline() {
+		return this.underline;
+	}
+
+	private void parsedString(final String str) {
 		int currentPos = -1;
 		int lastPos = 0;
 		String text = str.replaceAll("[\n]", "<br/>");
 		actionItems.clear();
-		while ((currentPos = text.indexOf("<action cmd=\"", (currentPos + 1))) > -1) {			
-			builder.append(text.substring(lastPos, currentPos));
-			builder.append("<span style=\"color: #0000FF;\">");
+		textTokens.clear();
+		while ((currentPos = text.indexOf("<action cmd=\"", (currentPos + 1))) > -1) {
+			textTokens.add(new TextToken(text.substring(lastPos, currentPos)));
+			
 			lastPos = currentPos+"<action cmd=\"".length();
 			String actionCommand = text.substring(lastPos, text.indexOf("\"", lastPos));			
 			lastPos = text.indexOf(">", lastPos)+1;
 			currentPos = text.indexOf("</action>", (currentPos + 1));			
 			ActionLabelItem item = new ActionLabelItem(text.substring(lastPos, currentPos));
 			item.setActionCommand(actionCommand);
-			builder.append(item.getText());
-			builder.append("</span>");
+			textTokens.add(item);
+			
 			lastPos = currentPos+"</action>".length();
 			actionItems.add(item);
 		}
 		if(lastPos < text.length()) {
-			builder.append(text.substring(lastPos));
+			textTokens.add(new TextToken(text.substring(lastPos)));
 		}
+	}
 
+	public String getText() {
+		StringBuilder builder = new StringBuilder();
+		if (!BasicHTML.isHTMLString(text)) {
+			builder.append("<html><body>");
+		}
+		for (TextToken token : textTokens) {
+			builder.append(token.toString());
+		}
 		if (!BasicHTML.isHTMLString(text)) {
 			builder.append("</body></html>");
 		}
 		return builder.toString();
-	}
-
-	public String getText() {
-		return text;
 	}
 	
 	public int getVerticalAlignment() {
@@ -151,10 +259,9 @@ public class MultiLineActionLabel extends JPanel implements SwingConstants, Acce
 		if (text == null) {
 			return;
 		}
-
+		
 		FontMetrics fm = SwingUtilities2.getFontMetrics(this, g);
 		layout(fm, getWidth(), getHeight());
-		
 		
 		if (text != null) {
 			View view = (View) getClientProperty(BasicHTML.propertyKey);
@@ -162,15 +269,19 @@ public class MultiLineActionLabel extends JPanel implements SwingConstants, Acce
 				try {
 					String clippedText = view.getDocument().getText(1, view.getDocument().getLength());					
 					identifyActionAreas(clippedText, fm, SwingUtilities2.getFontMetrics(this, g, fm.getFont().deriveFont(Font.BOLD)));
+					if(isEnabled()) {
+						g.setColor(getForeground().brighter().brighter().brighter().brighter());
+					}
 					view.paint(g, paintTextR);
 				} catch (Exception e) {
 				}				
 			} 
 		}
-//		g.setColor(Color.black);
-//		for(ActionLabelItem item : actionItems) {
-//			g.drawRect(item.getHotArea().x, item.getHotArea().y, item.getHotArea().width, item.getHotArea().height);
-//		}
+		if(isActionUnderline() && mouseHotspot != null) {
+			g.setColor(getActionColor());
+			int y = mouseHotspot.getHotArea().y+mouseHotspot.getHotArea().height - (int)(g.getFontMetrics().getDescent()*0.75);
+			g.drawLine(mouseHotspot.getHotArea().x, y, mouseHotspot.getHotArea().x+mouseHotspot.getHotArea().width, y);
+		}
 	}
 
 	private void identifyActionAreas(final String text, FontMetrics fmDefault, FontMetrics fmAction) {
@@ -182,14 +293,28 @@ public class MultiLineActionLabel extends JPanel implements SwingConstants, Acce
 				String sub = text.substring(0, textPos);
 				rect.x = paintTextR.x + fmDefault.stringWidth(sub);
 				rect.y = paintTextR.y;
+				while(rect.x > getWidth()) {
+					sub = findLastSpaceBeforeRightEnd(sub, fmDefault);
+					rect.x = paintTextR.x + fmDefault.stringWidth(sub);
+					rect.y += fmDefault.getHeight();
+				}
 				rect.width = fmDefault.stringWidth(item.getText());
 				rect.height = fmDefault.getHeight();
 				lastPos = textPos+item.getText().length();
 			}
 		}		
 	}
-
 	
+
+	private String findLastSpaceBeforeRightEnd(final String sub, FontMetrics fmDefault) {
+		String partSub = sub.substring(0);
+		int index = partSub.lastIndexOf(" ");
+		while(fmDefault.stringWidth(partSub) > getWidth()) {
+			index = partSub.lastIndexOf(" ");
+			partSub = sub.substring(0, index);			
+		}
+		return sub.substring(index+1);
+	}
 
 	private String layout(FontMetrics fm, int width, int height) {
 		Insets insets = getInsets(null);
@@ -325,14 +450,28 @@ public class MultiLineActionLabel extends JPanel implements SwingConstants, Acce
 		return null;
 	}
 	
+	public ActionLabelItem getActionByLocation(Point point) {
+		for (ActionLabelItem item : actionItems) {
+			if(item.hotArea.contains(point)) {
+				return item;
+			}
+		}
+		return null;
+	}
+	
 	class MouseAdapter implements MouseListener, MouseMotionListener {
 	
-		public void mouseMoved(MouseEvent e) {			
-			ActionLabelItem item = getIntersectingItem(e.getPoint());
-			if(item != null) {
-				MultiLineActionLabel.this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-			} else {
-				MultiLineActionLabel.this.setCursor(Cursor.getDefaultCursor());
+		public void mouseMoved(MouseEvent e) {
+			if(isEnabled()) {
+				ActionLabelItem item = getIntersectingItem(e.getPoint());
+				if(item != null) {
+					MultiLineActionLabel.this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+					mouseHotspot = item;
+				} else {
+					MultiLineActionLabel.this.setCursor(Cursor.getDefaultCursor());
+					mouseHotspot = null;
+				}
+				repaint();
 			}
 		}
 
@@ -346,23 +485,41 @@ public class MultiLineActionLabel extends JPanel implements SwingConstants, Acce
 		public void mouseDragged(MouseEvent e) {}
 		public void mousePressed(MouseEvent e) {}
 		public void mouseReleased(MouseEvent e) {}
-		public void mouseEntered(MouseEvent e) {}
-		public void mouseExited(MouseEvent e) {}		
+		public void mouseEntered(MouseEvent e) {
+			mouseHotspot = null;
+			repaint();
+		}
+		public void mouseExited(MouseEvent e) {
+			mouseHotspot = null;
+			repaint();
+		}
 	}
-
-	class ActionLabelItem {
-		private Rectangle hotArea = null;
-		private String actionCommand;
+	
+	class TextToken {
 		private final String text;
-		
-		public ActionLabelItem(String text) {
+		public TextToken(String text) {
 			this.text = text;
-		}		
-
+		}
+		
 		public String getText() {
 			return text;
 		}
+		
+		public String toString() {
+			return getText();
+		}
 
+	}
+
+	class ActionLabelItem extends TextToken {
+		private Rectangle hotArea = null;
+		private String actionCommand;
+		
+		
+		public ActionLabelItem(String text) {
+			super(text);
+		}
+		
 		public void setActionCommand(String actionCommand) {
 			this.actionCommand = actionCommand;			
 		}
@@ -382,6 +539,13 @@ public class MultiLineActionLabel extends JPanel implements SwingConstants, Acce
 			this.hotArea = hotArea;
 		}
 		
+		public String toString() {
+			StringBuilder builder = new StringBuilder();
+			builder.append("<span style=\"color: #"+getActionColorHex()+";\">");
+			builder.append(super.getText());
+			builder.append("</span>");
+			return builder.toString();
+		}
+		
 	}
-
 }

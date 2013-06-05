@@ -8,11 +8,13 @@ import javax.ws.rs.core.MultivaluedMap;
 
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.Version;
+import org.docear.plugin.services.ADocearServiceFeature;
 import org.docear.plugin.services.ServiceController;
 import org.docear.plugin.services.features.io.DocearServiceResponse;
 import org.docear.plugin.services.features.update.view.UpdateCheckerDialogPanel;
 import org.docear.plugin.services.xml.creators.ApplicationCreator;
 import org.docear.plugin.services.xml.creators.BuildNumberCreator;
+import org.docear.plugin.services.xml.creators.IXMLNodeProcessor;
 import org.docear.plugin.services.xml.creators.MajorVersionCreator;
 import org.docear.plugin.services.xml.creators.MiddleVersionCreator;
 import org.docear.plugin.services.xml.creators.MinorVersionCreator;
@@ -30,10 +32,11 @@ import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
+import org.freeplane.features.mode.ModeController;
 
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
-public class UpdateCheck {
+public class UpdateCheck extends ADocearServiceFeature {
 	public static final String DOCEAR_UPDATE_CHECKER_DISABLE = "docear.update_checker.disable";
 	public static final String DOCEAR_UPDATE_CHECKER_ALL = "docear.update_checker.all";
 	public static final String DOCEAR_UPDATE_CHECKER_BETA = "docear.update_checker.beta";
@@ -63,7 +66,9 @@ public class UpdateCheck {
 	public UpdateCheck() {
 		this.readManager = new ReadManager();
 		initReadManager();
-		
+	}
+
+	public void checkForUpdates() {
 		String xml;
 		try {
 			String choice = ResourceController.getResourceController().getProperty("docear.update_checker.options");
@@ -83,7 +88,6 @@ public class UpdateCheck {
 			}				
 			xml = requestLatestVersionXml(minStatus);
 			load(xml);
-			application = getApplication();
 			
 			final Version latestVersion = getLatestAvailableVersion();
 			final Version runningVersion = DocearController.getController().getVersion();
@@ -106,16 +110,21 @@ public class UpdateCheck {
 				System.out.println(latestVersion.getStatusNumber());
 				SwingUtilities.invokeLater(new Runnable() {					
 					public void run() {
-						UpdateCheckerDialogPanel dialogPanel = new UpdateCheckerDialogPanel("", runningVersion.toString(), latestVersionString, latestVersion.getStatus());				
-						JOptionPane.showMessageDialog(UITools.getFrame(), dialogPanel, TextUtils.getText("docear.new_version_available.title"), JOptionPane.INFORMATION_MESSAGE);
-						ResourceController.getResourceController().setProperty("docear.update_checker.options", dialogPanel.getChoice());
+						try {
+							UpdateCheckerDialogPanel dialogPanel = new UpdateCheckerDialogPanel("", runningVersion.toString(), latestVersionString, latestVersion.getStatus());				
+							JOptionPane.showMessageDialog(UITools.getFrame(), dialogPanel, TextUtils.getText("docear.new_version_available.title"), JOptionPane.INFORMATION_MESSAGE);
+							ResourceController.getResourceController().setProperty("docear.update_checker.options", dialogPanel.getChoice());
+						}
+						catch (Exception e) {
+							LogUtils.warn("org.docear.plugin.services.features.update.UpdateCheck.checkForUpdates(): "+e.getMessage());
+						}
 					}
 				});
 			}
 			
 		} catch (Exception e) {
 			LogUtils.warn("org.docear.plugin.services.features.UpdateCheck.UpdateCheck(): "+e.getMessage());
-		}		
+		}
 	}
 	
 	private String requestLatestVersionXml(String minStatus) throws Exception {
@@ -151,10 +160,11 @@ public class UpdateCheck {
 		return false;
 	}
 	
-	public void load(final String xml) {		
+	private void load(final String xml) {		
 		final TreeXmlReader reader = new TreeXmlReader(readManager);
 		
-		try { 
+		try {
+			
 			reader.load(new StringReader(xml));			
 		}
 		catch (final Exception e) {
@@ -178,7 +188,7 @@ public class UpdateCheck {
 	}
 	
 	public Version getLatestAvailableVersion() {
-		return ServiceController.getController().getApplication().getVersions().entrySet().iterator().next().getValue();		
+		return this.application.getVersions().entrySet().iterator().next().getValue();		
 	}
 	
 	private IElementHandler getReleaseNotesCreator() {		
@@ -264,13 +274,34 @@ public class UpdateCheck {
 	private IElementHandler getApplicationCreator() {
 		if (this.applicationCreator == null) {
 			this.applicationCreator = new ApplicationCreator();
+			this.applicationCreator.setResultProcessor(new IXMLNodeProcessor() {
+				
+				public void process(Object node, Object parent) {
+					if(node instanceof Application) {
+						setApplication((Application) node);
+					}
+					
+				}
+			});
 		}
 		
 		return this.applicationCreator; 
 	}
+	
+	private void setApplication(Application application) {
+		this.application = application;
+	}
 
+	@Override
+	protected void installDefaults(ModeController modeController) {
+		new Thread() {
+			public void run() {
+				checkForUpdates();
+			}
+		}.start();
+	}
 
-	public Application getApplication() {
-		return application;
+	@Override
+	public void shutdown() {
 	}
 }

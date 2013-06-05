@@ -3,6 +3,7 @@ package org.docear.plugin.services.features.setup.view;
 import java.awt.Color;
 import java.util.Locale;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
@@ -25,14 +26,20 @@ public class VerifyServicePagePanel extends AWizardPage {
 	private JLabel lblMessage;
 	private final DocearServiceTestTask test;
 	private final String title;
+	private boolean skipOnSuccess;
 
 	/***********************************************************************************
 	 * CONSTRUCTORS
 	 * @param settings 
 	 **********************************************************************************/
 	public VerifyServicePagePanel(String title, DocearServiceTestTask task) {
+		this(title, task, false);
+	}
+	
+	public VerifyServicePagePanel(String title, DocearServiceTestTask task, boolean skipOnSuccess) {
 		this.title = title;
 		this.test = task;
+		this.setSkipOnSuccess(skipOnSuccess);
 		setBackground(Color.WHITE);
 		setLayout(new FormLayout(new ColumnSpec[] {
 				FormFactory.RELATED_GAP_COLSPEC,
@@ -58,17 +65,31 @@ public class VerifyServicePagePanel extends AWizardPage {
 
 	@Override
 	public void preparePage(WizardContext context) {
+		this.setPageDisplayable(true);
 		DocearUser settings = context.get(DocearUser.class);
 		try {
 			test.run(settings);
 			context.getNextButton().setEnabled(true);
+			getRootPane().setDefaultButton((JButton) context.getNextButton());
 			lblMessage.setText(TextUtils.getText(("docear.setup.wizard.verification."+title+".msg").toLowerCase(Locale.ENGLISH)));
+			if(skipOnSuccess) {
+				this.setPageDisplayable(false);
+			}
 		} catch (DocearServiceException e) {
 			LogUtils.warn(e);
 			context.getNextButton().setEnabled(false);
+			getRootPane().setDefaultButton((JButton) context.getBackButton());
 			lblMessage.setText(e.getMessage());
 		}
 		context.setWizardTitle(getTitle());
+	}
+
+	public boolean isSkipOnSuccess() {
+		return skipOnSuccess;
+	}
+
+	public void setSkipOnSuccess(boolean skipOnSuccess) {
+		this.skipOnSuccess = skipOnSuccess;
 	}
 
 }

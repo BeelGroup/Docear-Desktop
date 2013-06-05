@@ -16,17 +16,30 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import javax.swing.SwingUtilities;
+
 import org.docear.plugin.core.DocearController;
+import org.docear.plugin.core.event.DocearEvent;
+import org.docear.plugin.core.event.DocearEventType;
+import org.docear.plugin.core.event.IDocearEventListener;
 import org.docear.plugin.core.features.DocearMapModelExtension;
 import org.docear.plugin.core.io.DirectoryObserver;
 import org.docear.plugin.core.logging.DocearLogger;
+import org.docear.plugin.services.ADocearServiceFeature;
 import org.docear.plugin.services.ServiceController;
-import org.docear.plugin.services.features.IDocearServiceFeature;
 import org.docear.plugin.services.features.user.DocearUser;
+import org.freeplane.core.resources.ResourceController;
+import org.freeplane.core.user.IUserAccountChangeListener;
+import org.freeplane.core.user.UserAccountChangeEvent;
+import org.freeplane.core.user.UserAccountController;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.MapModel;
+import org.freeplane.features.mode.Controller;
+import org.freeplane.features.mode.ModeController;
+import org.freeplane.plugin.workspace.URIUtils;
 
-public abstract class UploadController implements IDocearServiceFeature {
+public class UploadController extends ADocearServiceFeature {
+	
 	private static FileFilter zipFilter = new FileFilter() {
 		public boolean accept(File f) {
 			return (f != null && f.getName().toLowerCase().endsWith(".zip"));
@@ -48,34 +61,68 @@ public abstract class UploadController implements IDocearServiceFeature {
 	private final UploadThread uploadThread = new UploadThread(this);
 	
 	private final Set<File> uploadFiles = new HashSet<File>();
+	
+	public UploadController() {
+		DocearController.getController().addDocearEventListener(new IDocearEventListener() {		
+			public void handleEvent(DocearEvent event) {
+				if (event.getType() == DocearEventType.APPLICATION_CLOSING) {
+					shutdown();
+				}
+				else if (event.getType() == DocearEventType.FINISH_THREADS) {
+					finishThreads();
+				}
+			}
+		});
+	}
+	
 	/**
 	 * @return
 	 */
-	public abstract boolean isUploadEnabled();
+	public boolean isBackupEnabled() {
+		DocearUser userSettings = ServiceController.getCurrentUser();
+		return userSettings.isBackupEnabled() && userSettings.isTransmissionEnabled() && userSettings.isValid();
+	}
 
-	/**
-	 * @return
-	 */
-	public abstract boolean isBackupEnabled();
+	public boolean isUploadEnabled() {
+		DocearUser user = ServiceController.getCurrentUser();
+		boolean needUser = user.getEnabledServicesCode() > 0 && user.isTransmissionEnabled() && user.isOnline();
+
+		return needUser && user.isValid();
+	}
 	
 	/**
 	 * Provides the time in minutes until the next upload cycle should be started
 	 * 
 	 * @return time to wait until the next upload cycle
 	 */
-	public abstract int getUploadInterval();
-
+	public int getUploadInterval() {
+		final ResourceController resourceCtrl = Controller.getCurrentController().getResourceController();
+		int backupMinutes = resourceCtrl.getIntProperty("save_backup_automcatically", 0);
+		if (backupMinutes <= 0) {
+			backupMinutes = 30;
+		}
+		return backupMinutes;
+	}
 	/**
 	 * @return
 	 */
-	public abstract File getUploadDirectory();
+	public File getUploadDirectory(String forName)  {
+		File uploadBufferDirectory = new File(getUploadBufferPath(), forName);
+		if (!uploadBufferDirectory.exists()) {
+			uploadBufferDirectory.mkdirs();
+		}
+		return uploadBufferDirectory;
+	}
 	
+	public File getUploadBufferPath() {
+		return new File(URIUtils.getFile(ServiceController.getController().getUserSettingsHome()), "queue");
+	}
 	
 	/**
 	 * @return
 	 */
-	public File[] getUploadPackages() {
-		return getUploadDirectory().listFiles(zipFilter);
+	public File[] getUploadPackages(String forName) {
+		return getUploadDirectory(forName).listFiles(zipFilter);
 	}
 	
 	
@@ -107,7 +154,7 @@ public abstract class UploadController implements IDocearServiceFeature {
 	}
 	
 	public void refreshUploadBuffer() {
-		File[] files = getUploadPackages();
+		File[] files = getUploadPackages("mindmaps");
 		if(files == null) {
 			return;
 		}
@@ -162,20 +209,6 @@ public abstract class UploadController implements IDocearServiceFeature {
 	}
 	
 	/**
-	 * @return
-	 */
-	protected Thread getPacker() {
-		return this.packerThread;
-	}
-	
-	/**
-	 * @return
-	 */
-	protected Thread getUploader() {
-		return this.uploadThread;
-	}
-	
-	/**
 	 * 
 	 */
 	private void createPackages() {
@@ -227,7 +260,7 @@ public abstract class UploadController implements IDocearServiceFeature {
 		Thread thread = new Thread() {
 			public void run() {
 				try {					
-					File backupFile = new File(getUploadDirectory().getAbsolutePath(), System.currentTimeMillis() + "_" + map.getFile().getName() + ".zip");
+					File backupFile = new File(getUploadDirectory("mindmaps").getAbsolutePath(), System.currentTimeMillis() + "_" + map.getFile().getName() + ".zip");
 					
 					
 					FileOutputStream fout = null;
@@ -278,7 +311,7 @@ public abstract class UploadController implements IDocearServiceFeature {
 	 * @return
 	 */
 	private Properties getMapProperties(MapModel map) {
-		DocearUser userSettings = ServiceController.getUser();
+		DocearUser userSettings = ServiceController.getCurrentUser();
  		DocearController docearController = DocearController.getController();
 				
 		DocearMapModelExtension dmme = map.getExtension(DocearMapModelExtension.class);
@@ -332,5 +365,24 @@ public abstract class UploadController implements IDocearServiceFeature {
 	public void shutdown() {		
 		this.packerThread.terminate();
 		this.uploadThread.terminate();
+	}
+
+	@Override
+	protected void installDefaults(ModeController modeController) {
+		UserAccountController.getController().addUserAccountChangeListener(new IUserAccountChangeListener() {
+			
+			public void activated(UserAccountChangeEvent event) {
+				refreshUploadBuffer();
+			}
+			
+			public void aboutToDeactivate(UserAccountChangeEvent event) {
+			}
+		});
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				uploadThread.start();
+				packerThread.start();
+			}
+		});
 	}
 }

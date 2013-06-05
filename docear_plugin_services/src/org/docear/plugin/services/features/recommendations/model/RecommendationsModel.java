@@ -22,7 +22,7 @@ public class RecommendationsModel {
 	
 	private void parseRecommendations(Collection<RecommendationEntry> recommendations) {		
 		if(recommendations == null) {
-			if(ServiceController.getUser().isRecommendationsEnabled()) {
+			if(ServiceController.getCurrentUser().isRecommendationsEnabled()) {
 				setRoot(RecommendationsModelNode.createNoRecommendationsNode(TextUtils.getText("recommendations.error.no_recommendations")));
 			}
 			else {
@@ -42,7 +42,7 @@ public class RecommendationsModel {
 	}
 	
 	public String getTitle() {
-		String label = ServiceController.getUser().getName();
+		String label = ServiceController.getCurrentUser().getName();
 		if(label != null && label.trim().length() > 0) {
 			return TextUtils.format("recommendations.map.label.forUser", label);
 		}

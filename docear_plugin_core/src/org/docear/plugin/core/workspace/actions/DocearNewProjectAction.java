@@ -41,25 +41,38 @@ public class DocearNewProjectAction extends AWorkspaceAction {
 					settings.addRepositoryPathURI(uri);
 				}
 			}
-			File path = URIUtils.getFile(dialog.getProjectPath());
-			
-			//WORKSPACE - todo: ask for permission to create the directory or check for always_create setting
-			if(!path.exists() ) {
-				path.mkdir();
-			}
-					
-			AWorkspaceProject project = AWorkspaceProject.create(null, path.toURI());
+			AWorkspaceProject project = AWorkspaceProject.create(null, dialog.getProjectPath());
 			project.addExtension(settings);
-			WorkspaceController.getCurrentModel().addProject(project);
-			try {
-				LOAD_RETURN_TYPE return_type = WorkspaceController.getCurrentModeExtension().getProjectLoader().loadProject(project);
-				if(return_type == LOAD_RETURN_TYPE.NEW_PROJECT && dialog.getProjectName() != null && dialog.getProjectName().length() > 0) {
-					project.getModel().getRoot().setName(dialog.getProjectName());
-					project.getModel().nodeChanged(project.getModel().getRoot(), null, dialog.getProjectName());
-				}
-			} catch (IOException e) {
-				LogUtils.severe(e);
+			createProject(project);
+		}
+	}
+
+	public static void createProject(AWorkspaceProject project) {
+		if(project == null) {
+			return;
+		}
+		File path = URIUtils.getFile(project.getProjectHome());
+		
+		//WORKSPACE - todo: ask for permission to create the directory or check for always_create setting
+		if(!path.exists() ) {
+			path.mkdir();
+		}
+		
+		String projectName = null;		
+		DocearProjectSettings settings = project.getExtensions(DocearProjectSettings.class);
+		if(settings != null) {
+			projectName = settings.getProjectName();
+		}
+		
+		WorkspaceController.getCurrentModel().addProject(project);
+		try {
+			LOAD_RETURN_TYPE return_type = WorkspaceController.getCurrentModeExtension().getProjectLoader().loadProject(project);
+			if(return_type == LOAD_RETURN_TYPE.NEW_PROJECT && projectName != null && projectName.length() > 0) {
+				project.getModel().getRoot().setName(projectName);
+				project.getModel().nodeChanged(project.getModel().getRoot(), null, projectName);
 			}
+		} catch (IOException e) {
+			LogUtils.severe(e);
 		}
 	}
 

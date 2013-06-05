@@ -15,7 +15,7 @@ public class ServiceWindowListener implements WindowListener {
 		final WindowListener wl = this;
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				if(ServiceController.getController().isAutoRecommending()) {
+				if(ServiceController.getFeature(RecommendationsController.class).isAutoRecommending()) {
 					SwingUtilities.invokeLater(this);
 					return;
 				}
@@ -45,10 +45,10 @@ public class ServiceWindowListener implements WindowListener {
 	}
 
 	private void getRecommendations(final WindowListener wl) {		
-		if (ServiceController.getController().getAutoRecommendations() != null) {
+		if (ServiceController.getFeature(RecommendationsController.class).getAutoRecommendations() != null) {
 			UITools.getFrame().removeWindowListener(wl);
-			RecommendationsController.refreshRecommendations(ServiceController.getController().getAutoRecommendations());
-			ServiceController.getController().setAutoRecommendations(null);
+			RecommendationsController.refreshRecommendations(ServiceController.getFeature(RecommendationsController.class).getAutoRecommendations());
+			ServiceController.getFeature(RecommendationsController.class).setAutoRecommendations(null);
 		}
 	}
 

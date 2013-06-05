@@ -18,7 +18,14 @@ public abstract class WizardContext {
 	 **********************************************************************************/
 
 	public void set(Class<? extends Object> key, Object value) {
-		properties.put(key, value);
+		if(key != null) {
+			if(value == null) {
+				properties.remove(key);
+			}
+			else {
+				properties.put(key, value);
+			}
+		}
 	}
 	
 	public <T> T get(Class<T> key) {

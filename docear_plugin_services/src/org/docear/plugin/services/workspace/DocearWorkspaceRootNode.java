@@ -17,7 +17,7 @@ public class DocearWorkspaceRootNode extends WorkspaceRootNode {
 	 **********************************************************************************/
 	public String getName() {
 		String text = TextUtils.getText("docear.node.root.default");
-		String name = ServiceController.getUser().getUsername();
+		String name = ServiceController.getCurrentUser().getUsername();
 		if(name != null) {
 			text = TextUtils.format("docear.node.root.name", name);
 		}

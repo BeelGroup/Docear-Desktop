@@ -18,7 +18,7 @@ public class ShowRecommendationsAction extends AFreeplaneAction {
 	}
 
 	public void setEnabled() {
-		if (ServiceController.getUser().isRecommendationsEnabled() && ServiceController.getUser().isValid()) {
+		if (ServiceController.getCurrentUser().isRecommendationsEnabled() && ServiceController.getCurrentUser().isValid()) {
 			setEnabled(true);
 		}
 		else {

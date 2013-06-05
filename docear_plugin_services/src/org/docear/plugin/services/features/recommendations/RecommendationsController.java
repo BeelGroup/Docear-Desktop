@@ -1,6 +1,8 @@
 package org.docear.plugin.services.features.recommendations;
 
+import java.io.File;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.net.UnknownHostException;
 import java.rmi.UnexpectedException;
 import java.util.ArrayList;
@@ -19,7 +21,9 @@ import javax.swing.ProgressMonitor;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.commons.lang.NullArgumentException;
+import org.docear.plugin.core.logging.DocearLogger;
 import org.docear.plugin.core.util.CoreUtils;
+import org.docear.plugin.services.ADocearServiceFeature;
 import org.docear.plugin.services.ServiceController;
 import org.docear.plugin.services.features.io.DocearConnectionProvider;
 import org.docear.plugin.services.features.io.DocearServiceResponse;
@@ -28,23 +32,42 @@ import org.docear.plugin.services.features.recommendations.model.RecommendationE
 import org.docear.plugin.services.features.recommendations.model.RecommendationsModel;
 import org.docear.plugin.services.features.recommendations.model.RecommendationsModelNode;
 import org.docear.plugin.services.features.recommendations.view.RecommendationsView;
+import org.docear.plugin.services.features.recommendations.view.ServiceWindowListener;
+import org.docear.plugin.services.features.recommendations.workspace.DownloadFolderNode;
+import org.docear.plugin.services.features.recommendations.workspace.ShowRecommendationsNode;
+import org.docear.plugin.services.features.user.DocearUser;
 import org.docear.plugin.services.xml.DocearXmlBuilder;
 import org.docear.plugin.services.xml.DocearXmlElement;
 import org.docear.plugin.services.xml.DocearXmlRootElement;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
+import org.freeplane.features.mode.Controller;
+import org.freeplane.features.mode.ModeController;
 import org.freeplane.n3.nanoxml.IXMLParser;
 import org.freeplane.n3.nanoxml.IXMLReader;
 import org.freeplane.n3.nanoxml.StdXMLReader;
 import org.freeplane.n3.nanoxml.XMLParserFactory;
+import org.freeplane.plugin.workspace.URIUtils;
+import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.mindmapmode.FileFolderDropHandler;
+import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
+import org.freeplane.plugin.workspace.nodes.FolderLinkNode;
 
 import com.sun.jersey.core.util.StringKeyStringValueIgnoreCaseMultivaluedMap;
 
-public abstract class RecommendationsController {
+public class RecommendationsController extends ADocearServiceFeature {
 
 	private static Object mutex = new Object();
 	private static boolean isRequesting;
+	
+	public static final long RECOMMENDATIONS_AUTOSHOW_INTERVAL = 1000*60*60*24*7; // every 7 days in milliseconds
+
+	private File downloadsFolder;
+	private FolderLinkNode downloadsNode;
+	
+	private Collection<RecommendationEntry> autoRecommendations;
+	private Boolean AUTO_RECOMMENDATIONS_LOCK = false;
 
 	public static void refreshRecommendations() {
 		refreshRecommendations(null);
@@ -80,7 +103,7 @@ public abstract class RecommendationsController {
 	
 	private static RecommendationsModel requestRecommendations() throws AlreadyInUseException {
 		RecommendationsModel model = null;		
-		if (ServiceController.getUser().isRecommendationsEnabled()) {
+		if (ServiceController.getCurrentUser().isRecommendationsEnabled()) {
 			final ProgressMonitor monitor = new ProgressMonitor(UITools.getFrame(), TextUtils.getText("recommendations.request.wait.text"), null, 0, 100);
 			monitor.setMillisToDecideToPopup(0);
 			monitor.setMillisToPopup(0);
@@ -144,7 +167,7 @@ public abstract class RecommendationsController {
 			LogUtils.info("requesting recommendations");
 		}
 		try {
-			String name = ServiceController.getUser().getUsername();
+			String name = ServiceController.getCurrentUser().getUsername();
 			if (!CoreUtils.isEmpty(name)) {
 				MultivaluedMap<String,String> params = new StringKeyStringValueIgnoreCaseMultivaluedMap();
 				if(!userRequest) {
@@ -209,6 +232,108 @@ public abstract class RecommendationsController {
 	
 	public static void closeRecommendationView() {
 		RecommendationsView.close();
+	}
+	
+	
+	private void startRecommendationsRequest() {
+		long lastShowTime = Controller.getCurrentController().getResourceController().getLongProperty("docear.recommendations.last_auto_show", 0);
+		DocearUser user = ServiceController.getCurrentUser();
+		if(((System.currentTimeMillis()-lastShowTime) > RECOMMENDATIONS_AUTOSHOW_INTERVAL)
+				&& user.isValid()
+				&& user.isRecommendationsEnabled()) {
+			LogUtils.info("automatically requesting recommendations");
+			UITools.getFrame().addWindowListener(new ServiceWindowListener());
+						
+			
+			synchronized (AUTO_RECOMMENDATIONS_LOCK) {
+				AUTO_RECOMMENDATIONS_LOCK = true;
+			}
+			new Thread() {
+				public void run() {	
+					try {
+						Collection<RecommendationEntry> recommendations = RecommendationsController.getNewRecommendations(false);	
+						if(recommendations.isEmpty()) {
+							setAutoRecommendations(null);
+						}
+						else {
+							setAutoRecommendations(recommendations);
+						}						
+						Controller.getCurrentController().getResourceController().setProperty("docear.recommendations.last_auto_show", Long.toString(System.currentTimeMillis()));
+					
+					} 
+					catch (Exception e) {				
+						DocearLogger.warn("org.docear.plugin.services.ServiceController.startRecommendationsMode(): " + e.getMessage());
+						setAutoRecommendations(null);
+					}
+					synchronized (AUTO_RECOMMENDATIONS_LOCK) {
+						AUTO_RECOMMENDATIONS_LOCK = false;
+					}					
+				}
+			}.start();
+		} 
+		else {
+			setAutoRecommendations(null);
+		}
+	}
+	
+	public void setAutoRecommendations(Collection<RecommendationEntry> autoRecommendations) {
+		this.autoRecommendations = autoRecommendations;
+	}
+
+	public Collection<RecommendationEntry> getAutoRecommendations() {		
+			while(isLocked()) {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+				}
+			}		
+			return autoRecommendations;
+	}
+
+	private boolean isLocked() {
+		synchronized (AUTO_RECOMMENDATIONS_LOCK ) {
+			return AUTO_RECOMMENDATIONS_LOCK;
+		}
+	}
+
+	public boolean isAutoRecommending() {
+		synchronized (AUTO_RECOMMENDATIONS_LOCK ) {
+			return AUTO_RECOMMENDATIONS_LOCK;
+		}
+	}
+	
+	public URI getDownloadsFolder() {
+		return downloadsFolder.toURI();
+	}
+	
+	public void refreshDownloadsFolder() {
+		WorkspaceController.getCurrentModeExtension().getView().expandPath(downloadsNode.getTreePath());
+		downloadsNode.refresh();
+	}
+
+	@Override
+	protected void installDefaults(ModeController modeController) {
+		AWorkspaceTreeNode wsRoot = WorkspaceController.getModeExtension(modeController).getModel().getRoot();
+		wsRoot.insertChildNode(new ShowRecommendationsNode(), 0);
+		downloadsNode = new DownloadFolderNode();
+		downloadsFolder = new File( URIUtils.getFile(ServiceController.getController().getUserSettingsHome()),"downloads");
+		if(!downloadsFolder.exists()) {
+			try {
+				downloadsFolder.mkdirs();
+			}
+			catch (Exception e) {
+				LogUtils.warn("Exception in org.docear.plugin.services.ServiceController.addPluginDefaults(modeController):"+ e.getMessage());
+			}
+		}
+		downloadsNode.setPath(downloadsFolder.toURI());
+		wsRoot.insertChildNode(downloadsNode, 1);
+		
+		WorkspaceController.getModeExtension(modeController).getView().getTransferHandler().registerNodeDropHandler(DownloadFolderNode.class, new FileFolderDropHandler());
+		startRecommendationsRequest();
+	}
+
+	@Override
+	public void shutdown() {
 	}
 
 	

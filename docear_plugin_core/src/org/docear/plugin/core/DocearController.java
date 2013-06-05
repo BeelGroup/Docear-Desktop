@@ -309,7 +309,7 @@ public class DocearController implements IDocearEventListener {
 		}
 	}
 	
-	public String getTermsOfUse() {
+	public String getTermsOfService() {
 		try {
 			return IOTools.getStringFromStream(DocearController.class.getResourceAsStream("/Docear_terms_of_use.txt"),"UTF-8");
 		}

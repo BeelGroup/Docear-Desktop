@@ -1,7 +1,6 @@
 package org.docear.plugin.services.features.user;
 
-import java.net.URISyntaxException;
-import java.util.concurrent.CancellationException;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -13,8 +12,8 @@ import javax.ws.rs.core.MultivaluedMap;
 
 import org.docear.plugin.services.DocearServiceException;
 import org.docear.plugin.services.DocearServiceException.DocearServiceExceptionType;
-import org.docear.plugin.services.features.io.DocearConnectionProvider;
 import org.docear.plugin.services.ServiceController;
+import org.docear.plugin.services.features.io.DocearConnectionProvider;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.omg.CORBA.portable.UnknownException;
@@ -34,26 +33,21 @@ public class AccountRegisterer {
 	}
 	
 	public AccountRegisterer() {
-
 	}
 
-	public void createRegisteredUser(String name, String password, String email, Integer birthYear, Boolean newsLetter, Boolean isMale)
-			throws DocearServiceException, URISyntaxException, CancellationException {
-		createUser(name, password, USER_TYPE_REGISTERED, email, birthYear, newsLetter, isMale);
+	public void createRegisteredUser(String name, String password, String email, Boolean newsLetter) throws DocearServiceException {
+		createUser(name, password, email, null, newsLetter, null);
 		//DOCEAR - ToDo: 
-		//ResourceController.getResourceController().setProperty(CommunicationsController.DOCEAR_CONNECTION_USERNAME_PROPERTY, name);
 		//CommunicationsController.getController().tryToConnect(name, password, true, true);
-
 	}
 
 
-	private void createUser(final String name, final String password, final Integer type, final String email, final Integer birthYear, final Boolean newsLetter, final Boolean isMale)
-			throws DocearServiceException {
-				
-		final TaskState state= new TaskState(); 
+	private void createUser(final String name, final String password, final String email, final Integer birthYear, final Boolean newsLetter, final Boolean isMale) throws DocearServiceException {
+		
 		ExecutorService execSrv = Executors.newSingleThreadExecutor();
-		Future<TaskState> future = execSrv.submit(new Runnable() {
-			public void run() {
+		Future<TaskState> future = execSrv.submit(new Callable<TaskState>() {
+			public TaskState call() throws Exception {
+				TaskState state = new TaskState();
 				final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
 				try {
 					Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
@@ -61,12 +55,12 @@ public class AccountRegisterer {
 					queryParams.add("userName", name);
 					queryParams.add("password", password);
 					queryParams.add("retypedPassword", password);
-					queryParams.add("userType", "" + type);
+					queryParams.add("userType", "" + USER_TYPE_REGISTERED);
 					queryParams.add("eMail", email);
 					queryParams.add("firstName", null);
 					queryParams.add("middleName", null);
 					queryParams.add("lastName", null);
-					queryParams.add("birthYear", birthYear == null ? null : birthYear.toString());
+					queryParams.add("birthYear", null);
 					queryParams.add("generalNewsLetter", newsLetter == null ? null : newsLetter.toString());
 					queryParams.add("isMale", isMale == null ? null : isMale.toString());
 		
@@ -101,12 +95,13 @@ public class AccountRegisterer {
 				finally {
 					Thread.currentThread().setContextClassLoader(contextClassLoader);
 				}
-				
+				return state;
 			}
-		}, state);
+		});
 		long time = System.currentTimeMillis();
+		TaskState ts = null;
 		try {			
-			future.get(DocearConnectionProvider.CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
+			ts = future.get(DocearConnectionProvider.CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {
 			future.cancel(true);
 			execSrv.shutdown();
@@ -125,17 +120,12 @@ public class AccountRegisterer {
 		}
 		
 		
-		if(state.ex != null) {
-			if(state.ex instanceof DocearServiceException) {
-				throw (DocearServiceException)state.ex;
+		if(ts.ex != null) {
+			if(ts.ex instanceof DocearServiceException) {
+				throw (DocearServiceException)ts.ex;
 			}
-			throw new UnknownException(state.ex);
+			throw new UnknownException(ts.ex);
 			
 		}
-
 	}
-
-//	private String createAnonymousUserName() {
-//		return System.currentTimeMillis() + "_" + CoreUtils.createRandomString(5);
-//	}
 }

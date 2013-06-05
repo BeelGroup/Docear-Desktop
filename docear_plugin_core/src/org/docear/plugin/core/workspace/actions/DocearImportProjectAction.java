@@ -33,29 +33,43 @@ public class DocearImportProjectAction extends AWorkspaceAction {
 		
 		if(response == JOptionPane.OK_OPTION) {					
 			AWorkspaceProject project = dialog.getProject();
-			if(project == null) {
-				return;
-			}
-			WorkspaceController.getCurrentModel().addProject(project);
-			if(dialog.isConversionNecessary()) {
-				try {
-					DocearWorkspaceToProjectConverter.convert(project.getExtensions(DocearConversionDescriptor.class));
-				} catch (IOException e) {
-					LogUtils.severe(e);
-				}
-				return;
-			} 
-			
+			DocearProjectSettings settings = new DocearProjectSettings();
+			settings.setProjectName(dialog.getProjectName());
+			project.addExtension(settings);
+			importProject(project);
+		}
+	}
+
+	public static void importProject(AWorkspaceProject project) {
+		if(project == null) {
+			return;
+		}
+		
+		String projectName = null;		
+		DocearProjectSettings settings = project.getExtensions(DocearProjectSettings.class);
+		if(settings != null) {
+			projectName = settings.getProjectName();
+		}
+		
+		WorkspaceController.getCurrentModel().addProject(project);
+		if(project.getExtensions(DocearConversionDescriptor.class) != null) {
 			try {
-				LOAD_RETURN_TYPE return_type = WorkspaceController.getCurrentModeExtension().getProjectLoader().loadProject(project);
-				if(return_type == LOAD_RETURN_TYPE.NEW_PROJECT && dialog.getProjectName() != null && dialog.getProjectName().length() > 0) {
-					project.getModel().changeNodeName(project.getModel().getRoot(), dialog.getProjectName());
-				}
+				DocearWorkspaceToProjectConverter.convert(project.getExtensions(DocearConversionDescriptor.class));
 			} catch (IOException e) {
 				LogUtils.severe(e);
-			} catch (WorkspaceModelException e) {
-				LogUtils.severe(e);
 			}
+			return;
+		} 
+		
+		try {
+			LOAD_RETURN_TYPE return_type = WorkspaceController.getCurrentModeExtension().getProjectLoader().loadProject(project);
+			if(return_type == LOAD_RETURN_TYPE.NEW_PROJECT && projectName != null && projectName.length() > 0) {
+				project.getModel().changeNodeName(project.getModel().getRoot(), projectName);
+			}
+		} catch (IOException e) {
+			LogUtils.severe(e);
+		} catch (WorkspaceModelException e) {
+			LogUtils.severe(e);
 		}
 	}
 

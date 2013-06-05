@@ -54,10 +54,6 @@ public class DocearProjectLoader extends ProjectLoader {
 	private LinkTypeReferencesCreator linkTypeReferencesCreator;
 	private IResultProcessor resultProcessor;
 	
-	
-	//DOCEAR - required for backwards compatibility   
-//	private final static String CONFIG_FILE_NAME = "workspace.xml";
-	
 
 	/***********************************************************************************
 	 * CONSTRUCTORS

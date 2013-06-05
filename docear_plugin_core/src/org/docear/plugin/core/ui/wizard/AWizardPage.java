@@ -4,7 +4,7 @@ import javax.swing.JPanel;
 
 public abstract class AWizardPage extends JPanel {
 	private static final long serialVersionUID = 1L;
-	private boolean invisibleExec = false;
+	private boolean displayable = true;
 	private boolean skipOnBack = false;
 	/***********************************************************************************
 	 * CONSTRUCTORS
@@ -14,12 +14,12 @@ public abstract class AWizardPage extends JPanel {
 	 * METHODS
 	 **********************************************************************************/
 	
-	public void setPageInvisible(boolean enabled) {
-		this.invisibleExec  = enabled;
+	public void setPageDisplayable(boolean enabled) {
+		this.displayable  = enabled;
 	}
 	
-	public boolean isInvisiblePage() {
-		return this.invisibleExec;
+	public boolean isPageDisplayable() {
+		return this.displayable;
 	}
 	
 	public void setSkipOnBack(boolean enabled) {

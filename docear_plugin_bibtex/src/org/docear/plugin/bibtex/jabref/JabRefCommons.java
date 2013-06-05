@@ -304,7 +304,7 @@ public abstract class JabRefCommons {
 	}
 	
 	public static void showMetadataDialog(URI uri) throws InterruptedException, ExecutionException, IOException {
-		String userName = ServiceController.getController().getUser().getUsername();
+		String userName = ServiceController.getController().getCurrentUser().getUsername();
 //		if (userName == null) {
 //			JOptionPane.showMessageDialog(UITools.getFrame(), TextUtils.getText("docear.metadata.import.requirement_failed"));
 //			return;
@@ -355,7 +355,7 @@ public abstract class JabRefCommons {
 	}
 	
 	public static void showMetadataUpdateDialog(URI uri, BibtexEntry oldEntry) throws InterruptedException, ExecutionException, IOException {
-		String userName = ServiceController.getController().getUser().getUsername();
+		String userName = ServiceController.getController().getCurrentUser().getUsername();
 //		if (userName == null) {
 //			JOptionPane.showMessageDialog(UITools.getFrame(), TextUtils.getText("docear.metadata.import.requirement_failed"));
 //			return;

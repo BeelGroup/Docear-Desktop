@@ -29,7 +29,6 @@ public class WizardController implements ActionListener {
 			wizard.cancel();
 		}
 		else {
-			wizard.resetControls();
 			if(e.getSource().equals(wizard.getContext().getNextButton())) {
 				WizardPageDescriptor desc = wizard.getContext().getCurrentDescriptor().getNextPageDescriptor(wizard.getContext());
 				if(desc == null || Wizard.FINISH_PAGE.equals(desc)) {

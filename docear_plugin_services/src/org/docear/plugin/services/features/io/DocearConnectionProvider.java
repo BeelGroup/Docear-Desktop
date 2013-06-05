@@ -23,11 +23,11 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.io.IOExceptionWithCause;
 import org.docear.plugin.core.io.ProgressInputStream;
+import org.docear.plugin.services.ADocearServiceFeature;
 import org.docear.plugin.services.DocearServiceException;
-import org.docear.plugin.services.ServiceController;
-import org.docear.plugin.services.features.IDocearServiceFeature;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
+import org.freeplane.features.mode.ModeController;
 
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientResponse;
@@ -39,7 +39,7 @@ import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 import com.sun.jersey.core.util.StringKeyStringValueIgnoreCaseMultivaluedMap;
 import com.sun.jersey.multipart.impl.MultiPartWriter;
 
-public class DocearConnectionProvider implements IDocearServiceFeature {
+public class DocearConnectionProvider extends ADocearServiceFeature {
 	public static final int CONNECTION_TIMEOUT = 7000;
 	private Object proxyAuthentication = new Object();
 
@@ -68,7 +68,7 @@ public class DocearConnectionProvider implements IDocearServiceFeature {
 	}
 	
 	public WebResource getServiceResource() {		
-		WebResource resource = client.resource(ServiceController.getController().getOnlineServiceUri());		
+		WebResource resource = client.resource(getOnlineServiceUri());		
 		return resource;
 	}
 	
@@ -85,6 +85,13 @@ public class DocearConnectionProvider implements IDocearServiceFeature {
 			}
 		}
 		return is;
+	}
+	
+	public URI getOnlineServiceUri() {
+		if (System.getProperty("org.docear.localhost", "false").equals("true")) {
+			return URI.create("http://127.0.0.1:8080/");
+		}
+		return URI.create("https://api.docear.org/");
 	}
 	
 	public void setDefaultHeader(String key, String value) {
@@ -426,6 +433,14 @@ public class DocearConnectionProvider implements IDocearServiceFeature {
 			}
 		}
 		return new ProgressInputStream(inStream, uri.toURL(), length);
+	}
+
+	@Override
+	protected void installDefaults(ModeController modeController) {
+	}
+
+	@Override
+	public void shutdown() {
 	}
 	
 	/***********************************************************************************

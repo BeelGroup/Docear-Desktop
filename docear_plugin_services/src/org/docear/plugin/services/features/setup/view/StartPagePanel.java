@@ -7,6 +7,7 @@ import java.awt.event.KeyListener;
 
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -19,6 +20,7 @@ import org.docear.plugin.core.ui.components.LabeledPasswordField;
 import org.docear.plugin.core.ui.components.LabeledTextField;
 import org.docear.plugin.core.ui.wizard.AWizardPage;
 import org.docear.plugin.core.ui.wizard.WizardContext;
+import org.docear.plugin.services.features.user.DocearLocalUser;
 import org.docear.plugin.services.features.user.DocearUser;
 import org.freeplane.core.util.TextUtils;
 import org.swingplus.JHyperlink;
@@ -29,7 +31,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
 public class StartPagePanel extends AWizardPage {
-	public enum OPTION {
+	public enum START_OPTION {
 		LOGIN, REGISTRATION
 	}
 
@@ -89,7 +91,7 @@ public class StartPagePanel extends AWizardPage {
 			public void stateChanged(ChangeEvent e) {
 				if (context != null && isRegistrationOption()) {
 					enableButtons(context);
-					context.set(OPTION.class, OPTION.REGISTRATION);
+					context.set(START_OPTION.class, START_OPTION.REGISTRATION);
 				}
 			}
 		});
@@ -150,7 +152,7 @@ public class StartPagePanel extends AWizardPage {
 			public void stateChanged(ChangeEvent e) {
 				if (context != null && isLoginOption()) {
 					enableButtons(context);
-					context.set(OPTION.class, OPTION.LOGIN);
+					context.set(START_OPTION.class, START_OPTION.LOGIN);
 				}
 			}
 		});
@@ -225,21 +227,6 @@ public class StartPagePanel extends AWizardPage {
 		prepareFields(startSettings);
 	}
 
-	@Override
-	public String getTitle() {
-		return TextUtils.getText("docear.setup.wizard.start.title");
-	}
-
-	@Override
-	public void preparePage(WizardContext context) {
-		this.context = context;
-		context.getBackButton().setText(TextUtils.getText("docear.setup.wizard.controls.skip2local"));
-		context.getNextButton().setText(TextUtils.getText("docear.setup.wizard.controls.next"));
-		context.setWizardTitle(getTitle());
-		prepareFields(context.get(DocearUser.class));
-		enableButtons(context);
-	}
-
 	public boolean isRegistrationOption() {
 		return rdbtnRegister.isSelected();
 	}
@@ -264,14 +251,17 @@ public class StartPagePanel extends AWizardPage {
 		return pw;
 	}
 	
-	private void prepareFields(DocearUser settings) {
-		if(settings == null) {
+	private void prepareFields(DocearUser user) {
+		txtUsername.setText("");
+		pwdPasswd.setText("");
+		
+		if(user == null) {
 			rdbtnRegister.setSelected(true);
 		}
-		else {
-			txtUsername.setText(settings.getName() == null ? "" : settings.getName());
-			pwdPasswd.setText(settings.getPassword() == null ? "" : settings.getPassword());
-			rdbtnLogin.setSelected(settings.getName() != null);
+		else if(user.isValid() || user.getPassword() != null) {
+			txtUsername.setText(user.getName() == null ? "" : user.getName());
+			pwdPasswd.setText(user.getPassword() == null ? "" : user.getPassword());
+			rdbtnLogin.setSelected(user.getName() != null);
 		}
 		
 	}
@@ -280,10 +270,33 @@ public class StartPagePanel extends AWizardPage {
 		DocearUser settings = context.get(DocearUser.class);
 		if(isLoginOption() && (getUsername() == null || (getPassword() == null && (settings == null || settings.getAccessToken() == null))) ) {
 			ctxt.getNextButton().setEnabled(false);
+			getRootPane().setDefaultButton((JButton) ctxt.getBackButton());
 		}
 		else {
 			ctxt.getNextButton().setEnabled(true);
+			getRootPane().setDefaultButton((JButton) ctxt.getNextButton());
 		}
+	}
+	
+	@Override
+	public String getTitle() {
+		return TextUtils.getText("docear.setup.wizard.start.title");
+	}
+
+	@Override
+	public void preparePage(WizardContext context) {
+		this.context = context;
+		context.getBackButton().setText(TextUtils.getText("docear.setup.wizard.controls.skip2local"));
+		context.getNextButton().setText(TextUtils.getText("docear.setup.wizard.controls.next"));
+		context.setWizardTitle(getTitle());
+		context.set(DocearLocalUser.class, null);
+		DocearUser user = context.get(DocearUser.class);
+		if(user instanceof DocearLocalUser) {
+			user = new DocearUser();
+			context.set(DocearUser.class, user);
+		}
+		prepareFields(user);
+		enableButtons(context);
 	}
 
 }
