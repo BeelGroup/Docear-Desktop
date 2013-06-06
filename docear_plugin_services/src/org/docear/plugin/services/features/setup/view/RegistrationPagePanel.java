@@ -5,6 +5,8 @@ import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -179,6 +181,19 @@ public class RegistrationPagePanel extends AWizardPage {
 			}
 			
 			public void keyPressed(KeyEvent e) {}
+		});
+		pwdPassword.addFocusListener(new FocusListener() {
+			
+			public void focusLost(FocusEvent e) {
+				if (cachedContext != null) {
+					enableControls(cachedContext);
+				}
+			}
+			
+			public void focusGained(FocusEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
 		});
 		panel.add(pwdPassword, "1, 3, fill, default");
 		
@@ -482,17 +497,19 @@ public class RegistrationPagePanel extends AWizardPage {
 		txtUsername.setText("");
 		pwdPassword.setText("");
 		pwdRetypedPassword.setText("");
-		chckbxAcceptTOS.setSelected(false);
-		chckbxAcceptUsageTerms.setSelected(false);
-		chckbxNewsletter.setSelected(false);
-		chckbxCollaboration.setSelected(true);
-		chckbxRecommendations.setSelected(true);
-		chckbxOnlineBackup.setSelected(true);
-		chckbxSynchronization.setSelected(true);
 		
 		if(user != null) {
 			txtUsername.setText(user.getUsername() == null ? "" : user.getUsername());
 			txtEmail.setText(user.getEmail() == null ? "" : user.getEmail());
+		}
+		else {
+			chckbxAcceptTOS.setSelected(false);
+			chckbxAcceptUsageTerms.setSelected(false);
+			chckbxNewsletter.setSelected(false);
+			chckbxCollaboration.setSelected(true);
+			chckbxRecommendations.setSelected(true);
+			chckbxOnlineBackup.setSelected(true);
+			chckbxSynchronization.setSelected(true);
 		}
 		
 	}
