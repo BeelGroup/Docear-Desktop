@@ -53,6 +53,7 @@ public class DocearUserController extends ADocearServiceFeature {
 	public boolean createUserAccount(DocearUser user) throws DocearServiceException {
 		if(user != null) {
 			registerer.createRegisteredUser(user.getUsername(), user.getPassword(), user.getEmail(), user.isNewsletterEnabled());
+			user.setNew();
 			return true;
 		}
 		return false;

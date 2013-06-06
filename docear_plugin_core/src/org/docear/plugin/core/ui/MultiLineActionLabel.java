@@ -55,6 +55,10 @@ public class MultiLineActionLabel extends JPanel implements SwingConstants, Acce
 
 	private boolean underline = true;
 	
+	public MultiLineActionLabel() {
+		this(null);
+	}
+	
 	public MultiLineActionLabel(String text) {
 		setText(text);
 		addMouseListener(mouseAdapter);
@@ -107,7 +111,9 @@ public class MultiLineActionLabel extends JPanel implements SwingConstants, Acce
 	}
 
 	public void setText(String text) {
-
+		if(text == null) {
+			text = "";
+		}
 		String oldAccessibleName = null;
 		if (accessibleContext != null) {
 			oldAccessibleName = accessibleContext.getAccessibleName();

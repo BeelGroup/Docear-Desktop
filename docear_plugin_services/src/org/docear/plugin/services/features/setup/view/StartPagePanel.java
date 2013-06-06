@@ -258,7 +258,7 @@ public class StartPagePanel extends AWizardPage {
 		if(user == null) {
 			rdbtnRegister.setSelected(true);
 		}
-		else if(user.isValid() || user.getPassword() != null) {
+		else if(user.isValid() || (user.isNew() && user.getPassword() != null)) {
 			txtUsername.setText(user.getName() == null ? "" : user.getName());
 			pwdPasswd.setText(user.getPassword() == null ? "" : user.getPassword());
 			rdbtnLogin.setSelected(user.getName() != null);

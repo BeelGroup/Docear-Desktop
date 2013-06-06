@@ -37,8 +37,6 @@ public class AccountRegisterer {
 
 	public void createRegisteredUser(String name, String password, String email, Boolean newsLetter) throws DocearServiceException {
 		createUser(name, password, email, null, newsLetter, null);
-		//DOCEAR - ToDo: 
-		//CommunicationsController.getController().tryToConnect(name, password, true, true);
 	}
 
 

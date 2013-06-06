@@ -135,6 +135,16 @@ public class DocearSetupWizardAction extends AFreeplaneAction {
 					context.getTraversalLog().getPreviousPage(context);
 					return context.getModel().getPage("page.project.create");
 			}
+
+			@Override
+			public WizardPageDescriptor getBackPageDescriptor(WizardContext context) {
+				if(context.get(DocearUser.class).isNew()) {
+					context.getTraversalLog().getPreviousPage(context);
+				}
+				return super.getBackPageDescriptor(context);
+			}
+			
+			
 		};
 		desc.getPage().setSkipOnBack(true);
 		desc.getPage().setPreferredSize(new Dimension(640,480));

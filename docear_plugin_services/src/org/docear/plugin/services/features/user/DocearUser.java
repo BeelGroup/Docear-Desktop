@@ -49,6 +49,7 @@ public class DocearUser implements IUserAccount {
 	private List<PropertyChangeListener> listeners = new ArrayList<PropertyChangeListener>();
 	private boolean isOnline;
 	private boolean enabled = true;
+	private boolean isNew;
 	
 	/***********************************************************************************
 	 * CONSTRUCTORS
@@ -262,6 +263,14 @@ public class DocearUser implements IUserAccount {
 		return false;
 	}
 	
+	protected void setNew() {
+		this.isNew = true;		
+	}
+	
+	public boolean isNew() {
+		return isNew;
+	}
+	
 	public String toString() {
 		return "DocearUser[name="+getName() + ";token="+getAccessToken()+"]";
 	}
@@ -292,6 +301,5 @@ public class DocearUser implements IUserAccount {
 			firePropertyChanged(ENABLED_PROPERTY, enabled, !enabled);
 		}
 	}
-
 	
 }

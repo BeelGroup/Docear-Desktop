@@ -239,6 +239,7 @@ public class Wizard {
 	public void finish() {
 		if(NOT_DEFINED == returnCode) {
 			returnCode = OK_OPTION;
+			wizard.dispatchEvent(new WindowEvent(wizard, WindowEvent.WINDOW_CLOSING));
 		}
 	}
 	
