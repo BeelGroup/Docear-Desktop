@@ -136,7 +136,7 @@ public class DocearNodeMouseMotionListener implements IMouseListener {
 //			StringBuilder sb = new StringBuilder();
 //			pdfHeaderExtraction(e, sb);
 		}
-		boolean openOnPage = ResourceController.getResourceController().getBooleanProperty(
+		boolean openOnPage = DocearController.getPropertiesController().getBooleanProperty(
 				PdfUtilitiesController.OPEN_PDF_VIEWER_ON_PAGE_KEY);		
 		
 		if (!openOnPage) {

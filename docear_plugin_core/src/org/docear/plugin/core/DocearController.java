@@ -63,7 +63,7 @@ public class DocearController implements IDocearEventListener {
 	 **********************************************************************************/
 	
 	protected DocearController() {
-		firstRun = !ResourceController.getResourceController().getBooleanProperty(DOCEAR_FIRST_RUN_PROPERTY);
+		firstRun = !DocearController.getPropertiesController().getBooleanProperty(DOCEAR_FIRST_RUN_PROPERTY);
 		setApplicationIdentifiers();
 		addDocearEventListener(this);
 	}
@@ -76,9 +76,9 @@ public class DocearController implements IDocearEventListener {
 	}
 	
 	public boolean isLicenseDialogNecessary() {		
-		int storedBuildNumber = Integer.parseInt(ResourceController.getResourceController().getProperty(DOCEAR_VERSION_NUMBER, "0"));
+		int storedBuildNumber = Integer.parseInt(DocearController.getPropertiesController().getProperty(DOCEAR_VERSION_NUMBER, "0"));
 		if (storedBuildNumber == 0) {
-			ResourceController.getResourceController().setProperty(DOCEAR_VERSION_NUMBER, ""+this.applicationBuildNumber);
+			DocearController.getPropertiesController().setProperty(DOCEAR_VERSION_NUMBER, ""+this.applicationBuildNumber);
 			return true;
 		}
 		else {
@@ -236,6 +236,7 @@ public class DocearController implements IDocearEventListener {
 		dispatchDocearEvent(new DocearEvent(this, null, DocearEventType.APPLICATION_CLOSING));
 		
 		Controller.getCurrentController().getViewController().saveProperties();
+		DocearController.getPropertiesController().saveProperties();
 		ResourceController.getResourceController().saveProperties();		
 		if(!waitThreadsReady()){
 			return false;

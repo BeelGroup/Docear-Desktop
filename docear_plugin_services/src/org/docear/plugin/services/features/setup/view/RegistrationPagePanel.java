@@ -64,6 +64,7 @@ public class RegistrationPagePanel extends AWizardPage {
 	private JLabel lblIconRecommendations;
 	private JLabel lblBackup;
 	private JLabel lblIconBackup;
+	private MultiLineActionLabel multiLineActionLabel;
 	
 	/***********************************************************************************
 	 * CONSTRUCTORS
@@ -73,6 +74,7 @@ public class RegistrationPagePanel extends AWizardPage {
 		setBackground(Color.WHITE);
 		setLayout(new FormLayout(new ColumnSpec[] {
 				FormFactory.RELATED_GAP_COLSPEC,
+				FormFactory.UNRELATED_GAP_COLSPEC,
 				FormFactory.DEFAULT_COLSPEC,
 				FormFactory.RELATED_GAP_COLSPEC,
 				ColumnSpec.decode("12dlu:grow"),},
@@ -98,13 +100,12 @@ public class RegistrationPagePanel extends AWizardPage {
 		
 		JLabel lblRequiredInformation = new JLabel(TextUtils.getText("docear.setup.wizard.register.required"));
 		lblRequiredInformation.setFont(new Font("Tahoma", Font.BOLD, 11));
-		add(lblRequiredInformation, "2, 2, 3, 1");
+		add(lblRequiredInformation, "2, 2, 4, 1");
 		
 		JPanel panel = new JPanel();
 		panel.setBackground(Color.WHITE);
-		add(panel, "2, 4, 3, 1, fill, fill");
+		add(panel, "3, 4, 3, 1, fill, fill");
 		panel.setLayout(new FormLayout(new ColumnSpec[] {
-				FormFactory.RELATED_GAP_COLSPEC,
 				ColumnSpec.decode("default:grow"),
 				ColumnSpec.decode("left:12dlu"),
 				ColumnSpec.decode("max(109dlu;default):grow"),
@@ -135,7 +136,7 @@ public class RegistrationPagePanel extends AWizardPage {
 			
 			public void keyPressed(KeyEvent e) {}
 		});
-		panel.add(txtUsername, "2, 1, fill, default");
+		panel.add(txtUsername, "1, 1, fill, default");
 		
 		txtEmail = new LabeledTextField(TextUtils.getText("docear.setup.wizard.register.input.label.email"));
 		txtEmail.setBorder(new LineBorder(Color.DARK_GRAY, 1));
@@ -157,7 +158,7 @@ public class RegistrationPagePanel extends AWizardPage {
 			
 			public void keyPressed(KeyEvent e) {}
 		});
-		panel.add(txtEmail, "4, 1, fill, default");
+		panel.add(txtEmail, "3, 1, fill, default");
 		
 		pwdPassword = new LabeledPasswordField(TextUtils.getText("docear.setup.wizard.register.input.label.passwd"));
 		pwdPassword.setBorder(new LineBorder(Color.DARK_GRAY, 1));
@@ -179,13 +180,13 @@ public class RegistrationPagePanel extends AWizardPage {
 			
 			public void keyPressed(KeyEvent e) {}
 		});
-		panel.add(pwdPassword, "2, 3, fill, default");
+		panel.add(pwdPassword, "1, 3, fill, default");
 		
 		lblPwdWarning = new JLabel();
 		if(url != null) {
 			lblPwdWarning.setIcon(new ImageIcon(url));
 		}
-		panel.add(lblPwdWarning, "3, 3, right, default");
+		panel.add(lblPwdWarning, "2, 3, right, default");
 		lblPwdWarning.setVisible(false);
 		lblPwdWarning.setToolTipText(TextUtils.getText("docear.setup.wizard.register.input.warn.passwd"));
 		
@@ -203,23 +204,23 @@ public class RegistrationPagePanel extends AWizardPage {
 			
 			public void keyPressed(KeyEvent e) {}
 		});
-		panel.add(pwdRetypedPassword, "4, 3, fill, default");
+		panel.add(pwdRetypedPassword, "3, 3, fill, default");
 		
 		lblRetypeWarning = new JLabel();		
 		if(url != null) {
 			lblRetypeWarning.setIcon(new ImageIcon(url));
 		}
-		panel.add(lblRetypeWarning, "5, 3");
+		panel.add(lblRetypeWarning, "4, 3");
 		lblRetypeWarning.setVisible(false);
 		lblRetypeWarning.setToolTipText(TextUtils.getText("docear.setup.wizard.register.input.warn.passwd"));
 		
 		JLabel lblServicesoptional = new JLabel(TextUtils.getText("docear.setup.wizard.register.services"));
 		lblServicesoptional.setFont(new Font("Tahoma", Font.BOLD, 11));
-		add(lblServicesoptional, "2, 6, 3, 1");
+		add(lblServicesoptional, "2, 6, 4, 1");
 		
 		panel_1 = new JPanel();
 		panel_1.setBackground(Color.WHITE);
-		add(panel_1, "2, 8, 3, 1, fill, fill");
+		add(panel_1, "3, 8, 3, 1, fill, fill");
 		panel_1.setLayout(new FormLayout(new ColumnSpec[] {
 				FormFactory.DEFAULT_COLSPEC,
 				FormFactory.RELATED_GAP_COLSPEC,
@@ -231,7 +232,7 @@ public class RegistrationPagePanel extends AWizardPage {
 				FormFactory.DEFAULT_ROWSPEC,}));
 		
 		chckbxRecommendations = new JCheckBox();
-		panel_1.add(chckbxRecommendations, "1, 1");
+		panel_1.add(chckbxRecommendations, "1, 1, default, top");
 		chckbxRecommendations.setSelected(true);
 		chckbxRecommendations.setBackground(Color.WHITE);
 		chckbxRecommendations.addChangeListener(new ChangeListener() {
@@ -263,10 +264,10 @@ public class RegistrationPagePanel extends AWizardPage {
 		lblIconRecommendations = new JLabel(new ImageIcon(DocearController.class.getResource("/images/question_16.png")));
 		lblIconRecommendations.addMouseListener(getHelpMouseListener());
 		lblIconRecommendations.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		panel_2.add(lblIconRecommendations, "3, 1");
+		//panel_2.add(lblIconRecommendations, "3, 1");
 		
 		chckbxSynchronization = new JCheckBox(TextUtils.getText("docear.setup.wizard.register.feature.synchronization"));
-		panel_1.add(chckbxSynchronization, "5, 1");
+		panel_1.add(chckbxSynchronization, "5, 1, default, top");
 		chckbxSynchronization.setBackground(Color.WHITE);
 		chckbxSynchronization.setSelected(true);
 		chckbxSynchronization.addChangeListener(new ChangeListener() {
@@ -283,7 +284,7 @@ public class RegistrationPagePanel extends AWizardPage {
 		});
 		
 		chckbxOnlineBackup = new JCheckBox();
-		panel_1.add(chckbxOnlineBackup, "1, 2");
+		panel_1.add(chckbxOnlineBackup, "1, 2, default, top");
 		chckbxOnlineBackup.setSelected(true);
 		chckbxOnlineBackup.setBackground(Color.WHITE);
 		chckbxOnlineBackup.addChangeListener(new ChangeListener() {
@@ -316,10 +317,10 @@ public class RegistrationPagePanel extends AWizardPage {
 		lblIconBackup.setBackground(Color.WHITE);
 		lblIconBackup.addMouseListener(getHelpMouseListener());
 		lblIconBackup.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		panel_3.add(lblIconBackup, "3, 1");
+		//panel_3.add(lblIconBackup, "3, 1");
 		
 		chckbxCollaboration = new JCheckBox(TextUtils.getText("docear.setup.wizard.register.feature.collaboration"));
-		panel_1.add(chckbxCollaboration, "5, 2");
+		panel_1.add(chckbxCollaboration, "5, 2, default, top");
 		chckbxCollaboration.setBackground(Color.WHITE);
 		chckbxCollaboration.setSelected(true);
 		chckbxCollaboration.addChangeListener(new ChangeListener() {
@@ -337,7 +338,7 @@ public class RegistrationPagePanel extends AWizardPage {
 		
 		JLabel lblAndTheFine = new JLabel(TextUtils.getText("docear.setup.wizard.docear.terms.title"));
 		lblAndTheFine.setFont(new Font("Tahoma", Font.BOLD, 11));
-		add(lblAndTheFine, "2, 11, 3, 1");
+		add(lblAndTheFine, "2, 11, 4, 1");
 		
 		chckbxAcceptUsageTerms = new JCheckBox();
 		chckbxAcceptUsageTerms.setBackground(Color.WHITE);
@@ -348,7 +349,7 @@ public class RegistrationPagePanel extends AWizardPage {
 				}
 			}
 		});
-		add(chckbxAcceptUsageTerms, "2, 13, default, top");
+		add(chckbxAcceptUsageTerms, "3, 13, default, top");
 		
 		final DocearLicensePanel licenseText = new DocearLicensePanel();
 		
@@ -362,7 +363,7 @@ public class RegistrationPagePanel extends AWizardPage {
 				}
 			}
 		});
-		add(lblProcessingTerms, "4, 13, fill, fill");
+		add(lblProcessingTerms, "5, 13, fill, fill");
 		
 		chckbxAcceptTOS = new JCheckBox();
 		chckbxAcceptTOS.setBackground(Color.WHITE);
@@ -375,7 +376,7 @@ public class RegistrationPagePanel extends AWizardPage {
 		});
 		
 		
-		add(chckbxAcceptTOS, "2, 14, default, top");
+		add(chckbxAcceptTOS, "3, 14, default, top");
 		
 		lblToS = new MultiLineActionLabel(TextUtils.getText("docear.setup.wizard.docear.terms.service"));
 		lblToS.setBackground(Color.WHITE);
@@ -393,9 +394,9 @@ public class RegistrationPagePanel extends AWizardPage {
 				}
 			}
 		});
-		add(lblToS, "4, 14, fill, fill");
+		add(lblToS, "5, 14, fill, fill");
 		
-		chckbxNewsletter = new JCheckBox(TextUtils.getText("docear.setup.wizard.register.newsletter"));
+		chckbxNewsletter = new JCheckBox();
 		chckbxNewsletter.setBackground(Color.WHITE);
 		chckbxNewsletter.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
@@ -409,7 +410,11 @@ public class RegistrationPagePanel extends AWizardPage {
 				}
 			}
 		});
-		add(chckbxNewsletter, "2, 16, 3, 1");
+		add(chckbxNewsletter, "3, 16, default, top");
+		
+		multiLineActionLabel = new MultiLineActionLabel(TextUtils.getText("docear.setup.wizard.register.newsletter"));
+		multiLineActionLabel.setBackground(Color.WHITE);
+		add(multiLineActionLabel, "5, 16, fill, fill");
 	}
 	
 	/***********************************************************************************

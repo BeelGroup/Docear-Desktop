@@ -9,6 +9,9 @@ import java.awt.Frame;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
 
 import javax.swing.AbstractButton;
 import javax.swing.Box;
@@ -26,8 +29,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import org.freeplane.core.util.TextUtils;
-import com.jgoodies.forms.layout.FormLayout;
+
 import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
 /***
@@ -68,6 +72,8 @@ public class Wizard {
 	private boolean drawButtonBarSeparator = false;
 	private JButton closeButton;
 	private JEditorPane titleComponent;
+	private WizardPageDescriptor startPageIdentifier;
+	private MouseAdapter dragHandler;
 
 	/***********************************************************************************
 	 * CONSTRUCTORS
@@ -77,6 +83,7 @@ public class Wizard {
 		wizardModel = new WizardModel();
 		wizard = new JDialog(owner);
 		wizardController = new WizardController(this);
+		wizard.setModal(true);
 		wizard.setUndecorated(true);
 		wizard.getRootPane().setWindowDecorationStyle(JRootPane.PLAIN_DIALOG);
 		initReturnCodeObserver();
@@ -180,16 +187,31 @@ public class Wizard {
 		return context;
 	}
 	
-	public synchronized int show() {		
+	public void setStartPage(Object identifier) {
+		this.startPageIdentifier = wizardModel.getPage(identifier);
+	}
+	
+	public WizardPageDescriptor getStartPage() {
+		if(this.startPageIdentifier == null) {
+			return wizardModel.getFirstPage();
+		}
+		return this.startPageIdentifier;
+	}
+	
+	public synchronized int show() {
 		returnCode = NOT_DEFINED;
 		returnCodeObserver.start();
 		wizard.setSize(640, 480);
 		centerOnOwner(wizard);
 		
+		resetControls();
+		if(getStartPage() != null) {
+			setCurrentPage(getStartPage().getIdentifier());
+		}
+		
 		SwingUtilities.updateComponentTreeUI(wizard);
 		wizard.pack();
 		wizard.setVisible(true);
-		
 		try {
 			returnCodeObserver.join();
 		} catch (InterruptedException e) {
@@ -210,6 +232,7 @@ public class Wizard {
 	public void cancel() {
 		if(NOT_DEFINED == returnCode) {
 			returnCode = CANCEL_OPTION;
+			wizard.dispatchEvent(new WindowEvent(wizard, WindowEvent.WINDOW_CLOSING));
 		}
 	}
 	
@@ -239,8 +262,9 @@ public class Wizard {
 		headPanel.setLayout(new BorderLayout());
 		headPanel.setBackground(Color.WHITE);
 		headPanel.setPreferredSize(new Dimension(0, 60));
-		headPanel.setBorder(new EmptyBorder(0, 10, 5, 10));		
-		
+		headPanel.setBorder(new EmptyBorder(0, 10, 5, 10));
+		headPanel.addMouseMotionListener(getDragHandler());
+		headPanel.addMouseListener(getDragHandler());
 		closeButton = new JButton(new ImageIcon(Wizard.class.getResource("/images/window-close.png")));
 		closeButton.setPreferredSize(new Dimension(35, 25));
 		closeButton.setMargin(new Insets(10, 10, 7, 10));
@@ -251,6 +275,8 @@ public class Wizard {
 		headControls.add(closeButton, BorderLayout.NORTH);
 		titlePanel.setBackground(Color.WHITE);
 		titlePanel.setBorder(null);
+		titlePanel.addMouseMotionListener(getDragHandler());
+		titlePanel.addMouseListener(getDragHandler());
 		titlePanel.setLayout(new FormLayout(new ColumnSpec[] {
 				ColumnSpec.decode("388px:grow"),},
 			new RowSpec[] {
@@ -258,6 +284,8 @@ public class Wizard {
 		
 		titleComponent.setEditable(false);
 		titleComponent.setFont(titleComponent.getFont().deriveFont(Font.BOLD, 14f));
+		titleComponent.addMouseMotionListener(getDragHandler());
+		titleComponent.addMouseListener(getDragHandler());
 		titlePanel.add(titleComponent, "1, 1, fill, center");
 		
 		headPanel.add(headControls, BorderLayout.EAST);
@@ -293,6 +321,39 @@ public class Wizard {
 		
 		contentPanel.add(cardPanel, BorderLayout.CENTER);
 		contentPanel.add(buttonPanel, BorderLayout.SOUTH);
+	}
+	
+	private MouseAdapter getDragHandler() {
+		if(dragHandler == null) {
+			dragHandler = new MouseAdapter() {
+				@Override
+				public void mouseMoved(MouseEvent e) {
+					Point tempPoint = e.getPoint();
+					SwingUtilities.convertPointToScreen(tempPoint, e.getComponent());
+					point = tempPoint;
+				}
+				
+				private Point point;
+				@Override
+				public void mouseDragged(MouseEvent e) {
+					Point nuPoint = wizard.getLocation();
+					Point tempPoint = e.getPoint();
+					SwingUtilities.convertPointToScreen(tempPoint, e.getComponent());
+					if(point != null) {
+						nuPoint.x += tempPoint.x-point.x;
+						nuPoint.y += tempPoint.y-point.y;
+						wizard.setLocation(nuPoint);
+					}
+					point = tempPoint;
+					e.consume();
+				}
+				
+			};
+			
+			
+			
+		}
+		return dragHandler;
 	}
 
 	private void buildButtonBar() {
@@ -357,7 +418,7 @@ public class Wizard {
 			wizard.getRootPane().setDefaultButton(nextButton);
 		}
 		if(backButton != null) {
-			backButton.setVisible(true);
+			backButton.setVisible(wizardModel.getPageCount() > 1);
 			backButton.setEnabled(true);
 			backButton.setText(TextUtils.getText("docear.setup.wizard.controls.back"));
 		}
@@ -367,6 +428,8 @@ public class Wizard {
 			skipButton.setText(TextUtils.getText("docear.setup.wizard.controls.skip"));
 		}
 	}
+
+	
 
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES

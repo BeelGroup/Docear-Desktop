@@ -28,7 +28,6 @@ import org.docear.plugin.services.xml.elements.Application;
 import org.freeplane.core.io.IElementHandler;
 import org.freeplane.core.io.ReadManager;
 import org.freeplane.core.io.xml.TreeXmlReader;
-import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
@@ -71,7 +70,7 @@ public class UpdateCheck extends ADocearServiceFeature {
 	public void checkForUpdates() {
 		String xml;
 		try {
-			String choice = ResourceController.getResourceController().getProperty("docear.update_checker.options");
+			String choice = DocearController.getPropertiesController().getProperty("docear.update_checker.options");
 			if (choice == null || DOCEAR_UPDATE_CHECKER_DISABLE.equals(choice)) {
 				return;
 			}

@@ -480,7 +480,7 @@ public class ImportProjectPagePanel extends AWizardPage {
 		
 		public int compareTo(VersionItem o) {
 			return (int) (latestUse.getTime()-o.latestUse.getTime());
-		}		
+		}
 	}
 	
 	class ConversionItem extends VersionItem {
@@ -490,7 +490,7 @@ public class ImportProjectPagePanel extends AWizardPage {
 		}
 		
 		public String toString() {
-			return "[convert] " + super.toString(); 
+			return "[profile] " + super.toString(); 
 		}
 	}
 }

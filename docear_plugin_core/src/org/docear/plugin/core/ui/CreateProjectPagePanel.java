@@ -348,11 +348,10 @@ public class CreateProjectPagePanel extends AWizardPage {
 		});
 		add(btnBrowseBib, "8, 18");
 		
-		final JLabel lblPdfsLiterature = new JLabel(TextUtils.getText("docear.setup.wizard.create.literature.label"));
+		JLabel lblPdfsLiterature = new JLabel(TextUtils.getText("docear.setup.wizard.create.literature.label"));
 		add(lblPdfsLiterature, "4, 20, right, top");
 		
-		final JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setEnabled(false);
+		JScrollPane scrollPane = new JScrollPane();
 		add(scrollPane, "6, 20, 1, 5, fill, fill");
 		
 		final JList repositoryPathList = new JList();
@@ -443,7 +442,7 @@ public class CreateProjectPagePanel extends AWizardPage {
 				updateFields();
 			}
 		});
-		add(rdbtnImportMendeley, "2, 26, 9, 1");
+		//add(rdbtnImportMendeley, "2, 26, 9, 1");
 		
 		chckbxIncludeDemoFiles = new JCheckBox(TextUtils.getText("docear.setup.wizard.create.demo.label"));
 		chckbxIncludeDemoFiles.setSelected(true);
@@ -848,7 +847,7 @@ public class CreateProjectPagePanel extends AWizardPage {
 		}
 		
 		public String toString() {
-			return "[default repository] "+new File(URIUtils.getFile(getProjectHome()), "literature_repository"+File.separator).getPath();			
+			return /*"[default repository] "+*/new File(URIUtils.getFile(getProjectHome()), "literature_repository"+File.separator).getPath();			
 		}
 		
 	}

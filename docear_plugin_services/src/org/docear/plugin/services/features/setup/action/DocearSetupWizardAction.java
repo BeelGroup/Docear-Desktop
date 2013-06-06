@@ -18,6 +18,7 @@ import org.docear.plugin.services.features.setup.view.RegistrationPagePanel;
 import org.docear.plugin.services.features.setup.view.SecondPagePanel;
 import org.docear.plugin.services.features.setup.view.SecondPagePanel.DATA_OPTION;
 import org.docear.plugin.services.features.setup.view.StartPagePanel;
+import org.docear.plugin.services.features.setup.view.StartPagePanel.START_OPTION;
 import org.docear.plugin.services.features.setup.view.VerifyServicePagePanel;
 import org.docear.plugin.services.features.user.DocearLocalUser;
 import org.docear.plugin.services.features.user.DocearUser;
@@ -53,21 +54,19 @@ public class DocearSetupWizardAction extends AFreeplaneAction {
 	}
 	
 	public static void startWizard(boolean exitOnCancel) {
-		
-		
 		Wizard wiz = new Wizard(UITools.getFrame());
 		initWizard(wiz);
 		int ret = wiz.show();
 		if(ret == Wizard.OK_OPTION) {
 			if(wiz.getContext().get(DocearLocalUser.class) != null) {
-				new DocearLocalUser().activate();
+				DocearUserController.LOCAL_USER.activate();
 			}
 			else {
 				wiz.getContext().get(DocearUser.class).activate();
 			}
 			DocearWorkspaceProject project = wiz.getContext().get(DocearWorkspaceProject.class);
 			if(project != null) {
-				if(wiz.getContext().get(DATA_OPTION.class) == DATA_OPTION.CREATE) {
+				if(wiz.getContext().get(START_OPTION.class) == START_OPTION.REGISTRATION || wiz.getContext().get(DATA_OPTION.class) == DATA_OPTION.CREATE) {
 					DocearNewProjectAction.createProject(project);
 				}
 				else if(wiz.getContext().get(DATA_OPTION.class) == DATA_OPTION.IMPORT) {
@@ -104,7 +103,7 @@ public class DocearSetupWizardAction extends AFreeplaneAction {
 		wizard.registerWizardPanel(desc);
 		DocearUser user = ServiceController.getCurrentUser();
 		wizard.getContext().set(DocearUser.class, user);
-		wizard.setCurrentPage(desc.getIdentifier());
+		wizard.setStartPage(desc.getIdentifier());
 		
 		//login verification
 		desc = new WizardPageDescriptor("page.verify.login", new VerifyServicePagePanel("Log-In", getLoginVerificationTask(), true)) {

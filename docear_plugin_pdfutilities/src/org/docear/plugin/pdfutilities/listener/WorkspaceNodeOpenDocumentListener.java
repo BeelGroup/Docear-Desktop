@@ -3,6 +3,7 @@ package org.docear.plugin.pdfutilities.listener;
 import java.io.File;
 import java.net.URI;
 
+import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.util.CoreUtils;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
 import org.freeplane.core.resources.ResourceController;
@@ -35,7 +36,7 @@ public class WorkspaceNodeOpenDocumentListener implements IWorkspaceNodeActionLi
 		}
 		
 		
-		boolean openOnPage = ResourceController.getResourceController().getBooleanProperty(PdfUtilitiesController.OPEN_PDF_VIEWER_ON_PAGE_KEY);		
+		boolean openOnPage = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.OPEN_PDF_VIEWER_ON_PAGE_KEY);		
 		
 		if (openOnPage) {
 			PdfUtilitiesController.getController().openPdfOnPage(uri, 1);

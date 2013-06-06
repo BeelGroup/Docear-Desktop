@@ -9,6 +9,7 @@ public class WizardModel {
 	/***********************************************************************************
 	 * CONSTRUCTORS
 	 **********************************************************************************/
+	private WizardPageDescriptor firstPage;
 
 	
 	/***********************************************************************************
@@ -32,10 +33,21 @@ public class WizardModel {
 			throw new RuntimeException("id already used");
 		}
 		pages.put(id, panel);
+		if(firstPage == null) {
+			firstPage = panel;
+		}
 	}
 	
 	public WizardPageDescriptor getPage(Object id) {
 		return pages.get(id);
+	}
+
+	public int getPageCount() {
+		return pages.size();
+	}
+
+	public WizardPageDescriptor getFirstPage() {
+		return firstPage;
 	}
 
 	/***********************************************************************************

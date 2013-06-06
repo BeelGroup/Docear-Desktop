@@ -30,7 +30,6 @@ import org.docear.plugin.pdfutilities.features.AnnotationModel;
 import org.docear.plugin.pdfutilities.pdf.PdfAnnotationImporter;
 import org.docear.plugin.pdfutilities.pdf.PdfFileFilter;
 import org.docear.plugin.pdfutilities.util.MonitoringUtils;
-import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.clipboard.MindMapNodesSelection;
@@ -162,7 +161,7 @@ public class DocearNodeDropListener extends MNodeDropListener {
 				for(final File file : fileList){	
 					if(Thread.currentThread().isInterrupted()) return null;
 					firePropertyChange(SwingWorkerDialog.NEW_FILE, null, file.getName());
-		        	boolean importAnnotations = ResourceController.getResourceController().getBooleanProperty(PdfUtilitiesController.AUTO_IMPORT_ANNOTATIONS_KEY);
+		        	boolean importAnnotations = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.AUTO_IMPORT_ANNOTATIONS_KEY);
 		            if(new PdfFileFilter().accept(file) && importAnnotations){	
 		            	List<AnnotationModel> annotations = new ArrayList<AnnotationModel>();
 		            	try{

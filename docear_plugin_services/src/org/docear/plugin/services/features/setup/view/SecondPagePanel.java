@@ -133,6 +133,7 @@ public class SecondPagePanel extends AWizardPage {
 		group.add(rdbtnStartWithEmpty);
 		group.add(rdbtnImportFromHarddisk);
 		group.add(rdbtnDataFromDocear);
+		rdbtnCreateNewProject.setSelected(true);
 		
 		lblTermsChapter = new JLabel(TextUtils.getText("docear.setup.wizard.docear.terms.title"));
 		lblTermsChapter.setFont(new Font("Tahoma", Font.BOLD, 11));
@@ -158,6 +159,9 @@ public class SecondPagePanel extends AWizardPage {
 				if("top".equals(e.getActionCommand())) {
 					licenseText.setLicenseText(DocearController.getController().getDataProcessingTerms());
 					JOptionPane.showConfirmDialog(getRootPane(), licenseText, TextUtils.getText("docear.license.data_processing.title"), JOptionPane.PLAIN_MESSAGE, JOptionPane.PLAIN_MESSAGE, null);
+				}
+				else if("gpl".equals(e.getActionCommand())) {
+					//DOCEAR - ToDo: show gplv2.html
 				}
 			}
 		});
@@ -256,16 +260,18 @@ public class SecondPagePanel extends AWizardPage {
 		chckbxAcceptUsageTerms.setVisible(true);
 		lblTermsChapter.setVisible(true);
 		lblToS.setVisible(true);
+		lblProcessingTerms.setText(TextUtils.getText("docear.setup.wizard.docear.terms.processing"));
 		lblProcessingTerms.setVisible(true);
 		lblWhatNext.setText(TextUtils.getText("docear.setup.wizard.second.title.login"));
 	}
 	private void prepareForLocalUser() {
 		this.localUser = true;
 		chckbxAcceptTOS.setVisible(false);
-		chckbxAcceptUsageTerms.setVisible(false);
+		chckbxAcceptUsageTerms.setVisible(true);
 		lblTermsChapter.setVisible(false);
 		lblToS.setVisible(false);
-		lblProcessingTerms.setVisible(false);
+		lblProcessingTerms.setText(TextUtils.getText("docear.setup.wizard.docear.terms.gpl"));
+		lblProcessingTerms.setVisible(true);
 		lblWhatNext.setText(TextUtils.getText("docear.setup.wizard.second.title.local"));
 	}
 

@@ -691,7 +691,7 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 					UITools.informationMessage(TextUtils.getText("AbstractMonitoringAction.29")); //$NON-NLS-1$
 					return false;
 				}
-				CustomFileListFilter monitorFileFilter = new CustomFileListFilter(ResourceController.getResourceController().getProperty(
+				CustomFileListFilter monitorFileFilter = new CustomFileListFilter(DocearController.getPropertiesController().getProperty(
 						TextUtils.getText("AbstractMonitoringAction.30"))); //$NON-NLS-1$
 				monitorFiles = getFilteredFileList(monitoringDirectory, monitorFileFilter, isMonitorSubDirectories(target));
 
@@ -770,7 +770,7 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 				case 1:
 					return true;
 				case 2:
-					return ResourceController.getResourceController().getBooleanProperty("docear_subdir_monitoring"); //$NON-NLS-1$
+					return DocearController.getPropertiesController().getBooleanProperty("docear_subdir_monitoring"); //$NON-NLS-1$
 				}
 			}
 

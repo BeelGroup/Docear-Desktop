@@ -537,8 +537,8 @@ public class PdfUtilitiesController extends ALanguageController {
 		for (PDFReaderHandle reader : readers) {
 			s += reader.getExecFile() + "|";
 		}
-		String savedReaders = ResourceController.getResourceController().getProperty("installed_pdf_readers");
-		ResourceController.getResourceController().setProperty("installed_pdf_readers", s);
+		String savedReaders = DocearController.getPropertiesController().getProperty("installed_pdf_readers");
+		DocearController.getPropertiesController().setProperty("installed_pdf_readers", s);
 		if (!s.equals(savedReaders)) {
 			return true;
 		}
@@ -586,7 +586,7 @@ public class PdfUtilitiesController extends ALanguageController {
 				Controller.getCurrentController().getResourceController().setProperty(OPEN_PDF_VIEWER_ON_PAGE_KEY, true);
 				readerCommand = buildCommandString(reader);
 			}
-			ResourceController.getResourceController().setProperty(OPEN_ON_PAGE_READER_COMMAND_KEY, readerCommand);
+			DocearController.getPropertiesController().setProperty(OPEN_ON_PAGE_READER_COMMAND_KEY, readerCommand);
 		}
 		else {
 			try {
@@ -680,8 +680,6 @@ public class PdfUtilitiesController extends ALanguageController {
 		this.modecontroller.addMenuContributor(new IMenuContributor() {
 
 			public void updateMenus(ModeController modeController, MenuBuilder builder) {
-				ResourceController resourceController = ResourceController.getResourceController();
-				
 				if(!Compat.isMacOsX()){
 					builder.addAction("/menu_bar/help/Web resources", Controller.getCurrentController().getAction(DocearSendPdfxcRegistryAction.KEY), MenuBuilder.AS_CHILD);
 				}
@@ -692,7 +690,7 @@ public class PdfUtilitiesController extends ALanguageController {
 						MenuBuilder.BEFORE);
 
 				builder.addRadioItem(MENU_BAR + PDF_MANAGEMENT_MENU, new RadioButtonAction(AUTO_IMPORT_LANG_KEY, AUTO_IMPORT_ANNOTATIONS_KEY),
-						resourceController.getBooleanProperty(AUTO_IMPORT_ANNOTATIONS_KEY));
+						DocearController.getPropertiesController().getBooleanProperty(AUTO_IMPORT_ANNOTATIONS_KEY));
 				builder.addAction(MENU_BAR + PDF_MANAGEMENT_MENU, importAllAnnotationsAction, MenuBuilder.AS_CHILD);
 				builder.addAction(MENU_BAR + PDF_MANAGEMENT_MENU, importNewAnnotationsAction, MenuBuilder.AS_CHILD);				
 				builder.addAction(MENU_BAR + PDF_MANAGEMENT_MENU, importAllChildAnnotationsAction, MenuBuilder.AS_CHILD);
@@ -966,7 +964,7 @@ public class PdfUtilitiesController extends ALanguageController {
 					NodeUtilities.setAttributeValue(map.getRootNode(), PdfUtilitiesController.MON_MINDMAP_FOLDER, CoreConfiguration.LIBRARY_PATH);
 					NodeUtilities.setAttributeValue(map.getRootNode(), PdfUtilitiesController.MON_AUTO, 2);
 					NodeUtilities.setAttributeValue(map.getRootNode(), PdfUtilitiesController.MON_SUBDIRS, 2);
-					if (ResourceController.getResourceController().getBooleanProperty("docear_flatten_subdir")) {
+					if (DocearController.getPropertiesController().getBooleanProperty("docear_flatten_subdir")) {
 						NodeUtilities.setAttributeValue(map.getRootNode(), PdfUtilitiesController.MON_FLATTEN_DIRS, 1);
 					}
 					else {
@@ -1233,7 +1231,7 @@ public class PdfUtilitiesController extends ALanguageController {
 			return null;
 		}
 		
-		String readerCommandProperty = ResourceController.getResourceController().getProperty(PdfUtilitiesController.OPEN_ON_PAGE_READER_COMMAND_KEY);
+		String readerCommandProperty = DocearController.getPropertiesController().getProperty(PdfUtilitiesController.OPEN_ON_PAGE_READER_COMMAND_KEY);
 		if (readerCommandProperty == null || readerCommandProperty.isEmpty()) {
 			setToStandardPdfViewer();
 			JOptionPane.showMessageDialog(UITools.getFrame(), TextUtils.getText(OPEN_ON_PAGE_ERROR_KEY), TextUtils.getText("warning"), JOptionPane.WARNING_MESSAGE);
@@ -1328,9 +1326,9 @@ public class PdfUtilitiesController extends ALanguageController {
 			}
 		}
 		else {
-			ResourceController.getResourceController().setProperty(OPEN_STANDARD_PDF_VIEWER_KEY, true);
-			ResourceController.getResourceController().setProperty(OPEN_INTERNAL_PDF_VIEWER_KEY, false);
-			ResourceController.getResourceController().setProperty(OPEN_PDF_VIEWER_ON_PAGE_KEY, false);
+			DocearController.getPropertiesController().setProperty(OPEN_STANDARD_PDF_VIEWER_KEY, true);
+			DocearController.getPropertiesController().setProperty(OPEN_INTERNAL_PDF_VIEWER_KEY, false);
+			DocearController.getPropertiesController().setProperty(OPEN_PDF_VIEWER_ON_PAGE_KEY, false);
 		}		
 	}
 	

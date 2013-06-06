@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.features.AnnotationID;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
@@ -18,7 +19,6 @@ import org.docear.plugin.pdfutilities.features.IAnnotation;
 import org.docear.plugin.pdfutilities.features.IAnnotation.AnnotationType;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
 import org.docear.plugin.pdfutilities.map.IAnnotationImporter;
-import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
@@ -197,7 +197,7 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 	private List<AnnotationModel> importBookmarks(PDOutlineNode parent) throws IOException, COSLoadException, COSRuntimeException{
 		List<AnnotationModel> annotations = new ArrayList<AnnotationModel>();
 		
-		if(!this.importAll && !ResourceController.getResourceController().getBooleanProperty(PdfUtilitiesController.IMPORT_BOOKMARKS_KEY)){
+		if(!this.importAll && !DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.IMPORT_BOOKMARKS_KEY)){
 			return annotations;
 		}	
 		if(parent == null) return annotations;
@@ -275,8 +275,8 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 			importHighlightedTexts = true;
 		}
 		else{
-			importComments = ResourceController.getResourceController().getBooleanProperty(PdfUtilitiesController.IMPORT_COMMENTS_KEY);
-			importHighlightedTexts = ResourceController.getResourceController().getBooleanProperty(PdfUtilitiesController.IMPORT_HIGHLIGHTED_TEXTS_KEY);
+			importComments = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.IMPORT_COMMENTS_KEY);
+			importHighlightedTexts = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.IMPORT_HIGHLIGHTED_TEXTS_KEY);
 		}
 		
 		String lastString = ""; //$NON-NLS-1$

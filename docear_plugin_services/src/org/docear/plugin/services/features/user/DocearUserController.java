@@ -64,8 +64,8 @@ public class DocearUserController extends ADocearServiceFeature {
 			return;
 		}
 		if(user.isValid()) {
-			user.setOnline(true);
 			ServiceController.getConnectionController().setDefaultHeader("accessToken", user.getAccessToken());
+			user.setOnline(true);
 			return;
 		}
 		MultivaluedMap<String, String> formParams = new MultivaluedMapImpl();
@@ -89,6 +89,7 @@ public class DocearUserController extends ADocearServiceFeature {
 				DocearConnectionProvider.readResponseContent(response.getEntityInputStream());
 				user.setEnabled(true);
 				user.setAccessToken(token);
+				ServiceController.getConnectionController().setDefaultHeader("accessToken", user.getAccessToken());
 				user.setOnline(true);
 			}
 			else {
@@ -159,7 +160,7 @@ public class DocearUserController extends ADocearServiceFeature {
 					event.getUser().addPropertyChangeListener(getUserPropertyChangeListener());
 					try {
 						try {
-							ServiceController.getFeature(DocearWorkspaceSettings.class).loadUser((DocearUser) event.getUser());
+							ServiceController.getFeature(DocearWorkspaceSettings.class).load((DocearUser) event.getUser());
 						} catch (IOException e) {
 							LogUtils.severe("Exception in org.docear.plugin.services.features.user.DocearUserController.loadUser(name):"+e.getMessage());
 						}
@@ -230,7 +231,7 @@ public class DocearUserController extends ADocearServiceFeature {
 			user.setUsername(name);
 			user.setEnabled(true);
 			try {
-				ServiceController.getFeature(DocearWorkspaceSettings.class).loadUser(user);
+				ServiceController.getFeature(DocearWorkspaceSettings.class).load(user);
 			} catch (IOException e) {
 				LogUtils.severe("Exception in org.docear.plugin.services.features.user.DocearUserController.loadUser(name):"+e.getMessage());
 			}

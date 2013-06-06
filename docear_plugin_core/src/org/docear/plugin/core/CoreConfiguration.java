@@ -125,7 +125,7 @@ public class CoreConfiguration extends ALanguageController {
 		adjustProperties(controller);				
 		
 		AWorkspaceProject.setCurrentProjectCreator(new DocearWorspaceProjectCreator());
-		if(ResourceController.getResourceController().getProperty("ApplicationName", "Docear").equals("Docear")) {
+		if(DocearController.getPropertiesController().getProperty("ApplicationName", "Docear").equals("Docear")) {
 			try {
 			DefaultFileNode.setApplicationIcon(new ImageIcon(CoreConfiguration.class.getResource("/images/docear16.png")));
 			}
@@ -429,7 +429,7 @@ public class CoreConfiguration extends ALanguageController {
 		});
 		modeController.getUserInputListenerFactory().addToolBar(NotificationBar.TOOLBAR_NAME, ViewController.TOP, new NotificationBar());
 		String propertyName = Controller.getCurrentController().getViewController().completeVisiblePropertyKey(NotificationBar.getNotificationBar());
-		ResourceController.getResourceController().setProperty(propertyName, false);
+		DocearController.getPropertiesController().setProperty(propertyName, false);
 	}
 
 
@@ -479,7 +479,7 @@ public class CoreConfiguration extends ALanguageController {
 	}
 
 	private void replaceActions() {		
-		ResourceController resourceController = ResourceController.getResourceController();		
+		ResourceController resourceController = DocearController.getPropertiesController();		
 		
 		WorkspaceController.replaceAction(new DocearOpenUrlAction(REQUEST_FEATURE_ACTION, resourceController.getProperty(FEATURE_TRACKER_LOCATION)));
 		WorkspaceController.replaceAction(new DocearOpenUrlAction(ASK_FOR_HELP, resourceController.getProperty(HELP_FORUM_LOCATION)));
@@ -549,7 +549,7 @@ public class CoreConfiguration extends ALanguageController {
 		private static final long serialVersionUID = 1L;
 
 		public void actionPerformed(final ActionEvent e) {
-			final ResourceController resourceController = ResourceController.getResourceController();
+			final ResourceController resourceController = DocearController.getPropertiesController();
 			final File baseDir = new File(resourceController.getResourceBaseDir()).getAbsoluteFile().getParentFile();
 			final String languageCode = resourceController.getLanguageCode();
 			final File file = ConfigurationUtils.getLocalizedFile(new File[]{baseDir}, Controller.getCurrentController().getResourceController().getProperty("tutorial_map"), languageCode);

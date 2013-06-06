@@ -1,13 +1,16 @@
 package org.docear.plugin.core.workspace.actions;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 
-import javax.swing.JOptionPane;
-
-import org.docear.plugin.core.ui.dialog.DocearImportProjectDialogPanel;
+import org.docear.plugin.core.ui.ImportProjectPagePanel;
+import org.docear.plugin.core.ui.wizard.Wizard;
+import org.docear.plugin.core.ui.wizard.WizardContext;
+import org.docear.plugin.core.ui.wizard.WizardPageDescriptor;
 import org.docear.plugin.core.workspace.compatible.DocearWorkspaceToProjectConverter;
 import org.docear.plugin.core.workspace.controller.DocearConversionDescriptor;
+import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
@@ -27,17 +30,48 @@ public class DocearImportProjectAction extends AWorkspaceAction {
 	}
 
 	public void actionPerformed(ActionEvent event) {
-		final DocearImportProjectDialogPanel dialog = new DocearImportProjectDialogPanel();
+		final Wizard wiz = new Wizard(UITools.getFrame());
+		initWizard(wiz);
 		
-		int response = JOptionPane.showConfirmDialog(UITools.getFrame(), dialog, TextUtils.getText("workspace.action.node.import.project.dialog.title"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-		
-		if(response == JOptionPane.OK_OPTION) {					
-			AWorkspaceProject project = dialog.getProject();
-			DocearProjectSettings settings = new DocearProjectSettings();
-			settings.setProjectName(dialog.getProjectName());
-			project.addExtension(settings);
-			importProject(project);
-		}
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				int ret = wiz.show();
+				if(ret == Wizard.OK_OPTION) {
+					AWorkspaceProject project = wiz.getContext().get(DocearWorkspaceProject.class);
+					importProject(project);
+				}
+			}
+		}).start();
+	}
+	
+	private void initWizard(Wizard wizard) {
+		//new project page
+		WizardPageDescriptor desc = new WizardPageDescriptor("page.project.import", new ImportProjectPagePanel()) {
+			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
+				context.set(DocearWorkspaceProject.class, ((ImportProjectPagePanel)getPage()).getProject());
+				return Wizard.FINISH_PAGE;
+			}
+
+			@Override
+			public void aboutToDisplayPage(WizardContext context) {
+				context.getNextButton().setText(TextUtils.getText("docear.setup.wizard.controls.finish"));
+				super.aboutToDisplayPage(context);
+			}
+			
+			@Override
+			public void displayingPage(WizardContext context) {
+				super.displayingPage(context);
+				context.setWizardTitle(TextUtils.getText("workspace.action.node.import.project.dialog.title"));
+				context.getBackButton().setVisible(false);
+				context.getNextButton().setText(TextUtils.getText("docear.setup.wizard.controls.finish"));
+			}
+			
+			
+		};
+		desc.getPage().setPreferredSize(new Dimension(640,480));
+		wizard.registerWizardPanel(desc);
+		wizard.setStartPage(desc.getIdentifier());
 	}
 
 	public static void importProject(AWorkspaceProject project) {

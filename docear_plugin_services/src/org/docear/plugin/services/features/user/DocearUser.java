@@ -260,7 +260,11 @@ public class DocearUser implements IUserAccount {
 	
 	public boolean isNewsletterEnabled() {
 		return false;
-	}	
+	}
+	
+	public String toString() {
+		return "DocearUser[name="+getName() + ";token="+getAccessToken()+"]";
+	}
 
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES

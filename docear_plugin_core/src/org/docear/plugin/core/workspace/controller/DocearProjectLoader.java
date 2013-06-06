@@ -24,7 +24,6 @@ import org.docear.plugin.core.workspace.node.FolderTypeLibraryNode;
 import org.docear.plugin.core.workspace.node.FolderTypeLiteratureRepositoryNode;
 import org.docear.plugin.core.workspace.node.LinkTypeIncomingNode;
 import org.docear.plugin.core.workspace.node.LinkTypeLiteratureAnnotationsNode;
-import org.docear.plugin.core.workspace.node.LinkTypeMyPublicationsNode;
 import org.docear.plugin.core.workspace.node.LinkTypeReferencesNode;
 import org.docear.plugin.core.workspace.node.LiteratureRepositoryPathNode;
 import org.freeplane.core.util.Compat;
@@ -187,13 +186,13 @@ public class DocearProjectLoader extends ProjectLoader {
 		
 		LinkTypeLiteratureAnnotationsNode litNode = new LinkTypeLiteratureAnnotationsNode();
 		litNode.setLinkPath(URIUtils.createURI(libPath.toString()+"/literature_and_annotations.mm"));
-		litNode.setName(TextUtils.getText(litNode.getClass().getName().toLowerCase(Locale.ENGLISH)+".label" ));
+		litNode.setName(TextUtils.getRawText(litNode.getClass().getName().toLowerCase(Locale.ENGLISH)+".label" ));
 		project.getModel().addNodeTo(litNode, libNode);
 		
-		LinkTypeMyPublicationsNode pubNode = new LinkTypeMyPublicationsNode();
-		pubNode.setLinkPath(URIUtils.createURI(libPath.toString()+"/my_publications.mm"));
-		pubNode.setName(TextUtils.getText(pubNode.getClass().getName().toLowerCase(Locale.ENGLISH)+".label" ));
-		project.getModel().addNodeTo(pubNode, libNode);
+//		LinkTypeMyPublicationsNode pubNode = new LinkTypeMyPublicationsNode();
+//		pubNode.setLinkPath(URIUtils.createURI(libPath.toString()+"/my_publications.mm"));
+//		pubNode.setName(TextUtils.getText(pubNode.getClass().getName().toLowerCase(Locale.ENGLISH)+".label" ));
+//		project.getModel().addNodeTo(pubNode, libNode);
 		
 		LinkTypeFileNode tempNode = new LinkTypeFileNode();
 		tempNode.setLinkURI(URIUtils.createURI(libPath.toString()+"/temp.mm"));
@@ -249,14 +248,15 @@ public class DocearProjectLoader extends ProjectLoader {
 			defaultRef.setLinkURI(URIUtils.createURI(libPath.toString()+"/"+bibName+".bib"));
 		}
 		defaultRef.setSystem(true);
-		project.getModel().addNodeTo(defaultRef, root);
-		
-		root.initiateMyFile(project);
 		
 		if(settings != null && settings.includeDemoFiles()) {
 			LogUtils.info("copy docear tutorial files");
 			copyDemoFiles(project, URIUtils.getAbsoluteFile(defaultRef.getLinkURI()), (settings.getBibTeXLibraryPath() == null));
 		}
+		
+		project.getModel().addNodeTo(defaultRef, root);
+		
+		root.initiateMyFile(project);
 		
 		//misc -> help.mm
 		root.refresh();
@@ -276,7 +276,6 @@ public class DocearProjectLoader extends ProjectLoader {
 		Map<String, String> replaceMapping = new HashMap<String, String>();
 		replaceMapping.put("@LITERATURE_REPO_DEMO@", relativeRepoPath.toString());
 		
-		//DOCEAR - todo: test
 		URI relativeBibURI = LinkController.toLinkTypeDependantURI(bibPath, repoPath, LinkController.LINK_RELATIVE_TO_MINDMAP);
 		if(Compat.isWindowsOS() && relativeBibURI.getPath().startsWith("//")) {
 			replaceMapping.put("@LITERATURE_BIB_DEMO@", (new File(relativeBibURI).getPath().replace(File.separator, File.separator+File.separator)/*+File.separator+File.separator+"Example PDFs"*/));
@@ -287,7 +286,7 @@ public class DocearProjectLoader extends ProjectLoader {
 		
 		boolean created = createAndCopy(new File(defaultFilesPath,"incoming.mm"), "/demo/template_incoming.mm", replaceMapping);
 		createAndCopy(new File(defaultFilesPath,"literature_and_annotations.mm"), "/demo/template_litandan.mm", replaceMapping);
-		createAndCopy(new File(defaultFilesPath,"my_publications.mm"), "/demo/template_mypubs.mm", replaceMapping);
+		//createAndCopy(new File(defaultFilesPath,"my_publications.mm"), "/demo/template_mypubs.mm", replaceMapping);
 		createAndCopy(new File(defaultFilesPath,"temp.mm"), "/demo/template_temp.mm", created, replaceMapping);
 		createAndCopy(new File(defaultFilesPath,"trash.mm"), "/demo/template_trash.mm", created, replaceMapping);
 		if(setBib) {

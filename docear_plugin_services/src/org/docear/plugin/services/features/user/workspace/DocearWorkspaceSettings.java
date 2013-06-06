@@ -59,22 +59,22 @@ public class DocearWorkspaceSettings extends ADocearServiceFeature implements IW
 			
 			public void activated(UserAccountChangeEvent event) {
 				if(event.getUser() instanceof DocearUser) {
-//					try {
-//						loadUser((DocearUser) event.getUser());
-//					} catch (IOException e) {
-//						LogUtils.warn("Exception in org.docear.plugin.services.features.user.workspace.DocearWorkspaceSettings.getUserChangeListener().new IUserAccountChangeListener() {...}.activated(event): "+ e.getMessage());
-//					}
+					try {
+						load((DocearUser) event.getUser());
+					} catch (IOException e) {
+						LogUtils.warn("Exception in org.docear.plugin.services.features.user.workspace.DocearWorkspaceSettings.getUserChangeListener().new IUserAccountChangeListener() {...}.activated(event): "+ e.getMessage());
+					}
 					event.getUser().addPropertyChangeListener(getUserPropertyChangeListener());
 				}
 			}
 
 			public void aboutToDeactivate(UserAccountChangeEvent event) {
 				if(event.getUser() instanceof DocearUser) {
-//					try {
-//						storeUser((DocearUser) event.getUser());
-//					} catch (IOException e) {
-//						LogUtils.warn("Exception in org.docear.plugin.services.features.user.workspace.DocearWorkspaceSettings.getUserChangeListener().new IUserAccountChangeListener() {...}.aboutToDeactivate(event): "+ e.getMessage());
-//					}
+					try {
+						store((DocearUser) event.getUser());
+					} catch (IOException e) {
+						LogUtils.warn("Exception in org.docear.plugin.services.features.user.workspace.DocearWorkspaceSettings.getUserChangeListener().new IUserAccountChangeListener() {...}.aboutToDeactivate(event): "+ e.getMessage());
+					}
 					event.getUser().removePropertyChangeListener(getUserPropertyChangeListener());
 				}
 			}
@@ -111,29 +111,36 @@ public class DocearWorkspaceSettings extends ADocearServiceFeature implements IW
 	public static final String DOCEAR_INFORMATION_RETRIEVAL = "docear_information_retrieval";
 	public static final String DOCEAR_SAVE_BACKUP = "docear_save_backup";
 
-	public void storeUser(DocearUser user) throws IOException {
+	private void storeUser(DocearUser user) {
 		if(user.isValid()) {
-			DocearController.getPropertiesController().setProperty(DOCEAR_CONNECTION_TOKEN_PROPERTY, user.getAccessToken());
+			properties.setProperty(DOCEAR_CONNECTION_TOKEN_PROPERTY, user.getAccessToken());
 		}
 		else {
-			DocearController.getPropertiesController().setProperty(DOCEAR_CONNECTION_TOKEN_PROPERTY, "");
+			properties.setProperty(DOCEAR_CONNECTION_TOKEN_PROPERTY, "");
 		}
 		if(user.getEnabledServicesCode() > 0) {
-			DocearController.getPropertiesController().setProperty(DOCEAR_INFORMATION_RETRIEVAL, String.valueOf(user.getEnabledServicesCode()));
+			properties.setProperty(DOCEAR_INFORMATION_RETRIEVAL, String.valueOf(user.getEnabledServicesCode()));
 		}
 		else {
-			DocearController.getPropertiesController().setProperty(DOCEAR_INFORMATION_RETRIEVAL, "0");
+			properties.setProperty(DOCEAR_INFORMATION_RETRIEVAL, "0");
 		}
 		if(user.isBackupEnabled()) {
-			DocearController.getPropertiesController().setProperty(DOCEAR_SAVE_BACKUP, Boolean.toString(user.isBackupEnabled()));
+			properties.setProperty(DOCEAR_SAVE_BACKUP, Boolean.toString(user.isBackupEnabled()));
 		}
 	}
 	
-	public void loadUser(DocearUser user) throws IOException {
-		String token = DocearController.getPropertiesController().getProperty(DOCEAR_CONNECTION_TOKEN_PROPERTY);
+	private void loadUser(DocearUser user) {
+		String token = properties.getProperty(DOCEAR_CONNECTION_TOKEN_PROPERTY);
+		if(token == null) {
+			token = DocearController.getPropertiesController().getProperty(DOCEAR_CONNECTION_TOKEN_PROPERTY);
+		}
 		user.setAccessToken(token);
-		if(DocearController.getPropertiesController().getProperty(DOCEAR_INFORMATION_RETRIEVAL) != null) {
-			int ir = Integer.parseInt(DocearController.getPropertiesController().getProperty(DOCEAR_INFORMATION_RETRIEVAL, "0"));
+		String strRetrieval = properties.getProperty(DOCEAR_INFORMATION_RETRIEVAL);
+		if(strRetrieval == null) {
+			strRetrieval = DocearController.getPropertiesController().getProperty(DOCEAR_INFORMATION_RETRIEVAL);
+		}
+		if(strRetrieval != null) {
+			int ir = Integer.parseInt(strRetrieval);
 			if((DocearUser.RECOMMENDATIONS & ir) > 0) {
 				user.setRecommandationsEnabled(true);
 			}
@@ -144,6 +151,9 @@ public class DocearWorkspaceSettings extends ADocearServiceFeature implements IW
 	}
 	
 	public void load(DocearUser user) throws IOException {
+		if(user == null) {
+			throw new IOException("user is NULL");
+		}
 		final File userPropertiesFolder = new File(getSettingsPath(user));
 		final File settingsFile = new File(userPropertiesFolder, USER_SETTINGS_FILENAME);
 				
@@ -153,16 +163,20 @@ public class DocearWorkspaceSettings extends ADocearServiceFeature implements IW
 			properties.load(in);
 		}
 		catch (final Exception ex) {
-			LogUtils.info("Workspace settings not found, create new file");
+			LogUtils.info("Workspace settings not found, creating new default settings");
 			setupDefaultSettings();
 		}
 		finally {
 			FileUtils.silentlyClose(in);
 		}
+		loadUser(user);
 		
 	}
 	
 	public void store(DocearUser user) throws IOException {
+		if(user == null) {
+			throw new IOException("user is NULL");
+		}
 		final File userPropertiesFolder = new File(getSettingsPath(user));
 		final File settingsFile = new File(userPropertiesFolder, USER_SETTINGS_FILENAME);
 		storeUser(user);
@@ -208,7 +222,14 @@ public class DocearWorkspaceSettings extends ADocearServiceFeature implements IW
 	}
 
 	public String getProperty(String key, String defaultValue) {
-		return properties.getProperty(key, defaultValue);
+		String value = properties.getProperty(key);
+		if(value == null && wrappedHandler != null) {
+			value = wrappedHandler.getProperty(key, defaultValue);
+		}
+		if(value == null) {
+			return defaultValue;
+		}
+		return value;
 	}
 
 	public String getProperty(String key) {

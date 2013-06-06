@@ -1,13 +1,15 @@
 package org.docear.plugin.core.workspace.actions;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 
-import javax.swing.JOptionPane;
-
-import org.docear.plugin.core.ui.dialog.DocearProjectDialogPanel;
+import org.docear.plugin.core.ui.CreateProjectPagePanel;
+import org.docear.plugin.core.ui.wizard.Wizard;
+import org.docear.plugin.core.ui.wizard.WizardContext;
+import org.docear.plugin.core.ui.wizard.WizardPageDescriptor;
+import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
@@ -27,24 +29,49 @@ public class DocearNewProjectAction extends AWorkspaceAction {
 	}
 
 	public void actionPerformed(ActionEvent event) {
-		DocearProjectDialogPanel dialog = new DocearProjectDialogPanel();
-		int response = JOptionPane.showConfirmDialog(UITools.getFrame(), dialog, TextUtils.getText("workspace.action.node.new.project.dialog.title"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 		
-		if(response == JOptionPane.OK_OPTION) {
-			DocearProjectSettings settings = new DocearProjectSettings();
-			settings.includeDemoFiles(dialog.includeDemoFiles());
-			settings.setProjectName(dialog.getProjectName());
-			if(!dialog.useDefaults()) {
-				settings.setBibTeXLibraryPath(dialog.getBibTeXPath());
-				settings.setUseDefaultRepositoryPath(dialog.useDefaultRepositoryPath());
-				for(URI uri : dialog.getRepositoryPathList()) {
-					settings.addRepositoryPathURI(uri);
+		final Wizard wiz = new Wizard(UITools.getFrame());
+		initWizard(wiz);
+		
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				int ret = wiz.show();
+				if(ret == Wizard.OK_OPTION) {
+					AWorkspaceProject project = wiz.getContext().get(DocearWorkspaceProject.class);
+					createProject(project);
 				}
 			}
-			AWorkspaceProject project = AWorkspaceProject.create(null, dialog.getProjectPath());
-			project.addExtension(settings);
-			createProject(project);
-		}
+		}).start();
+	}
+
+	private void initWizard(Wizard wizard) {
+		//new project page
+		WizardPageDescriptor desc = new WizardPageDescriptor("page.project.create", new CreateProjectPagePanel()) {
+			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
+				context.set(DocearWorkspaceProject.class, ((CreateProjectPagePanel)getPage()).getProject());
+				return Wizard.FINISH_PAGE;
+			}
+
+			@Override
+			public void aboutToDisplayPage(WizardContext context) {
+				super.aboutToDisplayPage(context);
+				context.getNextButton().setText(TextUtils.getText("docear.setup.wizard.controls.finish"));
+			}
+
+			@Override
+			public void displayingPage(WizardContext context) {
+				super.displayingPage(context);
+				context.setWizardTitle(TextUtils.getText("workspace.action.node.new.project.dialog.title"));
+				context.getBackButton().setVisible(false);
+				context.getNextButton().setText(TextUtils.getText("docear.setup.wizard.controls.finish"));
+			}
+			
+			
+		};
+		desc.getPage().setPreferredSize(new Dimension(640,480));
+		wizard.registerWizardPanel(desc);
+		wizard.setStartPage(desc.getIdentifier());
 	}
 
 	public static void createProject(AWorkspaceProject project) {

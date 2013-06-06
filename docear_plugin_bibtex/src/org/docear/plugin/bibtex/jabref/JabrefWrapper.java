@@ -75,7 +75,7 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 		// Add the action for warning about and handling duplicate BibTeX keys:
 		//postOpenActions.add(new HandleDuplicateWarnings());
 		//DOCEAR: don't warn, just resolve --> #464
-		if (ResourceController.getResourceController().getBooleanProperty("docear.reference_manager.resolve_duplicate_keys")) {
+		if (DocearController.getPropertiesController().getBooleanProperty("docear.reference_manager.resolve_duplicate_keys")) {
 		    postOpenActions.add(new HandleDuplicateKeys());
 		}
 		else {
@@ -288,7 +288,7 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 				Globals.prefs.put("workingDirectory", file.getPath());
 				// Should this be done _after_ we know it was successfully
 				// opened?
-				ResourceController resourceController = ResourceController.getResourceController();
+				ResourceController resourceController = DocearController.getPropertiesController();
 				String encoding = resourceController.getProperty("docear_bibtex_encoding", Globals.prefs.get("defaultEncoding"));
 
 				if (Util.hasLockFile(file)) {
