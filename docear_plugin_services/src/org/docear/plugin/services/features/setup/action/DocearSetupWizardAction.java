@@ -3,6 +3,7 @@ package org.docear.plugin.services.features.setup.action;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 
+import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.ui.CreateProjectPagePanel;
 import org.docear.plugin.core.ui.ImportProjectPagePanel;
 import org.docear.plugin.core.ui.wizard.Wizard;
@@ -27,6 +28,7 @@ import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
+import org.freeplane.plugin.workspace.WorkspaceController;
 
 public class DocearSetupWizardAction extends AFreeplaneAction {
 
@@ -73,6 +75,8 @@ public class DocearSetupWizardAction extends AFreeplaneAction {
 					DocearImportProjectAction.importProject(project);
 				}
 			}
+			WorkspaceController.save();
+			DocearController.getPropertiesController().saveProperties();
 		}
 		else {
 			if(exitOnCancel) {
