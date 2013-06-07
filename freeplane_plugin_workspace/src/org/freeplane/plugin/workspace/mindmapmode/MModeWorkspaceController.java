@@ -195,25 +195,7 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 //	}
 	
 	private void setupModel(ModeController modeController) {
-		String[] projectsIds = getWorkspaceSettings().getProperty(WorkspaceSettings.WORKSPACE_MODEL_PROJECTS, "").split(WorkspaceSettings.WORKSPACE_MODEL_PROJECTS_SEPARATOR);
-		for (String projectID : projectsIds) {
-			String projectHome = getWorkspaceSettings().getProperty(projectID);
-			if(projectHome == null) {
-				continue;
-			}
-			AWorkspaceProject project = null;
-			try {
-				project = AWorkspaceProject.create(projectID, URIUtils.createURI(projectHome));
-				getModel().addProject(project);
-				getProjectLoader().loadProject(project);
-			}
-			catch (Exception e) {
-				LogUtils.severe(e);
-				if(project != null) {
-					getModel().removeProject(project);
-				}
-			}
-		}	
+		load();
 	}
 
 	private void setupView(ModeController modeController) {
@@ -454,6 +436,40 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 	@Override
 	public void save() {
 		saveSettings();		
+	}
+
+	@Override
+	public void load() {
+		clear();
+		String[] projectsIds = getWorkspaceSettings().getProperty(WorkspaceSettings.WORKSPACE_MODEL_PROJECTS, "").split(WorkspaceSettings.WORKSPACE_MODEL_PROJECTS_SEPARATOR);
+		for (String projectID : projectsIds) {
+			String projectHome = getWorkspaceSettings().getProperty(projectID);
+			if(projectHome == null) {
+				continue;
+			}
+			AWorkspaceProject project = null;
+			try {
+				project = AWorkspaceProject.create(projectID, URIUtils.createURI(projectHome));
+				getModel().addProject(project);
+				getProjectLoader().loadProject(project);
+			}
+			catch (Exception e) {
+				LogUtils.severe(e);
+				if(project != null) {
+					getModel().removeProject(project);
+				}
+			}
+		}
+	}
+
+	@Override
+	public void clear() {
+		List<AWorkspaceProject> projects = getModel().getProjects();
+		synchronized (projects) {
+			for (AWorkspaceProject project : projects) {
+				getModel().removeProject(project);
+			}
+		}
 	}
 
 }

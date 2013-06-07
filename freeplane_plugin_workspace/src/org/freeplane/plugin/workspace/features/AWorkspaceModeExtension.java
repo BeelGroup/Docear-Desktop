@@ -34,6 +34,10 @@ public abstract class AWorkspaceModeExtension implements IExtension {
 	
 	public abstract void shutdown();
 	
+	public abstract void load();
+	
+	public abstract void clear();
+	
 	public IOController getIOController() {
 		return workspaceIOController;
 	}
