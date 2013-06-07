@@ -167,6 +167,7 @@ public class OneTouchCollapseResizer extends JResizer {
 	
 	public void setExpanded(boolean enabled) {
 		if(this.expanded != enabled) {
+			this.expanded = enabled;
 			try {
 				Component resizedComponent = getResizedParent();
 				if(resizedComponent instanceof JComponent) {
@@ -187,7 +188,7 @@ public class OneTouchCollapseResizer extends JResizer {
 				// just ignore
 			}
 		}
-		this.expanded = enabled;
+		
 	}
 	
 	private Component getResizedParent() {

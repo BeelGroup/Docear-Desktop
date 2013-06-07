@@ -90,6 +90,7 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 	private WorkspaceModel wsModel;
 	private AWorkspaceProject currentSelectedProject = null;
 	private IProjectSelectionListener projectSelectionListener;
+	private Runnable viewUpdater;
 
 	public MModeWorkspaceController(ModeController modeController) {
 		super(modeController);
@@ -201,15 +202,9 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 	private void setupView(ModeController modeController) {
 		FileSystemManager.setDirectoryConflictHandler(new DirectoryMergeConflictDialog());
 		FileSystemManager.setFileConflictHandler(new FileExistsConflictDialog());
-		boolean expanded = true;
-		try {
-			expanded = !Boolean.parseBoolean(getWorkspaceSettings().getProperty(WorkspaceSettings.WORKSPACE_VIEW_COLLAPSED, "false"));
-		}
-		catch (Exception e) {
-			// ignore -> default is true
-		}
 		
-		OneTouchCollapseResizer otcr = new OneTouchCollapseResizer(Direction.LEFT, CollapseDirection.COLLAPSE_LEFT);
+		
+		final OneTouchCollapseResizer otcr = new OneTouchCollapseResizer(Direction.LEFT, CollapseDirection.COLLAPSE_LEFT);
 		otcr.addCollapseListener(getWorkspaceView());
 		ResizerEventAdapter adapter = new ResizerEventAdapter() {
 			
@@ -236,16 +231,29 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 		otcr.addCollapseListener(adapter);
 		
 		Box resizableTools = Box.createHorizontalBox();
-		try {
-			int width = Integer.parseInt(getWorkspaceSettings().getProperty(WorkspaceSettings.WORKSPACE_VIEW_WIDTH, "250"));
-			getWorkspaceView().setPreferredSize(new Dimension(width, 40));
-		}
-		catch (Exception e) {
-			// blindly accept
-		}
-		resizableTools.add(getWorkspaceView());			
+		resizableTools.add(getWorkspaceView());
+		this.viewUpdater = new Runnable() {
+			public void run() {
+				boolean expanded = true;
+				try {
+					expanded = !Boolean.parseBoolean(getWorkspaceSettings().getProperty(WorkspaceSettings.WORKSPACE_VIEW_COLLAPSED, "false"));
+				}
+				catch (Exception e) {
+					// ignore -> default is true
+				}
+				otcr.setExpanded(expanded);
+				try {
+					int width = Integer.parseInt(getWorkspaceSettings().getProperty(WorkspaceSettings.WORKSPACE_VIEW_WIDTH, "250"));
+					getWorkspaceView().setPreferredSize(new Dimension(width, 40));
+				}
+				catch (Exception e) {
+					// blindly accept
+				}
+			}
+		};
+		this.viewUpdater.run();
 		resizableTools.add(otcr);
-		otcr.setExpanded(expanded);
+		
 		modeController.getUserInputListenerFactory().addToolBar("workspace", ViewController.LEFT, resizableTools);
 		getWorkspaceView().setModel(getModel());
 		getView().expandPath(getModel().getRoot().getTreePath());
@@ -441,6 +449,9 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 	@Override
 	public void load() {
 		clear();
+		if(this.viewUpdater != null) {
+			this.viewUpdater.run();
+		}
 		String[] projectsIds = getWorkspaceSettings().getProperty(WorkspaceSettings.WORKSPACE_MODEL_PROJECTS, "").split(WorkspaceSettings.WORKSPACE_MODEL_PROJECTS_SEPARATOR);
 		for (String projectID : projectsIds) {
 			String projectHome = getWorkspaceSettings().getProperty(projectID);
