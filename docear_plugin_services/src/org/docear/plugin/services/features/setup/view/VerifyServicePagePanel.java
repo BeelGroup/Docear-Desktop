@@ -3,6 +3,8 @@ package org.docear.plugin.services.features.setup.view;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.font.TextAttribute;
@@ -15,7 +17,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.ui.MultiLineActionLabel;
@@ -40,6 +41,8 @@ public class VerifyServicePagePanel extends AWizardPage {
 	private final DocearServiceTestTask test;
 	private final String title;
 	private boolean skipOnSuccess;
+	private boolean showSocialLinks = true;
+	private JPanel socialPanel;
 
 	/***********************************************************************************
 	 * CONSTRUCTORS
@@ -60,22 +63,31 @@ public class VerifyServicePagePanel extends AWizardPage {
 				ColumnSpec.decode("default:grow"),},
 			new RowSpec[] {
 				FormFactory.RELATED_GAP_ROWSPEC,
-				RowSpec.decode("fill:default"),
-				RowSpec.decode("4dlu:grow"),
+				RowSpec.decode("fill:default:grow"),
+				FormFactory.RELATED_GAP_ROWSPEC,
 				RowSpec.decode("fill:default"),
 				RowSpec.decode("default:grow"),}));
 		
 		lblMessage = new MultiLineActionLabel();
 		lblMessage.setBackground(Color.WHITE);
-		lblMessage.setHorizontalAlignment(SwingConstants.CENTER);
-		lblMessage.setVerticalAlignment(SwingConstants.TOP);
-		
+		lblMessage.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) {
+				if("contact".equals(e.getActionCommand())) {
+					try {
+						Controller.getCurrentController().getViewController().openDocument(URI.create("http://www.docear.org/docear/contact/"));
+					} catch (IOException e1) {
+						LogUtils.warn("Exception in org.docear.plugin.services.features.setup.view.VerifyServicePagePanel.VerifyServicePagePanel(...).new ActionListener() {...}.actionPerformed(e): "+e1.getMessage());
+					}
+				}
+			}
+		});
 		add(lblMessage, "2, 2, fill, fill");
 		
-		JPanel panel = new JPanel();
-		panel.setBackground(Color.WHITE);
-		add(panel, "2, 4, center, fill");
-		panel.setLayout(new FormLayout(new ColumnSpec[] {
+		socialPanel = new JPanel();
+		socialPanel.setBackground(Color.WHITE);
+		add(socialPanel, "2, 4, center, fill");
+		socialPanel.setLayout(new FormLayout(new ColumnSpec[] {
 				FormFactory.RELATED_GAP_COLSPEC,
 				FormFactory.DEFAULT_COLSPEC,},
 			new RowSpec[] {
@@ -101,7 +113,7 @@ public class VerifyServicePagePanel extends AWizardPage {
 				}
 			}
 		});
-		panel.add(lblTwitter, "2, 2");
+		socialPanel.add(lblTwitter, "2, 2");
 		
 		JLabel lblFacebook = new JLabel(TextUtils.getText("docear.setup.wizard.follow.facebook"));
 		lblFacebook.setFont(adjustFont(lblFacebook.getFont()));
@@ -118,7 +130,7 @@ public class VerifyServicePagePanel extends AWizardPage {
 				}
 			}
 		});
-		panel.add(lblFacebook, "2, 4");
+		socialPanel.add(lblFacebook, "2, 4");
 		
 		JLabel lblGoogle = new JLabel(TextUtils.getText("docear.setup.wizard.follow.google"));
 		lblGoogle.setFont(adjustFont(lblGoogle.getFont()));
@@ -135,7 +147,7 @@ public class VerifyServicePagePanel extends AWizardPage {
 				}
 			}
 		});
-		panel.add(lblGoogle, "2, 6");
+		socialPanel.add(lblGoogle, "2, 6");
 	}	
 	
 	/***********************************************************************************
@@ -158,6 +170,7 @@ public class VerifyServicePagePanel extends AWizardPage {
 	public void preparePage(WizardContext context) {
 		this.setPageDisplayable(true);
 		DocearUser settings = context.get(DocearUser.class);
+		socialPanel.setVisible(showSocialLinks);
 		try {
 			test.run(settings);
 			context.getNextButton().setEnabled(true);
@@ -171,6 +184,7 @@ public class VerifyServicePagePanel extends AWizardPage {
 			context.getNextButton().setEnabled(false);
 			getRootPane().setDefaultButton((JButton) context.getBackButton());
 			lblMessage.setText(e.getMessage());
+			socialPanel.setVisible(false);
 		}
 		context.setWizardTitle(getTitle());
 	}
@@ -182,5 +196,8 @@ public class VerifyServicePagePanel extends AWizardPage {
 	public void setSkipOnSuccess(boolean skipOnSuccess) {
 		this.skipOnSuccess = skipOnSuccess;
 	}
-
+	
+	public void setSocialLinksVisible(boolean b) {
+		this.showSocialLinks = b;
+	}
 }

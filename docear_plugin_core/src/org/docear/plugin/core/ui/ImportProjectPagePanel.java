@@ -172,7 +172,7 @@ public class ImportProjectPagePanel extends AWizardPage {
 	
 	private URI getImportHome() {
 		if(txtImportHome.getText().length()==0) {
-			return null;
+			return WorkspaceController.getDefaultProjectHome();
 		}
 		return new File(txtImportHome.getText()).toURI();
 	}
@@ -221,6 +221,9 @@ public class ImportProjectPagePanel extends AWizardPage {
 			readVersions(_data);		
 		}
 		lookForIncompatibles();
+		if(getModel().getSize() > 0) {
+			lstVersions.setSelectedIndex(0);
+		}
 		enableControls(cachedContext);
 	}
 	

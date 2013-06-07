@@ -12,9 +12,7 @@ import org.docear.plugin.core.ui.wizard.WizardPageDescriptor;
 import org.docear.plugin.core.workspace.actions.DocearImportProjectAction;
 import org.docear.plugin.core.workspace.actions.DocearNewProjectAction;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
-import org.docear.plugin.services.DocearServiceException;
 import org.docear.plugin.services.ServiceController;
-import org.docear.plugin.services.features.setup.DocearServiceTestTask;
 import org.docear.plugin.services.features.setup.view.RegistrationPagePanel;
 import org.docear.plugin.services.features.setup.view.SecondPagePanel;
 import org.docear.plugin.services.features.setup.view.SecondPagePanel.DATA_OPTION;
@@ -24,9 +22,10 @@ import org.docear.plugin.services.features.setup.view.VerifyServicePagePanel;
 import org.docear.plugin.services.features.user.DocearLocalUser;
 import org.docear.plugin.services.features.user.DocearUser;
 import org.docear.plugin.services.features.user.DocearUserController;
+import org.docear.plugin.services.features.user.action.DocearUserLoginAction;
+import org.docear.plugin.services.features.user.action.DocearUserRegistrationAction;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.components.UITools;
-import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 
@@ -110,7 +109,7 @@ public class DocearSetupWizardAction extends AFreeplaneAction {
 		wizard.setStartPage(desc.getIdentifier());
 		
 		//login verification
-		desc = new WizardPageDescriptor("page.verify.login", new VerifyServicePagePanel("Log-In", getLoginVerificationTask(), true)) {
+		desc = new WizardPageDescriptor("page.verify.login", new VerifyServicePagePanel("Log-In", DocearUserLoginAction.getLoginVerificationTask(), true)) {
 			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
 				return context.getModel().getPage("page.second");
 			}
@@ -130,7 +129,7 @@ public class DocearSetupWizardAction extends AFreeplaneAction {
 		wizard.registerWizardPanel(desc);
 		
 		//registration verification
-		desc = new WizardPageDescriptor("page.verify.registration", new VerifyServicePagePanel("Registration", getRegistrationVerificationTask(), false)) {
+		desc = new WizardPageDescriptor("page.verify.registration", new VerifyServicePagePanel("Registration", DocearUserRegistrationAction.getRegistrationVerificationTask(), false)) {
 			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
 					context.getTraversalLog().getPreviousPage(context);
 					return context.getModel().getPage("page.project.create");
@@ -203,81 +202,5 @@ public class DocearSetupWizardAction extends AFreeplaneAction {
 		wizard.registerWizardPanel(desc);
 		
 	}
-
-	private static DocearServiceTestTask getLoginVerificationTask() {
-		return new DocearServiceTestTask() {
-			private boolean success = false;
-			private DocearServiceException ex = null;
-			public boolean isSuccessful() {
-				return success;
-			}
-
-			public void run(final DocearUser user) throws DocearServiceException {
-				ex = null;
-				success = false;
-				
-				if(!user.isValid()) {
-					Thread task = new Thread() {
-						public void run() {
-							try {
-								ServiceController.getFeature(DocearUserController.class).loginUser(user);
-							} catch (DocearServiceException e) {
-								ex = e;
-							}						
-						}
-					};
-					task.start();
-					try {
-						task.join();
-					} catch (InterruptedException e) {
-						LogUtils.warn(e);
-					}
-					if(ex != null) {
-						throw ex;
-					}
-				}
-				
-				if(user.isValid()) {
-					success = true;
-				}
-			}
-		};
-	}
 	
-	private static DocearServiceTestTask getRegistrationVerificationTask() {
-		return new DocearServiceTestTask() {
-			private boolean success = false;
-			private DocearServiceException ex = null;
-			public boolean isSuccessful() {
-				return success;
-			}
-
-			public void run(final DocearUser user) throws DocearServiceException {
-				ex = null;
-				success = false;
-				
-				if(!user.isValid()) {
-					Thread task = new Thread() {
-						public void run() {
-							try {
-								ServiceController.getFeature(DocearUserController.class).createUserAccount(user);
-							} catch (DocearServiceException e) {
-								ex = e;
-							}						
-						}
-					};
-					task.start();
-					try {
-						task.join();
-					} catch (InterruptedException e) {
-						LogUtils.warn(e);
-					}
-					if(ex != null) {
-						throw ex;
-					}
-					success = true;
-				}
-			}
-		};
-	}
 }

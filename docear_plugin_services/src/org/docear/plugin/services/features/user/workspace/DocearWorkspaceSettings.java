@@ -92,10 +92,10 @@ public class DocearWorkspaceSettings extends ADocearServiceFeature implements IW
 						}
 						else if(DocearUser.IS_VALID_PROPERTY.equals(evt.getPropertyName())) {
 							if(user.isValid()) {
-								DocearController.getPropertiesController().setProperty(DOCEAR_CONNECTION_TOKEN_PROPERTY, user.getAccessToken());
+								properties.setProperty(DOCEAR_CONNECTION_TOKEN_PROPERTY, user.getAccessToken());
 							}
 							else {
-								DocearController.getPropertiesController().setProperty(DOCEAR_CONNECTION_TOKEN_PROPERTY, "");
+								properties.setProperty(DOCEAR_CONNECTION_TOKEN_PROPERTY, "");
 							}
 						}
 					}

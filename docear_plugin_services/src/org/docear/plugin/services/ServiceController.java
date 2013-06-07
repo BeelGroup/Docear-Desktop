@@ -24,12 +24,10 @@ import org.docear.plugin.services.features.user.action.DocearClearUserDataAction
 import org.docear.plugin.services.features.user.workspace.DocearWorkspaceSettings;
 import org.docear.plugin.services.workspace.DocearWorkspaceModel;
 import org.freeplane.core.resources.ResourceController;
-import org.freeplane.core.user.UserAccountController;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.IMapLifeCycleListener;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
-import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 
 public class ServiceController {
@@ -136,7 +134,7 @@ public class ServiceController {
 	}
 	
 	public URI getUserSettingsHome() {
-		File home = new File(URIUtils.getFile(WorkspaceController.getApplicationSettingsHome()), "/users/"+UserAccountController.getController().getActiveUser().getName());
+		File home = new File(getFeature(DocearWorkspaceSettings.class).getSettingsPath());//new File(URIUtils.getFile(WorkspaceController.getApplicationSettingsHome()), "/users/"+getCurrentUser().getName());
 		return home.toURI();
 	}
 

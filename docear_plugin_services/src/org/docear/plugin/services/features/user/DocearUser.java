@@ -271,6 +271,16 @@ public class DocearUser implements IUserAccount {
 		return isNew;
 	}
 	
+	public boolean equals(Object obj) {
+		if(obj instanceof DocearUser) {
+			if(getUsername() != null) {
+				return getUsername().equals(((DocearUser) obj).getUsername());
+			}
+		}
+		
+		return super.equals(obj);
+	}
+	
 	public String toString() {
 		return "DocearUser[name="+getName() + ";token="+getAccessToken()+"]";
 	}

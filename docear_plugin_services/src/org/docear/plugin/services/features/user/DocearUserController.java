@@ -13,6 +13,9 @@ import org.docear.plugin.services.ADocearServiceFeature;
 import org.docear.plugin.services.DocearServiceException;
 import org.docear.plugin.services.ServiceController;
 import org.docear.plugin.services.features.io.DocearConnectionProvider;
+import org.docear.plugin.services.features.user.action.DocearUserLoginAction;
+import org.docear.plugin.services.features.user.action.DocearUserRegistrationAction;
+import org.docear.plugin.services.features.user.action.DocearUserServicesAction;
 import org.docear.plugin.services.features.user.view.WorkspaceDocearServiceConnectionBar;
 import org.docear.plugin.services.features.user.view.WorkspaceDocearServiceConnectionBar.CONNECTION_STATE;
 import org.docear.plugin.services.features.user.workspace.DocearWorkspaceSettings;
@@ -23,6 +26,8 @@ import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.components.TreeView;
+import org.freeplane.plugin.workspace.model.WorkspaceModel;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.ClientResponse.Status;
@@ -61,7 +66,7 @@ public class DocearUserController extends ADocearServiceFeature {
 	
 
 	public void loginUser(DocearUser user) throws DocearServiceException {
-		if(user == null || LOCAL_USER.equals(user)) {
+		if(user == null || LOCAL_USER.equals(user) || user.getPassword() == null) {
 			return;
 		}
 		if(user.isValid()) {
@@ -114,7 +119,12 @@ public class DocearUserController extends ADocearServiceFeature {
 			connectionBar.setUsername(user.getName());
 			connectionBar.setEnabled(true);
 			if (user.isTransmissionEnabled()) {
-				connectionBar.setConnectionState(CONNECTION_STATE.CONNECTED);
+				if(user.isOnline()) {
+					connectionBar.setConnectionState(CONNECTION_STATE.CONNECTED);
+				}
+				else {
+					connectionBar.setConnectionState(CONNECTION_STATE.DISCONNECTED);
+				}
 			}
 			else {
 				connectionBar.setConnectionState(CONNECTION_STATE.DISABLED);
@@ -148,8 +158,12 @@ public class DocearUserController extends ADocearServiceFeature {
 					user.toggleTransmissionEnabled();
 				}
 				else if(WorkspaceDocearServiceConnectionBar.CONNECTION_BAR_CLICKED.equals(event.getSource()) ) {
-//					DocearAllowUploadChooserAction.showDialog(false);
-					LogUtils.info("CALL SETTINGS WIZARD");
+					if(DocearUserController.LOCAL_USER.equals(DocearUserController.getActiveUser())) {
+						WorkspaceController.getAction(DocearUserRegistrationAction.KEY);
+					}
+					else {
+						WorkspaceController.getAction(DocearUserLoginAction.KEY);
+					}
 				}
 			}
 		});
@@ -167,7 +181,7 @@ public class DocearUserController extends ADocearServiceFeature {
 						}
 						loginUser((DocearUser) event.getUser());
 					} catch (DocearServiceException e) {
-						e.printStackTrace();
+						LogUtils.warn(e);
 					}
 					if(event.getUser() instanceof DocearLocalUser) {
 						DocearController.getPropertiesController().setProperty(DOCEAR_CONNECTION_USERNAME_PROPERTY, "");
@@ -175,6 +189,7 @@ public class DocearUserController extends ADocearServiceFeature {
 					else {
 						DocearController.getPropertiesController().setProperty(DOCEAR_CONNECTION_USERNAME_PROPERTY, event.getUser().getName());
 					}
+					adjustInfoBarConnectionState((DocearUser) event.getUser());
 				}
 				else {
 					getActiveUser().activate();
@@ -186,12 +201,21 @@ public class DocearUserController extends ADocearServiceFeature {
 					return;
 				}
 				if(event.getUser() instanceof DocearUser) {
-					//DOCEAR - ToDo: clear up all user account links
 					((DocearUser)event.getUser()).setOnline(false);
+					WorkspaceController.save();
+					clearWorkspace();
 				}
 				event.getUser().removePropertyChangeListener(getUserPropertyChangeListener());
 			}
 		});
+	}
+	
+	private void clearWorkspace() {
+		WorkspaceModel model = WorkspaceController.getCurrentModel();
+		AWorkspaceProject[] projects = model.getProjects().toArray(new AWorkspaceProject[0]);
+		for (AWorkspaceProject project : projects) {
+			model.removeProject(project);
+		}
 	}
 	
 	private PropertyChangeListener getUserPropertyChangeListener() {
@@ -204,6 +228,9 @@ public class DocearUserController extends ADocearServiceFeature {
 					}
 					else if (DocearUser.TRANSMISSION_PROPERTY.equals(evt.getPropertyName())) {
 						connectionBar.allowTransmission(user.isTransmissionEnabled());
+					}
+					else if (DocearUser.IS_ONLINE_PROPERTY.equals(evt.getPropertyName())) {
+						connectionBar.setConnectionState(CONNECTION_STATE.CONNECTED);
 					}
 					adjustInfoBarConnectionState(user);
 				}
@@ -243,6 +270,9 @@ public class DocearUserController extends ADocearServiceFeature {
 
 	@Override
 	protected void installDefaults(ModeController modeController) {
+		WorkspaceController.addAction(new DocearUserLoginAction());
+		WorkspaceController.addAction(new DocearUserRegistrationAction());
+		WorkspaceController.addAction(new DocearUserServicesAction());
 	}
 
 

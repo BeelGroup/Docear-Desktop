@@ -301,6 +301,7 @@ public class ReferencesController extends ALanguageController implements IDocear
 					public void run() {
 						ReferencesController contr = ReferencesController.getController();
 						JabrefWrapper wrapper = contr.getJabrefWrapper();
+						extHandle.getBasePanel().getSaveAction().run();
 						wrapper.closeDatabase(extHandle);						
 					}
 				});

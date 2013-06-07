@@ -40,6 +40,9 @@ import org.docear.plugin.services.xml.DocearXmlBuilder;
 import org.docear.plugin.services.xml.DocearXmlElement;
 import org.docear.plugin.services.xml.DocearXmlRootElement;
 import org.freeplane.core.ui.components.UITools;
+import org.freeplane.core.user.IUserAccountChangeListener;
+import org.freeplane.core.user.UserAccountChangeEvent;
+import org.freeplane.core.user.UserAccountController;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.Controller;
@@ -316,20 +319,39 @@ public class RecommendationsController extends ADocearServiceFeature {
 		AWorkspaceTreeNode wsRoot = WorkspaceController.getModeExtension(modeController).getModel().getRoot();
 		wsRoot.insertChildNode(new ShowRecommendationsNode(), 0);
 		downloadsNode = new DownloadFolderNode();
+		updateDownloadNode();
+		wsRoot.insertChildNode(downloadsNode, 1);
+		UserAccountController.getController().addUserAccountChangeListener(new IUserAccountChangeListener() {
+			
+			public void activated(UserAccountChangeEvent event) {
+				if(event.getUser() instanceof DocearUser) {
+					try {
+					updateDownloadNode();
+					downloadsNode.refresh();
+					}
+					catch (Exception e) {
+						LogUtils.warn("Could not switch download folder node: "+ e.getMessage());
+					}
+				}
+			}
+			
+			public void aboutToDeactivate(UserAccountChangeEvent event) {}
+		});
+		WorkspaceController.getModeExtension(modeController).getView().getTransferHandler().registerNodeDropHandler(DownloadFolderNode.class, new FileFolderDropHandler());
+		startRecommendationsRequest();
+	}
+
+	private void updateDownloadNode() {
 		downloadsFolder = new File( URIUtils.getFile(ServiceController.getController().getUserSettingsHome()),"downloads");
 		if(!downloadsFolder.exists()) {
 			try {
 				downloadsFolder.mkdirs();
 			}
 			catch (Exception e) {
-				LogUtils.warn("Exception in org.docear.plugin.services.ServiceController.addPluginDefaults(modeController):"+ e.getMessage());
+				LogUtils.warn("Exception in org.docear.plugin.services.features.recommendations.RecommendationsController.updateDownloadNode():"+ e.getMessage());
 			}
 		}
 		downloadsNode.setPath(downloadsFolder.toURI());
-		wsRoot.insertChildNode(downloadsNode, 1);
-		
-		WorkspaceController.getModeExtension(modeController).getView().getTransferHandler().registerNodeDropHandler(DownloadFolderNode.class, new FileFolderDropHandler());
-		startRecommendationsRequest();
 	}
 
 	@Override
