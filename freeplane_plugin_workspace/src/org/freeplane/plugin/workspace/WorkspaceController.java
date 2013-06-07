@@ -301,7 +301,13 @@ public final class WorkspaceController implements IExtension {
 		getCurrentModeExtension().save();
 	}
 
+	public static void load() {
+		getCurrentModeExtension().load();
+	}
 	
+	public static void clear() {
+		getCurrentModeExtension().clear();
+	}
 
 	
 	
