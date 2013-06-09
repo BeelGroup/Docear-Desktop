@@ -257,6 +257,7 @@ public class AkkaTests {
 	 * testAddNodeRequest Open Map. Add new node to root node.
 	 */
 	@Test
+	@Ignore
 	public void testAddNodeRequest() {
 		new JavaTestKit(system) {
 			{
@@ -338,6 +339,7 @@ public class AkkaTests {
 	 * testGetNodeRequest Get node from map
 	 */
 	@Test
+	@Ignore
 	public void testGetNodeRequest() {
 		new JavaTestKit(system) {
 			{
@@ -642,6 +644,7 @@ public class AkkaTests {
 	 * if node got attributes.
 	 */
 	@Test
+	@Ignore
 	public void testChangeEdgeRequest() {
 		new JavaTestKit(system) {
 			{

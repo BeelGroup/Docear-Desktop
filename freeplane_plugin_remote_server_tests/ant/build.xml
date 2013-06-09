@@ -39,21 +39,21 @@
 	</path>
 	
 	<path id="freeplane_plugin_remote_server.classpath">
-		<pathelement location="${freeplane_plugin_remote_server.location}/bin" />
 		<pathelement location="${freeplane_plugin_remote_server.location}/ivy/ivy.jar" />
 		<fileset dir="${freeplane_plugin_remote_server.location}/lib/" includes="**.jar"/>
 		<path refid="freeplane.classpath" />
 	</path>
 
 	<path id="freeplane_plugin_remote_shared.classpath">
-		<pathelement location="bin" />
 		<pathelement location="ivy/ivy.jar" />
 		<fileset dir="${freeplane_plugin_remote_shared.location}/lib/" includes="**.jar" />
 		<path refid="freeplane.classpath" />
 	</path>
 	
 	<path id="freeplane_plugin_remote_server_tests.classpath">
-		<pathelement location="bin" />
+		<pathelement location="${root}/resources" />
+		<pathelement location="${root}/build" />
+		<pathelement location="${root}/src" />
 		<pathelement location="ivy/ivy.jar" />
 		<fileset dir="${root}/lib/" includes="**.jar"/>
 		<path refid="freeplane.classpath" />
@@ -86,12 +86,15 @@
 	
 	<target name="build" depends="lib_fileset">
 		<mkdir dir="${build}" />
-		<javac debug="true" destdir="bin" includeantruntime="false">
+		<javac debug="true" destdir="${build}" includeantruntime="false">
 			<src path="src/tests" />
 			<src path="resources" />
 			<classpath>
 				<fileset dir="lib">
 					<include name="**/*.jar" />
+				</fileset>
+				<fileset dir="${freeplane_plugin_remote_shared.location}/lib">
+					<include name="freeplane_remote_shared.jar" />
 				</fileset>
 				<pathelement path="${classpath}/" />
 			</classpath>
@@ -135,50 +138,33 @@
 		</delete>
 	</target>
 
-		
-    <condition property="isOSUnix">
-        <os family="unix" />
-    </condition>
-
-    <condition property="isOSWindows">
-        <os family="windows" />
-    </condition>
-	
-	<target name="killTaskIfWindows" if="isOSWindows">	
-		<echo>Killing Freeplane</echo>
-		<exec executable="taskkill">
-			<arg value="-F"/>
-			<arg value="/PID"/>
-			<arg value="${pid}"/>
-		</exec>	
-		<delete file="../freeplane_framework/build/RUNNING_PID"  failonerror="false"/>
-    </target>
-
-    <target name="killTaskIfUnix" if="isOSUnix">
-    	<echo>Killing Freeplane</echo>
-        <exec executable="bash">
-			<arg value="kill -15"/>
-        	<arg value="${pid}"/>
-        </exec>
-    	<delete file="../freeplane_framework/build/RUNNING_PID"  failonerror="false"/>
-    </target>
-
 	<target name="test" depends="build">
 		<delete file="../freeplane_framework/build/RUNNING_PID"  failonerror="false"/>
 		<exec executable="bash" dir="../freeplane_framework/build/" spawn="true">
 			<arg value="silent_freeplane-server.sh"/>
 		</exec>
-		<!-- <sleep seconds="10"/> -->
+		<echo>Waiting 5 seconds for freeplane to start...</echo>
+		<sleep seconds="5"/>
 		<mkdir dir="${report.dir}" />
-		<junit fork="yes" printsummary="yes" haltonerror="yes" haltonfailure="no" showoutput="yes" failureproperty="junit.failure">
+		<junit fork="yes" printsummary="yes" haltonerror="no" haltonfailure="no" showoutput="yes" failureproperty="junit.failure">
 			<test name="tests.AkkaTests" todir="${report.dir}"/>
 			<formatter type="xml"/>
 			<classpath refid="freeplane_plugin_remote_server_tests.classpath" />
 		</junit>
-		<fail if="junit.failure" message="Unit test(s) failed.  See reports!"/>
+		<echo>Finished tests. Killing freeplane...</echo>
 		<loadfile property="pid" srcFile="../freeplane_framework/build/RUNNING_PID"/>
-		<antcall target="killTaskIfWindows"/>
-		<antcall target="killTaskIfUnix"/>
+     	<echo>PID = ${pid}</echo>
+		<exec executable="taskkill" osfamily="winnt">
+			<arg value="/F"/>
+			<arg value="/PID"/>
+			<arg value="${pid}"/>
+		</exec>
+		<exec executable="kill" osfamily="unix">
+			<arg value="-9"/>
+			<arg value="${pid}"/>
+		</exec>
+		<echo>Killed freeplane.</echo>
+		<fail if="junit.failure" message="Unit test(s) failed.  See reports!"/>
 	</target>
 	
 	<target name="junitreport">
@@ -188,4 +174,3 @@
 		</junitreport>
 	</target>	
 </project>
-
