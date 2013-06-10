@@ -201,6 +201,7 @@ _debug "Calling: "\
  "-Dorg.knopflerfish.framework.bundlestorage=memory"\
  "-Dorg.freeplane.globalresourcedir=${freedir}/resources"\
  "-Dorg.knopflerfish.gosg.jars=reference:file:${freedir}/core/"\
+ "-Dlogback.configurationFile=${freedir}/ci-logger.xml"\
  "-Dorg.freeplane.main.application.FreeplaneStarter.headless=true"\
  $defines\
  $xdockname\
@@ -220,6 +221,7 @@ _debug "Calling: "\
  "-Dorg.knopflerfish.framework.bundlestorage=memory"\
  "-Dorg.freeplane.globalresourcedir=${freedir}/resources"\
  "-Dorg.knopflerfish.gosg.jars=reference:file:${freedir}/core/"\
+ "-Dlogback.configurationFile=${freedir}/ci-logger.xml"\
  "-Dorg.freeplane.main.application.FreeplaneStarter.headless=true"\
  $defines\
  $xdockname\
