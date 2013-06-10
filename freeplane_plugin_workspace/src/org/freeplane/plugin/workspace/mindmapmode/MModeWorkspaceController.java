@@ -475,11 +475,9 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 
 	@Override
 	public void clear() {
-		List<AWorkspaceProject> projects = getModel().getProjects();
-		synchronized (projects) {
-			for (AWorkspaceProject project : projects) {
-				getModel().removeProject(project);
-			}
+		AWorkspaceProject[] projects = getModel().getProjects().toArray(new AWorkspaceProject[0]);
+		for (AWorkspaceProject project : projects) {
+			getModel().removeProject(project);
 		}
 	}
 
