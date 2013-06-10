@@ -138,6 +138,17 @@
 		</delete>
 	</target>
 
+	<target name="test-only" depends="build">
+		<mkdir dir="${report.dir}" />
+		<junit fork="yes" printsummary="yes" haltonerror="no" haltonfailure="no" showoutput="yes" failureproperty="junit.failure">
+			<test name="tests.AkkaTests" todir="${report.dir}"/>
+			<formatter type="xml"/>
+			<classpath refid="freeplane_plugin_remote_server_tests.classpath" />
+		</junit>
+		<fail if="junit.failure" message="Unit test(s) failed.  See reports!"/>
+	</target>
+	
+	
 	<target name="test" depends="build">
 		<delete file="../freeplane_framework/build/RUNNING_PID"  failonerror="false"/>
 		<exec executable="bash" dir="../freeplane_framework/build/" spawn="true">
