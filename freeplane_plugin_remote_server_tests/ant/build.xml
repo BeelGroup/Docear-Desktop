@@ -155,6 +155,7 @@
 		<delete dir="${freeplane_server.dir}" failonerror="false"/>
 		<echo>Unzip freeplane_server.zip and chmod .sh files...</echo>
 		<unzip src="${freeplane_server.zip.dir}/freeplane_server.zip" dest="${freeplane_server.zip.dir}"/>
+		<delete file="${freeplane_server.dir}/RUNNING_PID" failonerror="false"/>
 		<chmod file="${freeplane_server.dir}/freeplane-server.sh" perm="777"/>
 		<chmod file="${freeplane_server.dir}/silent_freeplane-server.sh" perm="777"/>
 		<echo>Starting freeplane...</echo>
