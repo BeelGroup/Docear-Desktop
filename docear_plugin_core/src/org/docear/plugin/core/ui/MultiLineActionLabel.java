@@ -299,7 +299,8 @@ public class MultiLineActionLabel extends JPanel implements SwingConstants, Acce
 				String sub = text.substring(0, textPos);
 				rect.x = paintTextR.x + fmDefault.stringWidth(sub);
 				rect.y = paintTextR.y;
-				while(rect.x > getWidth()) {
+				int width = getWidth()-getInsets().left-getInsets().right;
+				while(rect.x > width) {
 					sub = findLastSpaceBeforeRightEnd(sub, fmDefault);
 					rect.x = paintTextR.x + fmDefault.stringWidth(sub);
 					rect.y += fmDefault.getHeight();
@@ -315,7 +316,8 @@ public class MultiLineActionLabel extends JPanel implements SwingConstants, Acce
 	private String findLastSpaceBeforeRightEnd(final String sub, FontMetrics fmDefault) {
 		String partSub = sub.substring(0);
 		int index = partSub.lastIndexOf(" ");
-		while(fmDefault.stringWidth(partSub) > getWidth()) {
+		int width = getWidth()-getInsets().left-getInsets().right;
+		while(fmDefault.stringWidth(partSub) > width) {
 			index = partSub.lastIndexOf(" ");
 			partSub = sub.substring(0, index);			
 		}

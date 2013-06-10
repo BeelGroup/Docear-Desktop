@@ -251,7 +251,7 @@ public class DocearUserController extends ADocearServiceFeature {
 	}
 
 	public DocearUser loadUser(String name) {
-		if(name == null) {
+		if(name == null || name.trim().isEmpty()) {
 			return LOCAL_USER;
 		}
 		else {
