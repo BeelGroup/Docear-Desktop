@@ -199,6 +199,7 @@ public class MNodeDropListener implements DropTargetListener {
 	public void dropActionChanged(final DropTargetDragEvent e) {
 	}
 
+
 	public boolean isDragAcceptable(final DropTargetDragEvent ev) {
 		if (ev.isDataFlavorSupported(DataFlavor.stringFlavor)) {
 			return true;
@@ -208,6 +209,7 @@ public class MNodeDropListener implements DropTargetListener {
 		}
 		return false;
 	}
+
 
 	protected boolean isDropAcceptable(final DropTargetDropEvent event) {
 		final NodeModel node = ((MainView) event.getDropTargetContext().getComponent()).getNodeView().getModel();

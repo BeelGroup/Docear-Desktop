@@ -78,7 +78,6 @@ public class FreeplaneSplashModern extends JWindow {
 			}
 		}
 		splashResource = ResourceController.getResourceController().getResource("/images/" + appName + "_splash.png");
-			
 		splashImage = new ImageIcon(splashResource);
 		getRootPane().setOpaque(false);
 		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();

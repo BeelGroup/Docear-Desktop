@@ -65,6 +65,7 @@ import org.freeplane.n3.nanoxml.XMLException;
  * provide persistence for the last recent maps. Maps should be shown in the
  * format:"mode\:key",ie."Mindmap\:/home/joerg/freeplane.mm"
  */
+
 public class LastOpenedList implements IMapViewChangeListener, IMapChangeListener {
 	private static final String MENU_CATEGORY = "main_menu_most_recent_files";
 	private static final String LAST_OPENED_LIST_LENGTH = "last_opened_list_length";
@@ -184,6 +185,7 @@ public class LastOpenedList implements IMapViewChangeListener, IMapChangeListene
 		}
 		final URL after = (URL) event.getNewValue();
 		if (after != null) {
+
 			//DOCEAR - decode url string
 			final String fileAfter = sun.net.www.ParseUtil.decode(after.getFile());
 			if (fileAfter != null) {
@@ -248,6 +250,7 @@ public class LastOpenedList implements IMapViewChangeListener, IMapChangeListene
 			safeOpen(lastMap);
 		}
 	}
+
 
 	public void remove(final String restoreable) {
 		if(!lastOpenedList.remove(restoreable)) {
@@ -350,7 +353,6 @@ public class LastOpenedList implements IMapViewChangeListener, IMapChangeListene
 		if(separatorIndex == -1)
 			return restorable;
 		String key = restorable.substring(0, separatorIndex);
-		//DOCEAR - decode url string
 		return TextUtils.getText("open_as" + key, key) + restorable.substring(separatorIndex);
 		
     }
