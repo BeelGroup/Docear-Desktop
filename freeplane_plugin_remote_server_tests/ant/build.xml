@@ -160,7 +160,7 @@
 		<chmod file="${freeplane_server.dir}/silent_freeplane-server.sh" perm="777"/>
 		<echo>Starting freeplane...</echo>
 		<exec executable="bash" dir="${freeplane_server.dir}" spawn="true" osfamily="unix">
-			<arg value="xfvb-run silent_freeplane-server.sh"/>
+			<arg value="sudo xvfb-run silent_freeplane-server.sh"/>
 		</exec>
 		<exec executable="bash" dir="${freeplane_server.dir}" spawn="true" osfamily="windows">
 			<arg value="silent_freeplane-server.sh"/>
