@@ -158,7 +158,7 @@ public class DocearUser implements IUserAccount {
 		}
 	}
 
-	public void setRecommandationsEnabled(boolean selected) {
+	public void setRecommendationsEnabled(boolean selected) {
 		if(recommendationsEnabled != selected) {
 			recommendationsEnabled = selected;
 			firePropertyChanged(RECOMMENDATIONS_PROPERTY, selected, !selected);

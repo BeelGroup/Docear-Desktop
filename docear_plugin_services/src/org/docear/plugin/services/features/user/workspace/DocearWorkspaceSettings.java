@@ -142,7 +142,7 @@ public class DocearWorkspaceSettings extends ADocearServiceFeature implements IW
 		if(strRetrieval != null) {
 			int ir = Integer.parseInt(strRetrieval);
 			if((DocearUser.RECOMMENDATIONS & ir) > 0) {
-				user.setRecommandationsEnabled(true);
+				user.setRecommendationsEnabled(true);
 			}
 		}
 		if(DocearController.getPropertiesController().getProperty(DOCEAR_SAVE_BACKUP) != null) {

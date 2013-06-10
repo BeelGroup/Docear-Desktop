@@ -38,10 +38,12 @@ import org.docear.plugin.services.features.recommendations.RecommendationsContro
 import org.docear.plugin.services.features.recommendations.model.RecommendationEntry;
 import org.docear.plugin.services.features.recommendations.model.RecommendationsModel;
 import org.docear.plugin.services.features.recommendations.model.RecommendationsModelNode;
+import org.docear.plugin.services.features.user.action.DocearUserServicesAction;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.Controller;
+import org.freeplane.plugin.workspace.WorkspaceController;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -453,10 +455,7 @@ public class RecommendationsView extends JPanel {
 			add(btnNewButton, "2, 4");
 			btnNewButton.addActionListener(new ActionListener() {				
 				public void actionPerformed(ActionEvent e) {
-					//Docear - ToDo: impl new Wizard 
-//					if(DocearAllowUploadChooserAction.showDialog(false)) {
-//						RecommendationsController.refreshRecommendations();
-//					}
+					WorkspaceController.getAction(DocearUserServicesAction.KEY).actionPerformed(null);
 				}
 			});
 		}

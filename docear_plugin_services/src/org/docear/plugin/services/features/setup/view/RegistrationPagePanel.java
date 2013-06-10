@@ -258,7 +258,7 @@ public class RegistrationPagePanel extends AWizardPage {
 						settings = new DocearUser();
 						cachedContext.set(DocearUser.class, settings);
 					}
-					settings.setRecommandationsEnabled(chckbxRecommendations.isSelected());
+					settings.setRecommendationsEnabled(chckbxRecommendations.isSelected());
 				}
 			}
 		});

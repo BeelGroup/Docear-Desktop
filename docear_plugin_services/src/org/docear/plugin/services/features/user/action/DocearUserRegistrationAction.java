@@ -35,21 +35,10 @@ public class DocearUserRegistrationAction extends AWorkspaceAction {
 	}
 
 	public void actionPerformed(ActionEvent event) {
-		final Wizard wiz = new Wizard(UITools.getFrame());
-		initWizard(wiz);
-		
-		new Thread(new Runnable() {
-			public void run() {
-				int ret = wiz.show();
-				if(ret == Wizard.OK_OPTION) {
-					wiz.getContext().get(DocearUser.class).activate();
-					WorkspaceController.save();
-				}
-			}
-		}).start();
+		showRegistrationWizard();
 	}
 
-	private void initWizard(Wizard wizard) {
+	private static void initWizard(Wizard wizard) {
 		//registration page
 		WizardPageDescriptor desc = new WizardPageDescriptor("page.registration", new RegistrationPagePanel()) {
 			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
@@ -170,6 +159,21 @@ public class DocearUserRegistrationAction extends AWorkspaceAction {
 		if(srcDir.exists()) {
 			FileUtils.moveDirectory(srcDir, destDir);
 		}
+	}
+
+	public static void showRegistrationWizard() {
+		final Wizard wiz = new Wizard(UITools.getFrame());
+		initWizard(wiz);
+		
+		new Thread(new Runnable() {
+			public void run() {
+				int ret = wiz.show();
+				if(ret == Wizard.OK_OPTION) {
+					wiz.getContext().get(DocearUser.class).activate();
+					WorkspaceController.save();
+				}
+			}
+		}).start();
 	}
 
 }
