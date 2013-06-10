@@ -148,6 +148,7 @@ public class DocearWorkspaceSettings extends ADocearServiceFeature implements IW
 		if(DocearController.getPropertiesController().getProperty(DOCEAR_SAVE_BACKUP) != null) {
 			user.setBackupEnabled(Boolean.parseBoolean(DocearController.getPropertiesController().getProperty(DOCEAR_SAVE_BACKUP)));
 		}
+		WorkspaceController.load();
 	}
 	
 	public void load(DocearUser user) throws IOException {
