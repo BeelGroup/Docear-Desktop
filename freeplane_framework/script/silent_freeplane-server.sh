@@ -1,3 +1,3 @@
 #!/bin/sh
 echo "starting freeplane server"
-./freeplane-server.sh &
+xvfb-run ./freeplane-server.sh &
