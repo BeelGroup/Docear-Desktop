@@ -25,6 +25,8 @@ import org.docear.messages.Messages.ChangeNodeResponse;
 import org.docear.messages.Messages.CloseAllOpenMapsRequest;
 import org.docear.messages.Messages.CloseMapRequest;
 import org.docear.messages.Messages.CloseUnusedMaps;
+import org.docear.messages.Messages.CreateMindmapRequest;
+import org.docear.messages.Messages.CreateMindmapResponse;
 import org.docear.messages.Messages.FetchMindmapUpdatesRequest;
 import org.docear.messages.Messages.FetchMindmapUpdatesResponse;
 import org.docear.messages.Messages.GetNodeRequest;
@@ -857,6 +859,28 @@ public class AkkaTests {
 						System.out.println(updates.get(1));
 
 						closeMindMapOnServer(5);
+					}
+				};
+			}
+		};
+	}
+	
+	@Test
+	public void testCreateNewMap() {
+		new JavaTestKit(system) {
+			{
+				localActor.tell(getRef(), getRef());
+				new Within(duration("3 seconds")) {
+					@Override
+					public void run() {
+						final UserIdentifier userIdentifier = new UserIdentifier(USERNAME1, SOURCE);
+						final MapIdentifier mapIdentifier = new MapIdentifier("-1", "/mindmaps/test.mm");
+						
+						final CreateMindmapRequest request = new CreateMindmapRequest(userIdentifier, mapIdentifier);
+						remoteActor.tell(request, localActor);
+
+						CreateMindmapResponse response = expectMsgClass(CreateMindmapResponse.class);
+						assertThat(response.isSuccess()).isEqualTo(true);
 					}
 				};
 			}

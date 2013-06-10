@@ -2,7 +2,6 @@ package org.freeplane.plugin.remote.client.services;
 
 import java.io.PrintStream;
 import java.net.URI;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

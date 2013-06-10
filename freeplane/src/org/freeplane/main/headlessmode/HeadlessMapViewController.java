@@ -49,21 +49,20 @@ import org.freeplane.features.ui.IMapViewChangeListener;
 import org.freeplane.features.ui.IMapViewManager;
 
 /**
- * @author Dimitry Polivaev
- * 24.12.2012
+ * @author Dimitry Polivaev 24.12.2012
  */
 public class HeadlessMapViewController implements IMapViewManager {
 	final private Map<String, MapModel> maps = new HashMap<String, MapModel>();
-	Collection<IMapSelectionListener> mapSelectionListeners = new ArrayList<IMapSelectionListener>(); 
+	Collection<IMapSelectionListener> mapSelectionListeners = new ArrayList<IMapSelectionListener>();
 	private MapModel currentMap = null;
 	private String currentKey = null;
 
 	public void addMapSelectionListener(IMapSelectionListener pListener) {
-		
+
 	}
 
 	public void addMapViewChangeListener(IMapViewChangeListener pListener) {
-		
+
 	}
 
 	public boolean changeToMapView(Component newMapView) {
@@ -71,18 +70,17 @@ public class HeadlessMapViewController implements IMapViewManager {
 	}
 
 	public boolean changeToMapView(String mapViewDisplayName) {
-		if(mapViewDisplayName != null && maps.containsKey(mapViewDisplayName)) {
+		if (mapViewDisplayName != null && maps.containsKey(mapViewDisplayName)) {
 			final MapModel nextMap = maps.get(mapViewDisplayName);
 			MapModel oldMap = currentMap;
-			for(IMapSelectionListener mapSelectionListener : mapSelectionListeners)
+			for (IMapSelectionListener mapSelectionListener : mapSelectionListeners)
 				mapSelectionListener.beforeMapChange(oldMap, nextMap);
 			currentKey = mapViewDisplayName;
 			currentMap = nextMap;
-			for(IMapSelectionListener mapSelectionListener : mapSelectionListeners)
+			for (IMapSelectionListener mapSelectionListener : mapSelectionListeners)
 				mapSelectionListener.afterMapChange(oldMap, nextMap);
-	        return true;
-        }
-        else
+			return true;
+		} else
 			return false;
 	}
 
@@ -92,14 +90,14 @@ public class HeadlessMapViewController implements IMapViewManager {
 
 	public String checkIfFileIsAlreadyOpened(URL urlToCheck) throws MalformedURLException {
 		final String key = urlToCheck.toString();
-		if(maps.containsKey(key))
+		if (maps.containsKey(key))
 			return key;
 		else
 			return null;
 	}
 
 	public boolean close(boolean withoutSave) {
-		if(currentMap == null)
+		if (currentMap == null)
 			return false;
 		maps.remove(currentKey);
 		currentKey = null;
@@ -173,7 +171,7 @@ public class HeadlessMapViewController implements IMapViewManager {
 
 	public void newMapView(MapModel map, ModeController modeController) {
 		final String key = map.getURL().toString();
-		if(key.equals(currentKey))
+		if (key.equals(currentKey))
 			close(true);
 		maps.put(key, map);
 		changeToMapView(key);
@@ -208,7 +206,7 @@ public class HeadlessMapViewController implements IMapViewManager {
 	}
 
 	public boolean tryToChangeToMapView(URL url) throws MalformedURLException {
-		if(url == null)
+		if (url == null)
 			return false;
 		return tryToChangeToMapView(url.toString());
 	}
@@ -238,15 +236,15 @@ public class HeadlessMapViewController implements IMapViewManager {
 	}
 
 	public void updateMenus(MenuBuilder menuBuilder) {
-		
+
 	}
 
 	public void obtainFocusForSelected() {
-		
+
 	}
 
 	public void setTitle() {
-		
+
 	}
 
 	public Object setEdgesRenderingHint(Graphics2D g) {
@@ -254,7 +252,7 @@ public class HeadlessMapViewController implements IMapViewManager {
 	}
 
 	public void setTextRenderingHint(Graphics2D g) {
-		
+
 	}
 
 	public boolean closeAllMaps() {
@@ -263,20 +261,31 @@ public class HeadlessMapViewController implements IMapViewManager {
 		currentMap = null;
 		return true;
 	}
-	
+
 	private class MapSelection implements IMapSelection {
+
+		private NodeModel selectedNode = null;
 
 		public void centerNode(NodeModel node) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		public NodeModel getSelected() {
 			// TODO just a hack because of undo
-			return Controller.getCurrentController().getModeController().getMapController().getRootNode();
+			if (selectedNode != null)
+				return selectedNode;
+			else {
+				try {
+					return Controller.getCurrentController().getModeController().getMapController().getRootNode();
+				} catch (NullPointerException e) {
+					return null;
+				}
+			}
+
 		}
 
-		public Set<NodeModel> getSelection() {			 
+		public Set<NodeModel> getSelection() {
 			return new HashSet<NodeModel>();
 		}
 
@@ -291,49 +300,46 @@ public class HeadlessMapViewController implements IMapViewManager {
 		}
 
 		public boolean isSelected(NodeModel node) {
-			// TODO Auto-generated method stub
-			return false;
+			return selectedNode.equals(node);
 		}
 
-		public void keepNodePosition(NodeModel node, float horizontalPoint,
-				float verticalPoint) {
+		public void keepNodePosition(NodeModel node, float horizontalPoint, float verticalPoint) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		public void makeTheSelected(NodeModel node) {
-			// TODO Auto-generated method stub
-			
+			this.selectedNode = node;
+
 		}
 
 		public void scrollNodeToVisible(NodeModel selected) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		public void selectAsTheOnlyOneSelected(NodeModel node) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		public void selectBranch(NodeModel node, boolean extend) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		public void selectContinuous(NodeModel node) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		public void selectRoot() {
-			// TODO Auto-generated method stub
-			
+			selectedNode = Controller.getCurrentController().getModeController().getMapController().getRootNode();
 		}
 
 		public void setSiblingMaxLevel(int nodeLevel) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		public int size() {
@@ -343,16 +349,16 @@ public class HeadlessMapViewController implements IMapViewManager {
 
 		public void toggleSelected(NodeModel node) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		public void replaceSelection(NodeModel[] nodes) {
 			// TODO Auto-generated method stub
-			
+
 		}
 	}
 
 	public void setScrollbarsVisible(boolean areScrollbarsVisible) {
-		
+
 	}
 }

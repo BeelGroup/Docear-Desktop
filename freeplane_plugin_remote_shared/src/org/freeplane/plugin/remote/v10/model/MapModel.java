@@ -15,16 +15,14 @@ public class MapModel implements Serializable {
 	public String id;
 	public Boolean isReadonly;
 	public NodeModelRoot root;
-	public String name;
 	public int revision;
 
 	public MapModel() {
 	}
 	
-	public MapModel(org.freeplane.features.map.MapModel freeplaneMap, String name, int revision, boolean autoloadChildren) {
+	public MapModel(org.freeplane.features.map.MapModel freeplaneMap, int revision, boolean autoloadChildren) {
 		id = freeplaneMap.getTitle();
 		isReadonly = freeplaneMap.isReadOnly();
-		this.name = name;
 		this.revision = revision;
 		
 		NodeModel rootNodeFreeplane = freeplaneMap.getRootNode();

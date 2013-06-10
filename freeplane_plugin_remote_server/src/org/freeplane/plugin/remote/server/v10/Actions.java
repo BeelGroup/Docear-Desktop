@@ -5,6 +5,7 @@ import static org.freeplane.plugin.remote.RemoteUtils.changeNodeAttribute;
 import static org.freeplane.plugin.remote.RemoteUtils.getNodeFromOpenMapById;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
@@ -17,6 +18,8 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 
+import javax.management.RuntimeErrorException;
+
 import org.apache.commons.io.FileUtils;
 import org.docear.messages.Messages.AddNodeRequest;
 import org.docear.messages.Messages.AddNodeResponse;
@@ -28,6 +31,8 @@ import org.docear.messages.Messages.CloseAllOpenMapsRequest;
 import org.docear.messages.Messages.CloseMapRequest;
 import org.docear.messages.Messages.CloseServerRequest;
 import org.docear.messages.Messages.CloseUnusedMaps;
+import org.docear.messages.Messages.CreateMindmapRequest;
+import org.docear.messages.Messages.CreateMindmapResponse;
 import org.docear.messages.Messages.FetchMindmapUpdatesRequest;
 import org.docear.messages.Messages.FetchMindmapUpdatesResponse;
 import org.docear.messages.Messages.GetNodeRequest;
@@ -54,6 +59,7 @@ import org.docear.messages.exceptions.NodeNotFoundException;
 import org.docear.messages.exceptions.NodeNotLockedByUserException;
 import org.docear.messages.models.MapIdentifier;
 import org.docear.messages.models.UserIdentifier;
+import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.MapWriter;
 import org.freeplane.features.map.NodeModel;
@@ -123,9 +129,8 @@ public class Actions {
 		// create the MapModel for JSON
 		logger().debug("Actions.getMapModelJson => creating mapmodel for JSON-convertion");
 		final OpenMindmapInfo info = RemoteController.getMapIdentifierInfoMap().get(request.getMapIdentifier());
-		final String mapName = info.getName();
 		final int revision = info.getCurrentRevision();
-		MapModel mm = new MapModel(freeplaneMap, mapName, revision, loadAllNodes);
+		MapModel mm = new MapModel(freeplaneMap, revision, loadAllNodes);
 
 		if (!loadAllNodes) {
 			RemoteUtils.loadNodesIntoModel(mm.root, nodeCount);
@@ -195,17 +200,21 @@ public class Actions {
 		openMindmapInfoMap().remove(mapIdentifier);
 	}
 
-	public static OpenMindMapResponse openMindmap(final OpenMindMapRequest request) {
-		final MapIdentifier mapIdentifier = request.getMapIdentifier();
-		final String mapContent = request.getMindmapFileContent();
-		final String mapName = request.getMindmapFileName();
-		logger().debug("Actions.openMindmap => mapId: {}; mapName: {}; content:'{}...'", mapIdentifier.getMapId(), mapName, mapContent.substring(0, Math.min(mapContent.length(), 20)));
-
-		// create file
+	private static String getTempFileName() {
 		final Random ran = new Random();
 		final String filename = "" + System.currentTimeMillis() + ran.nextInt(100);
 		final String tempDirPath = System.getProperty("java.io.tmpdir");
-		final File file = new File(tempDirPath + "/docear/" + filename + ".mm");
+		return tempDirPath + "/docear/" + filename + ".mm";
+	}
+
+	public static OpenMindMapResponse openMindmap(final OpenMindMapRequest request) {
+		final MapIdentifier mapIdentifier = request.getMapIdentifier();
+		final String mapContent = request.getMindmapFileContent();
+		logger().debug("Actions.openMindmap => mapId: {}; content:'{}...'", mapIdentifier.getMapId(), mapContent.substring(0, Math.min(mapContent.length(), 20)));
+
+		// create file
+
+		final File file = new File(getTempFileName());
 		logger().debug("Actions.openMindmap => temporary file '{}' was created", file.getAbsolutePath());
 
 		try {
@@ -214,7 +223,7 @@ public class Actions {
 
 			// put map in openMap Collection
 			final URL pathURL = file.toURI().toURL();
-			final OpenMindmapInfo info = new OpenMindmapInfo(pathURL, mapName);
+			final OpenMindmapInfo info = new OpenMindmapInfo(pathURL);
 			openMindmapInfoMap().put(request.getMapIdentifier(), info);
 			logger().debug("Actions.openMindmap => mindmap was put into openMindmapInfoMap ({} => {})", mapIdentifier.getMapId(), info.getMapUrl());
 
@@ -338,9 +347,9 @@ public class Actions {
 		// get parent Node
 		logger().debug("Actions.addNode => retrieving freeplane parent node");
 		final NodeModel parentNode = getNodeFromOpenMapById(mmapController(), parentNodeId);
-		
+
 		Side sideAdjusted = side;
-		if (parentNode.isRoot()){
+		if (parentNode.isRoot()) {
 			sideAdjusted = side == null ? Side.Left : side;
 		} else {
 			sideAdjusted = null;
@@ -518,7 +527,8 @@ public class Actions {
 			logger().debug("Actions.requestLock => no lock on node, creating lock...");
 			final String mapUpdateJson = addLockToNode(userIdentifier, mapIdentifier, node);
 			return new RequestLockResponse(true, mapUpdateJson);
-		} else if (userIdentifier.getUsername().equals(lockModel.getUsername())) { // refresh from
+		} else if (userIdentifier.getUsername().equals(lockModel.getUsername())) { // refresh
+																					// from
 			// locking user
 			refreshLockAccessTime(node);
 			return new RequestLockResponse(true, null);
@@ -559,6 +569,23 @@ public class Actions {
 		} else {
 			return new ReleaseLockResponse(false, null);
 		}
+	}
+
+	public static CreateMindmapResponse createNewMindMap(CreateMindmapRequest request) throws FileNotFoundException, IOException, URISyntaxException, XMLException {
+		final String filename = getTempFileName();
+
+		final File file = new File(filename);
+		final MMapIO mapIO = (MMapIO) RemoteController.getMapIO();
+		final org.freeplane.features.map.MapModel mapModel = mmapController().newModel();
+		mapIO.writeToFile(mapModel, file);
+		final URL mapUrl = file.toURI().toURL();
+		mapIO.newMap(mapUrl);
+		
+		final OpenMindmapInfo openMindmapInfo = new OpenMindmapInfo(mapUrl);
+
+		openMindmapInfoMap().put(request.getMapIdentifier(), openMindmapInfo);
+
+		return new CreateMindmapResponse(true);
 	}
 
 	public static void releaseTimedOutLocks(ReleaseTimedOutLocks request) throws MapNotFoundException, JsonGenerationException, JsonMappingException, IOException {
@@ -670,7 +697,8 @@ public class Actions {
 			// add lock
 			freeplaneNode.addExtension(lockModel);
 
-			final ChangeNodeAttributeUpdate update = new ChangeNodeAttributeUpdate(userIdentifier.getSource(), userIdentifier.getUsername(), freeplaneNode.getID(), "locked", userIdentifier.getUsername());
+			final ChangeNodeAttributeUpdate update = new ChangeNodeAttributeUpdate(userIdentifier.getSource(), userIdentifier.getUsername(), freeplaneNode.getID(), "locked",
+					userIdentifier.getUsername());
 			// add change to revision list
 			info.addUpdate(update);
 			return update.toJson();

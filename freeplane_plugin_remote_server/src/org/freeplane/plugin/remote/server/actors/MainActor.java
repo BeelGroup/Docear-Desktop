@@ -7,6 +7,7 @@ import org.docear.messages.Messages.CloseAllOpenMapsRequest;
 import org.docear.messages.Messages.CloseMapRequest;
 import org.docear.messages.Messages.CloseServerRequest;
 import org.docear.messages.Messages.CloseUnusedMaps;
+import org.docear.messages.Messages.CreateMindmapRequest;
 import org.docear.messages.Messages.FetchMindmapUpdatesRequest;
 import org.docear.messages.Messages.GetNodeRequest;
 import org.docear.messages.Messages.ListenToUpdateOccurrenceRequest;
@@ -24,7 +25,6 @@ import org.docear.messages.exceptions.NodeNotFoundException;
 import org.freeplane.plugin.remote.server.InternalMessages.ReleaseTimedOutLocks;
 import org.freeplane.plugin.remote.server.RemoteController;
 import org.freeplane.plugin.remote.server.v10.Actions;
-import org.freeplane.plugin.remote.v10.model.updates.ChangeEdgeAttributeUpdate;
 import org.slf4j.Logger;
 
 import akka.actor.ActorRef;
@@ -43,8 +43,7 @@ public class MainActor extends UntypedActor {
 
 		if (!(message instanceof ReleaseTimedOutLocks)) {
 			// Release check happens every 5 seconds and would flood the logging
-			logger.info("MainActor.onReceive => '{}' received.", message.getClass().getName());
-			logger.info("MainActor.onReceive => Sender: '{}'", sender.path());
+			logger.debug("MainActor.onReceive => '{}' received.", message.getClass().getName());
 		}
 
 		Object response = null;
@@ -113,7 +112,7 @@ public class MainActor extends UntypedActor {
 			else if (message instanceof RequestLockRequest) {
 				response = Actions.requestLock((RequestLockRequest) message);
 			}
-			
+
 			// change edge
 			else if (message instanceof ChangeEdgeRequest) {
 				response = Actions.changeEdge((ChangeEdgeRequest) message);
@@ -122,6 +121,11 @@ public class MainActor extends UntypedActor {
 			// get updates since specific revision
 			else if (message instanceof FetchMindmapUpdatesRequest) {
 				response = Actions.fetchUpdatesSinceRevision((FetchMindmapUpdatesRequest) message);
+			}
+
+			// create a new map
+			else if (message instanceof CreateMindmapRequest) {
+				response = Actions.createNewMindMap((CreateMindmapRequest) message);
 			}
 
 			// listen if update occurs
