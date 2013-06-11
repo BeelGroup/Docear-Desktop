@@ -50,7 +50,6 @@ public class DocearUserRegistrationAction extends AWorkspaceAction {
 				super.aboutToDisplayPage(context);
 				context.getBackButton().setVisible(false);
 			}
-			
 		};
 		desc.getPage().setPreferredSize(new Dimension(640,480));
 		wizard.registerWizardPanel(desc);
@@ -169,7 +168,13 @@ public class DocearUserRegistrationAction extends AWorkspaceAction {
 			public void run() {
 				int ret = wiz.show();
 				if(ret == Wizard.OK_OPTION) {
-					wiz.getContext().get(DocearUser.class).activate();
+					DocearUser user = wiz.getContext().get(DocearUser.class);
+					DocearUser clone = user.clone();
+					user.activate();
+					user.setBackupEnabled(clone.isBackupEnabled());
+					user.setCollaborationEnabled(clone.isCollaborationEnabled());
+					user.setSynchronizationEnabled(clone.isSynchronizationEnabled());
+					user.setRecommendationsEnabled(clone.isRecommendationsEnabled());
 					WorkspaceController.save();
 				}
 			}

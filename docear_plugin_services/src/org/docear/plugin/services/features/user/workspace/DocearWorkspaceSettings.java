@@ -141,13 +141,15 @@ public class DocearWorkspaceSettings extends ADocearServiceFeature implements IW
 		}
 		if(strRetrieval != null) {
 			int ir = Integer.parseInt(strRetrieval);
-			if((DocearUser.RECOMMENDATIONS & ir) > 0) {
-				user.setRecommendationsEnabled(true);
-			}
+			user.setRecommendationsEnabled((DocearUser.RECOMMENDATIONS & ir) > 0);
+			user.setCollaborationEnabled(((DocearUser.COLLABORATION & ir) > 0));
+			user.setBackupEnabled(((DocearUser.BACKUP & ir) > 0));
+			user.setSynchronizationEnabled(((DocearUser.SYNCHRONIZATION & ir) > 0));
 		}
 		if(DocearController.getPropertiesController().getProperty(DOCEAR_SAVE_BACKUP) != null) {
 			user.setBackupEnabled(Boolean.parseBoolean(DocearController.getPropertiesController().getProperty(DOCEAR_SAVE_BACKUP)));
 		}
+		DocearUser clone = user.clone();
 		WorkspaceController.load();
 	}
 	

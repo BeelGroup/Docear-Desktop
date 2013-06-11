@@ -8,7 +8,7 @@ import java.util.List;
 import org.freeplane.core.user.IUserAccount;
 import org.freeplane.core.user.UserAccountController;
 
-public class DocearUser implements IUserAccount {
+public class DocearUser implements IUserAccount, Cloneable {
 	public static final String RECOMMENDATIONS_PROPERTY = "RECOMMENDATIONS";
 	public static final String SYNCHRONIZATION_PROPERTY = "SYNCHRONIZATION";
 	public static final String BACKUP_PROPERTY = "BACKUP";
@@ -32,7 +32,7 @@ public class DocearUser implements IUserAccount {
 	public static final int ALLOW_RESEARCH = 1;
 	
 	
-	String username = null;
+	private String username = null;
 	private String email = null;
 	private String password = null;
 	
@@ -46,7 +46,7 @@ public class DocearUser implements IUserAccount {
 	private boolean isNewsletterEnabled = false;
 	
 	private boolean valid = false;
-	private List<PropertyChangeListener> listeners = new ArrayList<PropertyChangeListener>();
+	private transient List<PropertyChangeListener> listeners = new ArrayList<PropertyChangeListener>();
 	private boolean isOnline;
 	private boolean enabled = true;
 	private boolean isNew;
@@ -279,6 +279,16 @@ public class DocearUser implements IUserAccount {
 		}
 		
 		return super.equals(obj);
+	}
+	
+	public DocearUser clone() {
+		DocearUser user;
+		try {
+			user = (DocearUser) super.clone();
+			return user;
+		} catch (CloneNotSupportedException e) {
+			throw new UnsupportedOperationException();
+		}
 	}
 	
 	public String toString() {
