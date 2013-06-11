@@ -16,7 +16,7 @@ import org.freeplane.core.ui.SelectableAction;
 import org.freeplane.core.ui.components.JAutoCheckBoxMenuItem;
 import org.freeplane.core.ui.components.JFreeplaneMenuItem;
 import org.freeplane.features.mode.Controller;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.actions.AWorkspaceAction;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 
@@ -151,8 +151,9 @@ public class WorkspacePopupMenuBuilder {
 				public void popupMenuWillBecomeVisible(final PopupMenuEvent e) {
 					if(action instanceof AWorkspaceAction && e.getSource() instanceof WorkspacePopupMenu) {
 						WorkspacePopupMenu menu = ((WorkspacePopupMenu)e.getSource());
-						AWorkspaceTreeNode node = (AWorkspaceTreeNode) ((JTree)menu.getInvoker()).getPathForLocation(menu.getInvokerLocation().x, menu.getInvokerLocation().y).getLastPathComponent();
-						((AWorkspaceAction) action).setSelectedFor(node);
+						TreePath[] selectedNodes = ((JTree)menu.getInvoker()).getSelectionPaths();
+						AWorkspaceTreeNode node = (AWorkspaceTreeNode) ((JTree)menu.getInvoker()).getClosestPathForLocation(menu.getInvokerLocation().x, menu.getInvokerLocation().y).getLastPathComponent();
+						((AWorkspaceAction) action).setSelectedFor(node, selectedNodes);
 					} 
 					else {
 						action.setSelected();
@@ -160,7 +161,7 @@ public class WorkspacePopupMenuBuilder {
 				}
 			});
 		}
-		if (AFreeplaneAction.checkEnabledOnPopup(action)) {
+		if (AWorkspaceAction.checkEnabledOnPopup(action)) {
 			popupMenu.addPopupMenuListener(new PopupMenuListener() {
 				public void popupMenuCanceled(final PopupMenuEvent e) {
 				}
@@ -171,12 +172,14 @@ public class WorkspacePopupMenuBuilder {
 				public void popupMenuWillBecomeVisible(final PopupMenuEvent e) {
 					if(action instanceof AWorkspaceAction && e.getSource() instanceof WorkspacePopupMenu) {
 						WorkspacePopupMenu menu = ((WorkspacePopupMenu)e.getSource());
-						TreePath path = ((JTree)menu.getInvoker()).getPathForLocation(menu.getInvokerLocation().x, menu.getInvokerLocation().y);
+						TreePath[] selectedNodes = ((JTree)menu.getInvoker()).getSelectionPaths();
+						TreePath path = ((JTree)menu.getInvoker()).getClosestPathForLocation( menu.getInvokerLocation().x , menu.getInvokerLocation().y);
 						if(path != null) {
 							AWorkspaceTreeNode node = (AWorkspaceTreeNode) path.getLastPathComponent();
-							((AWorkspaceAction) action).setEnabledFor(node);
-						} else {
-							((AWorkspaceAction) action).setEnabledFor((AWorkspaceTreeNode) WorkspaceUtils.getModel().getRoot());
+							((AWorkspaceAction) action).setEnabledFor(node, selectedNodes);
+						} 
+						else {
+							((AWorkspaceAction) action).setEnabledFor((AWorkspaceTreeNode) WorkspaceController.getCurrentModel().getRoot(), selectedNodes);
 						}
 					}
 					else {

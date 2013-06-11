@@ -27,6 +27,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.Icon;
+
 import org.freeplane.core.extension.IExtension;
 import org.freeplane.core.io.ReadManager;
 import org.freeplane.core.io.WriteManager;
@@ -149,6 +151,18 @@ public class TextController implements IExtension {
 			return new HighlightedTransformedObject(object);
 		else
 			return object;
+	}
+
+	public Icon getIcon(Object object, final NodeModel nodeModel, Object extension){
+		if(object instanceof HighlightedTransformedObject){
+			return getIcon(((HighlightedTransformedObject)object).getObject(), nodeModel, extension);
+		}
+		for (IContentTransformer textTransformer : getTextTransformers()) {
+			Icon icon = textTransformer.getIcon(this, object, nodeModel, extension);
+			if( icon != null)
+				return icon;
+		}
+		return null;
 	}
 
 	public boolean isTextFormattingDisabled(final NodeModel nodeModel) {
@@ -322,16 +336,21 @@ public class TextController implements IExtension {
 	public String getNodeFormat(NodeModel node) {
 		Collection<IStyle> collection = LogicalStyleController.getController(modeController).getStyles(node);
 		final MapStyleModel model = MapStyleModel.getExtension(node.getMap());
-		for(IStyle styleKey : collection){
-			final NodeModel styleNode = model.getStyleNode(styleKey);
-			if (styleNode == null) {
-				continue;
-			}
-			final String format = NodeStyleModel.getNodeFormat(styleNode);
-			if (format != null) {
-				return format;
-			}
-        }
+		try {
+			for(IStyle styleKey : collection){
+				final NodeModel styleNode = model.getStyleNode(styleKey);
+				if (styleNode == null) {
+					continue;
+				}
+				final String format = NodeStyleModel.getNodeFormat(styleNode);
+				if (format != null) {
+					return format;
+				}
+	        }
+		}
+		catch (Exception e) {
+			LogUtils.warn("Exception in org.freeplane.features.text.TextController.getNodeFormat(node): "+ e.getMessage());
+		}
         return parseData() ? PatternFormat.STANDARD_FORMAT_PATTERN : PatternFormat.IDENTITY_PATTERN;
     }
 
@@ -354,4 +373,8 @@ public class TextController implements IExtension {
 		}
 		return false;
     }
+	public ModeController getModeController() {
+    	return modeController;
+    }
+
 }

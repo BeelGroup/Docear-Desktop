@@ -78,6 +78,9 @@ import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.features.text.TextController;
 import org.freeplane.features.ui.IMapViewChangeListener;
+import org.freeplane.features.url.IMapInputStreamConverter;
+import org.freeplane.features.url.MapConversionException;
+import org.freeplane.features.url.MapVersionInterpreter;
 import org.freeplane.features.url.UrlManager;
 import org.freeplane.n3.nanoxml.XMLException;
 import org.freeplane.n3.nanoxml.XMLParseException;
@@ -222,6 +225,10 @@ public class MFileManager extends UrlManager implements IMapViewChangeListener {
 
 	public MFileManager() {
 		super();
+	}
+	
+	protected void init() {
+		super.init();
 		createActions();
 		createPreferences();
 		if (ResourceController.getResourceController().getBooleanProperty("single_backup_directory")) {
@@ -397,7 +404,7 @@ public class MFileManager extends UrlManager implements IMapViewChangeListener {
         	map.setReadOnly(true);
         }
 		if (file.length() != 0) {
-			//Fixme: Docear - set the file for the map before parsing the xml --> needed by org.docear.plugin.pdfutilities.features.AnnotationXmlBuilder:95
+			//DOCEAR - fixed: set the file for the map before parsing the xml, necessary for some events
 			setFile(map, file);
         	NodeModel root = loadTree(map, file);
         	assert(map.getRootNode() == root);
@@ -472,6 +479,7 @@ public class MFileManager extends UrlManager implements IMapViewChangeListener {
 		final InputStream sequencedInput = new SequenceInputStream(readBytes, file);
 		Reader reader = null;
 		MapVersionInterpreter versionInterpreter = MapVersionInterpreter.getVersionInterpreter(mapStart);
+		map.addExtension(versionInterpreter);
 		if(versionInterpreter.anotherDialect){
 			String message = versionInterpreter.getDialectInfo(f.getAbsolutePath());
 			UITools.showMessage(message, JOptionPane.WARNING_MESSAGE);
@@ -486,6 +494,7 @@ public class MFileManager extends UrlManager implements IMapViewChangeListener {
 			}
 			else {
 				sequencedInput.close();				
+				//reader = UrlManager.getUpdateReader(f, FREEPLANE_VERSION_UPDATER_XSLT);
 				reader = isConverter.getConvertedStream(f);				
 			}
 		}
@@ -526,8 +535,7 @@ public class MFileManager extends UrlManager implements IMapViewChangeListener {
 	public void open() {
 		final JFileChooser chooser = getFileChooser(false);
 		chooser.setMultiSelectionEnabled(true);
-		final int returnVal = chooser
-		    .showOpenDialog(Controller.getCurrentController().getViewController().getMapView());
+		final int returnVal = chooser.showOpenDialog(Controller.getCurrentController().getMapViewManager().getMapViewComponent());
 		if (returnVal != JFileChooser.APPROVE_OPTION) {
 			return;
 		}
@@ -544,7 +552,7 @@ public class MFileManager extends UrlManager implements IMapViewChangeListener {
 				break;
 			}
 		}
-		Controller.getCurrentController().getViewController().setTitle();
+		Controller.getCurrentController().getMapViewManager().setTitle();
 	}
 
 	/**@deprecated -- use MMapIO*/
@@ -599,8 +607,7 @@ public class MFileManager extends UrlManager implements IMapViewChangeListener {
 		else if (startFile.isDirectory()) {
 			final JFileChooser chooser = getFileChooser(true);
 			chooser.setCurrentDirectory(startFile);
-			final int returnVal = chooser.showOpenDialog(Controller.getCurrentController().getViewController()
-			    .getMapView());
+			final int returnVal = chooser.showOpenDialog(Controller.getCurrentController().getMapViewManager().getMapViewComponent());
 			if (returnVal != JFileChooser.APPROVE_OPTION) {
 				return null;
 			}
@@ -637,14 +644,14 @@ public class MFileManager extends UrlManager implements IMapViewChangeListener {
 		final File userTemplates = defaultUserTemplateDir();
 		chooser.setCurrentDirectory(userTemplates);
 		final int returnVal = chooser
-		    .showOpenDialog(Controller.getCurrentController().getViewController().getMapView());
+		    .showOpenDialog(Controller.getCurrentController().getMapViewManager().getMapViewComponent());
 		if (returnVal != JFileChooser.APPROVE_OPTION) {
 			return;
 		}
 		File file = chooser.getSelectedFile();
 		if (file.exists()) {
 			final int overwriteMap = JOptionPane.showConfirmDialog(Controller.getCurrentController()
-			    .getViewController().getMapView(), TextUtils.getText("map_already_exists"), "Freeplane",
+				.getMapViewManager().getMapViewComponent(), TextUtils.getText("map_already_exists"), "Freeplane",
 			    JOptionPane.YES_NO_OPTION);
 			if (overwriteMap != JOptionPane.YES_OPTION) {
 				return;
@@ -729,7 +736,7 @@ public class MFileManager extends UrlManager implements IMapViewChangeListener {
 		}
 		chooser.setDialogTitle(TextUtils.getText("SaveAsAction.text"));
 		final int returnVal = chooser
-		    .showSaveDialog(Controller.getCurrentController().getViewController().getMapView());
+		    .showSaveDialog(Controller.getCurrentController().getMapViewManager().getMapViewComponent());
 		if (returnVal != JFileChooser.APPROVE_OPTION) {
 			return false;
 		}
@@ -742,7 +749,7 @@ public class MFileManager extends UrlManager implements IMapViewChangeListener {
 		}
 		if (f.exists()) {
 			final int overwriteMap = JOptionPane.showConfirmDialog(Controller.getCurrentController()
-			    .getViewController().getMapView(), TextUtils.getText("map_already_exists"), "Freeplane",
+				.getMapViewManager().getMapViewComponent(), TextUtils.getText("map_already_exists"), "Freeplane",
 			    JOptionPane.YES_NO_OPTION);
 			if (overwriteMap != JOptionPane.YES_OPTION) {
 				return false;

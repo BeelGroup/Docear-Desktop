@@ -6,15 +6,16 @@ import java.awt.Dimension;
 import java.awt.dnd.DropTarget;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.net.URI;
 import java.net.URL;
 
-import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
+import javax.swing.event.TreeModelEvent;
 
 import net.sf.jabref.BibtexEntry;
 import net.sf.jabref.JabRefPreferences;
@@ -34,6 +35,7 @@ import org.docear.plugin.bibtex.actions.UpdateReferencesAllOpenMapsAction;
 import org.docear.plugin.bibtex.actions.UpdateReferencesCurrentMapAction;
 import org.docear.plugin.bibtex.actions.UpdateReferencesInLibrary;
 import org.docear.plugin.bibtex.jabref.JabRefAttributes;
+import org.docear.plugin.bibtex.jabref.JabRefBaseHandle;
 import org.docear.plugin.bibtex.jabref.JabrefWrapper;
 import org.docear.plugin.bibtex.jabref.labelPattern.ILabelPattern;
 import org.docear.plugin.bibtex.listeners.BibtexNodeDropListener;
@@ -43,13 +45,14 @@ import org.docear.plugin.bibtex.listeners.NodeAttributeListener;
 import org.docear.plugin.bibtex.listeners.NodeSelectionListener;
 import org.docear.plugin.bibtex.listeners.SplmmMapsConvertListener;
 import org.docear.plugin.core.ALanguageController;
-import org.docear.plugin.core.CoreConfiguration;
 import org.docear.plugin.core.DocearController;
+import org.docear.plugin.core.IBibtexDatabase;
 import org.docear.plugin.core.event.DocearEvent;
 import org.docear.plugin.core.event.DocearEventType;
 import org.docear.plugin.core.event.IDocearEventListener;
-import org.docear.plugin.core.util.CoreUtils;
-import org.docear.plugin.core.workspace.node.LinkTypeReferencesNode;
+import org.docear.plugin.core.workspace.model.DocearProjectChangedEvent;
+import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
+import org.docear.plugin.core.workspace.model.IDocearProjectListener;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
 import org.docear.plugin.pdfutilities.map.MapConverter;
 import org.freeplane.core.resources.ResourceController;
@@ -62,14 +65,17 @@ import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
-import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.features.ui.INodeViewLifeCycleListener;
+import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
-import org.freeplane.plugin.workspace.event.IWorkspaceEventListener;
-import org.freeplane.plugin.workspace.event.WorkspaceEvent;
+import org.freeplane.plugin.workspace.features.ProjectURLHandler;
+import org.freeplane.plugin.workspace.model.WorkspaceModelEvent;
+import org.freeplane.plugin.workspace.model.WorkspaceModelListener;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
+import org.freeplane.plugin.workspace.model.project.IProjectSelectionListener;
+import org.freeplane.plugin.workspace.model.project.ProjectSelectionEvent;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
 import org.freeplane.view.swing.map.NodeView;
@@ -105,8 +111,6 @@ public class ReferencesController extends ALanguageController implements IDocear
 	private static final String ADD_NEW_REFERENCE_LANG_KEY = "menu_add_new_reference";
 	private static final String ADD_EXISTING_REFERENCES_LANG_KEY = "menu_add_existing_references";
 	private static final String REMOVE_REFERENCE_LANG_KEY = "menu_remove_references";
-	private static final String UPDATE_REFERENCES_IN_LIBRARY_LANG_KEY = "menu_update_references_in_library";
-	private static final String UPDATE_REFERENCES_ALL_MAPS_LANG_KEY = "menu_update_references_all_maps";
 	private static final String UPDATE_REFERENCES_ALL_OPEN_MAPS_LANG_KEY = "menu_update_references_all_open_maps";
 	private static final String UPDATE_REFERENCES_CURRENT_MAP_LANG_KEY = "menu_update_references_current_map";
 //	private static final String CONVERT_SPLMM_REFERENCES_LANG_KEY = "menu_update_splmm_references_current_map";
@@ -117,8 +121,8 @@ public class ReferencesController extends ALanguageController implements IDocear
 			UPDATE_REFERENCES_CURRENT_MAP_LANG_KEY);
 	private AFreeplaneAction UpdateReferencesAllOpenMaps = new UpdateReferencesAllOpenMapsAction(
 			UPDATE_REFERENCES_ALL_OPEN_MAPS_LANG_KEY);
-	private AFreeplaneAction UpdateReferencesInLibrary = new UpdateReferencesInLibrary(UPDATE_REFERENCES_IN_LIBRARY_LANG_KEY);
-	private AFreeplaneAction UpdateReferencesAllMaps = new UpdateReferencesAllMapsAction(UPDATE_REFERENCES_ALL_MAPS_LANG_KEY);
+	private AFreeplaneAction UpdateReferencesInLibrary = new UpdateReferencesInLibrary();
+	private AFreeplaneAction UpdateReferencesAllMaps = new UpdateReferencesAllMapsAction();
 //	private AFreeplaneAction ConvertSplmmReferences = new ConvertSplmmReferencesAction(CONVERT_SPLMM_REFERENCES_LANG_KEY);
 	private AFreeplaneAction AddExistingReference = new AddExistingReferenceAction(ADD_EXISTING_REFERENCES_LANG_KEY);
 	private AFreeplaneAction RemoveReference = new RemoveReferenceAction(REMOVE_REFERENCE_LANG_KEY);
@@ -127,8 +131,8 @@ public class ReferencesController extends ALanguageController implements IDocear
 	private AFreeplaneAction CopyCiteKey = new CopyCiteKeyToClipboard();
 	
 	//private AFreeplaneAction ShowJabrefPreferences = new ShowJabrefPreferencesAction("show_jabref_preferences");
-	
-	private boolean isRunning = false;
+	private IDocearProjectListener projectListener;
+	private IProjectSelectionListener projectSelectionListener;
 
 	public ReferencesController(ModeController modeController) {
 		super();
@@ -143,10 +147,8 @@ public class ReferencesController extends ALanguageController implements IDocear
 		this.addMenuEntries();
 		this.registerListeners();
 
-		this.initJabref();
-		
+		this.initJabref();		
 	}
-	
 
 	private void setPreferencesForDocear() {
 		JabRefPreferences.getInstance(JabrefWrapper.class).put("groupAutoShow", "false");
@@ -204,74 +206,176 @@ public class ReferencesController extends ALanguageController implements IDocear
 		}
 	}
 
-	private boolean alreadyInserted = false;
-	private void initJabref() {		
-		if(WorkspaceController.getController().isInitialized() && !isRunning) {
-			this.jabRefAttributes = new JabRefAttributes();
-			this.splmmAttributes = new SplmmAttributes();
-			WorkspaceController.getController().addWorkspaceListener(new IWorkspaceEventListener() {				
-				public void workspaceReady(WorkspaceEvent event) {
-					if(!alreadyInserted) {
-						alreadyInserted = true;
+	
+	private void initJabref() {
+		this.jabRefAttributes = new JabRefAttributes();
+		this.splmmAttributes = new SplmmAttributes();
+		
+		final ClassLoader classLoader = getClass().getClassLoader();
+		try {
+			SwingUtilities.invokeAndWait( new Runnable() {
+				public void run() {
+					Thread.currentThread().setContextClassLoader(classLoader);
 					
-						SwingUtilities.invokeLater(new Runnable() {
-							public void run() {
-								//removeSelf();
-								WorkspacePopupMenu popupMenu = new DefaultFileNode("temp", new File("temp.tmp")).getContextMenu();
-								WorkspacePopupMenuBuilder.insertAction(popupMenu, "workspace.action.addOrUpdateReferenceEntry", 0);
-								WorkspacePopupMenuBuilder.insertAction(popupMenu, WorkspacePopupMenuBuilder.SEPARATOR, 1);
-								popupMenu = new LinkTypeFileNode().getContextMenu();
-								WorkspacePopupMenuBuilder.insertAction(popupMenu, "workspace.action.addOrUpdateReferenceEntry", 0);
-								WorkspacePopupMenuBuilder.insertAction(popupMenu, WorkspacePopupMenuBuilder.SEPARATOR, 1);
-							}
-						});
+					jabrefWrapper = new JabrefWrapper(Controller.getCurrentController().getViewController().getJFrame());
+					 
+					modeController.getUserInputListenerFactory().getMenuBar().addKeyStrokeInterceptor(new KeyBindInterceptor());
+					createOptionPanel(jabrefWrapper.getJabrefFrame());
+					
+					WorkspaceController.getModeExtension(modeController).getView().addProjectSelectionListener(getProjectSelectionListener());
+				}
+			});
+		}
+		catch (Exception e) {
+			LogUtils.severe(e);
+		}
+		Controller.getCurrentController().addAction(new ShowJabrefPreferencesAction("show_jabref_preferences"));
+		
+		NodeSelectionListener nodeSelectionListener = new NodeSelectionListener();
+		nodeSelectionListener.init();
+		
+		WorkspaceController.getModeExtension(modeController).getModel().addWorldModelListener(new WorkspaceModelListener() {
+			
+			public void treeStructureChanged(TreeModelEvent arg0) {}
+			
+			@Override
+			public void treeNodesRemoved(TreeModelEvent arg0) {}
+			
+			@Override
+			public void treeNodesInserted(TreeModelEvent arg0) {}
+			
+			@Override
+			public void treeNodesChanged(TreeModelEvent arg0) {}
+			
+			@Override
+			public void projectRemoved(WorkspaceModelEvent event) {
+				if(event.getProject() instanceof DocearWorkspaceProject) {
+					try {
+						final File file = URIUtils.getFile(ProjectURLHandler.resolve(event.getProject(), ((DocearWorkspaceProject)event.getProject()).getBibtexDatabase().toURL()).toURI());
+						if(file == null) {
+							return;
+						}
+						addOrUpdateProjectExtension((DocearWorkspaceProject) event.getProject(), null);
+					} catch (Exception e) {
+						LogUtils.warn(e);
 					}
 				}
-				private void removeSelf() {
-					WorkspaceController.getController().removeWorkspaceListener(this);
+			}
+			
+			@Override
+			public void projectAdded(WorkspaceModelEvent event) {
+				if(event.getProject() instanceof DocearWorkspaceProject) {
+					((DocearWorkspaceProject) event.getProject()).addProjectListener(getProjectListener());
 				}
-				public void workspaceChanged(WorkspaceEvent event) {}
-				public void toolBarChanged(WorkspaceEvent event) {}
-				public void openWorkspace(WorkspaceEvent event) {}
-				public void configurationLoaded(WorkspaceEvent event) {}
-				public void configurationBeforeLoading(WorkspaceEvent event) {}
-				public void closeWorkspace(WorkspaceEvent event) {}
-			});			
-			
-			NodeSelectionListener nodeSelectionListener = new NodeSelectionListener();
-			nodeSelectionListener.init();
-			
-			final ClassLoader classLoader = getClass().getClassLoader();
-			isRunning  = true;
-			try {
-				SwingUtilities.invokeAndWait( new Runnable() {
+			}
+		});
+		for(AWorkspaceProject project : WorkspaceController.getModeExtension(modeController).getModel().getProjects()) {
+			if(project instanceof DocearWorkspaceProject) {
+				((DocearWorkspaceProject) project).addProjectListener(getProjectListener());
+				loadDatabase((DocearWorkspaceProject)project);
+			}
+		}
+		
+		//insert some extra actions to file nodes
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				//removeSelf();
+				WorkspacePopupMenu popupMenu = new DefaultFileNode("temp", new File("temp.tmp")).getContextMenu();
+				WorkspacePopupMenuBuilder.insertAction(popupMenu, "workspace.action.addOrUpdateReferenceEntry", 0);
+				WorkspacePopupMenuBuilder.insertAction(popupMenu, WorkspacePopupMenuBuilder.SEPARATOR, 1);
+				popupMenu = new LinkTypeFileNode().getContextMenu();
+				WorkspacePopupMenuBuilder.insertAction(popupMenu, "workspace.action.addOrUpdateReferenceEntry", 0);
+				WorkspacePopupMenuBuilder.insertAction(popupMenu, WorkspacePopupMenuBuilder.SEPARATOR, 1);
+			}
+		});
+	}
+	
+	private void addOrUpdateProjectExtension(DocearWorkspaceProject project, JabRefBaseHandle handle) {
+		JabRefProjectExtension ext = (JabRefProjectExtension) project.getExtensions(JabRefProjectExtension.class);
+		if(handle == null) {			
+			project.removeExtension(JabRefProjectExtension.class);
+			if(ext != null) {
+				final JabRefBaseHandle extHandle = ext.getBaseHandle();
+				extHandle.removeProjectConnection(project);
+				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
-						Thread.currentThread().setContextClassLoader(classLoader);
-						URI uri = null;
-						if(DocearController.getController().getLibrary() != null) {
-							uri = DocearController.getController().getLibrary().getBibtexDatabase();
-						}
-						
-						if (uri != null) {						
-							jabrefWrapper = new JabrefWrapper(Controller.getCurrentController().getViewController().getJFrame(), CoreUtils.resolveURI(uri));						
-						}
-						else {
-							jabrefWrapper = new JabrefWrapper(Controller.getCurrentController().getViewController().getJFrame());
-						} 
-						modeController.getUserInputListenerFactory().getMenuBar().addKeyStrokeInterceptor(new KeyBindInterceptor());
-						createOptionPanel(jabrefWrapper.getJabrefFrame());
-						
-						
+						ReferencesController contr = ReferencesController.getController();
+						JabrefWrapper wrapper = contr.getJabrefWrapper();
+						extHandle.getBasePanel().getSaveAction().run();
+						wrapper.closeDatabase(extHandle);						
 					}
 				});
 			}
-			catch (Exception e) {
-				LogUtils.severe(e);
-			}
-			Controller.getCurrentController().addAction(new ShowJabrefPreferencesAction("show_jabref_preferences"));
+			return;
+		}		
+		
+		if(ext == null) {
+			ext = new JabRefProjectExtension(handle);
+			project.addExtension(JabRefProjectExtension.class, ext);
 		}
+		else {
+			ext.setBaseHandle(handle);
+		}
+		handle.addProjectConnection(project);
 	}
 	
+	private void showBasePanel(DocearWorkspaceProject project) {
+		final JabRefProjectExtension ext = (JabRefProjectExtension) project.getExtensions(JabRefProjectExtension.class);
+			if(ext != null) {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					ReferencesController contr = ReferencesController.getController();
+					JabrefWrapper wrapper = contr.getJabrefWrapper();
+					wrapper.getJabrefFrame().showBasePanel(ext.getBaseHandle().getBasePanel());						
+				}
+			});
+		}
+	}
+
+	
+	private IDocearProjectListener getProjectListener() {
+		if(projectListener == null) {
+			projectListener = new IDocearProjectListener() {
+				@Override
+				public void changed(DocearProjectChangedEvent event) {					
+					if(DocearEventType.LIBRARY_CHANGED.equals(event.getDescriptor()) && event.getObject() instanceof IBibtexDatabase) {
+						loadDatabase(event.getSource());
+					}
+				}
+			};
+		}
+		return projectListener;
+	}
+	
+	private void loadDatabase(final DocearWorkspaceProject project) {
+		final File file = URIUtils.getAbsoluteFile(project.getBibtexDatabase());
+		if(file == null) {
+			return;
+		}
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {								
+				ReferencesController contr = ReferencesController.getController();
+				JabrefWrapper wrapper = contr.getJabrefWrapper();								
+				JabRefBaseHandle handle = wrapper.openDatabase(file, true);
+				addOrUpdateProjectExtension(project, handle);
+			}
+		});
+	}
+	
+	private IProjectSelectionListener getProjectSelectionListener() {
+		if(this.projectSelectionListener == null) {
+			this.projectSelectionListener = new IProjectSelectionListener() {
+				public void selectionChanged(ProjectSelectionEvent event) {
+					if(event.getSelectedProject() instanceof DocearWorkspaceProject) {
+						showBasePanel((DocearWorkspaceProject) event.getSelectedProject());
+					}
+					
+				}
+			};
+		}
+		return this.projectSelectionListener;
+	}
+
 	public JabRefAttributes getJabRefAttributes() {
 		return jabRefAttributes;
 	}
@@ -315,8 +419,24 @@ public class ReferencesController extends ALanguageController implements IDocear
 				builder.addAction(MENU_BAR + REFERENCE_MANAGEMENT_MENU, AddExistingReference, MenuBuilder.AS_CHILD);
 				builder.addAction(MENU_BAR + REFERENCE_MANAGEMENT_MENU, RemoveReference, MenuBuilder.AS_CHILD);
 
+				JMenu updRefMenuBar = new JMenu(TextUtils.getText(UPDATE_REFERENCES_MENU_LANG_KEY));
+				updRefMenuBar.getPopupMenu().addPopupMenuListener(new PopupMenuListener() {
+					
+					@Override
+					public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+						UpdateReferencesInLibrary.setEnabled();
+						UpdateReferencesAllMaps.setEnabled();
+					}
+					
+					@Override
+					public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {}
+					
+					@Override
+					public void popupMenuCanceled(PopupMenuEvent e) {}
+				});
+				
 				builder.addMenuItem(MENU_BAR + REFERENCE_MANAGEMENT_MENU,
-						new JMenu(TextUtils.getText(UPDATE_REFERENCES_MENU_LANG_KEY)), MENU_BAR + REFERENCE_MANAGEMENT_MENU
+						updRefMenuBar, MENU_BAR + REFERENCE_MANAGEMENT_MENU
 								+ UPDATE_REFERENCES_MENU, MenuBuilder.AS_CHILD);
 				builder.addAction(MENU_BAR + REFERENCE_MANAGEMENT_MENU + UPDATE_REFERENCES_MENU, UpdateReferencesCurrentMap,
 						MenuBuilder.AS_CHILD);
@@ -341,8 +461,25 @@ public class ReferencesController extends ALanguageController implements IDocear
 //				builder.addAction(referencesCategory + REFERENCE_MANAGEMENT_MENU, new ImportMetadateForNodeLink(), MenuBuilder.AS_CHILD);
 				builder.addAction(referencesCategory + REFERENCE_MANAGEMENT_MENU, AddExistingReference, MenuBuilder.AS_CHILD);
 				builder.addAction(referencesCategory + REFERENCE_MANAGEMENT_MENU, RemoveReference, MenuBuilder.AS_CHILD);
+				
+				
+				JMenu updRefMenu = new JMenu(TextUtils.getText(UPDATE_REFERENCES_MENU_LANG_KEY));
+				updRefMenu.getPopupMenu().addPopupMenuListener(new PopupMenuListener() {
+					
+					@Override
+					public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+						UpdateReferencesInLibrary.setEnabled();
+						UpdateReferencesAllMaps.setEnabled();
+					}
+					
+					@Override
+					public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {}
+					
+					@Override
+					public void popupMenuCanceled(PopupMenuEvent e) {}
+				});
 				builder.addMenuItem(referencesCategory + REFERENCE_MANAGEMENT_MENU,
-						new JMenu(TextUtils.getText(UPDATE_REFERENCES_MENU_LANG_KEY)), referencesCategory
+						updRefMenu, referencesCategory
 								+ REFERENCE_MANAGEMENT_MENU + UPDATE_REFERENCES_MENU, MenuBuilder.AS_CHILD);
 				builder.addAction(referencesCategory + REFERENCE_MANAGEMENT_MENU + UPDATE_REFERENCES_MENU,
 						UpdateReferencesCurrentMap, MenuBuilder.AS_CHILD);
@@ -364,45 +501,18 @@ public class ReferencesController extends ALanguageController implements IDocear
 	
 
 	public void handleEvent(DocearEvent event) {
-		if(event.getType() == DocearEventType.LIBRARY_NEW_REFERENCES_INDEXING_REQUEST && event.getEventObject() instanceof LinkTypeReferencesNode) {
-			final File file = WorkspaceUtils.resolveURI(CoreConfiguration.referencePathObserver.getUri());
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					ReferencesController contr = ReferencesController.getController();
-					JabrefWrapper wrapper = contr.getJabrefWrapper();
-					wrapper.replaceDatabase(file, true);
-				}
-			});
-		} 
-		else if(event.getType() == DocearEventType.APPLICATION_CLOSING) {
+//		if(event.getType() == DocearEventType.LIBRARY_NEW_REFERENCES_INDEXING_REQUEST && event.getEventObject() instanceof LinkTypeReferencesNode) {
+//			final File file = URIUtils.getAbsoluteFile(((LinkTypeReferencesNode)event.getEventObject()).getUri());
+//			SwingUtilities.invokeLater(new Runnable() {
+//				public void run() {
+//					ReferencesController contr = ReferencesController.getController();
+//					JabrefWrapper wrapper = contr.getJabrefWrapper();
+//					wrapper.replaceDatabase(file, true);
+//				}
+//			});
+//		} else 
+		if(event.getType() == DocearEventType.APPLICATION_CLOSING) {
 			new ReferenceQuitAction().actionPerformed(null);
-		}
-		else if ("DOCEAR_MODE_STARTUP".equals(event.getEventObject())) {
-			if (event.getSource() instanceof ModeController) {	
-				final JTabbedPane tabs = (JTabbedPane) MModeController.getMModeController().getUserInputListenerFactory().getToolBar("/format")
-	                    .getComponent(1);
-	            Dimension fixSize =  new Dimension(tabs.getComponent(0).getWidth(), 32000);
-
-    			try {
-    				ModeController modeController = (ModeController) event.getSource();							
-    				final JComponent comp = (JComponent) modeController.getUserInputListenerFactory().getToolBar("/format").getComponent(1);
-    				JPanel jabref = ReferencesController.getController().getJabrefWrapper().getJabrefFramePanel();
-    				comp.add(TextUtils.getText("jabref"), jabref);
-    				comp.setPreferredSize(fixSize);
-    			}
-    			catch (Exception ex) {
-    				LogUtils.warn(ex);
-    			}
-			}			
-		}
-		else if ("DOCEAR_MODE_SHUTDOWN".equals(event.getEventObject())) {
-			if (event.getSource() instanceof ModeController) {
-				ModeController modeController = MModeController.getMModeController();
-				final JTabbedPane tabs = (JTabbedPane) modeController.getUserInputListenerFactory().getToolBar("/format").getComponent(1);
-				JPanel jabref = ReferencesController.getController().getJabrefWrapper().getJabrefFramePanel();
-				tabs.add(TextUtils.getText("jabref"), jabref);
-				tabs.setSelectedComponent(jabref);
-			}
 		}
 	}
 
@@ -471,5 +581,4 @@ public class ReferencesController extends ALanguageController implements IDocear
 			return false;
 		}
 	}
-
 }

@@ -6,19 +6,24 @@ import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
 import java.awt.event.ActionEvent;
 
-import org.freeplane.core.ui.EnabledAction;
+import javax.swing.tree.TreePath;
+
 import org.freeplane.core.util.LogUtils;
-import org.freeplane.plugin.workspace.dnd.IDropAcceptor;
+import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.components.menu.CheckEnableOnPopup;
+import org.freeplane.plugin.workspace.dnd.DnDController;
+import org.freeplane.plugin.workspace.dnd.NoDropHandlerFoundExeption;
 import org.freeplane.plugin.workspace.dnd.WorkspaceTransferable;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 
-@EnabledAction(checkOnPopup = true)
+@CheckEnableOnPopup
 public class NodePasteAction extends AWorkspaceAction {
 
+	public static final String KEY = "workspace.action.node.paste";
 	private static final long serialVersionUID = 1L;
 
 	public NodePasteAction() {
-		super("workspace.action.node.paste");
+		super(KEY);
 	}
 	
 	public void setEnabled() {
@@ -40,23 +45,36 @@ public class NodePasteAction extends AWorkspaceAction {
 		}
 	}
 	
-	public void setEnabledFor(AWorkspaceTreeNode node) {
-		if(!(node instanceof IDropAcceptor)) {
+	public void setEnabledFor(AWorkspaceTreeNode node, TreePath[] selectedPaths) {
+		if(!DnDController.isDropAllowed(node)) {
 			setEnabled(false);
 			return;
 		}
-		super.setEnabledFor(node);
+		super.setEnabledFor(node, selectedPaths);
 	}
 	
 	public void actionPerformed(final ActionEvent e) {
         AWorkspaceTreeNode targetNode = getNodeFromActionEvent(e);
-        if(targetNode instanceof IDropAcceptor) {
+        if(DnDController.isDropAllowed(targetNode)) {
         	Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
         	Transferable transf = clip.getContents(null);
         	if(transf == null) {
         		return;
         	}
-        	((IDropAcceptor) targetNode).processDrop(transf, DnDConstants.ACTION_COPY);
+        	int dndAction = DnDConstants.ACTION_COPY;
+        	if(transf.isDataFlavorSupported(WorkspaceTransferable.WORKSPACE_MOVE_NODE_FLAVOR)) {
+        		dndAction = DnDConstants.ACTION_MOVE;
+        	}
+        	if(WorkspaceController.getCurrentModeExtension().getView() != null) {
+        		try {
+					WorkspaceController.getCurrentModeExtension().getView().getTransferHandler().handleDrop(targetNode, transf, dndAction);
+					if(dndAction == DnDConstants.ACTION_MOVE ) {
+						clip.setContents(null, null);
+					}
+				} catch (NoDropHandlerFoundExeption ex) {
+					LogUtils.info("Exception in org.freeplane.plugin.workspace.actions.NodePasteAction.actionPerformed(ActionEvent): "+ ex.getMessage());
+				}
+        	}
         }
     }
 

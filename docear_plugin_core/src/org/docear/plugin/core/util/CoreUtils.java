@@ -5,11 +5,11 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.security.SecureRandom;
 
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.plugin.workspace.URIUtils;
 
 public class CoreUtils {
 	public static File resolveURI(final URI uri) {
-		return WorkspaceUtils.resolveURI(uri);
+		return URIUtils.getAbsoluteFile(uri);
 	}
 	
 	public static String createRandomString(int length) {

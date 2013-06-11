@@ -4,12 +4,11 @@
  */
 package org.freeplane.plugin.workspace.dnd;
 
-import java.awt.datatransfer.Transferable;
 
 /**
  * 
  */
 public interface IWorkspaceTransferableCreator {
-	public Transferable getTransferable(); 
+	public WorkspaceTransferable getTransferable(); 
 
 }

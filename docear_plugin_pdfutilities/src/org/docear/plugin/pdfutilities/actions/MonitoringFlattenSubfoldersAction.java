@@ -16,19 +16,19 @@ import javax.swing.SwingUtilities;
 import org.docear.plugin.core.ui.SwingWorkerDialog;
 import org.docear.plugin.core.ui.SwingWorkerDialogLite;
 import org.docear.plugin.core.util.NodeUtilities;
-import org.docear.plugin.core.util.Tools;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
-import org.docear.plugin.pdfutilities.features.DocearNodeMonitoringExtensionController;
 import org.docear.plugin.pdfutilities.features.DocearNodeMonitoringExtension.DocearExtensionKey;
+import org.docear.plugin.pdfutilities.features.DocearNodeMonitoringExtensionController;
 import org.docear.plugin.pdfutilities.util.MonitoringUtils;
 import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.map.mindmapmode.MMapController;
 import org.freeplane.features.mode.Controller;
+import org.freeplane.plugin.workspace.URIUtils;
 import org.jdesktop.swingworker.SwingWorker;
 
-@EnabledAction( checkOnPopup = true )
+@EnabledAction(checkOnNodeChange=true)
 public class MonitoringFlattenSubfoldersAction extends DocearAction {
 
 	/**
@@ -99,8 +99,9 @@ public class MonitoringFlattenSubfoldersAction extends DocearAction {
 				fireStatusUpdate(SwingWorkerDialog.SET_PROGRESS_BAR_INDETERMINATE, null, null);				
 				Map<NodeModel, Stack<File>> result = new HashMap<NodeModel, Stack<File>>();
 				for(NodeModel node : selected.getChildren()){					
-					URI uri = Tools.getAbsoluteUri(node);
-					if(uri == null || Tools.getFilefromUri(uri) == null || !Tools.getFilefromUri(uri).exists() || !Tools.getFilefromUri(uri).isFile()){
+					URI uri = URIUtils.getAbsoluteURI(node);
+					File file = URIUtils.getFile(uri);
+					if(uri == null || file == null || !file.exists() || !file.isFile()){
 						continue;
 					}
 					Stack<File> folderStack = MonitoringUtils.getFolderStructureStack(selected, uri);				

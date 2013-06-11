@@ -10,16 +10,15 @@ import javax.swing.JOptionPane;
 
 import org.docear.plugin.core.mindmap.MindmapFileRemovedUpdater;
 import org.docear.plugin.core.mindmap.MindmapUpdateController;
-import org.docear.plugin.core.util.Tools;
 import org.docear.plugin.pdfutilities.util.MonitoringUtils;
 import org.freeplane.core.ui.EnabledAction;
+import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
-import org.freeplane.plugin.workspace.WorkspaceController;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.plugin.workspace.URIUtils;
 
-@EnabledAction( checkOnPopup = true, checkOnNodeChange = true )
+@EnabledAction(checkOnNodeChange=true)
 public class DeleteFileAction extends DocearAction {
 
 	/**
@@ -39,14 +38,14 @@ public class DeleteFileAction extends DocearAction {
 		
 		Set<File> deletedFiles = new HashSet<File>();
 		for (NodeModel node : selection) {
-			URI uri = Tools.getAbsoluteUri(node);
+			URI uri = URIUtils.getAbsoluteURI(node);
 			if (uri == null) {
 				continue;
 			}
 			
-			File file = WorkspaceUtils.resolveURI(uri, node.getMap());
+			File file = URIUtils.getFile(uri);
 			if(!file.delete()){
-				JOptionPane.showMessageDialog(Controller.getCurrentController().getViewController().getJFrame(), TextUtils.getText("DeleteFileAction.DeleteFailed.Message"), TextUtils.getText("DeleteFileAction.DeleteFailed.Title"), JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(UITools.getFrame(), TextUtils.getText("DeleteFileAction.DeleteFailed.Message"), TextUtils.getText("DeleteFileAction.DeleteFailed.Title"), JOptionPane.WARNING_MESSAGE);
 				return;
 			}			
 			deletedFiles.add(file);			
@@ -54,10 +53,10 @@ public class DeleteFileAction extends DocearAction {
 				
 		MindmapUpdateController ctrl = new MindmapUpdateController();
 		ctrl.addMindmapUpdater(new MindmapFileRemovedUpdater(TextUtils.getText("docear.mm_updater.remove_filelinks"), deletedFiles));
-		ctrl.updateRegisteredMindmapsInWorkspace(true);
+		ctrl.updateRegisteredMindmapsInProject(true);
 		//TODO: update mindmap
 		
-		WorkspaceController.getController().refreshWorkspace();
+		//WorkspaceController.getController().refreshWorkspace();
 		
 		
 		//TODO: only show action in menu, if the node links to a pdf file

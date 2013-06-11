@@ -24,12 +24,12 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.Collection;
+
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import org.apache.commons.lang.StringUtils;
 import org.freeplane.core.extension.IExtension;
-import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.undo.IActor;
@@ -99,7 +99,7 @@ class ExportBranchAction extends AFreeplaneAction {
 				return;
 			}
 			if (chosenFile.exists()) {
-				final int overwriteMap = JOptionPane.showConfirmDialog(controller.getViewController().getMapView(),
+				final int overwriteMap = JOptionPane.showConfirmDialog(controller.getMapViewManager().getMapViewComponent(),
 				    TextUtils.getText("map_already_exists"), "Freeplane", JOptionPane.YES_NO_OPTION);
 				if (overwriteMap != JOptionPane.YES_OPTION) {
 					return;
@@ -165,8 +165,7 @@ class ExportBranchAction extends AFreeplaneAction {
 			((MTextController) TextController.getController()).setNodeText(newNode, existingNode.getText());
 			modeController.undoableCopyExtensions(LogicalStyleKeys.NODE_STYLE, existingNode, newNode);
 			map.getFile();
-			((MLinkController) LinkController.getController()).setLink(newNode, newUri,
-			    LinkController.LINK_ABSOLUTE);
+			((MLinkController) LinkController.getController()).setLink(newNode, newUri, LinkController.LINK_ABSOLUTE);
 			map.destroy();
 		}
 	}

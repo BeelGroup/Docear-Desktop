@@ -22,8 +22,10 @@ package org.freeplane.features.url.mindmapmode;
 import java.awt.event.ActionEvent;
 
 import org.freeplane.core.ui.AFreeplaneAction;
+
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.url.UrlManager;
+
 
 class SaveAsAction extends AFreeplaneAction {
 	/**
@@ -37,6 +39,6 @@ class SaveAsAction extends AFreeplaneAction {
 
 	public void actionPerformed(final ActionEvent e) {
 		((MFileManager) UrlManager.getController()).saveAs(Controller.getCurrentController().getMap());
-		Controller.getCurrentController().getViewController().setTitle();
+		Controller.getCurrentController().getMapViewManager().setTitle();
 	}
 }

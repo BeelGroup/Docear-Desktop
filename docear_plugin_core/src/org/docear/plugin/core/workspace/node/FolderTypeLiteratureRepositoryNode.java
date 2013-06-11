@@ -1,48 +1,56 @@
-/**
- * author: Marcel Genzmehr
- * 18.08.2011
- */
 package org.docear.plugin.core.workspace.node;
 
+import java.awt.Component;
 import java.io.File;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Locale;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
-import org.docear.plugin.core.CoreConfiguration;
-import org.docear.plugin.core.workspace.node.config.NodeAttributeObserver;
-import org.freeplane.core.util.LogUtils;
+import org.docear.plugin.core.workspace.AVirtualDirectory;
+import org.docear.plugin.core.workspace.creator.FolderTypeLiteratureRepositoryPathCreator;
 import org.freeplane.core.util.TextUtils;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
+import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
+import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.io.IFileSystemRepresentation;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
-import org.freeplane.plugin.workspace.nodes.FolderLinkNode;
+import org.freeplane.plugin.workspace.model.project.IWorkspaceProjectExtension;
+import org.freeplane.plugin.workspace.nodes.AFolderNode;
 
 /**
  * 
  */
-public class FolderTypeLiteratureRepositoryNode extends FolderLinkNode implements ChangeListener, IFileSystemRepresentation {
-
+public class FolderTypeLiteratureRepositoryNode extends AFolderNode implements IWorkspaceNodeActionListener
+																				,IWorkspaceProjectExtension
+																				,IFileSystemRepresentation {
+	//WORKSPACE - todo: implement dnd handling
 	private static final long serialVersionUID = 1L;
-	private boolean locked;
 	private WorkspacePopupMenu popupMenu = null;
 	
 	private static final Icon DEFAULT_ICON = new ImageIcon(FolderTypeLiteratureRepositoryNode.class.getResource("/images/books.png"));
+	public static final String TYPE = "literature_repository";
 
 	/***********************************************************************************
 	 * CONSTRUCTORS
 	 **********************************************************************************/
 
+	public FolderTypeLiteratureRepositoryNode() {
+		this(TYPE);
+	}
+	
 	public FolderTypeLiteratureRepositoryNode(String type) {
-		super(type);		
-		CoreConfiguration.repositoryPathObserver.addChangeListener(this);
+		super(type);
+		setName(null);
+		//WORKSPACE - todo: implement observer structure
+//		CoreConfiguration.repositoryPathObserver.addChangeListener(this);
 	}
 
 	/***********************************************************************************
@@ -55,21 +63,22 @@ public class FolderTypeLiteratureRepositoryNode extends FolderLinkNode implement
 	}
 	
 	public void disassociateReferences()  {
-		CoreConfiguration.repositoryPathObserver.removeChangeListener(this);
+//		CoreConfiguration.repositoryPathObserver.removeChangeListener(this);
 	}
 	
 	public void setName(String name) {
-		super.setName("Literature Repository");
+		super.setName(TextUtils.getText(this.getClass().getName().toLowerCase(Locale.ENGLISH)+".label" ));
 	}
 	
-	public void setPath(URI uri) {
-		super.setPath(uri);
-		locked = true;		
-		CoreConfiguration.repositoryPathObserver.setUri(uri);
-		if (uri != null) {
-			createPathIfNeeded(uri);
+	public void addPath(URI uri) {
+		if(uri == null) {
+			return;
 		}
-		locked = false;	
+		AWorkspaceTreeNode newPathItem = FolderTypeLiteratureRepositoryPathCreator.newPathItem(null, uri, false);
+		this.getModel().addNodeTo(newPathItem, this);
+		this.refresh();
+		newPathItem.refresh();
+		
 	}
 	
 	public boolean setIcons(DefaultTreeCellRenderer renderer) {
@@ -79,50 +88,16 @@ public class FolderTypeLiteratureRepositoryNode extends FolderLinkNode implement
 		return true;
 	}
 	
-	private void createPathIfNeeded(URI uri) {
-		File file = WorkspaceUtils.resolveURI(uri);
-
-		if (file != null) {
-			if (!file.exists()) {
-				if (file.mkdirs()) {
-					LogUtils.info("New Literature Folder Created: " + file.getAbsolutePath());
-				}
-			}
-			this.setName(file.getName());
-		}
-		else {
-			this.setName("no folder selected!");
-		}
-
-		
-	}
-	
 	public void initializePopup() {
 		if (popupMenu == null) {
 			
 			popupMenu = new WorkspacePopupMenu();
 			WorkspacePopupMenuBuilder.addActions(popupMenu, new String[] {
-					WorkspacePopupMenuBuilder.createSubMenu(TextUtils.getRawText("workspace.action.new.label")),
-					"workspace.action.node.new.folder",
-					"workspace.action.file.new.mindmap",
-					//WorkspacePopupMenuBuilder.SEPARATOR,
-					//"workspace.action.file.new.file",
-					WorkspacePopupMenuBuilder.endSubMenu(),
+					"workspace.action.node.add.repository",
 					WorkspacePopupMenuBuilder.SEPARATOR,
-					"workspace.action.docear.uri.change",
-					"workspace.action.node.open.location",
-					WorkspacePopupMenuBuilder.SEPARATOR,
-					"workspace.action.node.cut",
-					"workspace.action.node.copy",
 					"workspace.action.node.paste",
-					WorkspacePopupMenuBuilder.SEPARATOR,
-					"workspace.action.node.rename",
-					"workspace.action.node.remove",
-					"workspace.action.file.delete",					
-					WorkspacePopupMenuBuilder.SEPARATOR,
 					"workspace.action.node.physical.sort",
-					WorkspacePopupMenuBuilder.SEPARATOR,					
-					"workspace.action.docear.enable.monitoring",
+					WorkspacePopupMenuBuilder.SEPARATOR,		
 					"workspace.action.node.refresh"
 			});
 		}
@@ -139,31 +114,41 @@ public class FolderTypeLiteratureRepositoryNode extends FolderLinkNode implement
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
 	 **********************************************************************************/
-	//TODO: replace by new method
-	public void propertyChanged(String propertyName, final String newValue, String oldValue) {
-		
+
+	public URI getPath() {
+		// not used here
+		return null;
 	}
 
-	public void stateChanged(ChangeEvent e) {		
-		if(!locked && e.getSource() instanceof NodeAttributeObserver) {			
-			URI uri = ((NodeAttributeObserver) e.getSource()).getUri();
-			try{		
-				createPathIfNeeded(uri);				
-			}
-			catch (Exception ex) {
-				return;
-			}
-			this.setPath(uri);
-			SwingUtilities.invokeLater(new Runnable() {
-				
-				public void run() {
-					refresh();					
+	public File getFile() {
+		return new AVirtualDirectory("LiteratureRepository") {
+			private static final long serialVersionUID = 1L;
+
+			protected Collection<File> getChildren() {
+				ArrayList<File> list = new ArrayList<File>();
+				Enumeration<AWorkspaceTreeNode> paths = children();
+				while(paths.hasMoreElements()) {
+					LiteratureRepositoryPathNode node = (LiteratureRepositoryPathNode) paths.nextElement();
+					list.add(URIUtils.getAbsoluteFile(node.getPath()));
 				}
-			});
-		}
+				return list;
+			}
+		};
 	}
 	
-	public File getFile() {
-		return WorkspaceUtils.resolveURI(this.getPath());
+	public void orderDescending(boolean enable) {
+		//not used
+	}
+
+	public boolean orderDescending() {
+		return false;
+	}
+
+	@Override
+	public void handleAction(WorkspaceActionEvent event) {
+		if (event.getType() == WorkspaceActionEvent.MOUSE_RIGHT_CLICK) {
+			showPopup( (Component) event.getBaggage(), event.getX(), event.getY());
+			event.consume();
+		}
 	}
 }

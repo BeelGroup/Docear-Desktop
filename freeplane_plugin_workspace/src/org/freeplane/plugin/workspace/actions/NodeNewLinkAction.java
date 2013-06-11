@@ -4,6 +4,7 @@
  */
 package org.freeplane.plugin.workspace.actions;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.net.URI;
@@ -11,8 +12,10 @@ import java.net.URI;
 import javax.swing.JFileChooser;
 
 import org.freeplane.core.ui.components.UITools;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.plugin.workspace.URIUtils;
+import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.nodes.AFolderNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
 
@@ -40,12 +43,20 @@ public class NodeNewLinkAction extends AWorkspaceAction {
 	 **********************************************************************************/
 
 	public void actionPerformed(ActionEvent e) {
-		AWorkspaceTreeNode targetNode = getNodeFromActionEvent(e);
-		if(targetNode == null) {
-			targetNode = (AWorkspaceTreeNode) WorkspaceUtils.getModel().getRoot();
+		AWorkspaceTreeNode targetNode = null;
+		if(e == null || getRootPopupMenu((Component) e.getSource()) == null) {
+			targetNode = WorkspaceController.getCurrentProject().getModel().getRoot();
 		}
+		else {
+			targetNode = getNodeFromActionEvent(e);
+		}
+		
+		if(targetNode == null) {
+			return;
+		}
+		AWorkspaceProject project = WorkspaceController.getProject(targetNode);
 		if(targetNode instanceof AFolderNode) {
-			JFileChooser chooser = new JFileChooser(WorkspaceUtils.resolveURI(((AFolderNode) targetNode).getPath() == null ? WorkspaceUtils.getProfileBaseURI() : ((AFolderNode) targetNode).getPath()));
+			JFileChooser chooser = new JFileChooser(URIUtils.getAbsoluteFile(((AFolderNode) targetNode).getPath() == null ? WorkspaceController.getCurrentProject().getProjectHome() : ((AFolderNode) targetNode).getPath()));
 			chooser.setMultiSelectionEnabled(false);
 			int response = chooser.showOpenDialog(UITools.getFrame());
 			if(response == JFileChooser.APPROVE_OPTION) {
@@ -53,14 +64,20 @@ public class NodeNewLinkAction extends AWorkspaceAction {
 				if(file != null) {
 					LinkTypeFileNode node = new LinkTypeFileNode();
 					node.setName(file.getName());
-					URI path = WorkspaceUtils.getWorkspaceRelativeURI(chooser.getSelectedFile());
+					URI path = chooser.getSelectedFile().toURI();
 					if (path == null) {
 						return;
-					}	
-					node.setLinkPath(path);
-					WorkspaceUtils.getModel().addNodeTo(node, targetNode);
-					WorkspaceUtils.saveCurrentConfiguration();
+					}
+					URI uri = project.getRelativeURI(path);
+					if(uri == null) {
+						node.setLinkURI(path);
+					}
+					else {
+						node.setLinkURI(uri);
+					}
+					targetNode.getModel().addNodeTo(node, targetNode);
 					targetNode.refresh();
+					targetNode.getModel().requestSave();
 				}
 			}
 		}

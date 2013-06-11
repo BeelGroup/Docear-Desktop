@@ -8,6 +8,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.Icon;
@@ -201,11 +202,69 @@ public interface Proxy {
 		/** removes all attributes.
 		 * @since 1.2 */
 		void clear();
+
+		/** allows application of Groovy collection methods like each(), collect(), ...
+		 * <pre>
+		 *   def keyList = node.attributes.collect { it.key }
+         *   def values = node.attributes.collect { it.value }
+         *   node.attributes.each {
+         *       if (it.key =~ /.*day/)
+         *           it.value += ' days'
+         *   }
+		 * </pre>
+		 * @since 1.3.2 */
+		Iterator<java.util.Map.Entry<String, Object>> iterator();
+	}
+
+    /** Here are four ways to enable a cloud on the current node and switch it off again:
+     * <pre>
+     *   node.cloud.enabled = true
+     *   node.cloud.enabled = false 
+     *   
+     *   node.cloud.shape = 'ROUND_RECT' // either 'ARC', 'STAR', 'RECT' or 'ROUND_RECT'
+     *   node.cloud.shape = null
+     *   
+     *   node.cloud.color = java.awt.Color.YELLOW
+     *   node.cloud.color = null
+     *   
+     *   node.cloud.colorCode = '#00FF66'
+     *   node.cloud.color = null
+     * </pre>
+     * @since 1.3 */
+    interface Cloud {
+        /**  @since 1.3 */
+        boolean getEnabled();
+        /**  @since 1.3 */
+        void setEnabled(boolean enable);
+
+        /** @return either null (if cloud is not enabled), "ARC", "STAR", "RECT" or "ROUND_RECT".
+         *  @since 1.3 */
+        String getShape();
+        /** @param shape use "ARC", "STAR", "RECT" or "ROUND_RECT". null removes the cloud
+         *  @since 1.3 */
+        void setShape(String shape);
+
+        /** @return either null (if cloud is not enabled) or the current cloud color.
+         * @since 1.3 */
+        Color getColor();
+        /** @since 1.3 */
+        void setColor(Color color);
+
+        /** @return either null (if cloud is not enabled) or a HTML color spec.
+         *  @since 1.3 */
+        String getColorCode();
+        /** @param rgbString a HTML color spec like #ff0000 (red) or #222222 (darkgray).
+         *  @since 1.3 */
+        void setColorCode(String rgbString);
 	}
 
 	/** Graphical connector between nodes:<code>node.connectorsIn</code> / <code>node.connectorsOut</code>
 	 * - read-only. */
 	interface ConnectorRO {
+        /** returns one of LINE, LINEAR_PATH, CUBIC_CURVE, EDGE_LIKE.
+         *  @since 1.3 */
+	    String getShape();
+
 		Color getColor();
 
 		String getColorCode();
@@ -233,11 +292,23 @@ public interface Proxy {
 		String getTargetLabel();
 
 		boolean simulatesEdge();
+
+		/** returns a Point.
+		 * @since 1.3.3 */
+		List<Integer> getStartInclination();
+		
+		/** returns a Point.
+		 * @since 1.3.3 */
+		List<Integer> getEndInclination();
 	}
 
 	/** Graphical connector between nodes:<code>node.connectorsIn</code> / <code>node.connectorsOut</code>
 	 * - read-write. */
 	interface Connector extends ConnectorRO {
+        /** @param shape one of LINE, LINEAR_PATH, CUBIC_CURVE, EDGE_LIKE.
+         *  @since 1.3 */
+        void setShape(String shape);
+
 		void setColor(Color color);
 
 		/** @param rgbString a HTML color spec like #ff0000 (red) or #222222 (darkgray).
@@ -263,6 +334,10 @@ public interface Proxy {
 		void setStartArrow(ArrowType arrowType);
 
 		void setTargetLabel(String label);
+
+        /** startPoint, endPoint: list of two integers representing a Point.
+         * @since 1.3.3 */
+        void setInclination(final List<Integer> startPoint, final List<Integer> endPoint);
 	}
 
 	/** Access to global state: <code>c</code> - read-only. */
@@ -476,8 +551,14 @@ public interface Proxy {
 
 	/** External object: <code>node.externalObject</code> - read-write. */
 	interface ExternalObject extends ExternalObjectRO {
+        /** setting null uri means remove external object.
+         * Starting with Freeplane 1.2.23 there is an additional setUri(Object) method that also accepts File,
+         * URI and URL arguments.
+         * @since 1.2 */
+		void setUri(String target);
+		
 		/** setting null uri means remove external object. */
-		void setUri(String uri);
+		void setFile(File target);
 		
 		/** set to 1.0 to set it to 100%. If the node has no object assigned this method does nothing. */
 		void setZoom(float zoom);
@@ -547,11 +628,18 @@ public interface Proxy {
 
 		/** returns a read-only list of the names of the icons the node has. Think twice before you use this method
 		 * since it leads to ugly code, e.g. use <code>node.icons.first</code> or <code>node.icons[0]</code> instead of
-		 * <code>node.icons.icons[0]</code>. */
+		 * <code>node.icons.icons[0]</code>. Perhaps you could also use iteration over icons, see. */
 		List<String> getIcons();
 		
 		/** returns a list of the urls of the icons the node has. */
 		List<URL> getUrls();
+
+        /** allows application of Groovy collection methods like each(), collect(), ...
+         * <pre>
+         *   def freeIcons = node.icons.findAll { it.startsWith('free') }
+         * </pre>
+         * @since 1.3.2 */
+        Iterator<String> iterator();
 	}
 
 	/** Node's icons: <code>node.icons</code> - read-write. */
@@ -708,7 +796,7 @@ public interface Proxy {
 		 * // equivalent:
 		 * node.map.filter = { it.text.contains("todo") }
 		 * 
-		 * // show anchestors of matching nodes
+		 * // show ancestors of matching nodes
 		 * node.map.filter(true, false){ it.text.contains("todo") }
 		 * // equivalent:
 		 * node.map.setFilter(true, false, { it.text.contains("todo") })
@@ -728,16 +816,16 @@ public interface Proxy {
 		 * @since 1.2 */
 		public void setFilter(final Closure<Boolean> closure);
 		
-		/** With {@link #filter(Closure)} neither anchestors not descendants of the visible nodes are shown. Use this
+		/** With {@link #filter(Closure)} neither ancestors not descendants of the visible nodes are shown. Use this
 		 * method to control these options.
 		 * @see #filter(Closure)
 		 * @since 1.2 */
-		public void filter(final boolean showAnchestors, final boolean showDescendants, final Closure<Boolean> closure);
+		public void filter(final boolean showAncestors, final boolean showDescendants, final Closure<Boolean> closure);
 
 		/** alias for {@link #setFilter(boolean, boolean, Closure)}
 		 * @see #filter(Closure)
 		 * @since 1.2 */
-		public void setFilter(final boolean showAnchestors, final boolean showDescendants, final Closure<Boolean> closure);
+		public void setFilter(final boolean showAncestors, final boolean showDescendants, final Closure<Boolean> closure);
 
 		/** reinstalls the previously undone filter if there is any.
 		 * Note: undo/redo for filters is separate to the undo/redo for other map state.
@@ -771,6 +859,11 @@ public interface Proxy {
 		 * @since 1.2
 		 */
 		Convertible getAt(String attributeName);
+
+        /**
+         *  @since 1.2
+         */
+		Cloud getCloud();
 
 		/** returns the index (0..) of this node in the (by Y coordinate sorted)
 		 * list of this node's children. Returns -1 if childNode is not a child
@@ -838,6 +931,13 @@ public interface Proxy {
 
 		/** @deprecated since 1.2 - use {@link #getParent()} instead. */
 		Node getParentNode();
+
+        /** a list of all nodes starting from this node upto (and including) the root node.
+         * <pre>
+         *   def path = pathToRoot.collect{ it.plainText }.join('.')
+         * </pre>
+         * @since 1.3.3 */
+        List<Node> getPathToRoot();
 
         /** returns the next node with respect to this node in breadth-first order.
          * Returns null if this node is the only one in the map. */
@@ -1284,7 +1384,7 @@ public interface Proxy {
 		 *  @since 1.2 */
 		void setTextColorCode(String rgbString);
 
-        /** @param sets the floating style for the node (aka "free node"). Should normally only applied to direct
+        /** sets the floating style for the node (aka "free node"). Should normally only be applied to direct
          *  children of the root node.
          *  @since 1.2 */
         void setFloating(boolean floating);

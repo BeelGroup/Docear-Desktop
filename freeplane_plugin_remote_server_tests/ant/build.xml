@@ -1,0 +1,175 @@
+<project name="docear_remote_tests" default="dist" basedir=".." xmlns:ivy="antlib:org.apache.ivy.ant">
+	<property name="workspace" location=".." />
+	<property name="src" value="src" />
+	<property name="resources" value="resources" />
+	<property name="root" value="." />
+	<property name="osgimanifest" value="${root}/META-INF/MANIFEST.MF" />
+	<property file="${workspace}/freeplane_framework/ant/ant.properties" />
+	<property file="${workspace}/freeplane/ant/ant.properties" />
+	<property file="ant/ant.properties" />
+	<property name="build.dir" value="${root}/build" />
+	<property name="lib.dir" value="${root}/lib" />
+	<property name="src.dir" value="${root}/src" />
+	<property name="dist.dir" value="${root}/dist" />
+	<property name="classes.dir" value="${build.dir}/classes" />
+	<property name="jar.dir" value="${build.dir}/jar" />
+	<property name="src.tests" value="${src.dir}/tests" />
+	<property name="report.dir" value="${root}/report" />
+	<property name="dist.osgi.dir" value="${dist}/org.freeplane.plugin.remote" />
+	<property name="freeplaneplugin.jar" value="${dist}/org.freeplane.plugin.remote.jar" />
+	<property name="debug" value="on" />
+	<property name="java_source_version" value="1.5" />
+	<property name="java_target_version" value="1.5" />
+	<property name="build.compiler" value="modern" />
+	<property name="classpath" value="${framework.jar}:${freeplane.jars}:${services.jar}:${core.jar}:${workspace.jar}:${dependencies.jars}:${remote-libs}" />
+	<property name="classpath.tests" value="${freeplane.jars}:${remote-libs}:${remote-tests-libs}" />
+	<property name="ivy.jar.dir" value="${basedir}/ivy" />
+	<property name="ivy.jar.file" value="${ivy.jar.dir}/ivy.jar" />
+	<property name="JOrtho_0.4_freeplane.location" value="${root}/../JOrtho_0.4_freeplane" />
+	<property name="freeplane.location" value="${root}/../freeplane" />
+	<property name="freeplane_plugin_remote.location" value="${root}/../freeplane_plugin_remote" />
+	<property name="freeplane.remote.shared.location" value="${root}/../freeplane_plugin_remote_shared" />
+	<!-- END PROPERTIES -->
+
+	<!-- BEGIN PATH-->
+	<path id="JOrtho_0.4_freeplane.classpath">
+		<pathelement location="${JOrtho_0.4_freeplane.location}/bin" />
+	</path>
+	<path id="freeplane.classpath">
+		<fileset dir="${freeplane.location}/lib/" includes="**.jar"/>
+		<pathelement location="${freeplane.location}/bin/classes" />
+		<path refid="JOrtho_0.4_freeplane.classpath" />
+	</path>
+	<path id="freeplane_plugin_remote.classpath">
+		<pathelement location="${freeplane_plugin_remote.location}/bin" />
+		<pathelement location="${freeplane_plugin_remote.location}/ivy/ivy.jar" />
+		<fileset dir="${freeplane_plugin_remote.location}/lib/" includes="**.jar"/>
+		<path refid="freeplane.classpath" />
+	</path>
+	<path id="freeplane_plugin_remote_tests.classpath">
+		<pathelement location="bin" />
+		<pathelement location="ivy/ivy.jar" />
+		<fileset dir="${root}/lib/" includes="**.jar"/>
+		<path refid="freeplane.classpath" />
+		<path refid="freeplane_plugin_remote.classpath" />
+	</path>
+	<!-- END PATH -->
+
+	<!-- BEGIN TARGETS -->
+	<target name="install-ivy" description="adds ivy ant module to ant">
+		<path id="ivy.lib.path">
+			<fileset dir="${ivy.jar.dir}" includes="*.jar" />
+		</path>
+		<taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path" />
+	</target>
+
+
+	<target name="resolve" description="retrieve dependencies with ivy" depends="install-ivy">
+		<ivy:retrieve />
+	</target>
+	
+	<target name="resolve-remote-shared" description="retrieve freeplane_remote_shared.jar">
+		<copy file="${root}/../freeplane_plugin_remote_shared/lib/freeplane_remote_shared.jar" todir="${root}/lib" />
+	</target>
+
+	<target name="clean">
+		<delete dir="${build.dir}" quiet="true" />
+		<delete dir="${dist.dir}" quiet="true" />
+		<delete dir="${lib.dir}" quiet="true" />
+		<delete>
+			<fileset defaultexcludes="no" dir="${src}" includes="**/*~" />
+		</delete>
+	</target>
+
+	<target name="cleanall" depends="clean">
+		<ant antfile="build.xml" dir="${JOrtho_0.4_freeplane.location}" inheritAll="false" target="clean" />
+		<ant antfile="build.xml" dir="${freeplane.location}/ant" inheritAll="false" target="clean" />
+		<ant antfile="build.xml" dir="${freeplane_plugin_remote.location}/ant" inheritAll="false" target="clean" />
+	</target>
+
+	<target name="dist" depends="resolve, resolve-remote-shared">
+	</target>
+
+	<target name="init">
+		<mkdir dir="bin" />
+		<copy includeemptydirs="false" todir="bin">
+			<fileset dir="src">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+		<copy includeemptydirs="false" todir="bin">
+			<fileset dir="resources">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="build" depends="resolve,init">
+		<echo message="${ant.project.name}: ${ant.file}" />
+		<javac debug="true" destdir="bin" includeantruntime="false">
+			<src path="src/tests" />
+			<src path="resources" />
+			<classpath refid="freeplane_plugin_remote_tests.classpath" />
+		</javac>
+	</target>
+
+	<target name="build-freeplane">
+		<ant antfile="build.xml" dir="${JOrtho_0.4_freeplane.location}" />
+		<ant antfile="ant/build.xml" dir="${freeplane.location}" inheritAll="false" target="build" />
+		<ant antfile="ant/build.xml" dir="${freeplane_plugin_remote.location}" inheritAll="false" target="build" />
+	</target>
+	
+    <condition property="isOSUnix">
+        <os family="unix" />
+    </condition>
+
+    <condition property="isOSWindows">
+        <os family="windows" />
+    </condition>
+	
+	<target name="ifOSWindows" if="isOSWindows">
+		<echo>Starting Freeplane</echo>
+		<exec dir="../freeplane_framework/build/" executable="cmd" >
+			<arg line="/K freeplane.bat"/>
+	    </exec>
+    </target>
+	
+	<target name="killTaskIfWindows" if="isOSWindows">	
+		<echo>Killing Freeplane</echo>
+		<exec executable="taskkill">
+			<arg value="-F"/>
+			<arg value="/PID"/>
+			<arg value="${pid}"/>
+		</exec>	
+    </target>
+
+	<target name="ifOSNotWindows" if="isOSUnix">
+		<echo>Starting Freeplane</echo>
+		<exec dir="resources/" executable="bash">
+		    <arg value="runFreeplane.sh"/>
+		</exec>
+    </target>
+	
+    <target name="killTaskIfUnix" if="isOSUnix">
+    	<echo>Killing Freeplane</echo>
+        <exec executable="bash">
+			<arg value="kill -15"/>
+        	<arg value="${pid}"/>
+        </exec>
+    </target>
+
+	<target name="test">
+		<echo>Dummy Test Target. This needs to be replaced.</echo>
+	</target>
+	
+	<target name="junitreport">
+		<junitreport todir="${report.dir}">
+			<fileset dir="${report.dir}" includes="TEST-*.xml" />
+			<report todir="${report.dir}" />
+		</junitreport>
+	</target>
+
+	<!-- END TARGETS -->
+
+</project>
+

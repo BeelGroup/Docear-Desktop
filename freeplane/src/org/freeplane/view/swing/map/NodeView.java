@@ -104,7 +104,7 @@ public class NodeView extends JComponent implements INodeView {
 	static{
 		boolean paintDebugBorder = false;
 		try{
-			paintDebugBorder = System.getProperty("org.freeplane.view.swing.map.NodeView.PAINT_DEBUG_BORDER", "false").equalsIgnoreCase("true");
+			paintDebugBorder = Boolean.getBoolean("org.freeplane.view.swing.map.NodeView.PAINT_DEBUG_BORDER");
 		}
 		catch(Exception e){
 		}
@@ -960,7 +960,7 @@ public class NodeView extends JComponent implements INodeView {
 			final Object renderingHint = g2.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
 			switch (paintingMode) {
 				case CLOUDS:
-					modeController.getController().getViewController().setEdgesRenderingHint(g2);
+					modeController.getController().getMapViewManager().setEdgesRenderingHint(g2);
 					final boolean isRoot = isRoot();
 					if (isRoot) {
 						paintCloud(g);
@@ -971,14 +971,15 @@ public class NodeView extends JComponent implements INodeView {
 			switch (paintingMode) {
 				case NODES:
 					g2.setStroke(BubbleMainView.DEF_STROKE);
-					modeController.getController().getViewController().setEdgesRenderingHint(g2);
+					modeController.getController().getMapViewManager().setEdgesRenderingHint(g2);
                     paintEdges(g2, this);
 					g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, renderingHint);
 			}
 		}
 		if (PAINT_DEBUG_BORDER && isSelected()&& paintingMode.equals(PaintingMode.SELECTED_NODES)){
 			final int spaceAround = getZoomed(SPACE_AROUND);
-			g.drawRect(spaceAround, spaceAround, getWidth() - 2 * spaceAround, getHeight() - 2 * spaceAround);
+			g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
+			g.drawRect(spaceAround - 1, spaceAround - 1, getWidth() - 2 * spaceAround, getHeight() - 2 * spaceAround);
 		}
 	}
 
@@ -1089,7 +1090,7 @@ public class NodeView extends JComponent implements INodeView {
 		final ModeController modeController = map.getModeController();
 		final Object renderingHint = g2.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
 		g2.setStroke(BubbleMainView.DEF_STROKE);
-		modeController.getController().getViewController().setEdgesRenderingHint(g2);
+		modeController.getController().getMapViewManager().setEdgesRenderingHint(g2);
 		final Point origin = new Point();
 		UITools.convertPointToAncestor(mainView, origin, this);
 		g.translate(origin.x, origin.y);

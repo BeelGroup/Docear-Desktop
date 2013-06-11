@@ -5,10 +5,12 @@ Bundle-SymbolicName: org.docear.plugin.core
 Bundle-Version: 1.0.0
 Bundle-Activator: org.docear.plugin.core.Activator
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Import-Package: org.osgi.framework;version="1.3.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: org.apache.commons.io,
+ org.osgi.framework;version="1.3.0",
+ org.osgi.service.url;version="1.0.0"
 Require-Bundle: org.freeplane.core;bundle-version="1.0.1",
- org.freeplane.plugin.workspace;bundle-version="1.0.0"
+ org.freeplane.plugin.workspace;bundle-version="2.0.0"
 Export-Package: name.pachler.nio.file,
  name.pachler.nio.file.impl,
  org.docear.plugin.core;
@@ -26,9 +28,12 @@ Export-Package: name.pachler.nio.file,
  org.docear.plugin.core.mindmap,
  org.docear.plugin.core.ui,
  org.docear.plugin.core.ui.components,
+ org.docear.plugin.core.ui.wizard,
  org.docear.plugin.core.util,
+ org.docear.plugin.core.workspace,
+ org.docear.plugin.core.workspace.actions,
+ org.docear.plugin.core.workspace.model,
  org.docear.plugin.core.workspace.node,
- org.docear.plugin.core.workspace.node.config,
  org.jdesktop.swingworker,
  org.swingplus
 Bundle-ClassPath: lib/plugin.jar,

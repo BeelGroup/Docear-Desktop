@@ -9,7 +9,7 @@ import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 
-@EnabledAction(checkOnPopup = true)
+@EnabledAction(checkOnNodeChange=true)
 public class ShowInReferenceManagerAction extends AFreeplaneAction {
 	
 	private static final long serialVersionUID = 1L;

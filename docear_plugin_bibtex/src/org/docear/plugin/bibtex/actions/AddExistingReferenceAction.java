@@ -14,7 +14,7 @@ import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.link.NodeLinks;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.features.url.UrlManager;
 
 public class AddExistingReferenceAction extends AFreeplaneAction {
 	
@@ -35,7 +35,7 @@ public class AddExistingReferenceAction extends AFreeplaneAction {
 		for (NodeModel node : nodes) {
 			try {
 				URI tempLink = NodeLinks.getLink(node);
-				String tempName = WorkspaceUtils.resolveURI(tempLink, node.getMap()).getName();
+				String tempName = UrlManager.getController().getAbsoluteFile(node.getMap(), tempLink).getName();
 
 				if (link == null) {
 					link = tempLink;

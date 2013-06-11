@@ -18,7 +18,7 @@ public class DocearShowTermsOfUseAction extends AFreeplaneAction {
 
 	public DocearShowTermsOfUseAction() {
 		super(key);
-		licenseText.setLicenseText(DocearController.getController().getTermsOfUse());
+		licenseText.setLicenseText(DocearController.getController().getTermsOfService());
 	}
 
 	public void actionPerformed(ActionEvent e) {		

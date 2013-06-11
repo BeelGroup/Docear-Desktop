@@ -25,7 +25,6 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.MatteBorder;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.text.html.HTMLDocument;
 
 import org.freeplane.core.extension.IExtension;
 import org.freeplane.core.resources.ResourceController;
@@ -464,7 +463,7 @@ public class ViewerController extends PersistentNodeHook implements INodeViewLif
 		if (uri == null) {
 			return null;
 		}
-		
+
 		uri = LinkController.toLinkTypeDependantURI(map.getFile(), input);
 		
 		final ExternalResource preview = new ExternalResource(uri);
@@ -659,15 +658,16 @@ public class ViewerController extends PersistentNodeHook implements INodeViewLif
 		if (uri == null || getViewerFactory(uri) == null) {
 			return false;
 		}
+
 		final File mapFile = targetNode.getMap().getFile();
 		if (mapFile == null && LinkController.getLinkType() == LinkController.LINK_RELATIVE_TO_MINDMAP) {
 			JOptionPane.showMessageDialog(KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner(),
 			    TextUtils.getText("not_saved_for_image_error"), "Freeplane", JOptionPane.WARNING_MESSAGE);
 			return false;
 		}
-		
-		uri = LinkController.toLinkTypeDependantURI(mapFile, file);
-		
+		if (LinkController.getLinkType() != LinkController.LINK_ABSOLUTE) {
+			uri = LinkController.toLinkTypeDependantURI(mapFile, file);
+		}
 		final MMapController mapController = (MMapController) Controller.getCurrentModeController().getMapController();
 		final NodeModel node;
 		if (mode.equals(PasteMode.INSIDE)) {

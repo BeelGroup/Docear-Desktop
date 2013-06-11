@@ -1,0 +1,32 @@
+<ivy-module version="2.0">
+	<info organisation="org.freeplane" module="webservice_test" />
+	<dependencies>
+		<dependency org="com.typesafe.akka" name="akka-actor_2.10"
+			rev="2.1.0">
+			<exclude module="org.eclipse.persistence.moxy" />
+			<exclude module="jettison" />
+		</dependency>
+		<dependency org="com.typesafe.akka" name="akka-testkit_2.10"
+			rev="2.1.0">
+			<exclude module="org.eclipse.persistence.moxy" />
+			<exclude module="jettison" />
+		</dependency>
+		<dependency org="com.typesafe.akka" name="akka-remote_2.10"
+			rev="2.1.0">
+			<exclude module="org.eclipse.persistence.moxy" />
+			<exclude module="jettison" />
+		</dependency>
+			
+		<dependency org="junit" name="junit" rev="4.11"/>
+		
+		<dependency org="com.fasterxml.jackson.core" name="jackson-core" rev="2.1.4"/>
+		<dependency org="com.fasterxml.jackson.core" name="jackson-annotations" rev="2.1.4"/>
+        <dependency org="com.fasterxml.jackson.core" name="jackson-databind" rev="2.1.4"/>
+		
+		<dependency org="org.easytesting" name="fest-assert" rev="1.4"/>
+		<dependency org="org.apache.commons" name="commons-io" rev="1.3.2"/>
+		
+		<dependency org="com.github.fge" name="json-schema-validator" rev="2.0.1"/>
+		
+	</dependencies>
+</ivy-module>

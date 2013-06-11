@@ -8,16 +8,15 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.JOptionPane;
 
-import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.Controller;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
 import org.freeplane.plugin.workspace.actions.AWorkspaceAction;
+import org.freeplane.plugin.workspace.components.menu.CheckEnableOnPopup;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.IMutableLinkNode;
 
-@EnabledAction(checkOnPopup=true)
+@CheckEnableOnPopup
 public class DocearRenameAction extends AWorkspaceAction {
 
 	private static final long serialVersionUID = 1L;
@@ -56,7 +55,7 @@ public class DocearRenameAction extends AWorkspaceAction {
 
 			if (newName != null) {
 				if(((IMutableLinkNode) targetNode).changeName(newName, false)) {
-					WorkspaceUtils.saveCurrentConfiguration();
+					targetNode.getModel().requestSave();
 				}
 				else {
 					JOptionPane.showMessageDialog(Controller.getCurrentController().getViewController().getContentPane(),

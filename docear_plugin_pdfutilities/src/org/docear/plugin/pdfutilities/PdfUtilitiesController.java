@@ -25,6 +25,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -35,7 +39,7 @@ import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
 import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
+import javax.swing.event.TreeModelEvent;
 
 import org.apache.commons.io.FilenameUtils;
 import org.docear.plugin.core.ALanguageController;
@@ -44,12 +48,9 @@ import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.event.DocearEvent;
 import org.docear.plugin.core.event.DocearEventType;
 import org.docear.plugin.core.event.IDocearEventListener;
-import org.docear.plugin.core.features.DocearMapModelController;
-import org.docear.plugin.core.features.DocearMapModelExtension.DocearMapType;
 import org.docear.plugin.core.util.CompareVersion;
 import org.docear.plugin.core.util.DirectoryFileFilter;
 import org.docear.plugin.core.util.NodeUtilities;
-import org.docear.plugin.core.util.Tools;
 import org.docear.plugin.core.util.WinRegistry;
 import org.docear.plugin.pdfutilities.actions.AbstractMonitoringAction;
 import org.docear.plugin.pdfutilities.actions.AddMonitoringFolderAction;
@@ -73,11 +74,11 @@ import org.docear.plugin.pdfutilities.features.DocearNodeMonitoringExtensionCont
 import org.docear.plugin.pdfutilities.features.IAnnotation;
 import org.docear.plugin.pdfutilities.features.PDFReaderHandle;
 import org.docear.plugin.pdfutilities.features.PDFReaderHandle.RegistryBranch;
-import org.docear.plugin.pdfutilities.listener.DefaultWorkspaceEventListener;
 import org.docear.plugin.pdfutilities.listener.DocearAutoMonitoringListener;
 import org.docear.plugin.pdfutilities.listener.DocearNodeDropListener;
 import org.docear.plugin.pdfutilities.listener.DocearNodeMouseMotionListener;
 import org.docear.plugin.pdfutilities.listener.DocearNodeSelectionListener;
+import org.docear.plugin.pdfutilities.listener.DocearProjectModelListener;
 import org.docear.plugin.pdfutilities.listener.MonitorungNodeUpdater;
 import org.docear.plugin.pdfutilities.listener.PdfNodeChangeListener;
 import org.docear.plugin.pdfutilities.listener.WorkspaceNodeOpenDocumentListener;
@@ -113,13 +114,15 @@ import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.features.ui.INodeViewLifeCycleListener;
+import org.freeplane.features.url.MapVersionInterpreter;
 import org.freeplane.features.url.UrlManager;
 import org.freeplane.features.url.mindmapmode.MFileManager;
-import org.freeplane.features.url.mindmapmode.MapVersionInterpreter;
 import org.freeplane.plugin.workspace.WorkspaceController;
-import org.freeplane.plugin.workspace.event.IWorkspaceEventListener;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
-import org.freeplane.plugin.workspace.event.WorkspaceEvent;
+import org.freeplane.plugin.workspace.mindmapmode.MModeWorkspaceUrlManager;
+import org.freeplane.plugin.workspace.model.WorkspaceModelEvent;
+import org.freeplane.plugin.workspace.model.WorkspaceModelListener;
+import org.freeplane.plugin.workspace.model.project.IProjectModelListener;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
 import org.freeplane.view.swing.map.NodeView;
@@ -198,6 +201,7 @@ public class PdfUtilitiesController extends ALanguageController {
 		}
 	};
 	private UIIcon refreshMonitoringIcon ;
+	private IProjectModelListener projectModelListener;
 	
 	private static PdfUtilitiesController controller;
 	public static final Icon REFRESH_MONITORING_ICON = new ImageIcon(PdfUtilitiesController.class.getResource("/icons/view-refresh-3.png"));
@@ -206,7 +210,7 @@ public class PdfUtilitiesController extends ALanguageController {
 		super();
 		controller = this;
 
-		LogUtils.info("starting DocearPdfUtilitiesStarter(ModeController)"); //$NON-NLS-1$
+		LogUtils.info("starting DocearPdfUtilitiesStarter(ModeController)..."); //$NON-NLS-1$
 		this.modecontroller = modeController;
 		this.addPropertiesToOptionPanel();
 		this.addPluginDefaults();
@@ -215,8 +219,7 @@ public class PdfUtilitiesController extends ALanguageController {
 		this.registerListener();
 		this.addMenuEntries();
 		
-		MapVersionInterpreter.addMapVersionInterpreter(new MapVersionInterpreter("0.9.0\" software_name=\"SciPlore_", false, false, "SciploreMM", "http://sciplore.org", null, new MapConverter()));
-		
+		MapVersionInterpreter.addMapVersionInterpreter(new MapVersionInterpreter("SciploreMM", 1, "0.9.0\" software_name=\"SciPlore_", false, false, "SciploreMM", "http://sciplore.org", null, new MapConverter()));
 	}
 
 	public static PdfUtilitiesController getController() {
@@ -224,7 +227,18 @@ public class PdfUtilitiesController extends ALanguageController {
 	}
 
 	public void showViewerSelectionIfNecessary() {
+		ExecutorService execSrv = Executors.newSingleThreadExecutor();
+		Future<?> f = execSrv.submit(new Runnable() {
+			public void run() {
 		showViewerSelectionIfNecessary(false);
+	}
+		});
+		try {
+			f.get(2, TimeUnit.SECONDS);
+		} catch (Exception e) {
+			LogUtils.info("ABORTED - finding pdf readers");
+		}
+		execSrv.shutdown();
 	}
 
 	public void showViewerSelectionIfNecessary(boolean force) {
@@ -543,8 +557,8 @@ public class PdfUtilitiesController extends ALanguageController {
 		for (PDFReaderHandle reader : readers) {
 			s += reader.getExecFile() + "|";
 		}
-		String savedReaders = ResourceController.getResourceController().getProperty("installed_pdf_readers");
-		ResourceController.getResourceController().setProperty("installed_pdf_readers", s);
+		String savedReaders = DocearController.getPropertiesController().getProperty("installed_pdf_readers");
+		DocearController.getPropertiesController().setProperty("installed_pdf_readers", s);
 		if (!s.equals(savedReaders)) {
 			return true;
 		}
@@ -592,7 +606,7 @@ public class PdfUtilitiesController extends ALanguageController {
 				Controller.getCurrentController().getResourceController().setProperty(OPEN_PDF_VIEWER_ON_PAGE_KEY, true);
 				readerCommand = buildCommandString(reader);
 			}
-			ResourceController.getResourceController().setProperty(OPEN_ON_PAGE_READER_COMMAND_KEY, readerCommand);
+			DocearController.getPropertiesController().setProperty(OPEN_ON_PAGE_READER_COMMAND_KEY, readerCommand);
 		}
 		else {
 			try {
@@ -678,19 +692,16 @@ public class PdfUtilitiesController extends ALanguageController {
 		this.modecontroller.removeAction("PasteAction"); //$NON-NLS-1$
 		this.modecontroller.addAction(new DocearPasteAction());
 
-		WorkspaceController.getIOController().registerNodeActionListener(DefaultFileNode.class, WorkspaceActionEvent.WSNODE_OPEN_DOCUMENT,
+		WorkspaceController.getCurrentModeExtension().getIOController().registerNodeActionListener(DefaultFileNode.class, WorkspaceActionEvent.WSNODE_OPEN_DOCUMENT,
 				new WorkspaceNodeOpenDocumentListener());
-		WorkspaceController.getIOController().registerNodeActionListener(LinkTypeFileNode.class, WorkspaceActionEvent.WSNODE_OPEN_DOCUMENT,
+		WorkspaceController.getCurrentModeExtension().getIOController().registerNodeActionListener(LinkTypeFileNode.class, WorkspaceActionEvent.WSNODE_OPEN_DOCUMENT,
 				new WorkspaceNodeOpenDocumentListener());
 	}
 
 	private void addMenuEntries() {
-
 		this.modecontroller.addMenuContributor(new IMenuContributor() {
 
 			public void updateMenus(ModeController modeController, MenuBuilder builder) {
-				ResourceController resourceController = ResourceController.getResourceController();
-				
 				if(!Compat.isMacOsX()){
 					builder.addAction("/menu_bar/help/Web resources", Controller.getCurrentController().getAction(DocearSendPdfxcRegistryAction.KEY), MenuBuilder.AS_CHILD);
 				}
@@ -701,7 +712,7 @@ public class PdfUtilitiesController extends ALanguageController {
 						MenuBuilder.BEFORE);
 
 				builder.addRadioItem(MENU_BAR + PDF_MANAGEMENT_MENU, new RadioButtonAction(AUTO_IMPORT_LANG_KEY, AUTO_IMPORT_ANNOTATIONS_KEY),
-						resourceController.getBooleanProperty(AUTO_IMPORT_ANNOTATIONS_KEY));
+						DocearController.getPropertiesController().getBooleanProperty(AUTO_IMPORT_ANNOTATIONS_KEY));
 				builder.addAction(MENU_BAR + PDF_MANAGEMENT_MENU, importAllAnnotationsAction, MenuBuilder.AS_CHILD);
 				builder.addAction(MENU_BAR + PDF_MANAGEMENT_MENU, importNewAnnotationsAction, MenuBuilder.AS_CHILD);				
 				builder.addAction(MENU_BAR + PDF_MANAGEMENT_MENU, importAllChildAnnotationsAction, MenuBuilder.AS_CHILD);
@@ -739,7 +750,7 @@ public class PdfUtilitiesController extends ALanguageController {
 
 				builder.addMenuItem(
 						MENU_BAR + MONITORING_MENU + SETTINGS_MENU,
-						new JMenu(TextUtils.getText("PdfUtilitiesController_12")), MENU_BAR + PDF_MANAGEMENT_MENU + MONITORING_MENU + SETTINGS_MENU + AUTOUPDATE_MENU, //$NON-NLS-1$
+						new JMenu(TextUtils.getText("PdfUtilitiesController_12")), MENU_BAR + MONITORING_MENU + SETTINGS_MENU + AUTOUPDATE_MENU, //$NON-NLS-1$
 						MenuBuilder.AS_CHILD);
 				builder.addMenuItem(monitoringCategory + MONITORING_MENU + SETTINGS_MENU,
 						new JMenu(TextUtils.getText("PdfUtilitiesController_12")), monitoringCategory + MONITORING_MENU + SETTINGS_MENU + AUTOUPDATE_MENU, //$NON-NLS-1$
@@ -747,7 +758,7 @@ public class PdfUtilitiesController extends ALanguageController {
 
 				builder.addMenuItem(
 						MENU_BAR + MONITORING_MENU + SETTINGS_MENU,
-						new JMenu(TextUtils.getText("PdfUtilitiesController_14")), MENU_BAR + PDF_MANAGEMENT_MENU + MONITORING_MENU + SETTINGS_MENU + SUBFOLDERS_MENU, //$NON-NLS-1$
+						new JMenu(TextUtils.getText("PdfUtilitiesController_14")), MENU_BAR + MONITORING_MENU + SETTINGS_MENU + SUBFOLDERS_MENU, //$NON-NLS-1$
 						MenuBuilder.AS_CHILD);
 				builder.addMenuItem(monitoringCategory + MONITORING_MENU + SETTINGS_MENU,
 						new JMenu(TextUtils.getText("PdfUtilitiesController_14")), monitoringCategory + MONITORING_MENU + SETTINGS_MENU + SUBFOLDERS_MENU, //$NON-NLS-1$
@@ -979,7 +990,7 @@ public class PdfUtilitiesController extends ALanguageController {
 					NodeUtilities.setAttributeValue(map.getRootNode(), PdfUtilitiesController.MON_MINDMAP_FOLDER, CoreConfiguration.LIBRARY_PATH);
 					NodeUtilities.setAttributeValue(map.getRootNode(), PdfUtilitiesController.MON_AUTO, 2);
 					NodeUtilities.setAttributeValue(map.getRootNode(), PdfUtilitiesController.MON_SUBDIRS, 2);
-					if (ResourceController.getResourceController().getBooleanProperty("docear_flatten_subdir")) {
+					if (DocearController.getPropertiesController().getBooleanProperty("docear_flatten_subdir")) {
 						NodeUtilities.setAttributeValue(map.getRootNode(), PdfUtilitiesController.MON_FLATTEN_DIRS, 1);
 					}
 					else {
@@ -1004,45 +1015,22 @@ public class PdfUtilitiesController extends ALanguageController {
 //				}
 			}
 		});
-		WorkspaceController.getController().addWorkspaceListener(new DefaultWorkspaceEventListener());
-		WorkspaceController.getController().addWorkspaceListener(new IWorkspaceEventListener() {
-			
-			public void workspaceReady(WorkspaceEvent event) {
+		//WORKSPACE - todo: adjust to new initiation process
 				showViewerSelectionIfNecessary();				
 				
-				final IWorkspaceEventListener self = this;
-				SwingUtilities.invokeLater(new Runnable() {
-					
-					public void run() {
-						WorkspaceController.getController().removeWorkspaceListener(self);
-					}
-				});
-			}
-			
-			public void workspaceChanged(WorkspaceEvent event) {
-			}
-			
-			public void toolBarChanged(WorkspaceEvent event) {
-			}
-			
-			public void openWorkspace(WorkspaceEvent event) {
-			}
-			
-			public void configurationLoaded(WorkspaceEvent event) {
-			}
-			
-			public void configurationBeforeLoading(WorkspaceEvent event) {
-			}
-			
-			public void closeWorkspace(WorkspaceEvent event) {
-			}
-		});
+		WorkspaceController.getCurrentModel().addWorldModelListener(new DefaultWorkspaceModelListener());
 
 		this.modecontroller.getMapController().addNodeChangeListener(new PdfNodeChangeListener());		
-
 		DocearAutoMonitoringListener autoMonitoringListener = new DocearAutoMonitoringListener();
 		this.modecontroller.getMapController().addMapLifeCycleListener(autoMonitoringListener);
 		Controller.getCurrentController().getViewController().getJFrame().addWindowFocusListener(autoMonitoringListener);
+	}
+
+	private IProjectModelListener getProjectModelListener() {
+		if(this.projectModelListener == null) {
+			this.projectModelListener = new DocearProjectModelListener();
+		}
+		return this.projectModelListener;
 	}
 
 	private void addPluginDefaults() {
@@ -1092,7 +1080,7 @@ public class PdfUtilitiesController extends ALanguageController {
 		MModeController modeController = (MModeController) this.modecontroller;
 
 		modeController.getOptionPanelBuilder().load(preferences);
-		//TODO: Does not work, because the properties are set in an extra dialog with the validator still using the old values
+		//DOCEAR - todo: Does not work, because the properties are set in an extra dialog with the validator still using the old values
 //		Controller.getCurrentController().addOptionValidator(new IValidator() {
 //			
 //			public ValidationResult validate(Properties properties) {
@@ -1182,11 +1170,16 @@ public class PdfUtilitiesController extends ALanguageController {
 		}
 	}
 
-	public boolean hasCompatibleSettings(String readerCommand) throws IOException {
-		PdfReaderFileFilter filter = new PdfReaderFileFilter();
+	public boolean hasCompatibleSettings(final String readerCommand) throws IOException {
+		LogUtils.info("checking pdf reader settings ...");
+		
+		final PdfReaderFileFilter filter = new PdfReaderFileFilter();
 		if (Compat.isMacOsX() || (!filter.isPdfXChange(readerCommand) && !filter.isAcrobat(readerCommand))) {
 			return true;
 		}		
+		
+
+		
 		File exportFile = new File(ResourceController.getResourceController().getFreeplaneUserDirectory(), "exported.reg");
 		try {
 			
@@ -1254,12 +1247,17 @@ public class PdfUtilitiesController extends ALanguageController {
 	
 	
 	public String[] getPdfReaderExecCommand(URI uriToFile, int page, String title) {
-		File file = Tools.getFilefromUri(Tools.getAbsoluteUri(uriToFile, Controller.getCurrentController().getMap()));
+		File file = null;
+		try {
+			file = new File(MModeWorkspaceUrlManager.getController().getAbsoluteUri(Controller.getCurrentController().getMap(), uriToFile));
+		} catch (Exception e) {
+			LogUtils.warn(e);
+		}
 		if (file == null) {
 			return null;
 		}
 		
-		String readerCommandProperty = ResourceController.getResourceController().getProperty(PdfUtilitiesController.OPEN_ON_PAGE_READER_COMMAND_KEY);
+		String readerCommandProperty = DocearController.getPropertiesController().getProperty(PdfUtilitiesController.OPEN_ON_PAGE_READER_COMMAND_KEY);
 		if (readerCommandProperty == null || readerCommandProperty.isEmpty()) {
 			setToStandardPdfViewer();
 			JOptionPane.showMessageDialog(UITools.getFrame(), TextUtils.getText(OPEN_ON_PAGE_ERROR_KEY), TextUtils.getText("warning"), JOptionPane.WARNING_MESSAGE);
@@ -1348,17 +1346,17 @@ public class PdfUtilitiesController extends ALanguageController {
 					setReaderPreferences(filePath);
 				}
 			} catch (ScriptException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//DOCEAR - todo: show error message dialog
+				LogUtils.warn(e);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//DOCEAR - todo: show error message dialog
+				LogUtils.warn(e);
 			}
 		}
 		else {
-			ResourceController.getResourceController().setProperty(OPEN_STANDARD_PDF_VIEWER_KEY, true);
-			ResourceController.getResourceController().setProperty(OPEN_INTERNAL_PDF_VIEWER_KEY, false);
-			ResourceController.getResourceController().setProperty(OPEN_PDF_VIEWER_ON_PAGE_KEY, false);
+			DocearController.getPropertiesController().setProperty(OPEN_STANDARD_PDF_VIEWER_KEY, true);
+			DocearController.getPropertiesController().setProperty(OPEN_INTERNAL_PDF_VIEWER_KEY, false);
+			DocearController.getPropertiesController().setProperty(OPEN_PDF_VIEWER_ON_PAGE_KEY, false);
 		}		
 	}
 	
@@ -1475,6 +1473,25 @@ public class PdfUtilitiesController extends ALanguageController {
     	else{
     		throw new IOException("Could not read applescript file.");
     	}
+	}
+
+	
+	private class DefaultWorkspaceModelListener implements WorkspaceModelListener {
+		public void projectRemoved(WorkspaceModelEvent event) {
+			event.getProject().getModel().removeProjectModelListener(getProjectModelListener());
+		}
+
+		public void projectAdded(WorkspaceModelEvent event) {
+			event.getProject().getModel().addProjectModelListener(getProjectModelListener());
+		}
+
+		public void treeStructureChanged(TreeModelEvent e) {}
+
+		public void treeNodesRemoved(TreeModelEvent e) {}
+
+		public void treeNodesInserted(TreeModelEvent e) {}
+
+		public void treeNodesChanged(TreeModelEvent e) {}
 	}
 
 }

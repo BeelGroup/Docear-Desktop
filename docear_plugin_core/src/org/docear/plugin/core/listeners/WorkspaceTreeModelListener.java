@@ -3,25 +3,17 @@ package org.docear.plugin.core.listeners;
 import java.awt.Component;
 import java.io.File;
 import java.io.FileFilter;
-import java.net.URL;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.LogUtils;
-import org.freeplane.features.map.MapChangeEvent;
 import org.freeplane.features.map.MapModel;
-import org.freeplane.features.map.mindmapmode.MMapController;
 import org.freeplane.features.mode.Controller;
-import org.freeplane.features.url.UrlManager;
 import org.freeplane.main.application.ApplicationResourceController;
 import org.freeplane.plugin.workspace.io.IFileSystemRepresentation;
-import org.freeplane.plugin.workspace.model.WorkspaceTreeModelEvent;
-import org.freeplane.plugin.workspace.model.WorkspaceTreeModelEvent.WorkspaceTreeModelEventType;
-import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 import org.freeplane.view.swing.map.MapView;
 
 public class WorkspaceTreeModelListener implements TreeModelListener {
@@ -71,7 +63,7 @@ public class WorkspaceTreeModelListener implements TreeModelListener {
 							//set to unsaved 
 							map.setSaved(false);
 							//update the application title to show that the map is not saved
-							Controller.getCurrentController().getViewController().setTitle();
+							Controller.getCurrentController().getMapViewManager().setTitle();
 						}
 					} catch (Throwable e) {
 						LogUtils.warn(e);

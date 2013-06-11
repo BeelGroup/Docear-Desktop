@@ -4,17 +4,17 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 
 import javax.swing.JOptionPane;
+import javax.swing.tree.TreePath;
 
-import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.TextUtils;
-import org.freeplane.plugin.workspace.WorkspaceController;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.plugin.workspace.URIUtils;
+import org.freeplane.plugin.workspace.components.menu.CheckEnableOnPopup;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
 
-@EnabledAction(checkOnPopup = true)
+@CheckEnableOnPopup
 public class FileNodeDeleteAction extends AWorkspaceAction {
 
 	/**
@@ -30,7 +30,7 @@ public class FileNodeDeleteAction extends AWorkspaceAction {
 	 * METHODS
 	 **********************************************************************************/
 	
-	public void setEnabledFor(AWorkspaceTreeNode node) {
+	public void setEnabledFor(AWorkspaceTreeNode node, TreePath[] selectedPath) {
 		if(node.isSystem()|| !node.isTransferable() || (!(node instanceof DefaultFileNode) && !(node instanceof LinkTypeFileNode))) {
 			setEnabled(false);
 		}
@@ -51,8 +51,7 @@ public class FileNodeDeleteAction extends AWorkspaceAction {
 				JOptionPane.YES_NO_OPTION);
 		if (yesorno == JOptionPane.OK_OPTION) {
 			deleteFile(node);
-		}
-		WorkspaceUtils.saveCurrentConfiguration();	
+		}	
 	}
 
 	private void deleteFile(final AWorkspaceTreeNode node) {
@@ -60,15 +59,17 @@ public class FileNodeDeleteAction extends AWorkspaceAction {
 			((DefaultFileNode) node).delete();
 		} 
 		else if (node instanceof LinkTypeFileNode) {						
-			File file = WorkspaceUtils.resolveURI(((LinkTypeFileNode) node).getLinkPath());
+			File file = URIUtils.getAbsoluteFile(((LinkTypeFileNode) node).getLinkURI());
 			if(file != null) {
 				if(!file.delete()) {
 					//show message?
 				}
 			}			
 		}
-		WorkspaceUtils.getModel().removeNodeFromParent(node);
-		WorkspaceController.getController().refreshWorkspace();
+		AWorkspaceTreeNode parent = node.getParent();
+		node.getModel().removeNodeFromParent(node);
+		parent.refresh();
+		parent.getModel().requestSave();
 		
 	}
 

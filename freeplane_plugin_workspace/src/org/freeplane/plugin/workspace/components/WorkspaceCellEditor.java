@@ -67,12 +67,7 @@ public class WorkspaceCellEditor extends DefaultTreeCellEditor {
 				}
 			}
 		}
-		else if(event == null && WorkspaceController.getController().getWorkspaceViewTree().getSelectionPath() != null) {
-			//FIXME: DOCEAR - disable any shortcut key that leads to editing a node (e.g. F2) 
-//			AWorkspaceTreeNode treeNode = (AWorkspaceTreeNode) WorkspaceController.getController().getWorkspaceViewTree().getSelectionPath().getLastPathComponent();
-//			if(treeNode.isSystem() || !treeNode.isEditable()) {
-//				return false;
-//			}
+		else if(event == null && WorkspaceController.getCurrentModeExtension().getView().getSelectionPath() != null) {
 			return false;
 		}
 		return super.isCellEditable(event);

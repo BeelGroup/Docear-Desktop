@@ -1,6 +1,7 @@
 package org.docear.plugin.pdfutilities.util;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -14,7 +15,8 @@ import org.docear.plugin.core.CoreConfiguration;
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.features.AnnotationID;
 import org.docear.plugin.core.util.NodeUtilities;
-import org.docear.plugin.core.util.Tools;
+import org.docear.plugin.core.workspace.AVirtualDirectory;
+import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
 import org.docear.plugin.pdfutilities.features.AnnotationNodeModel;
@@ -24,15 +26,19 @@ import org.docear.plugin.pdfutilities.features.IAnnotation;
 import org.docear.plugin.pdfutilities.features.IAnnotation.AnnotationType;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
 import org.docear.plugin.pdfutilities.pdf.PdfFileFilter;
-import org.freeplane.core.resources.ResourceController;
 import org.freeplane.features.attribute.AttributeController;
 import org.freeplane.features.attribute.NodeAttributeTableModel;
+import org.freeplane.features.link.LinkController;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.map.mindmapmode.MMapController;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.mindmapmode.MModeController;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.features.url.UrlManager;
+import org.freeplane.plugin.workspace.URIUtils;
+import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.features.WorkspaceMapModelExtension;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
 public abstract class MonitoringUtils {
 	
@@ -41,7 +47,7 @@ public abstract class MonitoringUtils {
 		return (attributeModel != null && attributeModel.getAttributeKeyList().contains(PdfUtilitiesController.MON_INCOMING_FOLDER));
 	}
 
-	public static URI getPdfDirFromMonitoringNode(NodeModel node) {
+	public static File getPdfDirFromMonitoringNode(NodeModel node) {
 		if(!isMonitoringNode(node)) return null;
 		NodeAttributeTableModel attributeModel = (NodeAttributeTableModel) node.getExtension(NodeAttributeTableModel.class);
 		if(attributeModel == null || !attributeModel.getAttributeKeyList().contains(PdfUtilitiesController.MON_INCOMING_FOLDER)){
@@ -57,13 +63,20 @@ public abstract class MonitoringUtils {
 				e.printStackTrace();
 			}
 		}
-		
+		WorkspaceMapModelExtension ext = WorkspaceController.getMapModelExtension(node.getMap());
+		if(ext == null || ext.getProject() == null) {
+			return null;
+		}
 		if(value.toString().equals(CoreConfiguration.DOCUMENT_REPOSITORY_PATH)){
-			return CoreConfiguration.repositoryPathObserver.getUri();
+			return ((DocearWorkspaceProject)ext.getProject()).getProjectLiteratureRepository();
 			
 		}
 		else{			
-			return Tools.getAbsoluteUri((URI)value);
+			try {
+				return URIUtils.getAbsoluteFile(UrlManager.getController().getAbsoluteUri(node.getMap(), (URI)value));
+			} catch (MalformedURLException e) {
+				return null;
+			}
 		}
 	}
 	
@@ -78,10 +91,15 @@ public abstract class MonitoringUtils {
 		Object value = attributeModel.getValue(attributeModel.getAttributePosition(PdfUtilitiesController.MON_MINDMAP_FOLDER));
 		
 		if(value.toString().equals(CoreConfiguration.LIBRARY_PATH)){
-			return DocearController.getController().getLibrary().getMindmaps();			
+			AWorkspaceProject project = WorkspaceController.getProject(node.getMap());
+			if(project == null || !(project instanceof DocearWorkspaceProject)) {
+				//WORKSPACE - DOCEAR info: better with an exception? 
+				return result;
+			}
+			return ((DocearWorkspaceProject) project).getLibraryMaps();
 		}
 		else{			
-			result.add(Tools.getAbsoluteUri((URI)value));
+			result.add(URIUtils.getAbsoluteURI((URI)value));
 			return result;
 		}		
 	}
@@ -124,7 +142,7 @@ public abstract class MonitoringUtils {
 				return true;				
 				
 			case 2:
-				return ResourceController.getResourceController().getBooleanProperty("docear_auto_monitoring"); //$NON-NLS-1$
+				return DocearController.getPropertiesController().getBooleanProperty("docear_auto_monitoring"); //$NON-NLS-1$
 				
 			default:
 				return false;
@@ -133,14 +151,12 @@ public abstract class MonitoringUtils {
 	
 	public static Stack<File> getFolderStructureStack(NodeModel monitoringNode, URI pdfFile){
 		Stack<File> folderStack = new Stack<File>();		
-		URI pdfDirURI = getPdfDirFromMonitoringNode(monitoringNode);
-		pdfDirURI = Tools.getAbsoluteUri(pdfDirURI);
-		if(pdfDirURI == null || Tools.getFilefromUri(pdfDirURI) == null || !Tools.getFilefromUri(pdfDirURI).exists() || !Tools.getFilefromUri(pdfDirURI).isDirectory()){
+		File pdfDirFile = getPdfDirFromMonitoringNode(monitoringNode);
+		if(pdfDirFile == null || !pdfDirFile.exists() || !pdfDirFile.isDirectory()){
 			return folderStack;
 		}
-		File pdfDirFile = Tools.getFilefromUri(pdfDirURI);		
-		File parent = Tools.getFilefromUri(pdfFile).getParentFile();
-		while(parent != null && !parent.equals(pdfDirFile)){
+		File parent = URIUtils.getAbsoluteFile(pdfFile).getParentFile();
+		while(parent != null && !isParent(pdfDirFile, parent)){
 			folderStack.push(parent);
 			parent = parent.getParentFile();
 			if(parent == null){
@@ -150,20 +166,37 @@ public abstract class MonitoringUtils {
 		return folderStack;
 	}
 	
+	public static boolean isParent(File parent, File f) {
+		File file = new File(f.toURI().normalize());
+		if(parent instanceof AVirtualDirectory) {
+			for(File fi : parent.listFiles()) {
+				File parentFile = new File(fi.toURI().normalize());
+				if(file.equals(parentFile)) {
+					return true;
+				}
+			}
+		}
+		else {
+			return file.equals(parent);
+		}
+		return false;
+	}
+	
 	public static boolean isPdfLinkedNode(NodeModel node){
-		URI link = Tools.getAbsoluteUri(node);		
+		URI link = NodeUtilities.getURI(node);		
         return new PdfFileFilter().accept(link);
     }
 	
 
-	public static List<NodeModel> insertNewChildNodesFrom(URI pdfFile, Collection<AnnotationModel> annotations, boolean isLeft, boolean flattenSubfolder, NodeModel target){
-		AnnotationModel root = new AnnotationModel(new AnnotationID(Tools.getAbsoluteUri(pdfFile), 0), AnnotationType.PDF_FILE);
-		root.setTitle(Tools.getFilefromUri(Tools.getAbsoluteUri(pdfFile)).getName());
+	public static List<NodeModel> insertNewChildNodesFrom(URI pdfUri, Collection<AnnotationModel> annotations, boolean isLeft, boolean flattenSubfolder, NodeModel target){
+		File pdfFile = URIUtils.getAbsoluteFile(pdfUri);
+		AnnotationModel root = new AnnotationModel(new AnnotationID(pdfFile.toURI(), 0), AnnotationType.PDF_FILE);
+		root.setTitle(pdfFile.getName());
 		root.getChildren().addAll(annotations);
 		Collection<AnnotationModel> newList = new ArrayList<AnnotationModel>();
 		newList.add(root);
 		if(!flattenSubfolder){		
-			Stack<File> folderStack = getFolderStructureStack(target, pdfFile);
+			Stack<File> folderStack = getFolderStructureStack(target, pdfUri);
 			target = createFolderStructurePath(target, folderStack);
 		}
 		return insertNewChildNodesFrom(newList, isLeft, target, target);
@@ -187,7 +220,7 @@ public abstract class MonitoringUtils {
 		else {
 			pathNode = ((MMapController) Controller.getCurrentModeController().getMapController()).newNode(parent.getName(), target.getMap());
 			DocearNodeMonitoringExtensionController.setEntry(pathNode, DocearExtensionKey.MONITOR_PATH, null);
-			NodeUtilities.setLinkFrom(WorkspaceUtils.getURI(parent), pathNode);
+			NodeUtilities.setLinkFrom(LinkController.normalizeURI(parent.toURI()), pathNode);
 			NodeUtilities.insertChildNodeFrom(pathNode, target.isLeft(), target);
 			return createFolderStructurePath(pathNode, pathStack);
 		}
@@ -219,7 +252,7 @@ public abstract class MonitoringUtils {
 		} catch (InterruptedException e) {			
 		}
 		if(isPdfLinkedNode(parent)){
-			URI uri = Tools.getAbsoluteUri(parent);
+			URI uri = URIUtils.getAbsoluteURI(NodeUtilities.getURI(parent));
 			AnnotationNodeModel oldAnnotation = AnnotationController.getAnnotationNodeModel(parent);
 			if(uri != null && oldAnnotation != null){				
 				result.put(oldAnnotation.getAnnotationID(), new ArrayList<AnnotationNodeModel>());				
@@ -266,20 +299,24 @@ public abstract class MonitoringUtils {
 		return nodes;
 	}
 	
-	public static NodeModel insertChildNodeFrom(URI file, boolean isLeft, NodeModel target, AnnotationType type){
-		final NodeModel node = ((MMapController) Controller.getCurrentModeController().getMapController()).newNode(Tools.getFilefromUri(file).getName(), target.getMap());
+	public static NodeModel insertChildNodeFrom(URI uri, boolean isLeft, NodeModel target, AnnotationType type){
+		if(uri == null) {
+			return null;
+		}
+		File file = URIUtils.getAbsoluteFile(uri);
+		final NodeModel node = ((MMapController) Controller.getCurrentModeController().getMapController()).newNode(file.getName(), target.getMap());
 		
 		
 		if(type != null){
 			AnnotationModel model = new AnnotationModel();//new AnnotationID(file, -1), type);
-			if(type == AnnotationType.PDF_FILE){
-				model.setAnnotationID(new AnnotationID(WorkspaceUtils.absoluteURI(file), 0));
-			}
 			model.setAnnotationType(type);
-			model.setUri(file);
+			model.setUri(uri);
+			if(type == AnnotationType.PDF_FILE){
+				model.setAnnotationID(new AnnotationID(file.toURI(), 0));
+			}
 			AnnotationController.setModel(node, model);
 		}
-		NodeUtilities.setLinkFrom(file, node);
+		NodeUtilities.setLinkFrom(uri, node);
 		return NodeUtilities.insertChildNodeFrom(node, isLeft, target);
 	}
 	
@@ -330,7 +367,7 @@ public abstract class MonitoringUtils {
 				continue;
 			}
 			if(annotation.getAnnotationType().equals(AnnotationType.PDF_FILE)){
-				if(annotation.getUri().equals(Tools.getAbsoluteUri(child))){
+				if(annotation.getUri().equals(URIUtils.getAbsoluteURI(child))){
 					return child;
 				}
 			}			

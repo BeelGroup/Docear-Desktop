@@ -8,7 +8,6 @@ import java.io.File;
 import java.util.Vector;
 
 import org.freeplane.core.util.LogUtils;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 
 public abstract class AFileNodeCreator implements IFileTypeHandler {
@@ -56,7 +55,7 @@ public abstract class AFileNodeCreator implements IFileTypeHandler {
 	public AWorkspaceTreeNode createFileNode(AWorkspaceTreeNode parent, String fileExtension, final File file) {		
 		final AWorkspaceTreeNode node = getNode(file.getName(), file);
 		if (node != null) {
-			WorkspaceUtils.getModel().addNodeTo(node, parent, false);
+			parent.getModel().addNodeTo(node, parent, false);
 			return node;
 		}
 		return parent;		

@@ -16,8 +16,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JToolBar;
 
-import org.freeplane.plugin.workspace.WorkspaceController;
-
 /**
  * 
  */
@@ -32,7 +30,7 @@ public class WorkspaceToolBar extends JToolBar {
 		JButton button = add(new AbstractAction("New", new ImageIcon(WorkspaceToolBar.class.getResource("/images/16x16/document-new-6.png"))) {
 			private static final long serialVersionUID = 1L;
 			public void actionPerformed(ActionEvent e) {
-				WorkspaceController.getController().actionPerformed(e);				
+				//WorkspaceController.getController().actionPerformed(e);				
 			}
 		});
 		configureComponent(button);
@@ -40,7 +38,7 @@ public class WorkspaceToolBar extends JToolBar {
 		button = add(new AbstractAction("Delete", new ImageIcon(WorkspaceToolBar.class.getResource("/images/16x16/document-delete.png"))) {			
 			private static final long serialVersionUID = 1L;
 			public void actionPerformed(ActionEvent e) {
-				WorkspaceController.getController().actionPerformed(e);
+				//WorkspaceController.getController().actionPerformed(e);
 			}
 		});
 		configureComponent(button);

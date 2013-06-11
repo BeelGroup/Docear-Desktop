@@ -9,7 +9,7 @@ import org.docear.plugin.bibtex.jabref.JabRefCommons;
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
 import org.docear.plugin.pdfutilities.util.MonitoringUtils;
-import org.docear.plugin.services.communications.CommunicationsController;
+import org.docear.plugin.services.ServiceController;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.ui.components.UITools;
@@ -17,7 +17,7 @@ import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 
-@EnabledAction(checkOnPopup = true)
+@EnabledAction(checkOnNodeChange=true)
 public class ImportMetadateForNodeLink extends AFreeplaneAction {
 
 	private static final String KEY = "menu_import_metadata";
@@ -52,7 +52,7 @@ public class ImportMetadateForNodeLink extends AFreeplaneAction {
 	}
 
 	public void setEnabled() {
-		String userName = CommunicationsController.getController().getUserName();
+		String userName = ServiceController.getController().getCurrentUser().getUsername();
 		NodeModel node = Controller.getCurrentModeController().getMapController().getSelectedNode();
 
 		if (userName == null || node == null) {

@@ -3,11 +3,12 @@ package org.freeplane.plugin.workspace.actions;
 import java.awt.event.ActionEvent;
 import java.util.Enumeration;
 
-import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.components.IWorkspaceView;
+import org.freeplane.plugin.workspace.model.WorkspaceTreeModel;
 
 public class WorkspaceCollapseAction extends AWorkspaceAction {
 
@@ -18,30 +19,29 @@ public class WorkspaceCollapseAction extends AWorkspaceAction {
 	}
 
 	public void actionPerformed(final ActionEvent e) {
-		JTree workspaceTree = WorkspaceController.getController().getWorkspaceViewTree();
-		collapseAll(workspaceTree);
+		collapseAll(getNodeFromActionEvent(e).getModel());
 	}
 
-	private static void collapseAll(JTree tree) {
-	    TreeNode root = (TreeNode) tree.getModel().getRoot();
-	 
+	private static void collapseAll(WorkspaceTreeModel model) {
+	    TreeNode root = (TreeNode) model.getRoot();
+	    IWorkspaceView view = WorkspaceController.getCurrentModeExtension().getView();
 	    TreePath rootPath = new TreePath(root);
 	    for (Enumeration<?> e=root.children(); e.hasMoreElements();) {
 	    	TreeNode n = (TreeNode) e.nextElement();
 	    	TreePath path = rootPath.pathByAddingChild(n);
-	    	collapseAll(tree, path);
+	    	collapseAll(view, model, path);
 	    }
 	}
 	 
-	private static void collapseAll(JTree tree, TreePath parent) {
+	private static void collapseAll(IWorkspaceView view, WorkspaceTreeModel model, TreePath parent) {
 	    TreeNode node = (TreeNode) parent.getLastPathComponent();
 	    if (node.getChildCount() >= 0) {
 	        for (Enumeration<?> e=node.children(); e.hasMoreElements();) {
 	            TreeNode n = (TreeNode) e.nextElement();
 	            TreePath path = parent.pathByAddingChild(n);
-	            collapseAll(tree, path);
+	            collapseAll(view, model, path);
 	        }
 	    }	    
-	    tree.collapsePath(parent);	 
+	    view.collapsePath(parent);	 
 	}
 }

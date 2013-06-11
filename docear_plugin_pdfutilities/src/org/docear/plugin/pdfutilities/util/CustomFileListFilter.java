@@ -2,18 +2,17 @@ package org.docear.plugin.pdfutilities.util;
 
 
 import java.io.File;
-import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.docear.plugin.core.util.Tools;
+import org.docear.plugin.core.util.ADocearFileFilter;
 
-public class CustomFileListFilter implements FileFilter{
+public class CustomFileListFilter extends ADocearFileFilter {
 	
 	List<String> regexList = new ArrayList<String>();
 	
 	public CustomFileListFilter(String property){
-		List<String> temp = Tools.getStringList(property);
+		List<String> temp = getStringList(property);
 		for(String s : temp){
 			if(!s.contains(".")) continue; //$NON-NLS-1$
 			s = s.substring(s.indexOf(".") + 1); //$NON-NLS-1$
@@ -33,5 +32,4 @@ public class CustomFileListFilter implements FileFilter{
 		}
 		return false;
 	}
-
 }

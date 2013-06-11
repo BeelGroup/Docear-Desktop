@@ -7,7 +7,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.docear.plugin.core.util.Tools;
 import org.docear.plugin.pdfutilities.listener.DocearNodeDropListener;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.features.clipboard.ClipboardController;
@@ -46,7 +45,7 @@ public class DocearPasteAction extends AFreeplaneAction {
 	                fileList = (List<File>) (transferable.getTransferData(fileListFlavor));
 	            }
 	            else if(transferable.isDataFlavorSupported(uriListFlavor)){	            	
-	                fileList = Tools.textURIListToFileList((String) transferable.getTransferData(uriListFlavor));
+	                fileList = DocearNodeDropListener.textURIListToFileList((String) transferable.getTransferData(uriListFlavor));
 	            }	            
 	            DocearNodeDropListener.pasteFileList(fileList, targetNode, targetNode.isNewChildLeft());
 	            
