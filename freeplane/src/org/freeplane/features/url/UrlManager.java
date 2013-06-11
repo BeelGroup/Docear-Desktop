@@ -67,8 +67,9 @@ import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.map.MapController;
 import org.freeplane.features.map.MapModel;
-import org.freeplane.features.map.NodeModel;
+
 import org.freeplane.features.map.MapWriter.Mode;
+import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mapio.MapIO;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
@@ -165,6 +166,7 @@ public class UrlManager implements IExtension {
 	public static void install( final UrlManager urlManager) {
 		final ModeController modeController = Controller.getCurrentModeController();
 		modeController.addExtension(UrlManager.class, urlManager);
+		urlManager.init();
 	}
 
 // // 	final private Controller controller;
@@ -172,6 +174,9 @@ public class UrlManager implements IExtension {
 
 	public UrlManager() {
 		super();
+	}
+	
+	protected void init() {
 //		this.modeController = modeController;
 //		controller = modeController.getController();
 		createActions();
@@ -183,10 +188,10 @@ public class UrlManager implements IExtension {
 	private void createActions() {
 	}
 
-	
 	public JFileChooser getFileChooser(final FileFilter filter, boolean useDirectorySelector) {
 		return getFileChooser(filter, useDirectorySelector, false);
 	}
+
 	/**
 	 * Creates a file chooser with the last selected directory as default.
 	 * @param useDirectorySelector
@@ -256,7 +261,7 @@ public class UrlManager implements IExtension {
 	public void handleLoadingException(final Exception ex) {
 		final String exceptionType = ex.getClass().getName();
 		if (exceptionType.equals(XMLParseException.class.getName())) {
-			final int showDetail = JOptionPane.showConfirmDialog(Controller.getCurrentController().getViewController().getMapView(),
+			final int showDetail = JOptionPane.showConfirmDialog(Controller.getCurrentController().getMapViewManager().getMapViewComponent(),
 			    TextUtils.getText("map_corrupted"), "Freeplane", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE);
 			if (showDetail == JOptionPane.YES_OPTION) {
 				UITools.errorMessage(ex);
@@ -346,7 +351,8 @@ public class UrlManager implements IExtension {
 					return;
 				}
 			}
-			//DOCEAR: mindmaps can be linked in a mindmap --> therefore workspace-relative-paths are possible
+
+			//DOCEAR: mindmaps can be linked in a mindmap --> therefore project-relative-paths are possible
 			if(!"file".equals(uri.getScheme())) {
 				try {
 					uri = uri.toURL().openConnection().getURL().toURI().normalize();
@@ -356,7 +362,6 @@ public class UrlManager implements IExtension {
 					UITools.errorMessage(TextUtils.format("link_not_found", uri.toString()));
 				}
 			}
-			
 			try {
 				if ((extension != null)
 				        && extension.equals(UrlManager.FREEPLANE_FILE_EXTENSION_WITHOUT_DOT)) {
@@ -393,8 +398,9 @@ public class UrlManager implements IExtension {
 		return getAbsoluteUri(map, uri);
 	}
 
+	
 	public URI getAbsoluteUri(final MapModel map, final URI uri) throws MalformedURLException {
-		//DOCEAR - fix workspace relative uri resolution
+		//DOCEAR - added project relative uri resolution
 		URI resolvedURI;
 		try {
 			resolvedURI = uri.toURL().openConnection().getURL().toURI();
@@ -425,7 +431,7 @@ public class UrlManager implements IExtension {
 		}
 	}
 	
-	public File absoluteFile(final MapModel map, final URI uri) {
+	public File getAbsoluteFile(final MapModel map, final URI uri) {
 		if(uri == null) {
 			return null;
 		}

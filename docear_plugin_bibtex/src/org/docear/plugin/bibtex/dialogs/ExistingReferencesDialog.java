@@ -120,8 +120,8 @@ public class ExistingReferencesDialog extends JDialog {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		{
 			JabrefWrapper jabRefWrapper = ReferencesController.getController().getJabrefWrapper();
-			this.basePanel = new BasePanel(jabRefWrapper.getJabrefFrame(), jabRefWrapper.getDatabase(), jabRefWrapper.getFile(), jabRefWrapper.getMeta(),
-					jabRefWrapper.getEncoding());
+			//DOCEAR - fixme: get file from active project or from active map
+			//this.basePanel = new BasePanel(jabRefWrapper.getJabrefFrame(), jabRefWrapper.getDatabase(), jabRefWrapper.getFile(), jabRefWrapper.getMeta(), jabRefWrapper.getEncoding());
 			Globals.fileUpdateMonitor.removeUpdateListener(this.basePanel.getFileMonitorHandle());
 			contentPanel.setLayout(new BorderLayout(0, 0));
 

@@ -15,7 +15,7 @@ import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 
-@EnabledAction(checkOnPopup = true)
+@EnabledAction(checkOnNodeChange=true)
 public class CopyBibtexToClipboard extends AFreeplaneAction{
 	private static final String KEY = "menu_copy_bibtex";
 	/**

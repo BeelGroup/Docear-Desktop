@@ -31,13 +31,14 @@ import javax.swing.SwingConstants;
 
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.AFreeplaneAction;
+
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.FreeplaneVersion;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.Controller;
 
-//DOCEAR
+//DOCEAR - info
 public class AboutAction extends AFreeplaneAction {
 	/**
 	 * 
@@ -63,7 +64,7 @@ public class AboutAction extends AFreeplaneAction {
 		addUri(box, "license_url", TextUtils.getText("license"));
 		addMessage(box, TextUtils.getText("license_text"));
 		
-		JOptionPane.showMessageDialog(Controller.getCurrentController().getViewController().getViewport(), box, TextUtils
+		JOptionPane.showMessageDialog(Controller.getCurrentController().getMapViewManager().getViewport(), box, TextUtils
 		    .getText("AboutAction.text"), JOptionPane.INFORMATION_MESSAGE);
 	}
 

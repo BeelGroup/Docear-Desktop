@@ -6,7 +6,7 @@ package org.freeplane.plugin.workspace.model;
 
 import javax.swing.tree.TreePath;
 
-import org.docear.lang.Destructable;
+import org.freeplane.lang.Destructable;
 
 /**
  * 
@@ -87,6 +87,13 @@ public class WorkspaceTreeNodePath extends TreePath implements Destructable {
 
 	public AWorkspaceTreeNode getLastPathComponent() {
 		return (AWorkspaceTreeNode) super.getLastPathComponent();
+	}
+	
+	public boolean equals(Object o) {
+		if(o instanceof WorkspaceTreeNodePath) {
+			return this.toString().equals(o.toString());
+		}
+		return super.equals(o);
 	}
 
 	/***********************************************************************************

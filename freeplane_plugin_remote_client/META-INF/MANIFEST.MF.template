@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: org.freeplane.plugin.remote.client
+Bundle-SymbolicName: org.freeplane.plugin.remote.client;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.freeplane.plugin.remote.client.Activator
+Require-Bundle: org.freeplane.core;bundle-version="1.0.1"
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: 
+ org.osgi.framework;version="1.3.0"
+Bundle-ClassPath: .,
+ @DEPENDENCY_JARS@,
+ lib/plugin.jar,
+ lib/freeplane_remote_shared.jar,
+ lib/messages_2.10-0.1-SNAPSHOT.jar
+

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="resources"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="ivy/ivy.jar"/>
+	<classpathentry kind="lib" path="lib/messages_2.10-0.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/akka-actor_2.10-2.1.0-javadoc.jar"/>
+	<classpathentry kind="lib" path="lib/akka-actor_2.10-2.1.0-sources.jar"/>
+	<classpathentry kind="lib" path="lib/akka-actor_2.10-2.1.0.jar"/>
+	<classpathentry kind="lib" path="lib/akka-remote_2.10-2.1.0-javadoc.jar"/>
+	<classpathentry kind="lib" path="lib/akka-remote_2.10-2.1.0-sources.jar"/>
+	<classpathentry kind="lib" path="lib/akka-remote_2.10-2.1.0.jar"/>
+	<classpathentry kind="lib" path="lib/akka-testkit_2.10-2.1.0-javadoc.jar"/>
+	<classpathentry kind="lib" path="lib/akka-testkit_2.10-2.1.0-sources.jar"/>
+	<classpathentry kind="lib" path="lib/akka-testkit_2.10-2.1.0.jar"/>
+	<classpathentry kind="lib" path="lib/commons-io-1.3.2-javadoc.jar"/>
+	<classpathentry kind="lib" path="lib/commons-io-1.3.2-sources.jar"/>
+	<classpathentry kind="lib" path="lib/commons-io-1.3.2.jar"/>
+	<classpathentry kind="lib" path="lib/config-1.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/fest-assert-1.4.jar"/>
+	<classpathentry kind="lib" path="lib/fest-util-1.1.6.jar"/>
+	<classpathentry kind="lib" path="lib/hamcrest-core-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/junit-4.11-javadoc.jar"/>
+	<classpathentry kind="lib" path="lib/junit-4.11-sources.jar"/>
+	<classpathentry kind="lib" path="lib/junit-4.11.jar"/>
+	<classpathentry kind="lib" path="lib/netty-3.5.8.Final.jar"/>
+	<classpathentry kind="lib" path="lib/protobuf-java-2.4.1.jar"/>
+	<classpathentry kind="lib" path="lib/scala-library-2.10.0.jar"/>
+	<classpathentry kind="lib" path="lib/uncommons-maths-1.2.2a.jar"/>
+	<classpathentry kind="lib" path="lib/freeplane_remote_shared.jar"/>
+	<classpathentry kind="lib" path="lib/guava-13.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-annotations-2.1.4.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-core-2.1.4.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-databind-2.1.4.jar"/>
+	<classpathentry kind="lib" path="lib/json-schema-validator-2.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/libphonenumber-5.3.jar"/>
+	<classpathentry kind="lib" path="lib/mailapi-1.4.3.jar"/>
+	<classpathentry kind="lib" path="lib/rhino-1.7R4.jar"/>
+	<classpathentry kind="lib" path="lib/json-schema-core-1.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/jcip-annotations-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/joda-time-2.1.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/freeplane_plugin_remote_server"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

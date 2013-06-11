@@ -12,26 +12,34 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+
+import org.freeplane.core.util.LogUtils;
 
 /**
  * 
  */
 public class OneTouchCollapseResizer extends JResizer {
-
 	private static final long serialVersionUID = 3836146387249880446L;
+	public static final String COLLAPSED = OneTouchCollapseResizer.class.getPackage().getName()+".collapsed";
+	private static final String ALREADY_IN_PAINT = OneTouchCollapseResizer.class.getPackage().getName()+".ALREADY_PAINTING";
 	
 	public enum CollapseDirection {COLLAPSE_LEFT, COLLAPSE_RIGHT};
 	
 	private Dimension lastComponentSize;
-	protected boolean expanded;
+	protected boolean expanded = true;
 	private JPanel hotspot;
 	private CollapseDirection collapseDirection;
 	private int inset = 2;
 	private final Direction direction;
 	private Integer resizeComponentIndex;
+	
+	private Set<ComponentCollapseListener> collapseListener = new LinkedHashSet<ComponentCollapseListener>();
+
 	
 	
 	/***********************************************************************************
@@ -45,8 +53,6 @@ public class OneTouchCollapseResizer extends JResizer {
 		direction = d;
 		this.setDividerSize(7);
 		this.collapseDirection = collapseDirection;
-		
-		
 		
 		MouseListener listener = new MouseListener() {			
 			private void resetCursor() {
@@ -74,7 +80,7 @@ public class OneTouchCollapseResizer extends JResizer {
 				if(e.getComponent() == getHotSpot()) {
 					resetCursor();
 				}
-				if(expanded) {
+				if(isExpanded()) {
 					resetCursor();
 				}
 			}
@@ -83,40 +89,31 @@ public class OneTouchCollapseResizer extends JResizer {
 				if(e.getComponent() == getHotSpot()) {
 					getHotSpot().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 				}
-				if(!expanded) {
+				if(!isExpanded()) {
 					e.getComponent().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 				}
 			}
 
 			public void mouseClicked(MouseEvent e) {
 				final JComponent parent = (JComponent) getParent();
-				final Component resizedComponent = parent.getComponent(resizeComponentIndex);
+				final Component resizedComponent = getResizedParent();
 				if(e.getComponent() == getHotSpot()) {					
 					final Dimension size = new Dimension(resizedComponent.getPreferredSize());
 					
-					if (expanded) {
+					if (isExpanded()) {
 						getHotSpot().setEnabled(true);
 						lastComponentSize = new Dimension(size);
-//						if(d.equals(Direction.RIGHT) || d.equals(Direction.LEFT)){
-//							size.width = getDivederSize();
-//						}
-//						else if(d.equals(Direction.UP) || d.equals(Direction.DOWN)){
-//							size.height = getDivederSize();
-//						}						
-						resizedComponent.setPreferredSize(new Dimension(0,0));
-						expanded = false;
+						setExpanded(false);
 					}
-					else {
-						resizedComponent.setPreferredSize(lastComponentSize);						
-						expanded = true;
+					else {						
+						setExpanded(true);
 					}				
 					parent.revalidate();
 					parent.repaint();
 				} 
 				else {
-					if (!expanded) {
-						resizedComponent.setPreferredSize(lastComponentSize);	
-						expanded = true;
+					if (!isExpanded()) {	
+						setExpanded(true);
 						parent.revalidate();
 						parent.repaint();
 					}
@@ -133,7 +130,9 @@ public class OneTouchCollapseResizer extends JResizer {
 	 * METHODS
 	 **********************************************************************************/
 	
-	
+	public boolean isExpanded() {
+		return this.expanded;
+	}
 	
 	public void setDividerSize(int size) {
 		final int w;
@@ -143,21 +142,21 @@ public class OneTouchCollapseResizer extends JResizer {
 			h = 0;
 		}
 		else if(direction.equals(Direction.LEFT)){
+			h = 0;
+			w = size;
+		}
+		else if(direction.equals(Direction.UP)){
 			h = size;
 			w = 0;
 		}
-		else if(direction.equals(Direction.UP)){
-			h = 0;
-			w = size;
-		}
 		else /*Direction.DOWN*/ {
-			h = 0;
-			w = size;
+			h = size;
+			w = 0;
 		}		
 		setPreferredSize(new Dimension(w, h));
 	}
 	
-	public int getDivederSize() {
+	public int getDividerSize() {
 		if(direction.equals(Direction.RIGHT) || direction.equals(Direction.LEFT)){
 			return getPreferredSize().width;
 		}
@@ -166,32 +165,67 @@ public class OneTouchCollapseResizer extends JResizer {
 		}
 	}
 	
+	public void setExpanded(boolean enabled) {
+		if(this.expanded != enabled) {
+			this.expanded = enabled;
+			try {
+				Component resizedComponent = getResizedParent();
+				if(resizedComponent instanceof JComponent) {
+					((JComponent) resizedComponent).putClientProperty(COLLAPSED, (enabled ? null : "true"));
+				}
+				if(enabled) {
+					if(lastComponentSize != null) {
+						resizedComponent.setPreferredSize(lastComponentSize);
+					}
+				}
+				else {
+					resizedComponent.setPreferredSize(new Dimension(0,0));
+				}
+				
+				fireCollapseStateChanged(resizedComponent, enabled);
+			}
+			catch (Exception e) {
+				// just ignore
+			}
+		}
+		
+	}
+	
 	private Component getResizedParent() {
 		final JComponent parent = (JComponent) getParent();
+		if(parent != null && resizeComponentIndex == null) {
+			resizeComponentIndex = getIndex();
+			lastComponentSize = new Dimension(parent.getComponent(resizeComponentIndex).getPreferredSize());
+		}		
 		return parent.getComponent(resizeComponentIndex);
 	}
 	
 	public void paint(Graphics g) {
-		if(resizeComponentIndex == null) {
-			resizeComponentIndex = getIndex();			
-			lastComponentSize = new Dimension(getResizedParent().getPreferredSize());
+		if(getClientProperty(ALREADY_IN_PAINT) != null) {
+			return;
 		}
+		putClientProperty(ALREADY_IN_PAINT, "true");
 		super.paint(g);
 		int center_y = getHeight()/2;
-		int divSize = getDivederSize();
+		int divSize = getDividerSize();
 		getHotSpot().setBounds(0, center_y-15, divSize, 30);
 		Dimension size = getResizedParent().getPreferredSize();
-		if((direction.equals(Direction.RIGHT) || direction.equals(Direction.LEFT)) && size.width <= getDivederSize()) {
-			expanded = false;
+		if((direction.equals(Direction.RIGHT) || direction.equals(Direction.LEFT)) && size.width <= getDividerSize()) {
+			setExpanded(false);
+			
 		}
-		else if((direction.equals(Direction.UP) || direction.equals(Direction.DOWN)) && size.height <= getDivederSize()){
-			expanded = false;
+		else if((direction.equals(Direction.UP) || direction.equals(Direction.DOWN)) && size.height <= getDividerSize()){
+			setExpanded(false);
 		}
 		else {
-			expanded = true;
+			setExpanded(true);
 			//getHotSpot().setBounds(0, 0, getDividerSize(), 24);
 		}
+		if(getResizedParent() instanceof JComponent) {
+			((JComponent) getResizedParent()).putClientProperty(COLLAPSED, (isExpanded() ? null : "true"));
+		}
 		getHotSpot().paint(g.create(getHotSpot().getLocation().x, getHotSpot().getLocation().y, getHotSpot().getWidth(), getHotSpot().getHeight()));
+		putClientProperty(ALREADY_IN_PAINT, null);
 	}
 	
 	private Component getHotSpot() {
@@ -200,7 +234,7 @@ public class OneTouchCollapseResizer extends JResizer {
 				private static final long serialVersionUID = -5321517835206976034L;
 
 				public void paint(Graphics g) {
-					if (expanded) {
+					if (isExpanded()) {
 						drawCollapseLabel(g);
 					}
 					else {
@@ -307,7 +341,45 @@ public class OneTouchCollapseResizer extends JResizer {
 		return -1;
     }
 
-	/***********************************************************************************
-	 * REQUIRED METHODS FOR INTERFACES
-	 **********************************************************************************/
+	public void addCollapseListener(ComponentCollapseListener listener) {
+		if(listener == null) return;
+		
+		synchronized (collapseListener) {
+			collapseListener.add(listener);
+		}
+		
+	}
+	
+	public void removeCollapseListener(ComponentCollapseListener listener) {
+		if(listener == null) return;
+		
+		synchronized (collapseListener) {
+			collapseListener.remove(listener);
+		}		
+	}
+	
+	private void fireCollapseStateChanged(Component resizedComponent, boolean expanded) {
+		ResizeEvent event = new ResizeEvent(resizedComponent);
+		synchronized (this.collapseListener) {
+			for(ComponentCollapseListener listener : collapseListener) {
+				try {
+					if(expanded) {
+						listener.componentExpanded(event);
+					}
+					else {
+						listener.componentCollapsed(event);
+					}
+				}
+				catch (Exception e) {
+					LogUtils.severe(e);
+				}
+			}
+		}
+		
+	}
+	
+	public interface ComponentCollapseListener {
+		public void componentCollapsed(ResizeEvent event);
+		public void componentExpanded(ResizeEvent event);
+	}
 }

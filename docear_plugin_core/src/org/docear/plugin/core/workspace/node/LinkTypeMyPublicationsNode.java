@@ -15,12 +15,15 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.event.DocearEvent;
 import org.docear.plugin.core.event.DocearEventType;
+import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.mapio.MapIO;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.mindmapmode.MModeController;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.plugin.workspace.URIUtils;
+import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.actions.WorkspaceNewMapAction;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
 import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
@@ -37,6 +40,8 @@ public class LinkTypeMyPublicationsNode extends ALinkNode implements IWorkspaceN
 	private static final Icon DEFAULT_ICON = new ImageIcon(ResourceController.class.getResource("/images/docear16.png"));
 
 	private static final long serialVersionUID = 1L;
+
+	public static final String TYPE = "my_publications";
 	
 	private URI linkPath;
 	private WorkspacePopupMenu popupMenu = null;
@@ -46,6 +51,10 @@ public class LinkTypeMyPublicationsNode extends ALinkNode implements IWorkspaceN
 	 * CONSTRUCTORS
 	 **********************************************************************************/
 
+	public LinkTypeMyPublicationsNode() {
+		this(TYPE);
+	}
+	
 	public LinkTypeMyPublicationsNode(String type) {
 		super(type);
 	}
@@ -55,16 +64,12 @@ public class LinkTypeMyPublicationsNode extends ALinkNode implements IWorkspaceN
 	 **********************************************************************************/
 
 	@ExportAsAttribute(name="path")
-	public URI getLinkPath() {
+	public URI getLinkURI() {
 		return linkPath;
 	}
 	
 	public void setLinkPath(URI linkPath) {
 		this.linkPath = linkPath;
-		if(this.linkPath != null) {
-			DocearEvent event = new DocearEvent(this, DocearEventType.LIBRARY_NEW_MINDMAP_INDEXING_REQUEST, getLinkPath());
-			DocearController.getController().dispatchDocearEvent(event);
-		}
 	}
 	
 	public boolean setIcons(DefaultTreeCellRenderer renderer) {
@@ -95,7 +100,7 @@ public class LinkTypeMyPublicationsNode extends ALinkNode implements IWorkspaceN
 	
 	
 	protected AWorkspaceTreeNode clone(LinkTypeMyPublicationsNode node) {
-		node.setLinkPath(getLinkPath());
+		node.setLinkPath(getLinkURI());
 		return super.clone(node);
 	}
 	
@@ -107,13 +112,13 @@ public class LinkTypeMyPublicationsNode extends ALinkNode implements IWorkspaceN
 	public void handleAction(WorkspaceActionEvent event) {
 		if (event.getType() == WorkspaceActionEvent.MOUSE_LEFT_DBLCLICK) {
 			try {				
-				File f = WorkspaceUtils.resolveURI(getLinkPath());
+				File f = URIUtils.getAbsoluteFile(getLinkURI());
 				if(f == null) {
 					return;
 				}
 				if (!f.exists()) {
-					if(!WorkspaceUtils.createNewMindmap(f, getName())) {
-						LogUtils.warn("could not create " + getLinkPath());
+					if(WorkspaceNewMapAction.createNewMap(f.toURI(), getName(), true) == null) {
+						LogUtils.warn("could not create " + getLinkURI());
 					}
 				}
 				
@@ -122,7 +127,7 @@ public class LinkTypeMyPublicationsNode extends ALinkNode implements IWorkspaceN
 				
 				try {
 					if(mapIO.newMap(f.toURI().toURL())) {
-						DocearEvent evnt = new DocearEvent(this, DocearEventType.NEW_MY_PUBLICATIONS, Controller.getCurrentController().getMap());
+						DocearEvent evnt = new DocearEvent(this, (DocearWorkspaceProject) WorkspaceController.getCurrentModel().getProject(getModel()), DocearEventType.NEW_MY_PUBLICATIONS, Controller.getCurrentController().getMap());
 						DocearController.getController().dispatchDocearEvent(evnt);
 					}
 				}
@@ -132,7 +137,7 @@ public class LinkTypeMyPublicationsNode extends ALinkNode implements IWorkspaceN
 				}
 			}
 			catch (Exception e) {
-				LogUtils.warn("could not open document (" + getLinkPath() + ")", e);
+				LogUtils.warn("could not open document (" + getLinkURI() + ")", e);
 			}
 		}
 		else if (event.getType() == WorkspaceActionEvent.MOUSE_RIGHT_CLICK) {			
@@ -159,7 +164,7 @@ public class LinkTypeMyPublicationsNode extends ALinkNode implements IWorkspaceN
 		// simple set the node name
 		//this.setName(newName);
 		try {
-			WorkspaceUtils.getModel().changeNodeName(this, newName);
+			getModel().changeNodeName(this, newName);
 			return true;
 		}
 		catch(Exception ex) {

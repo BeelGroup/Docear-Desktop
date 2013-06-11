@@ -25,14 +25,15 @@ import net.sf.jabref.gui.FileListTableModel;
 import net.sf.jabref.labelPattern.LabelPatternUtil;
 
 import org.apache.commons.io.FilenameUtils;
+import org.docear.plugin.bibtex.JabRefProjectExtension;
 import org.docear.plugin.bibtex.Reference;
 import org.docear.plugin.bibtex.Reference.Item;
 import org.docear.plugin.bibtex.ReferencesController;
 import org.docear.plugin.bibtex.dialogs.DuplicateLinkDialogPanel;
-import org.docear.plugin.core.CoreConfiguration;
 import org.docear.plugin.core.features.DocearMapModelExtension;
 import org.docear.plugin.core.features.MapModificationSession;
 import org.docear.plugin.core.util.NodeUtilities;
+import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.LogUtils;
@@ -50,7 +51,10 @@ import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.mindmapmode.MModeController;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.features.url.UrlManager;
+import org.freeplane.plugin.workspace.URIUtils;
+import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.features.WorkspaceMapModelExtension;
 import org.freeplane.view.swing.map.NodeView;
 
 public class JabRefAttributes {
@@ -193,7 +197,7 @@ public class JabRefAttributes {
 				}
 			}
 			for (URI uri : reference.getUris()) {
-				File file = WorkspaceUtils.resolveURI(uri, node.getMap());
+				File file = UrlManager.getController().getAbsoluteFile(node.getMap(), uri);
 				URL url = null;
 				if (file == null) {
 					try {
@@ -491,6 +495,16 @@ public class JabRefAttributes {
 	// FIXME: not used yet --> implement functionality into
 	// findBibtexEntryForPDF
 	public BibtexEntry findBibtexEntryForURL(URI nodeUri, MapModel map, boolean ignoreDuplicates) throws ResolveDuplicateEntryAbortedException {
+		WorkspaceMapModelExtension mapExt = WorkspaceController.getMapModelExtension(map);
+		if(mapExt == null || mapExt.getProject() == null) {
+			//DOCEAR - todo: what to do?
+			return null;
+		}
+		else {    			
+			JabRefProjectExtension prjExt = (JabRefProjectExtension) mapExt.getProject().getExtensions(JabRefProjectExtension.class);
+			ReferencesController.getController().getJabrefWrapper().getJabrefFrame().showBasePanel(prjExt.getBaseHandle().getBasePanel());
+		}
+		
 		BibtexDatabase database = ReferencesController.getController().getJabrefWrapper().getDatabase();
 		if (database == null || nodeUri == null) {
 			return null;
@@ -578,12 +592,26 @@ public class JabRefAttributes {
 	}
 
 	public BibtexEntry findBibtexEntryForPDF(URI uri, MapModel map, boolean ignoreDuplicates) throws ResolveDuplicateEntryAbortedException {
+		WorkspaceMapModelExtension mapExt = WorkspaceController.getMapModelExtension(map);
+		if(mapExt == null || mapExt.getProject() == null) {
+			//DOCEAR - todo: what to do?
+			return null;
+		}
+		else {    			
+			JabRefProjectExtension prjExt = (JabRefProjectExtension) mapExt.getProject().getExtensions(JabRefProjectExtension.class);
+			if(prjExt == null) {
+				//DOCEAR - todo: what to do?
+				return null;
+			}
+			ReferencesController.getController().getJabrefWrapper().getJabrefFrame().showBasePanel(prjExt.getBaseHandle().getBasePanel());
+		}
+		
 		BibtexDatabase database = ReferencesController.getController().getJabrefWrapper().getDatabase();
 		if (database == null) {
 			return null;
 		}
 		// file name linked in a node
-		File nodeFile = WorkspaceUtils.resolveURI(uri, map);
+		File nodeFile = UrlManager.getController().getAbsoluteFile(map, uri);
 		if (nodeFile == null) {
 			return null;
 		}
@@ -667,7 +695,7 @@ public class JabRefAttributes {
 		return fileNames;
 	}
 
-	public ArrayList<URI> parsePaths(BibtexEntry entry, String pathInBibtexFile) {
+	public ArrayList<URI> parsePaths(DocearWorkspaceProject project, BibtexEntry entry, String pathInBibtexFile) {
 		ArrayList<URI> uris = new ArrayList<URI>();
 		ArrayList<String> paths = extractPaths(pathInBibtexFile);
 
@@ -681,8 +709,7 @@ public class JabRefAttributes {
 				uris.add(new File(path).toURI());
 			}
 			else {
-				URI uri = CoreConfiguration.referencePathObserver.getUri();
-				URI absUri = WorkspaceUtils.absoluteURI(uri);
+				URI absUri = URIUtils.getAbsoluteURI(project.getBibtexDatabase());
 
 				final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
 				Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());

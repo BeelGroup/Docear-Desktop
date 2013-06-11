@@ -59,7 +59,7 @@ public class DefaultMapMouseListener implements IMouseListener {
 		if (e.isPopupTrigger()) {
 			Component popup = null;
 			final Component popupForModel;
-			final MapView mapView = (MapView) Controller.getCurrentController().getViewController().getMapView();
+			final MapView mapView = (MapView) Controller.getCurrentController().getMapViewManager().getMapViewComponent();
 			final ModeController modeController = Controller.getCurrentController().getModeController();
 			if(mapView != null){
 				final java.lang.Object obj = mapView.detectCollision(e.getPoint());
@@ -129,7 +129,7 @@ public class DefaultMapMouseListener implements IMouseListener {
 		if(selection != null){
 			final NodeModel selected = selection.getSelected();
 			if(selected != null)
-				controller.getViewController().getComponent(selected).requestFocusInWindow();
+				controller.getMapViewManager().getComponent(selected).requestFocusInWindow();
 		}
 	}
 
@@ -174,17 +174,23 @@ public class DefaultMapMouseListener implements IMouseListener {
 	 *
 	 */
 	public void mouseDragged(final MouseEvent e) {
-		final Rectangle r = new Rectangle(e.getX(), e.getY(), 1, 1);
 		final JComponent component = (JComponent) e.getComponent();
 		final MapView mapView = getMapView(component);
 		if(mapView == null)
 			return;
-		final boolean isEventPointVisible = component.getVisibleRect().contains(r);
-		if (!isEventPointVisible) {
-			component.scrollRectToVisible(r);
-		}
-		if (originX >= 0 && isEventPointVisible) {
-			mapView.scrollBy(originX - e.getX(), originY - e.getY());
+		if (originX >= 0) {
+			final int dx = originX - e.getX();
+			final int dy = originY - e.getY();
+			final Rectangle visibleRect = component.getVisibleRect();
+			final Rectangle r = new Rectangle(e.getX(), e.getY(), 1, 1);
+			final boolean isEventPointVisible = visibleRect.contains(r);
+			if (isEventPointVisible)
+	            mapView.scrollBy(dx, dy);
+            else {
+				mapView.scrollBy(dx/3, dy/3);
+				originX += dx/3;
+				originY += dy/3;
+			}
 		}
 	}
 

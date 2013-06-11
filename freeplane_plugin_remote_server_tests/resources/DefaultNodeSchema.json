@@ -1,0 +1,93 @@
+{
+	"type":"object",
+	"$schema": "http://json-schema.org/draft-03/schema",
+	"required":true,
+	"properties":{
+		"hGap": {
+			"type":"number",
+			"required":true
+		},
+		"shiftY": {
+			"type":"number",
+			"required":true
+		},
+		"folded": {
+			"type":"boolean",
+			"required":true
+		},
+		"icons": {
+			"type":"array",
+			"required":true,
+			"items":
+				{
+					"type":"string",
+					"required":false
+				}
+			
+
+		},
+		"id": {
+			"type":"string",
+			"required":true
+		},
+		"image": {
+			"type":"object",
+			"required":false
+		},
+		"edgeStyle": {
+			"type":"object",
+			"required":false
+		},
+		"isHtml": {
+			"type":"boolean",
+			"required":true
+		},
+		"locked": {
+			"type":"string",
+			"required":false
+		},
+		"children": {
+			"type":"array",
+			"required":false,
+			"items":
+				{
+					"type":"object",
+					"required":false
+				}
+		},
+		"childrenIds": {
+			"type":"array",
+			"required":false,
+			"items":
+				{
+					"type":"string",
+					"required":false
+				}
+		},
+		"link": {
+			"type":"string",
+			"required":false
+		},
+		"nodeText": {
+			"type":"string",
+			"required":true
+		},
+		"note": {
+			"type":"string",
+			"required":false
+		},
+		"prefferedChild": {
+			"type":"object",
+			"required":false
+		},
+		"attributes": {
+			"type":"array",
+			"required":false,
+			"items":
+				{
+					"type":"string",
+					"required":false
+				}
+		}
+	}
+}

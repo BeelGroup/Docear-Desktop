@@ -4,30 +4,18 @@
  */
 package org.freeplane.plugin.workspace.nodes;
 
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTargetDropEvent;
 import java.io.File;
-import java.net.URI;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
-import org.apache.commons.io.FileUtils;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
-import org.freeplane.features.mode.Controller;
-import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.plugin.workspace.WorkspaceController;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
-import org.freeplane.plugin.workspace.dnd.WorkspaceTransferable;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 
@@ -92,9 +80,9 @@ public class FolderFileNode extends DefaultFileNode {
 	public void refresh() {
 		try {
 			if (getFile().isDirectory()) {
-				WorkspaceUtils.getModel().removeAllElements(this);
-				WorkspaceController.getController().getFilesystemMgr().scanFileSystem(this, getFile());
-				WorkspaceUtils.getModel().reload(this);				
+				getModel().removeAllElements(this);
+				WorkspaceController.getFileSystemMgr().scanFileSystem(this, getFile());
+				getModel().reload(this);				
 			}
 		}
 		catch (Exception e) {
@@ -111,8 +99,6 @@ public class FolderFileNode extends DefaultFileNode {
 						WorkspacePopupMenuBuilder.createSubMenu(TextUtils.getRawText("workspace.action.new.label")),
 						"workspace.action.node.new.folder",
 						"workspace.action.file.new.mindmap",
-						//WorkspacePopupMenuBuilder.SEPARATOR,
-						//"workspace.action.file.new.file",
 						WorkspacePopupMenuBuilder.endSubMenu(),
 						WorkspacePopupMenuBuilder.SEPARATOR,
 						"workspace.action.node.open.location",
@@ -122,7 +108,6 @@ public class FolderFileNode extends DefaultFileNode {
 						"workspace.action.node.paste",
 						WorkspacePopupMenuBuilder.SEPARATOR,
 						"workspace.action.node.rename",
-						"workspace.action.node.remove",
 						"workspace.action.file.delete",
 						WorkspacePopupMenuBuilder.SEPARATOR,
 						"workspace.action.node.refresh"		
@@ -137,145 +122,9 @@ public class FolderFileNode extends DefaultFileNode {
 		}
 		return popupMenu;
 	}
-	
-	private void processWorkspaceNodeDrop(List<AWorkspaceTreeNode> nodes, int dropAction) {
-		try {	
-			File targetDir = getFile();
-			for(AWorkspaceTreeNode node : nodes) {
-				if(node instanceof DefaultFileNode) {					
-					if(targetDir != null && targetDir.isDirectory()) {
-						if(dropAction == DnDConstants.ACTION_COPY) {
-							((DefaultFileNode) node).copyTo(targetDir);
-						} 
-						else if(dropAction == DnDConstants.ACTION_MOVE) {							
-							File oldFile = ((DefaultFileNode) node).getFile();
-							if(oldFile.equals(targetDir)) return;
-							((DefaultFileNode) node).moveTo(targetDir);
-							File newFile = new File(targetDir, ((DefaultFileNode) node).getName());
-							AWorkspaceTreeNode parent = node.getParent();							
-							WorkspaceUtils.getModel().cutNodeFromParent(node);
-							parent.refresh();
-							WorkspaceUtils.getModel().nodeMoved(node, oldFile, newFile);
-						}
-					}
-				}
-				else if(node instanceof LinkTypeFileNode) {
-					File srcFile = WorkspaceUtils.resolveURI(((LinkTypeFileNode) node).getLinkPath());
-					if(targetDir != null && targetDir.isDirectory()) {
-						FileUtils.copyFileToDirectory(srcFile, targetDir);
-						if(dropAction == DnDConstants.ACTION_MOVE) {
-							AWorkspaceTreeNode parent = node.getParent();
-							WorkspaceUtils.getModel().cutNodeFromParent(node);
-							parent.refresh();
-							WorkspaceUtils.getModel().nodeMoved(node, srcFile, new File(targetDir, srcFile.getName()));
-						}
-					}
-				}
-			}			
-		}
-		catch (Exception e) {
-			LogUtils.warn(e);
-		}
-		WorkspaceController.getController().getExpansionStateHandler().addPathKey(this.getKey());
-		refresh();
-	}
-	
-	private void processFileListDrop(List<File> files, int dropAction) {
-		try {
-			File targetDir = getFile();			
-			for(File srcFile : files) {
-				if(srcFile.isDirectory()) {
-						FileUtils.copyDirectoryToDirectory(srcFile, targetDir);
-				}
-				else {
-					FileUtils.copyFileToDirectory(srcFile, targetDir, true);
-				}				
-			}
-			refresh();
-		}
-		catch (Exception e) {
-			LogUtils.warn(e);
-		}
-		refresh();
-	}
-	
-	private void processUriListDrop(List<URI> uris, int dropAction) {
-		try {
-			File targetDir = getFile();			
-			for(URI uri : uris) {
-				File srcFile = new File(uri);
-				if(srcFile == null || !srcFile.exists()) {
-					continue;
-				}
-				if(srcFile.isDirectory()) {
-					FileUtils.copyDirectoryToDirectory(srcFile, targetDir);
-				}
-				else {
-					FileUtils.copyFileToDirectory(srcFile, targetDir, true);
-				}				
-			}
-			refresh();
-		}
-		catch (Exception e) {
-			LogUtils.warn(e);
-		}
-		refresh();		
-	}
-	
-	public boolean acceptDrop(DataFlavor[] flavors) {
-		for(DataFlavor flavor : flavors) {
-			if(WorkspaceTransferable.WORKSPACE_FILE_LIST_FLAVOR.equals(flavor)
-				|| WorkspaceTransferable.WORKSPACE_URI_LIST_FLAVOR.equals(flavor)
-				|| WorkspaceTransferable.WORKSPACE_NODE_FLAVOR.equals(flavor)
-			) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public boolean processDrop(DropTargetDropEvent event) {
-		event.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
-		Transferable transferable = event.getTransferable();
-		if(processDrop(transferable, event.getDropAction())) {
-			event.dropComplete(true);
-			return true;
-		}
-		event.dropComplete(false);
-		return false;
-	}
 		
-	@SuppressWarnings("unchecked")
-	public boolean processDrop(Transferable transferable, int dropAction) {
-		try {
-			if(transferable.isDataFlavorSupported(WorkspaceTransferable.WORKSPACE_NODE_FLAVOR)) {
-				processWorkspaceNodeDrop((List<AWorkspaceTreeNode>) transferable.getTransferData(WorkspaceTransferable.WORKSPACE_NODE_FLAVOR), dropAction);	
-			}
-			else if(transferable.isDataFlavorSupported(WorkspaceTransferable.WORKSPACE_FILE_LIST_FLAVOR)) {
-				processFileListDrop((List<File>) transferable.getTransferData(WorkspaceTransferable.WORKSPACE_FILE_LIST_FLAVOR), dropAction);
-			} 
-			else if(transferable.isDataFlavorSupported(WorkspaceTransferable.WORKSPACE_URI_LIST_FLAVOR)) {
-				ArrayList<URI> uriList = new ArrayList<URI>();
-				String uriString = (String) transferable.getTransferData(WorkspaceTransferable.WORKSPACE_URI_LIST_FLAVOR);
-				if (!uriString.startsWith("file://")) {
-					return false;
-				}
-				String[] uriArray = uriString.split("\r\n");
-				for(String singleUri : uriArray) {
-					try {
-						uriList.add(URI.create(singleUri));
-					}
-					catch (Exception e) {
-						LogUtils.info("DOCEAR - "+ e.getMessage());
-					}
-				}
-				processUriListDrop(uriList, dropAction);	
-			}
-		}
-		catch (Exception e) {
-			LogUtils.warn(e);
-		}
-		return true;
+	public boolean isLeaf() {
+		return false;
 	}
 		
 	
@@ -284,7 +133,6 @@ public class FolderFileNode extends DefaultFileNode {
 	 **********************************************************************************/
 	public void handleAction(WorkspaceActionEvent event) {	
 		if(event.getType() == WorkspaceActionEvent.WSNODE_CHANGED) {
-			Controller.getCurrentController().selectMode(MModeController.MODENAME);
 			if(rename(event.getBaggage().toString())) {
 				setName(event.getBaggage().toString());
 				if(event.getSource() instanceof AWorkspaceTreeNode) {
@@ -315,5 +163,7 @@ public class FolderFileNode extends DefaultFileNode {
 		}
 	}
 	
-	
+	public boolean getAllowsChildren() {
+		return true;
+	}
 }

@@ -1,0 +1,151 @@
+<project name="freeplane_remote_client" default="dist" basedir=".." xmlns:ivy="antlib:org.apache.ivy.ant">
+	<property name="workspace" location=".." />
+	<property name="src" value="src" />
+	<property name="resources" value="resources" />
+	<property name="root" value="." />
+	<property name="osgimanifest" value="${root}/META-INF/MANIFEST.MF" />
+	<property file="${workspace}/freeplane_framework/ant/ant.properties" />
+	<property file="${workspace}/freeplane/ant/ant.properties" />
+	<property file="ant/ant.properties" />
+	<property name="build" value="${root}/build" />
+	<property name="lib" value="${root}/lib" />
+	<property name="dist" value="${root}/dist" />
+	<property name="dist.osgi.dir" value="${dist}/org.freeplane.plugin.remote.client" />
+	<property name="freeplaneplugin.jar" value="${dist}/org.freeplane.plugin.remote.client.jar" />
+	<property name="debug" value="on" />
+	<property name="java_source_version" value="1.5" />
+	<property name="java_target_version" value="1.5" />
+	<property name="build.compiler" value="modern" />
+	<property name="classpath" value="${framework.jar}:${freeplane.jars}:${services.jar}:${core.jar}:${workspace.jar}:${dependencies.jars}:${client-libs}" />
+	<property name="ivy.jar.dir" value="${basedir}/ivy" />
+	<property name="ivy.jar.file" value="${ivy.jar.dir}/ivy.jar" />
+	<property name="build.dir" value="build" />
+	<property name="src.dir" value="src" />
+	<property name="JOrtho_0.4_freeplane.location" value="${root}/../JOrtho_0.4_freeplane" />
+	<property name="freeplane.location" value="${root}/../freeplane" />
+	<property name="freeplane.remote.shared.location" value="${root}/../freeplane_plugin_remote_shared" />
+
+
+	<path id="JOrtho_0.4_freeplane.classpath">
+		<pathelement location="${JOrtho_0.4_freeplane.location}/bin" />
+	</path>
+
+	<path id="freeplane.classpath">
+		<fileset dir="${freeplane.location}/lib/" includes="**.jar" />
+		<pathelement location="${freeplane.location}/bin/classes" />
+		<path refid="JOrtho_0.4_freeplane.classpath" />
+	</path>
+
+	<path id="freeplane_plugin_remote_client.classpath">
+		<pathelement location="bin" />
+		<pathelement location="ivy/ivy.jar" />
+		<fileset dir="${root}/lib/" includes="**.jar" />
+		<path refid="freeplane.classpath" />
+	</path>
+
+	<target name="install-ivy" description="adds ivy ant module to ant">
+		<path id="ivy.lib.path">
+			<fileset dir="${ivy.jar.dir}" includes="*.jar" />
+		</path>
+		<taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path" />
+	</target>
+
+	<target name="resolve-remote-shared" description="retrieve freeplane_remote_shared.jar">
+		<copy file="${root}/../freeplane_plugin_remote_shared/lib/freeplane_remote_shared.jar" todir="${root}/lib" />
+	</target>
+			
+	<target name="resolve" description="retrieve dependencies with ivy" depends="install-ivy">
+		<ivy:retrieve />
+	</target>
+
+	<target name="build" depends="resolve-remote-shared,lib_fileset,git.revision">
+		<mkdir dir="${build}" />
+		<javac srcdir="${src}" destdir="${build}" debug="${debug}" source="${java_source_version}" target="${java_target_version}" encoding="utf8">
+			<classpath>
+				<fileset dir="lib">
+					<include name="**/*.jar" />
+				</fileset>
+				<pathelement path="${classpath}/" />
+			</classpath>
+		</javac>
+	</target>
+
+
+    <target name="lib_fileset" depends="resolve">
+		<fileset id="resolved_jars" dir="lib">
+			<include name="*.jar" />
+		</fileset>
+		<pathconvert pathsep=",${line.separator} " property="resolved.jars.path" refid="resolved_jars">
+			<map from="${basedir}/" to="" />
+		</pathconvert>
+        <delete file="${basedir}/META-INF/MANIFEST.MF" quiet="true"/>
+		<copy tofile="${basedir}/META-INF/MANIFEST.MF" file="${basedir}/META-INF/MANIFEST.MF.template">
+			<filterset>
+				<filter token="DEPENDENCY_JARS" value="${resolved.jars.path}" />
+			</filterset>
+		</copy>
+        <echo message="resolved"></echo>
+	</target>
+
+	<target name="dist" depends="build">
+		<jar jarfile="lib/plugin.jar">
+			<fileset dir="${build}" />
+			<fileset dir="${resources}" />
+			<fileset dir="${src}">
+				<include name="**/*.xml" />
+				<include name="**/*.properties" />
+				<include name="**/*.txt" />
+			</fileset>
+		</jar>
+		<delete dir="${dist.osgi.dir}" quiet="true" />
+		<mkdir dir="${dist.osgi.dir}" />
+		<copy todir="${dist.osgi.dir}">
+			<fileset dir="${root}">
+				<include name="lib/**" />
+			</fileset>
+		</copy>
+		<mkdir dir="${dist.osgi.dir}/META-INF" />
+
+		<copy tofile="${dist.osgi.dir}/META-INF/MANIFEST.MF" file="${osgimanifest}">
+		</copy>
+		<delete file="lib/plugin.jar" quiet="true" />
+	</target>
+
+	<target name="osgi_dist_as_jar" depends="dist">
+		<jar jarfile="${freeplaneplugin.jar}">
+			<fileset dir="${dist.osgi.dir}">
+				<include name="**" />
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="clean">
+		<delete dir="${build}" quiet="true" />
+		<delete dir="${dist}" quiet="true" />
+		<delete dir="${lib}" quiet="true" />
+		<delete>
+			<fileset defaultexcludes="no" dir="${src}" includes="**/*~" />
+		</delete>
+	</target>
+	
+	<available file="../.git" type="dir" property="git.present"/>
+	<target name="git.revision"  if="git.present">
+		<exec executable="git" outputproperty="git.revision" failifexecutionfails="false" errorproperty="">
+			<arg value="rev-parse"/>
+			<arg value="HEAD"/>
+		</exec>
+		<condition property="repository.version" value="${git.revision}" else="unknown">
+			<and>
+				<isset property="git.revision"/>
+				<length string="${git.revision}" trim="yes" length="0" when="greater"/>
+			</and>
+		</condition>
+		<mkdir dir="${build}" />
+		<touch file="${build}/git.commit"/> 
+		<propertyfile file="${build}/git.commit">
+			<entry  key="commit" value="${repository.version}"/>
+		</propertyfile>
+	</target>
+
+</project>
+

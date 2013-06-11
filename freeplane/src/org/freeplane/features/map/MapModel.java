@@ -172,8 +172,13 @@ public class MapModel {
 			return null;
 		}
 		else {
-			//DOCEAR - decode url string
-			return sun.net.www.ParseUtil.decode(getURL().toString());
+			try {
+				//DOCEAR - decode url string
+				return sun.net.www.ParseUtil.decode(getURL().toString());
+			}
+			catch (Exception e) {
+				return getURL().toString();
+			}
 		}
 	}
 

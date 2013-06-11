@@ -554,7 +554,7 @@ public class MapView extends JPanel implements Printable, Autoscroll, IMapChange
 	static private void createPropertyChangeListener() {
 		MapView.propertyChangeListener = new IFreeplanePropertyListener() {
 			public void propertyChanged(final String propertyName, final String newValue, final String oldValue) {
-				final Component mapView = Controller.getCurrentController().getViewController().getMapView();
+				final Component mapView = Controller.getCurrentController().getMapViewManager().getMapViewComponent();
 				if (!(mapView instanceof MapView)) {
 					return;
 				}
@@ -1208,7 +1208,7 @@ public class MapView extends JPanel implements Printable, Autoscroll, IMapChange
 		final Graphics2D g2 = (Graphics2D) g.create();
 		try {
 			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-			Controller.getCurrentController().getViewController().setTextRenderingHint(g2);
+			Controller.getCurrentController().getMapViewManager().setTextRenderingHint(g2);
 			super.paint(g2);
 		}
 		finally {
@@ -1348,7 +1348,7 @@ public class MapView extends JPanel implements Printable, Autoscroll, IMapChange
 
 	private void paintLinks(final Graphics2D graphics) {
 		arrowLinkViews = new Vector<ILinkView>();
-		final Object renderingHint = getModeController().getController().getViewController().setEdgesRenderingHint(
+		final Object renderingHint = getModeController().getController().getMapViewManager().setEdgesRenderingHint(
 		    graphics);
 		paintLinks(rootView, graphics, new HashSet<ConnectorModel>());
 		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, renderingHint);
@@ -1395,7 +1395,7 @@ public class MapView extends JPanel implements Printable, Autoscroll, IMapChange
 		g.setColor(MapView.standardSelectRectangleColor);
 		final Stroke standardSelectionStroke = getStandardSelectionStroke();
 		g.setStroke(standardSelectionStroke);
-		final Object renderingHint = getModeController().getController().getViewController().setEdgesRenderingHint(g);
+		final Object renderingHint = getModeController().getController().getMapViewManager().setEdgesRenderingHint(g);
 		for (final NodeView selected : getSelection()) {
 			paintSelectionRectangle(g, selected);
 		}

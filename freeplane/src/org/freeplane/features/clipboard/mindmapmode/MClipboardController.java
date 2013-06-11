@@ -436,15 +436,8 @@ public class MClipboardController extends ClipboardController {
 	    			return;
 	    		if(! FileUtils.getExtension(file.getName()).equals(IMAGE_FORMAT))
 	    			file = new File(file.getPath() + '.' + IMAGE_FORMAT);
-	    		final URI uri;
-	    		final boolean useRelativeUri = ResourceController.getResourceController().getProperty("links").equals(
-	    			    "relative");
-	    		if (useRelativeUri) {
-	    			uri = LinkController.toRelativeURI(mindmapFile, file, LinkController.LINK_RELATIVE_TO_MINDMAP);
-	    		}
-	    		else{
-	    			uri = file.toURI();
-	    		}
+
+	    		final URI uri = LinkController.toLinkTypeDependantURI(mindmapFile, file);
 	            ImageIO.write(image, IMAGE_FORMAT, file);
 				final NodeModel node = mapController.newNode(file.getName(), target.getMap());
 				final ExternalResource extension = new ExternalResource(uri);
@@ -529,6 +522,7 @@ public class MClipboardController extends ClipboardController {
 		if (t.isDataFlavorSupported(MindMapNodesSelection.fileListFlavor)) {
 			try {
 				final List<File> fileList = castToFileList(t.getTransferData(MindMapNodesSelection.fileListFlavor));
+				if (!shouldIgnoreFileListFlavor(fileList))
 				return new FileListFlavorHandler(fileList);
 			}
 			catch (final UnsupportedFlavorException e) {
@@ -587,6 +581,16 @@ public class MClipboardController extends ClipboardController {
 		}
 		return null;
 	}
+
+	private boolean shouldIgnoreFileListFlavor(final List<File> fileList) {
+		if(fileList.isEmpty())
+			return true;
+		final File file = fileList.get(0);
+		if(file.isDirectory())
+			return false;
+	    final String name = file.getName();
+		return name.endsWith(".URL") || name.endsWith(".url");
+    }
 
 	@SuppressWarnings("unchecked")
     private List<File> castToFileList(Object transferData) {
@@ -731,9 +735,10 @@ public class MClipboardController extends ClipboardController {
 				try {
 					URI linkUri = new URI(link);
 					uri = linkUri;
-					File absoluteFile = UrlManager.getController().absoluteFile(map, uri);
 					
-					if (absoluteFile != null) {
+					File absoluteFile = UrlManager.getController().getAbsoluteFile(map, uri);
+					if(absoluteFile != null) {
+					//if ("file".equals(linkUri.getScheme())) {
 						final File mapFile = map.getFile();
 						uri = LinkController.toLinkTypeDependantURI(mapFile, absoluteFile);
 						if(link.equals(text)){

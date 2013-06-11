@@ -13,7 +13,7 @@ import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
  * 
  */
 public class FolderTypeLibraryCreator extends AWorkspaceNodeCreator {
-	public static final String FOLDER_TYPE_LIBRARY = "library";
+	public static final String FOLDER_TYPE_LIBRARY = FolderTypeLibraryNode.TYPE;
 	
 	/***********************************************************************************
 	 * CONSTRUCTORS

@@ -3,17 +3,19 @@ package org.docear.plugin.bibtex.actions;
 import java.awt.event.ActionEvent;
 import java.io.File;
 
+import javax.swing.tree.TreePath;
+
 import org.docear.plugin.bibtex.ReferencesController;
 import org.docear.plugin.bibtex.jabref.JabRefCommons;
 import org.docear.plugin.bibtex.jabref.JabrefWrapper;
-import org.freeplane.core.ui.EnabledAction;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.actions.AWorkspaceAction;
+import org.freeplane.plugin.workspace.components.menu.CheckEnableOnPopup;
 import org.freeplane.plugin.workspace.io.IFileSystemRepresentation;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
 
-@EnabledAction(checkOnPopup = true)
+@CheckEnableOnPopup
 public class AddOrUpdateReferenceEntryWorkspaceAction extends AWorkspaceAction {
 	public static final String KEY = "workspace.action.addOrUpdateReferenceEntry";
 
@@ -22,14 +24,14 @@ public class AddOrUpdateReferenceEntryWorkspaceAction extends AWorkspaceAction {
 	}
 	private static final long serialVersionUID = 1L;
 
-	public void setEnabledFor(AWorkspaceTreeNode node) {
+	public void setEnabledFor(AWorkspaceTreeNode node, TreePath[] selectedPaths) {
 		File file = null;
 		if(node instanceof IFileSystemRepresentation) {
 			file = ((IFileSystemRepresentation) node).getFile();
 		}
 		else {
 			if(node instanceof LinkTypeFileNode) {				
-				file = WorkspaceUtils.resolveURI(((LinkTypeFileNode) node).getLinkPath());
+				file = URIUtils.getAbsoluteFile(((LinkTypeFileNode) node).getLinkURI());
 			}
 		}
 		
@@ -38,7 +40,7 @@ public class AddOrUpdateReferenceEntryWorkspaceAction extends AWorkspaceAction {
 			return;
 		}
 		
-		super.setEnabledFor(node);
+		super.setEnabledFor(node, selectedPaths);
 	}
 	
 	public void actionPerformed(ActionEvent e) {
@@ -50,7 +52,7 @@ public class AddOrUpdateReferenceEntryWorkspaceAction extends AWorkspaceAction {
 		}
 		else {
 			if(node instanceof LinkTypeFileNode) {				
-				file = WorkspaceUtils.resolveURI(((LinkTypeFileNode) node).getLinkPath());
+				file = URIUtils.getAbsoluteFile(((LinkTypeFileNode) node).getLinkURI());
 			}
 		}
 		

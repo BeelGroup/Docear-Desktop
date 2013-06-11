@@ -22,10 +22,12 @@ freeplane_plugin_script/build-nodehighlighter
 freeplane_plugin_script/lib/jsyntaxpane/nodehighlighter.jar
 freeplane_framework/temp
 docear_plugin_bibtex/lib/JabRef-2.7.1.jar
-freeplane/lib/jortho.jar
 docear_plugin_core/src/TestMain.java
-
-
 freeplane_ant/.classpath
-
-freeplane_ant/.classpath
+freeplane_plugin_remote_server/META-INF/MANIFEST.MF
+freeplane_plugin_remote_server/lib/
+freeplane_plugin_remote_server_tests/lib
+freeplane_plugin_remote_server_tests/report
+freeplane_plugin_remote_server_tests/src/files/mindmaps/4.mm
+freeplane_plugin_remote_client/lib
+freeplane_plugin_remote_shared/lib

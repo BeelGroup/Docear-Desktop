@@ -7,14 +7,15 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import org.apache.commons.io.FileUtils;
 import org.docear.pdf.PdfDataExtractor;
 import org.docear.plugin.core.features.AnnotationID;
 import org.docear.plugin.core.util.HtmlUtils;
-import org.docear.plugin.core.util.Tools;
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
 import org.docear.plugin.pdfutilities.features.AnnotationNodeModel;
 import org.docear.plugin.pdfutilities.features.AnnotationXmlBuilder;
@@ -25,12 +26,13 @@ import org.freeplane.core.extension.IExtension;
 import org.freeplane.core.io.ReadManager;
 import org.freeplane.core.io.WriteManager;
 import org.freeplane.core.util.LogUtils;
-import org.freeplane.features.link.NodeLinks;
 import org.freeplane.features.map.MapController;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.plugin.workspace.URIUtils;
+import org.freeplane.plugin.workspace.model.WorkspaceModelEvent;
+import org.freeplane.plugin.workspace.model.WorkspaceModelEvent.WorkspaceModelEventType;
 
 public class AnnotationController implements IExtension{
 	
@@ -146,22 +148,23 @@ public class AnnotationController implements IExtension{
 	
 	public static AnnotationNodeModel getAnnotationNodeModel(final NodeModel node){
 		IAnnotation annotation = AnnotationController.getModel(node, true);
-		File file = WorkspaceUtils.resolveURI(NodeLinks.getValidLink(node), node.getMap());
+		URI uri = URIUtils.getAbsoluteURI(node);
+		File file = URIUtils.getFile(uri);
 		if(annotation != null && file == null){
 			setModel(node, null);
 			return null;
 		}
 		if(annotation != null && annotation.getAnnotationType() != null && !annotation.getAnnotationType().equals(AnnotationType.PDF_FILE)){
-			return new AnnotationNodeModel(node, new AnnotationID(Tools.getAbsoluteUri(node), annotation.getObjectNumber()), annotation.getAnnotationType());
+			return new AnnotationNodeModel(node, new AnnotationID(uri, annotation.getObjectNumber()), annotation.getAnnotationType());
 		}		
 		if(annotation != null && file != null && annotation.getAnnotationType().equals(AnnotationType.PDF_FILE)){
-			return new AnnotationNodeModel(node, new AnnotationID(Tools.getAbsoluteUri(node), 0), AnnotationType.PDF_FILE); 
+			return new AnnotationNodeModel(node, new AnnotationID(uri, 0), AnnotationType.PDF_FILE); 
 		}		
 		if(annotation == null && file != null && file.getName().equals(node.getText()) && isPdfFile(file)){
-			return new AnnotationNodeModel(node, new AnnotationID(Tools.getAbsoluteUri(node), 0), AnnotationType.PDF_FILE); 
+			return new AnnotationNodeModel(node, new AnnotationID(uri, 0), AnnotationType.PDF_FILE); 
 		}
 		if(annotation == null && file != null && file.getName().equals(node.getText()) && !isPdfFile(file)){
-			return new AnnotationNodeModel(node, new AnnotationID(Tools.getAbsoluteUri(node), 0), AnnotationType.FILE); 
+			return new AnnotationNodeModel(node, new AnnotationID(uri, 0), AnnotationType.FILE); 
 		}
 		return null;
 	}
@@ -190,11 +193,11 @@ public class AnnotationController implements IExtension{
 	}
 	
 	private static void setModel(final NodeModel node){
-		File file = WorkspaceUtils.resolveURI(NodeLinks.getValidLink(node), node.getMap());
+		URI uri = URIUtils.getAbsoluteURI(node);
+		File file = URIUtils.getFile(uri);
 		if(!isPdfFile(file)){
 			return;
-		}
-		URI uri = Tools.getAbsoluteUri(node);
+		}		
 		for(IAnnotationImporter importer : annotationImporters) {
 			try {			
 				importer.searchAnnotation(uri, node);
@@ -263,15 +266,17 @@ public class AnnotationController implements IExtension{
 	}
 
 	private static void executeHashConfirmation(final File file, final long lastModified) {
-		executor.execute(new Runnable() {
-			public void run() {
-				updateDocumentHashCache(file, lastModified);
-			}
-			
-			public String toString() {
-				return ""+file;
-			}
-		});
+		if(file.exists()) {
+			executor.execute(new Runnable() {
+				public void run() {
+					updateDocumentHashCache(file, lastModified);
+				}
+				
+				public String toString() {
+					return ""+file;
+				}
+			});
+		}
 	}
 	
 	public static String getDocumentHash(URI uri) {
@@ -282,7 +287,7 @@ public class AnnotationController implements IExtension{
 		
 		File file = new File(uri);
 		
-		if(!file.getName().toLowerCase().endsWith(".pdf")) {
+		if(!file.exists() || !file.getName().toLowerCase().endsWith(".pdf")) {
 			return null;
 		}
 		
@@ -349,6 +354,34 @@ public class AnnotationController implements IExtension{
 		}
 		
 		return hashCode;
+	}
+
+	public void updateIndex(WorkspaceModelEvent event) {
+		if(event.getType() == WorkspaceModelEventType.RENAMED || event.getType() == WorkspaceModelEventType.MOVED) {
+			Map<File, File> fileMap = new HashMap<File, File>();
+			if(!((File)event.getNewValue()).isDirectory()){				
+				File oldFile = (File) event.getOldValue();
+				File newFile = (File) event.getNewValue();			
+				fileMap.put(oldFile, newFile);			
+			}
+			else{
+				File oldFile = (File) event.getOldValue();
+				File newFile = (File) event.getNewValue();
+				Collection<File> files = FileUtils.listFiles(newFile, null, true);			
+				for(File file : files){
+					String oldPath = file.getPath().replace(newFile.getPath(), oldFile.getPath());
+					fileMap.put(new File(oldPath), file);				
+				}			
+			}
+			synchronized (documentHashMap) {
+				for(Entry<File, File> entry : fileMap.entrySet()) {
+					if(documentHashMap.containsKey(entry.getKey().toString())) {
+						CachedHashItem hashItem = documentHashMap.remove(entry.getKey().toString());
+						documentHashMap.put(entry.getValue().toString(), hashItem);
+					}
+				}
+			}
+		}
 	}
 
 }

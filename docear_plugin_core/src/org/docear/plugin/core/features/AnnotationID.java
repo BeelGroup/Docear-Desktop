@@ -24,12 +24,11 @@ public class AnnotationID implements Comparable<AnnotationID>{
 		if(objectNumber == null){
 			throw new IllegalArgumentException(this.getClass().getName() + ": Object number can not be null."); //$NON-NLS-1$
 		}
+		this.uri = absoluteUri.normalize();
 		
-		String uri = absoluteUri.getPath().toLowerCase(Locale.ENGLISH);
-		uri = uri.trim();
-		this.id = uri + " " + objectNumber; //$NON-NLS-1$
-		this.objectNumber = objectNumber;
-		this.uri = absoluteUri;
+		String uri = this.uri.getPath().toLowerCase(Locale.ENGLISH).trim();
+		this.id = uri + " " + objectNumber;
+		this.objectNumber = objectNumber;		
 	}
 	
 	public URI getUri(){		
@@ -41,8 +40,10 @@ public class AnnotationID implements Comparable<AnnotationID>{
 	}
 	
 	public boolean equals(Object object){
-		if(object instanceof AnnotationID){
-			return this.getUri().getPath().toLowerCase(Locale.ENGLISH).equals(((AnnotationID) object).getUri().getPath().toLowerCase(Locale.ENGLISH)) && this.getObjectNumber().equals(((AnnotationID) object).getObjectNumber());
+		if(object instanceof AnnotationID) {
+			boolean ret1 = this.getUri().getPath().toLowerCase(Locale.ENGLISH).equals(((AnnotationID) object).getUri().getPath().toLowerCase(Locale.ENGLISH)); 
+			boolean ret2 = this.getObjectNumber().equals(((AnnotationID) object).getObjectNumber());
+			return ret1 && ret2;
 		}
 		else{
 			return super.equals(object);
@@ -65,6 +66,10 @@ public class AnnotationID implements Comparable<AnnotationID>{
 	public int hashCode(){		
 		return this.getId().hashCode();
 		
+	}
+	
+	public String toString() {
+		return getId();
 	}
 	
 	

@@ -6,7 +6,7 @@ import net.sf.jabref.BasePanel;
 import net.sf.jabref.imports.ParserResult;
 import net.sf.jabref.imports.PostOpenAction;
 
-import org.freeplane.core.resources.ResourceController;
+import org.docear.plugin.core.DocearController;
 import org.freeplane.core.util.TextUtils;
 
 public class DocearHandleDuplicateWarning implements PostOpenAction {
@@ -27,7 +27,7 @@ public class DocearHandleDuplicateWarning implements PostOpenAction {
             panel.runCommand("resolveDuplicateKeys");
         }
         if (answer == JOptionPane.NO_OPTION) {
-        	ResourceController.getResourceController().setProperty("docear.reference_manager.resolve_duplicate_keys", true);
+        	DocearController.getPropertiesController().setProperty("docear.reference_manager.resolve_duplicate_keys", true);
         	new HandleDuplicateKeys().performAction(panel, pr);
         }
 	}

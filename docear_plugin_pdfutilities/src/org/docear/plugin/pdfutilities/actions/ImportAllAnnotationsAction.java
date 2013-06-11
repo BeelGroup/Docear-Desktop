@@ -6,7 +6,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.docear.plugin.core.util.Tools;
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
 import org.docear.plugin.pdfutilities.features.IAnnotation.AnnotationType;
 import org.docear.plugin.pdfutilities.pdf.PdfAnnotationImporter;
@@ -15,11 +14,12 @@ import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
+import org.freeplane.plugin.workspace.URIUtils;
 
 import de.intarsys.pdf.cos.COSRuntimeException;
 import de.intarsys.pdf.parser.COSLoadException;
 
-@EnabledAction( checkOnPopup = true, checkOnNodeChange = true )
+@EnabledAction(checkOnNodeChange=true)
 public class ImportAllAnnotationsAction extends ImportAnnotationsAction {
 
 	/**
@@ -40,7 +40,7 @@ public class ImportAllAnnotationsAction extends ImportAnnotationsAction {
 		}
 		
 		else{
-			URI uri = Tools.getAbsoluteUri(selected);
+			URI uri = URIUtils.getAbsoluteURI(selected);
             try {
             	PdfAnnotationImporter importer = new PdfAnnotationImporter();            	
 				List<AnnotationModel> annotations = importer.importAnnotations(uri); 

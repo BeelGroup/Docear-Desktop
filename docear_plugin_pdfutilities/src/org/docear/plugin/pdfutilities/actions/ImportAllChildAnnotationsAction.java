@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 import java.net.URI;
 import java.util.ArrayList;
 
-import org.docear.plugin.core.util.Tools;
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
 import org.docear.plugin.pdfutilities.features.IAnnotation.AnnotationType;
 import org.docear.plugin.pdfutilities.pdf.PdfAnnotationImporter;
@@ -13,8 +12,9 @@ import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
+import org.freeplane.plugin.workspace.URIUtils;
 
-@EnabledAction( checkOnPopup = true, checkOnNodeChange = true )
+@EnabledAction(checkOnNodeChange=true)
 public class ImportAllChildAnnotationsAction extends ImportAnnotationsAction {
 
 	/**
@@ -39,7 +39,7 @@ public class ImportAllChildAnnotationsAction extends ImportAnnotationsAction {
 		
 		else{			
 			PdfAnnotationImporter importer = new PdfAnnotationImporter();    
-			URI uri = Tools.getAbsoluteUri(selected);
+			URI uri = URIUtils.getAbsoluteURI(selected);
 			try {
 				AnnotationModel annotation = importer.searchAnnotation(uri, selected);		
 				//System.gc();

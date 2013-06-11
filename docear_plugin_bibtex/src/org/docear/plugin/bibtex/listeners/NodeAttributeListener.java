@@ -12,9 +12,9 @@ import org.freeplane.features.attribute.Attribute;
 import org.freeplane.features.attribute.NodeAttributeTableModel;
 
 public class NodeAttributeListener implements TableModelListener {
-	
+	//WORKSPACE - DOCEAR todo: make sure the right db is active in jabref
 	public void tableChanged(TableModelEvent e) {
-		// do not use locking mechanism --> changes made to jabref should change all associated entries in mindmapo nodes as well
+		// do not use locking mechanism --> changes made to jabref should change all associated entries in mindmap nodes as well
 
 		// if changes only happened one row and one column
 		if (e.getFirstRow() == e.getLastRow() && e.getColumn() > 0) {

@@ -4,32 +4,44 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.docear.plugin.core.workspace.compatible.DocearConversionURLHandler;
+import org.docear.plugin.core.workspace.controller.DocearConversionDescriptor;
+import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
-import org.freeplane.main.osgi.IControllerExtensionProvider;
-import org.freeplane.plugin.workspace.WorkspaceDependentService;
+import org.freeplane.plugin.workspace.IWorkspaceDependingControllerExtension;
+import org.freeplane.plugin.workspace.WorkspaceDependingService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.url.URLConstants;
+import org.osgi.service.url.URLStreamHandlerService;
 
-public class Activator extends WorkspaceDependentService {
+public class Activator extends WorkspaceDependingService {
 	CoreConfiguration config;
 	
-	public final void startPlugin(BundleContext context, ModeController modeController) {	
+	public final void startPlugin(BundleContext context, ModeController modeController) {
+		Hashtable<String, String[]>properties = new Hashtable<String, String[]>();
+        properties.put(URLConstants.URL_HANDLER_PROTOCOL, new String[] { DocearConversionDescriptor.OLD_WORKSPACE_URL_HANDLE });
+        context.registerService(URLStreamHandlerService.class.getName(), new DocearConversionURLHandler(), properties);
+        
 		getConfig().initMode(modeController);		
 		startPluginServices(context, modeController);
 	}
 	
-	protected Collection<IControllerExtensionProvider> getControllerExtensions() {
-		List<IControllerExtensionProvider> controllerExtensions = new ArrayList<IControllerExtensionProvider>();
-		controllerExtensions.add(new IControllerExtensionProvider() {
-			public void installExtension(Controller controller) {			
+	protected Collection<IWorkspaceDependingControllerExtension> getControllerExtensions() {
+		List<IWorkspaceDependingControllerExtension> controllerExtensions = new ArrayList<IWorkspaceDependingControllerExtension>();
+		controllerExtensions.add(new IWorkspaceDependingControllerExtension() {
+			public void installExtension(BundleContext context, Controller controller) {
 				getConfig().initController(controller);
+				LogUtils.info("Docear Core controller extension initiated.");
+				startControllerExtensions(context, controller);
 			}
 		});
 		return controllerExtensions;
@@ -61,16 +73,39 @@ public class Activator extends WorkspaceDependentService {
 			e.printStackTrace();
 		}
 	}
-
+	
+	protected final void startControllerExtensions(BundleContext context, Controller controller) {		
+		try {
+			final ServiceReference[] extensions = context.getServiceReferences(IDocearControllerExtension.class.getName(), "(dependsOn="+DocearService.DEPENDS_ON+")");
+//			if (extensions != null) {
+//				List<?> extensions = sortOnDependencies(extensions, context);
+//				for(Object extension : extensions) {
+//					((IControllerExtensionProvider) extension).installExtension(controller);					
+//				}
+//				
+//			}
+			if (extensions != null) {
+				for (ServiceReference serviceReference : extensions) {
+					final IDocearControllerExtension extension = (IDocearControllerExtension) context.getService(serviceReference);
+					extension.installExtension(context, controller);
+					context.ungetService(serviceReference);
+				}
+			}
+		}
+		catch (final InvalidSyntaxException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private boolean isValid(DocearService service) {
-		if(isBlacklisted(service)) {
+		if(isBlacklisted(service.getBundleInfo().getBundleName())) {
 			return false;
 		}
 		return true;
 	}
-
-	private boolean isBlacklisted(DocearService service) {
-		if("org.docear.plugin.backup".equals(service.getBundleInfo().getBundleName())) {
+	
+	private boolean isBlacklisted(String packageName) {
+		if("org.docear.plugin.backup".equals(packageName)) {
 			return true;
 		}
 		return false;
@@ -94,20 +129,29 @@ public class Activator extends WorkspaceDependentService {
 					
 				}
 			}			
-			if(!requiredFor.containsValue(service)) {
+			if(!hasDependencies(service, requiredFor.values())) {
 				if(!list.contains(service)) {
 					list.add(service);
 				}
 				continue;
 			}
 			
-			resolveDependencies(list, requiredFor);			
+//			resolveDependencies(list, requiredFor);			
 		}
 		while( requiredFor.size() > 0) {
 			resolveDependencies(list, requiredFor);
 		}
 		
 		return list;
+	}
+
+	private boolean hasDependencies(DocearService service, Collection<Set<DocearService>> collection) {
+		for(Set<DocearService> set : collection) {
+			if(set.contains(service)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**

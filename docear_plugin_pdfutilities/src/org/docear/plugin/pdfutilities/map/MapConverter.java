@@ -16,8 +16,8 @@ import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
-import org.freeplane.features.url.mindmapmode.IMapConverter;
-import org.freeplane.features.url.mindmapmode.MapConversionException;
+import org.freeplane.features.url.IMapConverter;
+import org.freeplane.features.url.MapConversionException;
 
 public class MapConverter implements IMapConverter {
 	

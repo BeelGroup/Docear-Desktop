@@ -5,11 +5,11 @@ import java.io.IOException;
 import java.net.URI;
 
 import org.docear.pdf.PdfDataExtractor;
-import org.docear.plugin.core.util.Tools;
 import org.docear.plugin.pdfutilities.util.MonitoringUtils;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
+import org.freeplane.plugin.workspace.URIUtils;
 
 
 
@@ -31,7 +31,7 @@ public class ExtractPdfMetaDataAction extends AFreeplaneAction {
 		final NodeModel targetNode = Controller.getCurrentController().getSelection().getSelected();
 		
 		if(MonitoringUtils.isPdfLinkedNode(targetNode)) {
-			URI uri = Tools.getAbsoluteUri(targetNode);
+			URI uri = URIUtils.getAbsoluteURI(targetNode);
 			
 			try {
 				System.out.println(extractTitle(uri));

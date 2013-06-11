@@ -25,13 +25,15 @@ import java.net.URL;
 import javax.swing.SwingUtilities;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.AFreeplaneAction;
+
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.mindmapmode.MMapController;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.mindmapmode.MModeController;
 
-//DOCEAR: allow public access to the class
+//DOCEAR - info: allow public access to the class
 public class OnlineDocumentationAction extends AFreeplaneAction {
+
 	private static final long serialVersionUID = 1L;
 	private final URL url;
 

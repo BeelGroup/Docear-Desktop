@@ -39,7 +39,8 @@ class AddMenuItemLinkAction extends AFreeplaneAction {
 		final SelectMenuItemDialog dialog = new SelectMenuItemDialog(selectedNode);
 		final MenuEntry menuItem = dialog.getMenuItem();
 		if (menuItem != null) {			
-			((MLinkController) LinkController.getController()).setLink(selectedNode, LinkController.createMenuItemLink(menuItem.getKey()), LinkController.LINK_ABSOLUTE);
+            ((MLinkController) LinkController.getController()).setLink(selectedNode,
+                LinkController.createMenuItemLink(menuItem.getKey()), LinkController.LINK_ABSOLUTE);
 		}
 	}
 }

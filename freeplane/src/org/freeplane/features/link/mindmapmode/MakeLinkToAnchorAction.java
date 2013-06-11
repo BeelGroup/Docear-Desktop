@@ -47,7 +47,7 @@ public class MakeLinkToAnchorAction extends AFreeplaneAction {
 		final MLinkController mLinkController = (MLinkController)(LinkController.getController());
 		final String link = mLinkController.getAnchorIDforNode(selectedNode);
         if(link != null)
-        	mLinkController.setLinkTypeDependantLink(selectedNode, link);
+        	mLinkController.setLink(selectedNode, link, LinkController.LINK_ABSOLUTE);
 	}
 
 	@Override

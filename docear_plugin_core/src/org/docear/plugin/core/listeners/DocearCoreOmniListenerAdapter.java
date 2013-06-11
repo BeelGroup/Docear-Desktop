@@ -110,7 +110,7 @@ public class DocearCoreOmniListenerAdapter implements IMapLifeCycleListener, INo
 				DocearNodePrivacyExtensionController.getController().setPrivacyLevel(map.getRootNode(), DocearPrivacyLevel.DEMO);
 			}
 		}
-		LogUtils.info("onCreate");
+//		LogUtils.info("onCreate");
 	}
 
 	public void onRemove(MapModel map) {

@@ -11,7 +11,8 @@ import org.freeplane.core.ui.AFreeplaneAction;
 /**
  * 
  */
-@EnabledAction(checkOnPopup=true)
+
+@EnabledAction(checkOnNodeChange=true)
 public class FreeplaneActionMultiCaster extends AFreeplaneAction {
 
 	private static final long serialVersionUID = 1L;
@@ -42,9 +43,8 @@ public class FreeplaneActionMultiCaster extends AFreeplaneAction {
 	}
 	
 	public void setEnabled() {
-		//FIXME: DOCEAR - check annotation settings
-		this.a.setEnabled();
-		this.b.setEnabled();
+		if(a != null && checkEnabledAction(a)) this.a.setEnabled();
+		if(b != null && checkEnabledAction(b)) this.b.setEnabled();
 	}
 	
 	public AFreeplaneAction getA() {
@@ -61,5 +61,13 @@ public class FreeplaneActionMultiCaster extends AFreeplaneAction {
 	public void actionPerformed(ActionEvent e) {		
 		if(b != null) b.actionPerformed(e);
 		if(a != null) a.actionPerformed(e);
+	}
+	
+	private boolean checkEnabledAction(final AFreeplaneAction action) {
+		final EnabledAction annotation = action.getClass().getAnnotation(EnabledAction.class);
+		if (annotation == null) {
+			return false;
+		}
+		return annotation.checkOnNodeChange();
 	}
 }

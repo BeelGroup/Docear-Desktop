@@ -2,9 +2,9 @@ package org.freeplane.plugin.workspace.actions;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.JTree;
-
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.components.IWorkspaceView;
+import org.freeplane.plugin.workspace.components.TreeView;
 
 public class WorkspaceExpandAction extends AWorkspaceAction {
 
@@ -18,9 +18,9 @@ public class WorkspaceExpandAction extends AWorkspaceAction {
 	}
 	
 	public void actionPerformed(final ActionEvent e) {
-        JTree workspaceTree = WorkspaceController.getController().getWorkspaceViewTree();
-        for (int i = 1; i < workspaceTree.getRowCount(); i++) {
-                 workspaceTree.expandRow(i);
-        }       
+        IWorkspaceView view = WorkspaceController.getCurrentModeExtension().getView();
+        if(view instanceof TreeView) {
+        	((TreeView) view).expandAll(getNodeFromActionEvent(e));
+        }
     }
 }
