@@ -222,9 +222,7 @@ public class AkkaTests {
 						remoteActor.tell(new MindmapAsXmlRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "5")), localActor);
 
 						MindmapAsXmlResponse response = expectMsgClass(MindmapAsXmlResponse.class);
-						assertThat(response.getXmlString())
-								.contains(
-										"<node TEXT=\"right_L1P0_Links\" COLOR=\"#000000\" STYLE=\"as_parent\" MAX_WIDTH=\"600\" MIN_WIDTH=\"1\" POSITION=\"right\" ID=\"ID_1\" CREATED=\"1354627639897\" MODIFIED=\"1355079961660\" HGAP=\"70\" VSHIFT=\"-160\">");
+						assertThat(response.getFileBytes()).isNotEmpty();
 
 						closeMindMapOnServer(5);
 					}
@@ -1064,9 +1062,9 @@ public class AkkaTests {
 		}
 	}
 
-	private void validateDefaultNodeSchema(final String defaultNodeJsonString) {
-		validateDefaultNodeSchema(new ObjectMapper().valueToTree(defaultNodeJsonString));
-	}
+//	private void validateDefaultNodeSchema(final String defaultNodeJsonString) {
+//		validateDefaultNodeSchema(new ObjectMapper().valueToTree(defaultNodeJsonString));
+//	}
 		
 	private void validateDefaultNodeSchema(final JsonNode defaultNodeJson) {
 		final String schemaPath = "/DefaultNodeSchema.json";
