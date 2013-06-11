@@ -413,7 +413,7 @@ public class AkkaTests {
 						sendMindMapToServer(5);
 						remoteActor.tell(new RemoveNodeRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "5"), "ID_1"), localActor);
 						RemoveNodeResponse rmNodeResponse = expectMsgClass(RemoveNodeResponse.class);
-						assertThat(rmNodeResponse.getDeleted()).isEqualTo(true);
+						assertThat(rmNodeResponse.isSuccess()).isEqualTo(true);
 
 						remoteActor.tell(new GetNodeRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "5"), "ID_1", 1), localActor);
 						Failure response = expectMsgClass(Failure.class);
@@ -468,7 +468,7 @@ public class AkkaTests {
 						remoteActor.tell(new RemoveNodeRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "5"), "ID_1"), localActor);
 
 						RemoveNodeResponse response = expectMsgClass(RemoveNodeResponse.class);
-						assertThat(response.getDeleted()).isEqualTo(false);
+						assertThat(response.isSuccess()).isEqualTo(false);
 
 						closeMindMapOnServer(5);
 					}
@@ -731,7 +731,7 @@ public class AkkaTests {
 						// also checks that switching sides is no problem
 						final MoveNodeToRequest moveRequest = new MoveNodeToRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "5"), "ID_505304847", "ID_1", 1);
 						remoteActor.tell(moveRequest, localActor);
-						assertThat(expectMsgClass(MoveNodeToResponse.class).getSuccess()).isEqualTo(true);
+						assertThat(expectMsgClass(MoveNodeToResponse.class).isSuccess()).isEqualTo(true);
 
 						final GetNodeRequest getNodeRequest = new GetNodeRequest(new UserIdentifier(SOURCE, USERNAME1), new MapIdentifier("-1", "5"), "ID_505304847", 0);
 						remoteActor.tell(getNodeRequest, localActor);
@@ -959,7 +959,7 @@ public class AkkaTests {
 						public void run() {
 							remoteActor.tell(request, getRef());
 							OpenMindMapResponse response = expectMsgClass(OpenMindMapResponse.class);
-							assertThat(response.getSuccess()).isEqualTo(true);
+							assertThat(response.isSuccess()).isEqualTo(true);
 						}
 					};
 				}
@@ -990,7 +990,7 @@ public class AkkaTests {
 					public void run() {
 						remoteActor.tell(new RequestLockRequest(new UserIdentifier(SOURCE, USERNAME1), mapIdentifier, nodeId), getRef());
 						RequestLockResponse requestResponse = expectMsgClass(RequestLockResponse.class);
-						assertThat(requestResponse.getLockGained()).isEqualTo(true);
+						assertThat(requestResponse.isSuccess()).isEqualTo(true);
 					}
 				};
 			}
@@ -1004,7 +1004,7 @@ public class AkkaTests {
 					public void run() {
 						remoteActor.tell(new ReleaseLockRequest(new UserIdentifier(SOURCE, USERNAME1), mapIdentifier, nodeId), getRef());
 						ReleaseLockResponse releaseResponse = expectMsgClass(ReleaseLockResponse.class);
-						assertThat(releaseResponse.getLockReleased()).isEqualTo(true);
+						assertThat(releaseResponse.isSuccess()).isEqualTo(true);
 					}
 				};
 			}
