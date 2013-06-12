@@ -71,6 +71,10 @@ public abstract class URIUtils {
 	
 	public static URI getAbsoluteURI(MapModel map) {
 		if(map != null) {
+			if(map.getURL() == null) {
+				LogUtils.info("map not yet saved");
+				return null;
+			}
 			try {
 				return map.getURL().toURI();
 			} catch (Exception e) {

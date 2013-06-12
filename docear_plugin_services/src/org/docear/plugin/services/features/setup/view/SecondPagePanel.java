@@ -83,10 +83,7 @@ public class SecondPagePanel extends AWizardPage {
 		rdbtnDataFromDocear.setBackground(Color.WHITE);
 		rdbtnDataFromDocear.addChangeListener(new ChangeListener() {			
 			public void stateChanged(ChangeEvent e) {
-				if (cachedContext != null && isFromCloudOption()) {
-					enableControls(cachedContext);
-					cachedContext.set(DATA_OPTION.class, DATA_OPTION.SYNCH);
-				}
+				updateOption();
 			}
 		});
 		add(rdbtnDataFromDocear, "4, 4, 2, 1");
@@ -96,10 +93,7 @@ public class SecondPagePanel extends AWizardPage {
 		rdbtnImportFromHarddisk.setBackground(Color.WHITE);
 		rdbtnImportFromHarddisk.addChangeListener(new ChangeListener() {			
 			public void stateChanged(ChangeEvent e) {
-				if (cachedContext != null && isImportOption()) {
-					enableControls(cachedContext);
-					cachedContext.set(DATA_OPTION.class, DATA_OPTION.IMPORT);
-				}
+				updateOption();
 			}
 		});
 		add(rdbtnImportFromHarddisk, "4, 5, 2, 1");
@@ -108,22 +102,17 @@ public class SecondPagePanel extends AWizardPage {
 		rdbtnStartWithEmpty.setBackground(Color.WHITE);
 		rdbtnStartWithEmpty.addChangeListener(new ChangeListener() {			
 			public void stateChanged(ChangeEvent e) {
-				if (cachedContext != null && isEmptyOption()) {
-					enableControls(cachedContext);
-					cachedContext.set(DATA_OPTION.class, DATA_OPTION.EMPTY);
-				}
+				updateOption();
 			}
 		});
 		add(rdbtnStartWithEmpty, "4, 6, 2, 1");
 		
 		rdbtnCreateNewProject = new JRadioButton(TextUtils.getText("docear.setup.wizard.second.create.label"));
 		rdbtnCreateNewProject.setBackground(Color.WHITE);
-		rdbtnCreateNewProject.addChangeListener(new ChangeListener() {			
+		rdbtnCreateNewProject.setSelected(true);
+		rdbtnCreateNewProject.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
-				if (cachedContext != null && isCreateNewOption()) {
-					enableControls(cachedContext);
-					cachedContext.set(DATA_OPTION.class, DATA_OPTION.CREATE);
-				}
+				updateOption();
 			}
 		});
 		add(rdbtnCreateNewProject, "4, 7, 2, 1");
@@ -133,7 +122,7 @@ public class SecondPagePanel extends AWizardPage {
 		group.add(rdbtnStartWithEmpty);
 		group.add(rdbtnImportFromHarddisk);
 		group.add(rdbtnDataFromDocear);
-		rdbtnCreateNewProject.setSelected(true);
+		
 		
 		lblTermsChapter = new JLabel(TextUtils.getText("docear.setup.wizard.docear.terms.title"));
 		lblTermsChapter.setFont(new Font("Tahoma", Font.BOLD, 11));
@@ -200,6 +189,24 @@ public class SecondPagePanel extends AWizardPage {
 	 * METHODS
 	 **********************************************************************************/
 
+	private void updateOption() {
+		if (cachedContext != null) {
+			enableControls(cachedContext);
+			if(isCreateNewOption()) {
+				cachedContext.set(DATA_OPTION.class, DATA_OPTION.CREATE);
+			}
+			else if (isEmptyOption()) {
+				cachedContext.set(DATA_OPTION.class, DATA_OPTION.EMPTY);
+			}
+			else if (isImportOption()) {
+				cachedContext.set(DATA_OPTION.class, DATA_OPTION.IMPORT);
+			}
+			else if (isFromCloudOption()) {
+				cachedContext.set(DATA_OPTION.class, DATA_OPTION.SYNCH);
+			}
+		}
+	}
+	
 	private void enableControls(WizardContext context) {
 		if(context != null) {
 			context.getNextButton().setText(TextUtils.getText("docear.setup.wizard.controls.next"));
@@ -296,6 +303,6 @@ public class SecondPagePanel extends AWizardPage {
 		else {
 			prepareForOnlineUser();
 		}
-		enableControls(context);
+		updateOption();
 	}
 }
