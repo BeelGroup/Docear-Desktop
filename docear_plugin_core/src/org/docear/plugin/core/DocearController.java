@@ -285,6 +285,16 @@ public class DocearController implements IDocearEventListener {
 	}
 	
 	
+	public String getGPLv2Terms() {
+		try {
+			return IOTools.getStringFromStream(DocearController.class.getResourceAsStream("/gplv2.html"),"UTF-8");
+		}
+		catch (IOException e) {
+			LogUtils.warn(e);
+			return "GPLv2";
+		}
+	}
+	
 	public String getDataProcessingTerms() {
 		try {
 			return IOTools.getStringFromStream(DocearController.class.getResourceAsStream("/Docear_data_processing.txt"),"UTF-8");
