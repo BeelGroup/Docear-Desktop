@@ -70,7 +70,6 @@ public class DocearUserController extends ADocearServiceFeature {
 			return;
 		}
 		if(user.isValid()) {
-			ServiceController.getConnectionController().setDefaultHeader("accessToken", user.getAccessToken());
 			user.setOnline(true);
 			return;
 		}
@@ -95,7 +94,6 @@ public class DocearUserController extends ADocearServiceFeature {
 				DocearConnectionProvider.readResponseContent(response.getEntityInputStream());
 				user.setEnabled(true);
 				user.setAccessToken(token);
-				ServiceController.getConnectionController().setDefaultHeader("accessToken", user.getAccessToken());
 				user.setOnline(true);
 			}
 			else {
@@ -159,10 +157,10 @@ public class DocearUserController extends ADocearServiceFeature {
 				}
 				else if(WorkspaceDocearServiceConnectionBar.CONNECTION_BAR_CLICKED.equals(event.getSource()) ) {
 					if(DocearUserController.LOCAL_USER.equals(DocearUserController.getActiveUser())) {
-						WorkspaceController.getAction(DocearUserRegistrationAction.KEY);
+						WorkspaceController.getAction(DocearUserRegistrationAction.KEY).actionPerformed(null);
 					}
 					else {
-						WorkspaceController.getAction(DocearUserLoginAction.KEY);
+						WorkspaceController.getAction(DocearUserLoginAction.KEY).actionPerformed(null);
 					}
 				}
 			}
@@ -190,6 +188,7 @@ public class DocearUserController extends ADocearServiceFeature {
 						DocearController.getPropertiesController().setProperty(DOCEAR_CONNECTION_USERNAME_PROPERTY, event.getUser().getName());
 					}
 					adjustInfoBarConnectionState((DocearUser) event.getUser());
+					ServiceController.getConnectionController().setDefaultHeader("accessToken", ((DocearUser) event.getUser()).getAccessToken());
 				}
 				else {
 					getActiveUser().activate();
