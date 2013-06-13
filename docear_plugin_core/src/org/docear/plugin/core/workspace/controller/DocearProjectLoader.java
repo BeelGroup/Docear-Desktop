@@ -281,7 +281,7 @@ public class DocearProjectLoader extends ProjectLoader {
 			replaceMapping.put("@LITERATURE_BIB_DEMO@", (new File(relativeBibURI).getPath().replace(File.separator, File.separator+File.separator)/*+File.separator+File.separator+"Example PDFs"*/));
 		}
 		else {
-			replaceMapping.put("@LITERATURE_BIB_DEMO@", relativeBibURI.getRawPath().replace(":", "\\:")/*+"/Example PDFs"*/);
+			replaceMapping.put("@LITERATURE_BIB_DEMO@", relativeBibURI.getPath().replace(":", "\\:")/*+"/Example PDFs"*/);
 		}
 		
 		boolean created = createAndCopy(new File(defaultFilesPath,"incoming.mm"), "/demo/template_incoming.mm", replaceMapping);
