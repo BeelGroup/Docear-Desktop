@@ -8,7 +8,7 @@
 	<property file="${workspace}/freeplane_framework/ant/ant.properties" />
 	<property file="${workspace}/freeplane/ant/ant.properties" />
 	<property file="ant/ant.properties" />
-	<property name="external.jars" value="${jersey-client.jar}:${jersey-core.jar}:${jersey-multipart.jar}:${jsr311-api.jar}:${mimepull.jar}:${workspace.jar}:${jgoodies.jar}:${swingworker.jar}:${jhyperlink.jar}:${jpathwatch.jar}:${jna.jar}:${platform.jar}" />
+	<property name="external.jars" value="${workspace.jar}:${jgoodies.jar}:${swingworker.jar}:${jhyperlink.jar}:${jpathwatch.jar}:${jna.jar}:${platform.jar}:${guava.jar}" />
 	<property name="build" value="${root}/build" />
 	<property name="build" value="${root}/build" />
 	<property name="dist" value="${root}/dist" />
@@ -18,7 +18,7 @@
 	<property name="java_source_version" value="1.5" />
 	<property name="java_target_version" value="1.5" />
 	<property name="build.compiler" value="modern" />
-	<property name="classpath" value="${framework.jar}:${freeplane.jars}:${external.jars}:${jhall.jar}:${commons-io.jar}"/>
+	<property name="classpath" value="${framework.jar}:${freeplane.jars}:${external.jars}:${commons-io.jar}:${commons-cli.jar}"/>
 
 	<target name="build">
 		<mkdir dir="${build}" />
