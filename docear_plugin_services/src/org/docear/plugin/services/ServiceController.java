@@ -71,7 +71,7 @@ public class ServiceController {
 			serviceController.installFeature(new UpdateCheck());
 			
 			ServiceController.getFeature(DocearUserController.class).installView(modeController);
-			
+			ServiceController.getFeature(RecommendationsController.class).startRecommendationsRequest();
 		}
 	}
 	

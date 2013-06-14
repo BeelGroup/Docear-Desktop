@@ -59,28 +59,29 @@ public class RecommendationsView extends JPanel {
 	public RecommendationsView(final RecommendationsModel model) {
 		this();
 		setModel(model);
-		}
+	}
 
 	private RecommendationsView() {
 		this.setLayout(new BorderLayout());
 		updateTitle();
-				}
+		this.setBackground(Color.WHITE);
+		this.setBorder(new LineBorder(Color.LIGHT_GRAY, 1));
+	}
 	
 	public static RecommendationsView getView() throws NoSuchElementException {
 		Container cont = Controller.getCurrentController().getViewController().getContentPane();
 		if(tabPane == null) {
 			tabPane = findTabbedPane(cont);
-			}
-		//view = findView(tabPane);
+		}
+		
 		if(view == null) {
 			view = new RecommendationsView();
 			cont.remove(tabPane);
 			cont.add(view, BorderLayout.CENTER, 0);
-//			new RecommendationTabListener(tabPane, view);
-//			tabPane.addTab(view.getName(), view);
 		}
+		
 		return view;
-		}
+	}
 
 	private static JTabbedPane findTabbedPane(Container cont) throws NoSuchElementException {
 		JTabbedPane tabPane = null;
@@ -89,23 +90,19 @@ public class RecommendationsView extends JPanel {
 				tabPane = (JTabbedPane) comp;
 				break;
 			}
-			}
+		}
 		if(tabPane == null) {
-			//DOCEAR - todo: show error msg
 			LogUtils.warn("Exception in "+RecommendationsController.class+".getOrCreateRecommendationView(): could not find tabbed pane");
 			throw new NoSuchElementException("could not find tabbed pane"); 
-			}
-		return tabPane;
 		}
+		return tabPane;
+	}
 
-	//DOCEAR - todo: close does not work
 	public static void close() throws NoSuchElementException {
 		Container cont = Controller.getCurrentController().getViewController().getContentPane();
-//		JTabbedPane tabPane = findTabbedPane();
-//		RecommendationsView view = findView(tabPane);
 		if(view == null) {
 			return;
-	}
+		}
 
 		cont.remove(view);
 		cont.add(tabPane, BorderLayout.CENTER, 0);
@@ -151,7 +148,7 @@ public class RecommendationsView extends JPanel {
 			if(node instanceof RecommendationsModelNode.RecommendationContainerNode) {
 				container = getNewRecommandationContainerComponent(obj.toString());
 				if(parent == null) {
-					this.add(container);
+					//this.add(container);
 				}
 				else {
 					parent.add(container);
@@ -275,7 +272,7 @@ public class RecommendationsView extends JPanel {
 	private Container getNewRecommandationContainerComponent(String title) {
 		JPanel containerPanel = new JPanel();
 		containerPanel.setLayout(new BorderLayout());
-		containerPanel.setBackground(this.getBackground());
+		containerPanel.setBackground(Color.WHITE);
 		containerPanel.setBorder(new EmptyBorder(0, 10, 0, 0));
 		JPanel panel = new JPanel();
 				
@@ -284,7 +281,7 @@ public class RecommendationsView extends JPanel {
 		
 		containerPanel.add(containerTitle, BorderLayout.NORTH);
 		
-		panel.setBackground(Color.white);
+		panel.setBackground(Color.WHITE);
 		panel.setBorder(new LineBorder(Color.LIGHT_GRAY, 1, true));
 		panel.setLayout(new ListLayoutManager());		
 		containerPanel.add(panel, BorderLayout.CENTER);
@@ -511,25 +508,25 @@ public class RecommendationsView extends JPanel {
 		public Dimension minimumLayoutSize(Container parent) {
 			return parent.getMinimumSize();
 		}
-
+			
 		public void layoutContainer(Container parent) {
-			if(parent.getComponentCount() == 0) {
+			int i = parent.getComponentCount()-1;
+			if(i < 0) {
 				return;
 			}
-			Insets insets = new Insets(0, 0, parent.getHeight(), parent.getWidth()); 
+			Insets insets = new Insets(0, 0, parent.getHeight(), parent.getWidth());
 			if(parent instanceof JComponent) {
 				insets = ((JComponent) parent).getInsets();
 			}
 			int width = parent.getWidth()-insets.left-insets.right;
+			int height = parent.getComponent(0).getPreferredSize().height;
 			int x = insets.left;
-			int y = insets.top;
-			for(int i=0; i < parent.getComponentCount(); i++ ) {
-				Component comp = parent.getComponent(i);
-				int height = comp.getPreferredSize().height;
+			for(; i >= 0; i-- ) {
+				Component comp = parent.getComponent(i);	
+				int y = i*height + insets.top;	
 				comp.setBounds(x, y, width, height);
-				y += height;
+			}
 		}
-	}
 	
 		public void addLayoutComponent(String name, Component comp) {
 							

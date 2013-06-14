@@ -181,14 +181,25 @@ public class RecommendationsController extends ADocearServiceFeature {
 				if (response.getStatus() == Status.OK) {
 					try {
 						DocearXmlBuilder xmlBuilder = new DocearXmlBuilder();
+//						LogUtils.info(response.getContentAsString());
 						IXMLReader reader = new StdXMLReader(new InputStreamReader(response.getContent(), "UTF8"));
 						IXMLParser parser = XMLParserFactory.createDefaultXMLParser();
 						parser.setBuilder(xmlBuilder);
 						parser.setReader(reader);
 						parser.parse();
 						DocearXmlRootElement result = (DocearXmlRootElement) xmlBuilder.getRoot();
+						
 						Collection<DocearXmlElement> documents = result.findAll("document");
 						List<RecommendationEntry> recommendations = new ArrayList<RecommendationEntry>();
+						
+						java.util.Iterator<DocearXmlElement> iterator = documents.iterator();
+						if (iterator.hasNext()) {
+							DocearXmlElement document = iterator.next();
+							//"recommendations" element
+							DocearXmlElement recommendationsElement = document.getParent().getParent();
+							recommendations.add(new RecommendationEntry(null, recommendationsElement.getAttributeValue("descriptor"), null, null, false));
+						}
+						
 						for (DocearXmlElement document : documents) {
 							try {
 								// exclude reference documents -> may not have a sourceid and the parent does not have a fulltext attribute
@@ -241,7 +252,7 @@ public class RecommendationsController extends ADocearServiceFeature {
 	}
 	
 	
-	private void startRecommendationsRequest() {
+	public void startRecommendationsRequest() {
 		long lastShowTime = Controller.getCurrentController().getResourceController().getLongProperty("docear.recommendations.last_auto_show", 0);
 		DocearUser user = ServiceController.getCurrentUser();
 		if(((System.currentTimeMillis()-lastShowTime) > RECOMMENDATIONS_AUTOSHOW_INTERVAL)
@@ -341,7 +352,6 @@ public class RecommendationsController extends ADocearServiceFeature {
 			public void aboutToDeactivate(UserAccountChangeEvent event) {}
 		});
 		WorkspaceController.getModeExtension(modeController).getView().getTransferHandler().registerNodeDropHandler(DownloadFolderNode.class, new FileFolderDropHandler());
-		startRecommendationsRequest();
 	}
 
 	private void updateDownloadNode() {

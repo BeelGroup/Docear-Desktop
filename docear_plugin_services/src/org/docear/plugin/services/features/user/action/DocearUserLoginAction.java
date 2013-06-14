@@ -51,6 +51,7 @@ public class DocearUserLoginAction extends AWorkspaceAction {
 						WorkspaceController.getCurrentModeExtension().getView().refreshView();
 					}
 					catch (Exception e) {
+						LogUtils.warn(e);
 					}
 				}
 			}
