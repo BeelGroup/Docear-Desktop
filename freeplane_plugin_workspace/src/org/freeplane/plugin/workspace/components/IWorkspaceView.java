@@ -4,9 +4,8 @@ import java.awt.Component;
 
 import javax.swing.tree.TreePath;
 
-import org.freeplane.plugin.workspace.dnd.WorkspaceTransferHandler;
+import org.freeplane.plugin.workspace.dnd.IWorkspaceTransferHandler;
 import org.freeplane.plugin.workspace.handler.INodeTypeIconManager;
-import org.freeplane.plugin.workspace.mindmapmode.InputController;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.project.IProjectSelectionListener;
 
@@ -21,7 +20,7 @@ public interface IWorkspaceView {
 		
 	public boolean containsComponent(Component comp);
 		
-	public WorkspaceTransferHandler getTransferHandler();	
+	public IWorkspaceTransferHandler getTransferHandler();	
 
 	public TreePath getSelectionPath();
 
@@ -33,5 +32,7 @@ public interface IWorkspaceView {
 	
 	public void addProjectSelectionListener(IProjectSelectionListener projectSelectionListener);
 	
-	public InputController getInputController();
+	public boolean isPaintingEnabled();
+	
+	public void setPaintingEnabled(boolean enabled);
 }
