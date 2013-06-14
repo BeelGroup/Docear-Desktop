@@ -262,7 +262,7 @@ public class SecondPagePanel extends AWizardPage {
 	}
 	
 	public boolean isTermsAccepted() {
-		return localUser || (chckbxAcceptTOS.isSelected() && chckbxAcceptUsageTerms.isSelected());
+		return (localUser && chckbxAcceptUsageTerms.isSelected()) || (chckbxAcceptTOS.isSelected() && chckbxAcceptUsageTerms.isSelected());
 	}
 	
 	private void prepareForOnlineUser() {
