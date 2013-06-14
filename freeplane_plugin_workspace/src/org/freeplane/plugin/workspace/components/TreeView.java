@@ -70,7 +70,19 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 	public TreeView() {
 		this.setLayout(new BorderLayout());
 
-		mTree = new JTree();
+		mTree = new JTree() {
+			private static final long serialVersionUID = 1L;
+
+			public void paint(Graphics g) {
+				if(isPaintingEnabled()) {
+					try {
+						super.paint(g);
+					}
+					catch (Exception e) {
+					}
+				}
+			}
+		};
 		mTree.setBorder(BorderFactory.createEmptyBorder(2, view_margin, view_margin, view_margin));
 		mTree.putClientProperty("JTree.lineStyle", "Angled");
 		mTree.setCellRenderer(new WorkspaceNodeRenderer());
@@ -188,12 +200,6 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 		mTree.addSelectionPath(path);		
 	}
 		
-	public void paint(Graphics g) {
-		if(isPaintingEnabled()) {
-			super.paint(g);
-		}
-	}
-	
 	public boolean isPaintingEnabled() {
 		return paintingEnabled;
 	}
