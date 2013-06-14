@@ -475,10 +475,12 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 
 	@Override
 	public void clear() {
+		getView().setPaintingEnabled(false);
 		AWorkspaceProject[] projects = getModel().getProjects().toArray(new AWorkspaceProject[0]);
 		for (AWorkspaceProject project : projects) {
 			getModel().removeProject(project);
 		}
+		getView().setPaintingEnabled(true);
 	}
 
 }

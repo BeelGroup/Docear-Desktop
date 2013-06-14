@@ -3,6 +3,7 @@ package org.freeplane.plugin.workspace.components;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -64,6 +65,7 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 	private AWorkspaceProject lastSelectedProject;
 	private InputController inputController;
 	private ExpandedStateHandler expandedStateHandler;
+	private boolean paintingEnabled;
 	
 	public TreeView() {
 		this.setLayout(new BorderLayout());
@@ -164,9 +166,10 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 	}
 	
 	public void refreshView() {
+		paintingEnabled = true;
 		getExpandedStateHandler().setExpandedStates(((AWorkspaceTreeNode)mTree.getModel().getRoot()).getModel(), true);
 	}
-
+	
 	public void setModel(WorkspaceModel model) {
 		if(model instanceof TreeModel) {
 			mTree.setModel((TreeModel) model);
@@ -185,6 +188,20 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 		mTree.addSelectionPath(path);		
 	}
 		
+	public void paint(Graphics g) {
+		if(isPaintingEnabled()) {
+			super.paint(g);
+		}
+	}
+	
+	public boolean isPaintingEnabled() {
+		return paintingEnabled;
+	}
+	
+	public void setPaintingEnabled(boolean enabled) {
+		this.paintingEnabled = enabled;
+	}
+
 	public class TreeModelProxy implements TreeModel {
 		private final WorkspaceModel model;
 
@@ -306,7 +323,7 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 
 	public void expandAll(AWorkspaceTreeNode nodeFromActionEvent) {
 		for (int i = 1; i < mTree.getRowCount(); i++) {
-            mTree.expandRow(i);
+			mTree.expandRow(i);
 		}		
 	}
 
