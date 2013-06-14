@@ -161,7 +161,12 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 				// Controller.getCurrentController().getViewController().getMapView().setVisible(false);
 				for (final NodeModel target : targets) {
 					currentTarget = target;
-					URI uri = MonitoringUtils.getPdfDirFromMonitoringNode(target).toURI();
+					File file = MonitoringUtils.getPdfDirFromMonitoringNode(target);
+					if(file == null) {
+						fireStatusUpdate(SwingWorkerDialog.DETAILS_LOG_TEXT, null, "corresponding project is not loaded");
+						continue;
+					}
+					URI uri = file.toURI();
 					if (uri != null) {
 						DocearController.getController().getDocearEventLogger()
 								.appendToLog(this, DocearLogEvent.MONITORING_FOLDER_READ, URIUtils.getAbsoluteURI(uri));
