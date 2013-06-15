@@ -9,7 +9,7 @@
 		
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover -->
-            <fileNamePattern>/var/log/play-frontend/application-info.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <fileNamePattern>./log/mindmap-backend/application-info.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
             <!-- keep 30 days' worth of history -->
             <maxHistory>30</maxHistory>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
@@ -26,7 +26,7 @@
         <file>./log/mindmap-backend/application-info.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover -->
-            <fileNamePattern>/var/log/play-frontend/application.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <fileNamePattern>./log/mindmap-backend/application.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
             <!-- keep 30 days' worth of history -->
             <maxHistory>30</maxHistory>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
