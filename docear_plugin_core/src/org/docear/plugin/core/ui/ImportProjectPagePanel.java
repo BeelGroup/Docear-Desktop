@@ -5,9 +5,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -34,8 +37,11 @@ import org.docear.plugin.core.ui.wizard.AWizardPage;
 import org.docear.plugin.core.ui.wizard.WizardContext;
 import org.docear.plugin.core.workspace.controller.DocearConversionDescriptor;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
+import org.freeplane.core.io.ReadManager;
+import org.freeplane.core.io.xml.TreeXmlReader;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
+import org.freeplane.n3.nanoxml.XMLException;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
@@ -385,21 +391,21 @@ public class ImportProjectPagePanel extends AWizardPage {
 
 		protected void fireItemsAdded(int startIndex, int endIndex) {
 			ListDataEvent event = new ListDataEvent(this, ListDataEvent.INTERVAL_ADDED, startIndex, endIndex);
-			for (int i = items.size()-1; i >= 0; i--) {
+			for (int i = listeners.size()-1; i >= 0; i--) {
 				listeners.get(i).intervalAdded(event);
 			}			
 		}
 		
 		protected void fireItemsRemoved(int startIndex, int endIndex) {
 			ListDataEvent event = new ListDataEvent(this, ListDataEvent.INTERVAL_REMOVED, startIndex, endIndex);
-			for (int i = items.size()-1; i >= 0; i--) {
+			for (int i = listeners.size()-1; i >= 0; i--) {
 				listeners.get(i).intervalRemoved(event);
 			}			
 		}
 		
 		protected void fireItemsChanged(int startIndex, int endIndex) {
 			ListDataEvent event = new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, startIndex, endIndex);
-			for (int i = items.size()-1; i >= 0; i--) {
+			for (int i = listeners.size()-1; i >= 0; i--) {
 				listeners.get(i).contentsChanged(event);
 			}			
 		}
@@ -408,6 +414,18 @@ public class ImportProjectPagePanel extends AWizardPage {
 	
 	class TempProjectLoader extends ProjectLoader {
 		StringBuilder versionString;
+		private final ReadManager readManager;
+		
+		public TempProjectLoader() {
+			this.readManager = new ReadManager();
+			readManager.addElementHandler("workspace", getProjectRootCreator());
+			readManager.addElementHandler("project", getProjectRootCreator());
+		}
+		
+		protected void load(final URI xmlFile) throws MalformedURLException, XMLException, IOException {
+			final TreeXmlReader reader = new TreeXmlReader(readManager);
+			reader.load(new InputStreamReader(new BufferedInputStream(xmlFile.toURL().openStream())));
+		}
 		
 		public String getMetaInfo(AWorkspaceProject project) {
 			try {
