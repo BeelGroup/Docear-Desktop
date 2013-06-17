@@ -15,7 +15,11 @@ Bundle-ClassPath: lib/freeplaneviewer.jar,
  lib/jortho.jar,
  lib/imgscalr-lib-3.2.jar,
  lib/jna.jar,
- lib/platform.jar
+ lib/platform.jar,
+ lib/flamingo-6.3.jar,
+ lib/substance-6.3.jar,
+ lib/substance-flamingo-6.3.jar,
+ lib/substance-swingx-6.3.jar
 Bundle-Activator: org.freeplane.main.osgi.Activator
 Import-Package: org.osgi.framework,
  org.osgi.service.url;version="1.0.0"

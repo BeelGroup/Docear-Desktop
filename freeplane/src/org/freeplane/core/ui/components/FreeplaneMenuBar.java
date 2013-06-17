@@ -35,6 +35,7 @@ import org.freeplane.core.ui.IKeyStrokeInterceptor;
  * Moreover, the StructuredMenuHolder of all menus are hold here.
  */
 public class FreeplaneMenuBar extends JMenuBar {
+	//RIBBONS basic class handling the old menubar
 	public static final String EDIT_MENU = FreeplaneMenuBar.MENU_BAR_PREFIX + "/edit";
 	public static final String EXTRAS_MENU = FreeplaneMenuBar.MENU_BAR_PREFIX + "/extras";
 	public static final String FILE_MENU = FreeplaneMenuBar.MENU_BAR_PREFIX + "/file";

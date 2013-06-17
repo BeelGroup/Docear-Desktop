@@ -408,6 +408,8 @@ public class ReferencesController extends ALanguageController implements IDocear
 				
 				String referencesCategory = PdfUtilitiesController.getParentCategory(builder, PdfUtilitiesController.REFERENCE_CATEGORY);
 				
+				
+				//RIBBONS builder.addMenuItem
 				builder.addMenuItem(MENU_BAR + TOOLS_MENU, new JMenu(TextUtils.getText(REFERENCE_MANAGEMENT_MENU_LANG_KEY)),
 						MENU_BAR + REFERENCE_MANAGEMENT_MENU, MenuBuilder.BEFORE);
 

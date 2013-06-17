@@ -28,7 +28,6 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
 
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import org.freeplane.core.resources.ResourceController;
@@ -73,6 +72,7 @@ import org.freeplane.main.mindmapmode.MModeControllerFactory;
 import org.freeplane.view.swing.features.nodehistory.NodeHistory;
 import org.freeplane.view.swing.map.ViewLayoutTypeAction;
 import org.freeplane.view.swing.map.mindmapmode.MMapViewController;
+import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 
 public class FreeplaneGUIStarter implements FreeplaneStarter {
 	public static String getResourceBaseDir() {
@@ -133,7 +133,7 @@ public class FreeplaneGUIStarter implements FreeplaneStarter {
 			final String lookandfeel = System.getProperty("lookandfeel", applicationResourceController
 			    .getProperty("lookandfeel"));
 			FrameController.setLookAndFeel(lookandfeel);
-			final JFrame frame = new JFrame("Freeplane");
+			final JRibbonFrame frame = new JRibbonFrame("Freeplane");
 			frame.setName(UITools.MAIN_FREEPLANE_FRAME);
 			splash = new FreeplaneSplashModern(frame);
 			if (!System.getProperty("org.freeplane.nosplash", "false").equals("true")) {
@@ -185,11 +185,13 @@ public class FreeplaneGUIStarter implements FreeplaneStarter {
 		FModeControllerFactory.createModeController();
     }
 
+	//RIBBONS build menu from these files --> starting point
 	public void buildMenus(final Controller controller, final Set<String> plugins) {
-	    buildMenus(controller, plugins, MModeController.MODENAME, "/xml/mindmapmodemenu.xml");
+		buildMenus(controller, plugins, MModeController.MODENAME, "/xml/mindmapmoderibbons.xml");
+//	    buildMenus(controller, plugins, MModeController.MODENAME, "/xml/mindmapmodemenu.xml");
 	    LoadAcceleratorPresetsAction.install();
-	    buildMenus(controller, plugins, BModeController.MODENAME, "/xml/browsemodemenu.xml");
-	    buildMenus(controller, plugins, FModeController.MODENAME, "/xml/filemodemenu.xml");
+//	    buildMenus(controller, plugins, BModeController.MODENAME, "/xml/browsemodemenu.xml");
+//	    buildMenus(controller, plugins, FModeController.MODENAME, "/xml/filemodemenu.xml");
     }
 
 	private void buildMenus(final Controller controller, final Set<String> plugins, String mode, String xml) {

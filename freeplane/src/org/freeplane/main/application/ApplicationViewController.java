@@ -424,6 +424,7 @@ class ApplicationViewController extends FrameController {
 
 	@Override
 	protected void setFreeplaneMenuBar(final FreeplaneMenuBar menuBar) {
+		//RIBBONS main set Ribbon menu bar
 		frame.setJMenuBar(menuBar);
 	}
 

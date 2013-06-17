@@ -78,6 +78,8 @@ import org.freeplane.features.mode.ModeController;
 import org.freeplane.n3.nanoxml.XMLElement;
 
 public class MenuBuilder extends UIBuilder {
+	
+	//RIBBONS old MenuBuilder
 	private static class ActionHolder implements INameMnemonicHolder {
 		final private Action action;
 		
@@ -264,6 +266,7 @@ public class MenuBuilder extends UIBuilder {
 		}
 	}
 
+	//RIBBONS MenuStructureReader --> xml reader
 	private class MenuStructureReader {
 		private final class ActionCreator implements IElementHandler {
 			public Object createElement(final Object parent, final String tag, final XMLElement attributes) {

@@ -285,6 +285,7 @@ public class UserInputListenerFactory implements IUserInputListenerFactory {
 		}
 	}
 
+	//RIBBONS which xml file should be loaded as a menu
 	public void updateMenus(String menuStructureResource, Set<String> plugins) {
 		final FreeplaneMenuBar menuBar = getMenuBar();
 		menuBuilder.addMenuBar(menuBar, FreeplaneMenuBar.MENU_BAR_PREFIX);
