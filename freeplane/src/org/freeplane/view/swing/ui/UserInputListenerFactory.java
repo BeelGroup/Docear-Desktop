@@ -20,6 +20,7 @@
 package org.freeplane.view.swing.ui;
 
 import java.awt.Component;
+import java.awt.Frame;
 import java.awt.dnd.DragGestureListener;
 import java.awt.dnd.DropTargetListener;
 import java.awt.event.ActionListener;
@@ -329,6 +330,8 @@ public class UserInputListenerFactory implements IUserInputListenerFactory {
 		final IMapViewManager viewController = Controller.getCurrentController().getMapViewManager();
 		
 //		viewController.updateMenus(menuBuilder);
+		Frame f = UITools.getFrame();
+//		ribbonBuilder.buildRibbon();
 	}
 
 	//RIBBONS implement

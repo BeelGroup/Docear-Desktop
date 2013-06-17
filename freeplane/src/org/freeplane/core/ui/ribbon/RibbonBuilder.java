@@ -1,5 +1,6 @@
 package org.freeplane.core.ui.ribbon;
 
+import java.awt.Frame;
 import java.net.URL;
 import java.util.HashMap;
 
@@ -65,6 +66,9 @@ public class RibbonBuilder {
 		synchronized (structure) {
 			rootContributor.contribute(structure, null);			
 		}
+		Frame f = UITools.getFrame(); 
+		f.pack();
+		
 	}
 	
 	public void updateRibbon(String xmlResource) {

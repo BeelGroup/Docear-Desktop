@@ -19,8 +19,12 @@
  */
 package org.freeplane.main.application;
 
+import java.awt.ComponentOrientation;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Frame;
+import java.awt.GraphicsEnvironment;
+import java.awt.Rectangle;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
@@ -215,6 +219,10 @@ public class FreeplaneGUIStarter implements FreeplaneStarter {
 				splash.toBack();
 				final Frame frame = viewController.getFrame();
 				final int extendedState = frame.getExtendedState();
+				frame.applyComponentOrientation(ComponentOrientation.getOrientation(Locale.getDefault()));
+				Rectangle r = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+				frame.setPreferredSize(new Dimension(r.width, r.height / 2));
+				frame.setMinimumSize(new Dimension(r.width / 10, r.height / 2));
 				frame.setVisible(true);
 				if (extendedState != frame.getExtendedState()) {
 					frame.setExtendedState(extendedState);

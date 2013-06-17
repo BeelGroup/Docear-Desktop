@@ -17,6 +17,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/substance-6.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/substance-flamingo-6.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/substance-swingx-6.3.jar"/>
+	<classpathentry kind="lib" path="lib/trident.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/JOrtho_0.4_freeplane"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
