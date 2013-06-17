@@ -12,7 +12,7 @@ import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.ModeController;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
-import org.pushingpixels.flamingo.internal.ui.ribbon.appmenu.JRibbonApplicationMenuButton;
+import org.pushingpixels.flamingo.api.ribbon.RibbonApplicationMenu;
 
 
 public class RibbonBuilder {
@@ -23,19 +23,30 @@ public class RibbonBuilder {
 	private final RibbonStructureReader reader;
 	
 	public RibbonBuilder(ModeController mode, JRibbon ribbon) {
-		final JRibbonApplicationMenuButton applicationMenu = new JRibbonApplicationMenuButton(ribbon);
+		final RibbonApplicationMenu applicationMenu = new RibbonApplicationMenu();
 		structure = new IndexedTree(applicationMenu);
 		this.rootContributor = new RootContributor(ribbon);
 		reader = new RibbonStructureReader(this);
 		registerContributorFactory("ribbon_task", new RibbonTaskContributorFactory());
+		registerContributorFactory("ribbon_band", new RibbonBandContributorFactory());
+		
+//		//add(this.rootContributor, "/ribbon", IndexedTree.AS_CHILD);
+//		structure.addElement(structure, rootContributor, "/ribbon", IndexedTree.AS_CHILD);
 	}
 	
-	public void add(IRibbonContributor contributor, String path, int position) {
+	public void add(IRibbonContributor contributor, RibbonPath path, int position) {
 		if(contributor == null || path == null) {
 			throw new IllegalArgumentException("NULL");
 		}
 		synchronized (structure) {
-			structure.addElement(path, contributor, position);
+			RibbonPath elementPath = new RibbonPath(path);
+			elementPath.setName(contributor.getKey());
+			if("/ribbon".equals(path.getKey())) {				
+				structure.addElement(structure, contributor, elementPath.getKey(), position);
+			}
+			else {
+				structure.addElement(path.getKey(), contributor, elementPath.getKey(), position);
+			}
 		}
 	}
 	
@@ -82,6 +93,35 @@ public class RibbonBuilder {
 		}		
 	}
 
-	
+	public static class RibbonPath {
+		public static RibbonPath emptyPath() {
+			final RibbonPath menuPath = new RibbonPath(null);
+			return menuPath;
+		}
+
+		private final RibbonPath parent;
+		private String key = "";
+		
+		public RibbonPath(final RibbonPath parent) {
+			this.parent = parent;
+		}
+
+		public void setName(final String name) {
+			key = name;
+		}
+		
+		public RibbonPath getParent() {
+			return parent;
+		}
+		
+		public String getKey() {
+			return ((parent != null) ? parent.getKey() + "/" : "") + key;
+		}
+
+		@Override
+		public String toString() {
+			return getKey();
+		}
+	}
 
 }

@@ -8,7 +8,7 @@ import org.freeplane.core.io.IElementHandler;
 import org.freeplane.core.io.ReadManager;
 import org.freeplane.core.io.xml.TreeXmlReader;
 import org.freeplane.core.ui.IndexedTree;
-import org.freeplane.core.ui.MenuBuilder;
+import org.freeplane.core.ui.ribbon.RibbonBuilder.RibbonPath;
 import org.freeplane.core.util.FileUtils;
 import org.freeplane.n3.nanoxml.XMLElement;
 
@@ -22,37 +22,9 @@ public class RibbonStructureReader {
 		readManager.addElementHandler("menu_structure", new StructureCreator());
 		readManager.addElementHandler("menu_category", new CategoryCreator());
 		readManager.addElementHandler("ribbon_task", new RibbonTaskCreator());
-//		readManager.addElementHandler("ribbon_band", new RibbonBandCreator());
+		readManager.addElementHandler("ribbon_band", new RibbonBandCreator());
 		
 		this.builder = ribbonBuilder;
-	}
-
-	private static class RibbonPath {
-		static RibbonPath emptyPath() {
-			final RibbonPath menuPath = new RibbonPath("");
-			menuPath.key = "";
-			return menuPath;
-		}
-
-		String parentKey;
-		String key;
-
-		RibbonPath(final String key) {
-			parentKey = key;
-		}
-
-		void setKey(final String name) {
-			key = name;
-		}
-
-		void setLastKeySection(final String name) {
-			key = parentKey + '/' + name;
-		}
-
-		@Override
-		public String toString() {
-			return key;
-		}
 	}
 	
 	public void loadStructure(final URL xmlSource) {
@@ -76,6 +48,9 @@ public class RibbonStructureReader {
 	
 	private final class StructureCreator implements IElementHandler {
 		public Object createElement(final Object parent, final String tag, final XMLElement attributes) {
+			if (attributes == null) {
+				return null;
+			}
 			return RibbonPath.emptyPath();
 		}
 	}
@@ -85,12 +60,12 @@ public class RibbonStructureReader {
 			if (attributes == null) {
 				return null;
 			}
-			
-			final RibbonPath menuPath = new RibbonPath(parent.toString());
+			RibbonPath path = new RibbonPath((RibbonPath) parent);
 			String name = attributes.getAttribute("name", null);
 			if("ribbon".equals(name)) {
-    			menuPath.setLastKeySection(name);
-    			return menuPath;
+				path.setName(name);
+				String st = path.getKey();
+    			return path;
 			}
 			return null;
 		}
@@ -102,11 +77,27 @@ public class RibbonStructureReader {
 				return null;
 			}
 			
-			final RibbonPath menuPath = new RibbonPath(parent.toString());
-			menuPath.setLastKeySection(attributes.getAttribute("name", null));
+			final RibbonPath menuPath = new RibbonPath((RibbonPath) parent);
+			menuPath.setName(attributes.getAttribute("name", null));
 			IRibbonContributorFactory factory = builder.getContributorFactory(tag);
-			if(factory != null && !builder.containsKey(menuPath.key)) {
-				builder.add(factory.getContributor(attributes.getAttributes()), menuPath.parentKey, IndexedTree.AS_CHILD);
+			if(factory != null && !builder.containsKey(menuPath.getKey())) {
+				builder.add(factory.getContributor(attributes.getAttributes()), menuPath.getParent(), IndexedTree.AS_CHILD);
+			}
+			return menuPath;
+		}
+	}
+	
+	private final class RibbonBandCreator implements IElementHandler {
+		public Object createElement(final Object parent, final String tag, final XMLElement attributes) {
+			if (attributes == null) {
+				return null;
+			}
+			
+			final RibbonPath menuPath = new RibbonPath((RibbonPath) parent);
+			menuPath.setName(attributes.getAttribute("name", null));
+			IRibbonContributorFactory factory = builder.getContributorFactory(tag);
+			if(factory != null && !builder.containsKey(menuPath.getKey())) {
+				builder.add(factory.getContributor(attributes.getAttributes()), menuPath.getParent(), IndexedTree.AS_CHILD);
 			}
 			return menuPath;
 		}
