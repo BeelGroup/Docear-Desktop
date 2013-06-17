@@ -1,6 +1,7 @@
 package org.docear.plugin.services.features.user.view;
 
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -60,6 +61,7 @@ public class WorkspaceDocearServiceConnectionBar extends JToolBar {
 	
 	
 	private CONNECTION_STATE connectionState;
+	private JLabel lblNoCredentials;
 	
 	public WorkspaceDocearServiceConnectionBar() {
 		setMargin(nullInsets);
@@ -75,15 +77,23 @@ public class WorkspaceDocearServiceConnectionBar extends JToolBar {
 		configureComponent(button);
 		button.setDisabledIcon(new ImageIcon(this.getClass().getResource("/icons/arrow-refresh-disabled.png")));
 		
-		lblUsername = new JLabel("username");
+		lblUsername = new JLabel();
 		lblUsername.setBorder(new EmptyBorder(marginInsets));	
 		lblUsername.addMouseListener(mouseClickDispatcher);
+		lblUsername.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		add(lblUsername);
 		
 		lblConnectionState = new JLabel(TextUtils.getText("docear.service.connect.bar.status.1")+":");
 		lblConnectionState.setBorder(new EmptyBorder(marginInsets));
 		lblConnectionState.addMouseListener(mouseClickDispatcher);
+		lblConnectionState.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		add(lblConnectionState);
+		
+		lblNoCredentials = new JLabel(TextUtils.getText("docear.service.connect.bar.register"));
+		lblNoCredentials.setIcon(new ImageIcon(DocearController.class.getResource("/images/docear16.png")));
+		lblNoCredentials.setBorder(new EmptyBorder(marginInsets));
+		lblNoCredentials.addMouseListener(mouseClickDispatcher);
+		lblNoCredentials.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		
 		
 	}
@@ -98,7 +108,16 @@ public class WorkspaceDocearServiceConnectionBar extends JToolBar {
 	
 	public void setConnectionState(CONNECTION_STATE state) {
 		connectionState = state;
-		this.lblConnectionState.setText(TextUtils.getText("docear.service.connect.bar.status."+state.ordinal()));
+		this.removeAll();
+		if(state == CONNECTION_STATE.NO_CREDENTIALS) {
+			this.add(lblNoCredentials);
+		}
+		else {
+			add(button);
+			add(lblUsername);
+			add(lblConnectionState);
+			this.lblConnectionState.setText(TextUtils.getText("docear.service.connect.bar.status."+state.ordinal()));
+		}
 	}
 	
 	public CONNECTION_STATE getConnectionState() {

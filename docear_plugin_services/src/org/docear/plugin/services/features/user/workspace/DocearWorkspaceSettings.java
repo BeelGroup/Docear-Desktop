@@ -59,11 +59,11 @@ public class DocearWorkspaceSettings extends ADocearServiceFeature implements IW
 			
 			public void activated(UserAccountChangeEvent event) {
 				if(event.getUser() instanceof DocearUser) {
-					try {
-						load((DocearUser) event.getUser());
-					} catch (IOException e) {
-						LogUtils.warn("Exception in org.docear.plugin.services.features.user.workspace.DocearWorkspaceSettings.getUserChangeListener().new IUserAccountChangeListener() {...}.activated(event): "+ e.getMessage());
-					}
+//					try {
+//						load((DocearUser) event.getUser());
+//					} catch (IOException e) {
+//						LogUtils.warn("Exception in org.docear.plugin.services.features.user.workspace.DocearWorkspaceSettings.getUserChangeListener().new IUserAccountChangeListener() {...}.activated(event): "+ e.getMessage());
+//					}
 					event.getUser().addPropertyChangeListener(getUserPropertyChangeListener());
 				}
 			}
@@ -158,9 +158,10 @@ public class DocearWorkspaceSettings extends ADocearServiceFeature implements IW
 		}
 		final File userPropertiesFolder = new File(getSettingsPath(user));
 		final File settingsFile = new File(userPropertiesFolder, USER_SETTINGS_FILENAME);
-				
+		
 		InputStream in = null;
 		try {
+			properties = new Properties();
 			in = new FileInputStream(settingsFile);
 			properties.load(in);
 		}

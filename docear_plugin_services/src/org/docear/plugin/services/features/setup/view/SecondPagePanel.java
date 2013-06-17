@@ -16,6 +16,7 @@ import javax.swing.event.ChangeListener;
 
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.ui.MultiLineActionLabel;
+import org.docear.plugin.core.ui.components.DocearHTMLPanel;
 import org.docear.plugin.core.ui.components.DocearLicensePanel;
 import org.docear.plugin.core.ui.wizard.AWizardPage;
 import org.docear.plugin.core.ui.wizard.WizardContext;
@@ -150,7 +151,10 @@ public class SecondPagePanel extends AWizardPage {
 					JOptionPane.showConfirmDialog(getRootPane(), licenseText, TextUtils.getText("docear.license.data_processing.title"), JOptionPane.PLAIN_MESSAGE, JOptionPane.PLAIN_MESSAGE, null);
 				}
 				else if("gpl".equals(e.getActionCommand())) {
-					//DOCEAR - ToDo: show gplv2.html
+					DocearHTMLPanel gplPanel = new DocearHTMLPanel();
+					String text = DocearController.getController().getGPLv2Terms();
+					gplPanel.setText(text);
+					JOptionPane.showConfirmDialog(getRootPane(), gplPanel, TextUtils.getText("docear.license.data_processing.title"), JOptionPane.PLAIN_MESSAGE, JOptionPane.PLAIN_MESSAGE, null);
 				}
 			}
 		});
@@ -258,7 +262,7 @@ public class SecondPagePanel extends AWizardPage {
 	}
 	
 	public boolean isTermsAccepted() {
-		return localUser || (chckbxAcceptTOS.isSelected() && chckbxAcceptUsageTerms.isSelected());
+		return (localUser && chckbxAcceptUsageTerms.isSelected()) || (chckbxAcceptTOS.isSelected() && chckbxAcceptUsageTerms.isSelected());
 	}
 	
 	private void prepareForOnlineUser() {

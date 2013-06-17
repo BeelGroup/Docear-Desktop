@@ -57,6 +57,9 @@ public class DocearSetupWizardAction extends AFreeplaneAction {
 	public static void startWizard(boolean exitOnCancel) {
 		Wizard wiz = new Wizard(UITools.getFrame());
 		initWizard(wiz);
+		
+		UITools.backOtherWindows(); 
+		
 		int ret = wiz.show();
 		if(ret == Wizard.OK_OPTION) {
 			if(wiz.getContext().get(DocearLocalUser.class) != null) {

@@ -26,8 +26,6 @@ import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.components.TreeView;
-import org.freeplane.plugin.workspace.model.WorkspaceModel;
-import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.ClientResponse.Status;
@@ -65,14 +63,13 @@ public class DocearUserController extends ADocearServiceFeature {
 	}
 	
 
-	public void loginUser(DocearUser user) throws DocearServiceException {
+	public boolean loginUser(DocearUser user) throws DocearServiceException {
 		if(user == null || LOCAL_USER.equals(user) || user.getPassword() == null) {
-			return;
+			return false;
 		}
 		if(user.isValid()) {
-			ServiceController.getConnectionController().setDefaultHeader("accessToken", user.getAccessToken());
 			user.setOnline(true);
-			return;
+			return false;
 		}
 		MultivaluedMap<String, String> formParams = new MultivaluedMapImpl();
 		formParams.add("password", user.getPassword());
@@ -95,8 +92,8 @@ public class DocearUserController extends ADocearServiceFeature {
 				DocearConnectionProvider.readResponseContent(response.getEntityInputStream());
 				user.setEnabled(true);
 				user.setAccessToken(token);
-				ServiceController.getConnectionController().setDefaultHeader("accessToken", user.getAccessToken());
 				user.setOnline(true);
+				return true;
 			}
 			else {
 				throw new DocearServiceException(DocearConnectionProvider.getErrorMessageString(response));
@@ -159,10 +156,10 @@ public class DocearUserController extends ADocearServiceFeature {
 				}
 				else if(WorkspaceDocearServiceConnectionBar.CONNECTION_BAR_CLICKED.equals(event.getSource()) ) {
 					if(DocearUserController.LOCAL_USER.equals(DocearUserController.getActiveUser())) {
-						WorkspaceController.getAction(DocearUserRegistrationAction.KEY);
+						WorkspaceController.getAction(DocearUserRegistrationAction.KEY).actionPerformed(null);
 					}
 					else {
-						WorkspaceController.getAction(DocearUserLoginAction.KEY);
+						WorkspaceController.getAction(DocearUserLoginAction.KEY).actionPerformed(null);
 					}
 				}
 			}
@@ -172,14 +169,17 @@ public class DocearUserController extends ADocearServiceFeature {
 			
 			public void activated(UserAccountChangeEvent event) {
 				if(event.getUser() instanceof DocearUser) {
-					event.getUser().addPropertyChangeListener(getUserPropertyChangeListener());
+					DocearUser user = (DocearUser) event.getUser();
+					user.addPropertyChangeListener(getUserPropertyChangeListener());
 					try {
 						try {
-							ServiceController.getFeature(DocearWorkspaceSettings.class).load((DocearUser) event.getUser());
+							ServiceController.getFeature(DocearWorkspaceSettings.class).load(user);
 						} catch (IOException e) {
 							LogUtils.severe("Exception in org.docear.plugin.services.features.user.DocearUserController.loadUser(name):"+e.getMessage());
 						}
-						loginUser((DocearUser) event.getUser());
+						if(!loginUser(user) && user.isValid()) {
+							//onlineCheck(user);
+						}
 					} catch (DocearServiceException e) {
 						LogUtils.warn(e);
 					}
@@ -190,6 +190,7 @@ public class DocearUserController extends ADocearServiceFeature {
 						DocearController.getPropertiesController().setProperty(DOCEAR_CONNECTION_USERNAME_PROPERTY, event.getUser().getName());
 					}
 					adjustInfoBarConnectionState((DocearUser) event.getUser());
+					ServiceController.getConnectionController().setDefaultHeader("accessToken", ((DocearUser) event.getUser()).getAccessToken());
 				}
 				else {
 					getActiveUser().activate();
@@ -203,19 +204,10 @@ public class DocearUserController extends ADocearServiceFeature {
 				if(event.getUser() instanceof DocearUser) {
 					((DocearUser)event.getUser()).setOnline(false);
 					WorkspaceController.save();
-					clearWorkspace();
 				}
 				event.getUser().removePropertyChangeListener(getUserPropertyChangeListener());
 			}
 		});
-	}
-	
-	private void clearWorkspace() {
-		WorkspaceModel model = WorkspaceController.getCurrentModel();
-		AWorkspaceProject[] projects = model.getProjects().toArray(new AWorkspaceProject[0]);
-		for (AWorkspaceProject project : projects) {
-			model.removeProject(project);
-		}
 	}
 	
 	private PropertyChangeListener getUserPropertyChangeListener() {

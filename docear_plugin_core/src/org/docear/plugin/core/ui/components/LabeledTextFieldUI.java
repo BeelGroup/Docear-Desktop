@@ -20,8 +20,6 @@ import javax.swing.plaf.synth.SynthStyle;
 import javax.swing.text.Caret;
 import javax.swing.text.JTextComponent;
 
-import sun.swing.plaf.synth.SynthUI;
-
 class LabeledTextFieldUI extends BasicTextFieldUI {
 	/**
 	 * 
@@ -91,11 +89,11 @@ class LabeledTextFieldUI extends BasicTextFieldUI {
 	private int getComponentState(JTextComponent comp) {
 		if (comp.isEnabled()) {
 			if (comp.isFocusOwner()) {
-				return SynthUI.ENABLED | SynthUI.FOCUSED;
+				return SynthConstants.ENABLED | SynthConstants.FOCUSED;
 			}
-			return SynthUI.ENABLED;
+			return SynthConstants.ENABLED;
 		}
-		return SynthUI.DISABLED;
+		return SynthConstants.DISABLED;
 	}
 
 	private Region getComponentRegion(JTextComponent comp) {

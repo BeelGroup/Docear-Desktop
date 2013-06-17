@@ -21,26 +21,7 @@ public class RecommendationsModel {
 		
 	}
 	
-	private void parseRecommendations(Collection<RecommendationEntry> recommendations) {		
-//		if(recommendations == null) {
-//			if(ServiceController.getCurrentUser().isRecommendationsEnabled()) {
-//				setRoot(RecommendationsModelNode.createNoRecommendationsNode(TextUtils.getText("recommendations.error.no_recommendations")));
-//			}
-//			else {
-//				setRoot(RecommendationsModelNode.createNoServiceNode());
-//			}
-//			return;
-//		}
-//		setRoot(RecommendationsModelNode.createRecommendationContainerNode(TextUtils.getText("recommendations.container.documents")));
-//		if(recommendations.isEmpty()) {
-//			getRootNode().insert(RecommendationsModelNode.createNoRecommendationsNode(TextUtils.getText("recommendations.error.no_recommendations")));
-//		} 
-//		else {
-//			for(RecommendationEntry entry : recommendations) {
-//				getRootNode().insert(RecommendationsModelNode.createRecommendationEntryNode(entry));
-//			}		
-//		}
-
+	private void parseRecommendations(Collection<RecommendationEntry> recommendations) {
 		if(recommendations == null) {
 			if(ServiceController.getCurrentUser().isRecommendationsEnabled()) {
 				setRoot(RecommendationsModelNode.createNoRecommendationsNode(TextUtils.getText("recommendations.error.no_recommendations")));
@@ -69,8 +50,6 @@ public class RecommendationsModel {
 			getRootNode().insert(RecommendationsModelNode.createNoRecommendationsNode(TextUtils.getText("recommendations.error.no_recommendations")));
 		} 
 		else {
-			//shuffle on server side
-			//Collections.shuffle((List<?>) recommendations);
 			while (entries.hasNext()) {
 				getRootNode().insert(RecommendationsModelNode.createRecommendationEntryNode(entries.next()));
 			}		

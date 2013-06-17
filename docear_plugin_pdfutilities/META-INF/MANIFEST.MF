@@ -18,8 +18,8 @@ Bundle-ClassPath: .,
  lib/jpod/isrt.jar,
  lib/jpod/jbig2.jar,
  lib/plugin.jar,
- lib/docear-pdf-utilities.jar,
- lib/guava-14.0.1.jar
+ lib/guava-14.0.1.jar,
+ lib/docear-pdf-inspector.jar
 Export-Package: org.docear.plugin.pdfutilities,
  org.docear.plugin.pdfutilities.features,
  org.docear.plugin.pdfutilities.listener,

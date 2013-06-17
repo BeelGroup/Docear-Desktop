@@ -33,7 +33,7 @@ import org.freeplane.plugin.workspace.nodes.WorkspaceRootNode;
 /**
  * 
  */
-public class WorkspaceTransferHandler extends TransferHandler implements DropTargetListener {
+public class WorkspaceTransferHandler extends TransferHandler implements IWorkspaceTransferHandler, DropTargetListener {
 
 	/**
 	 * 

@@ -28,7 +28,7 @@ import org.freeplane.plugin.workspace.actions.AWorkspaceAction;
 public class DocearUserRegistrationAction extends AWorkspaceAction {
 	
 	private static final long serialVersionUID = 1L;
-	public static final String KEY = "workspace.action.user.register";
+	public static final String KEY = "docear.action.user.register";
 	
 	public DocearUserRegistrationAction() {
 		super(KEY);
