@@ -23,7 +23,7 @@ import org.freeplane.plugin.workspace.actions.AWorkspaceAction;
 public class DocearUserLoginAction extends AWorkspaceAction {
 	
 	private static final long serialVersionUID = 1L;
-	public static final String KEY = "workspace.action.user.login";
+	public static final String KEY = "docear.action.user.login";
 	
 	public DocearUserLoginAction() {
 		super(KEY);

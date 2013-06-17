@@ -511,7 +511,7 @@ public class ImportProjectPagePanel extends AWizardPage {
 		}
 		
 		public String toString() {
-			return "[profile] " + super.toString(); 
+			return /*"[profile] " +/**/ super.toString(); 
 		}
 	}
 }
