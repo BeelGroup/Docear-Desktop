@@ -1,35 +1,35 @@
 <menu_structure>
 	<menu_category name="ribbon">
-		<task name="Home">
-			<band name="Mind map">
+		<ribbon_task name="Home">
+			<ribbon_band name="Mind map">
 				<resize_policies>
 					<resize_policy policy="Mirror"/>
 					<resize_policy policy="High2Mid"/>
 				</resize_policies>
-				<menu_action type="dropdown" action="add_child_node" priority="top">
-					<menu_action action="add_sibling_node"/>
-					<menu_action action="add_summary_node" />
-					<menu_action action="add_floating_node" />
-				</menu_action>
-				<menu_action action="edit_node" priority="medium"/>
-				<menu_action action="delete_node" priority="medium"/>
-				<menu_action action="connect_ndes" tyoe ="dropdown" priority="low">
-					<menu_action action="connect_nodes_visual_link"/>
-					<menu_action action="connect_nodes_internal_link"/>
-				</menu_action>
-			</band>
-			<band name="Basics">
+				<ribbon_action type="dropdown" action="add_child_node" priority="top">
+					<ribbon_action action="add_sibling_node"/>
+					<ribbon_action action="add_summary_node" />
+					<ribbon_action action="add_floating_node" />
+				</ribbon_action>
+				<ribbon_action action="edit_node" priority="medium"/>
+				<ribbon_action action="delete_node" priority="medium"/>
+				<ribbon_action action="connect_ndes" tyoe ="dropdown" priority="low">
+					<ribbon_action action="connect_nodes_visual_link"/>
+					<ribbon_action action="connect_nodes_internal_link"/>
+				</ribbon_action>
+			</ribbon_band>
+			<ribbon_band name="Basics">
 				<resize_policies>
 					<resize_policy policy="Mirror"/>
 					<resize_policy policy="High2Mid"/>
 				</resize_policies>
-				<menu_action action="cut_node" priority="top"/>
-				<menu_action action="copy_node" priority="top"/>
-				<menu_action action="paste_node" priority="top"/>
-				<menu_action action="font_bold" priority="low"/>
-				<menu_action action="font_italic" priority="low"/>
+				<ribbon_action action="cut_node" priority="top"/>
+				<ribbon_action action="copy_node" priority="top"/>
+				<ribbon_action action="paste_node" priority="top"/>
+				<ribbon_action action="font_bold" priority="low"/>
+				<ribbon_action action="font_italic" priority="low"/>
 				<menu_contributor name="font_size" priority="low"/>
-			</band>
-		</task>
+			</ribbon_band>
+		</ribbon_task>
 	</menu_category>
 </menu_structure>

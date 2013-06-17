@@ -13,7 +13,7 @@
 	<classpathentry kind="lib" path="lib/freeplanemac.jar" sourcepath="/freeplane_mac/src"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-io-2.4.jar"/>
 	<classpathentry kind="lib" path="lib/jortho.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/flamingo-6.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/flamingo-6.3.jar" sourcepath="lib/flamingo-6.3-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/substance-6.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/substance-flamingo-6.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/substance-swingx-6.3.jar"/>

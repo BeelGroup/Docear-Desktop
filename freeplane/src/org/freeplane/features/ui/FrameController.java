@@ -367,12 +367,14 @@ abstract public class FrameController implements ViewController {
 				toolbarPanel[j].repaint();
 			}
 		}
-		setFreeplaneMenuBar(newUserInputListenerFactory.getMenuBar());
+		//RIBBONS - todo: refactor later
+//		setFreeplaneMenuBar(newUserInputListenerFactory.getMenuBar());
+		newUserInputListenerFactory.getRibbonBuilder().buildRibbon();
 		setUIComponentsVisible(newModeController.getController().getMapViewManager());
 	}
 
 	private void setUIComponentsVisible(IMapViewManager iMapViewManager) {
-	    getFreeplaneMenuBar().setVisible(isMenubarVisible());
+	    //getFreeplaneMenuBar().setVisible(isMenubarVisible());
 		final boolean areScrollbarsVisible = areScrollbarsVisible();
 		iMapViewManager.setScrollbarsVisible(areScrollbarsVisible);
     }

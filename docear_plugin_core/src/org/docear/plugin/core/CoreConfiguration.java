@@ -385,49 +385,47 @@ public class CoreConfiguration extends ALanguageController {
 	}
 		
 	private void addMenus(ModeController modeController) {
-		modeController.addMenuContributor(new IMenuContributor() {
-			public void updateMenus(ModeController modeController, MenuBuilder builder) {
-				//add entries to project menu
-				final String MENU_PROJECT_KEY = "/menu_bar/project";
-				builder.addSeparator(MENU_PROJECT_KEY, MenuBuilder.AS_CHILD);
-				final AWorkspaceAction addAction = new DocearAddRepositoryPathAction();
-				builder.addAction(MENU_PROJECT_KEY, addAction, MenuBuilder.AS_CHILD);
-				final AWorkspaceAction removeAction = new DocearRemoveRepositoryPathAction();
-				builder.addAction(MENU_PROJECT_KEY, removeAction, MenuBuilder.AS_CHILD);
-				Object obj = builder.get(MENU_PROJECT_KEY).getUserObject();
-				if(obj instanceof JMenu) {
-					((JMenu) obj).getPopupMenu().addPopupMenuListener(new PopupMenuListener() {					
-						public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-							addAction.setEnabled();
-							removeAction.setEnabled();
-						}
-						
-						public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {}
-						
-						public void popupMenuCanceled(PopupMenuEvent e) {}
-					});
-				}
-				
-				//add entries to
-				builder.addAction("/menu_bar/help", new DocearShowTermsOfUseAction(),	MenuBuilder.AS_CHILD);
-				builder.addAction("/menu_bar/help", new DocearShowDataPrivacyStatementAction(),	MenuBuilder.AS_CHILD);
-				builder.addAction("/menu_bar/help", new DocearShowDataProcessingTermsAction(),	MenuBuilder.AS_CHILD);
-				//builder.addAction("/menu_bar/help", new DocearShowNotificationBar(),	MenuBuilder.AS_CHILD);
-				
-				//add node privacy actions
-				if("true".equals(System.getProperty("docear.debug", "false"))) {
-					modeController.addAction(new DocearSetNodePrivacyAction());
-					builder.addSeparator("/menu_bar/edit", MenuBuilder.AS_CHILD);
-					builder.addAction("/menu_bar/edit", new DocearSetNodePrivacyAction(),	MenuBuilder.AS_CHILD);
-					builder.addSeparator("/node_popup", MenuBuilder.AS_CHILD);
-					builder.addAction("/node_popup", new DocearSetNodePrivacyAction(),	MenuBuilder.AS_CHILD);
-					
-				}
-			}
-		});
-		//modeController.getUserInputListenerFactory().addToolBar(NotificationBar.TOOLBAR_NAME, ViewController.TOP, new NotificationBar());
-		//String propertyName = Controller.getCurrentController().getViewController().completeVisiblePropertyKey(NotificationBar.getNotificationBar());
-		//ResourceController.getResourceController().setProperty(propertyName, false);
+		//RIBBONS implement
+//		modeController.addMenuContributor(new IMenuContributor() {
+//			public void updateMenus(ModeController modeController, MenuBuilder builder) {
+//				//add entries to project menu
+//				final String MENU_PROJECT_KEY = "/menu_bar/project";
+//				builder.addSeparator(MENU_PROJECT_KEY, MenuBuilder.AS_CHILD);
+//				final AWorkspaceAction addAction = new DocearAddRepositoryPathAction();
+//				builder.addAction(MENU_PROJECT_KEY, addAction, MenuBuilder.AS_CHILD);
+//				final AWorkspaceAction removeAction = new DocearRemoveRepositoryPathAction();
+//				builder.addAction(MENU_PROJECT_KEY, removeAction, MenuBuilder.AS_CHILD);
+//				Object obj = builder.get(MENU_PROJECT_KEY).getUserObject();
+//				if(obj instanceof JMenu) {
+//					((JMenu) obj).getPopupMenu().addPopupMenuListener(new PopupMenuListener() {					
+//						public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+//							addAction.setEnabled();
+//							removeAction.setEnabled();
+//						}
+//						
+//						public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {}
+//						
+//						public void popupMenuCanceled(PopupMenuEvent e) {}
+//					});
+//				}
+//				
+//				//add entries to
+//				builder.addAction("/menu_bar/help", new DocearShowTermsOfUseAction(),	MenuBuilder.AS_CHILD);
+//				builder.addAction("/menu_bar/help", new DocearShowDataPrivacyStatementAction(),	MenuBuilder.AS_CHILD);
+//				builder.addAction("/menu_bar/help", new DocearShowDataProcessingTermsAction(),	MenuBuilder.AS_CHILD);
+//				//builder.addAction("/menu_bar/help", new DocearShowNotificationBar(),	MenuBuilder.AS_CHILD);
+//				
+//				//add node privacy actions
+//				if("true".equals(System.getProperty("docear.debug", "false"))) {
+//					modeController.addAction(new DocearSetNodePrivacyAction());
+//					builder.addSeparator("/menu_bar/edit", MenuBuilder.AS_CHILD);
+//					builder.addAction("/menu_bar/edit", new DocearSetNodePrivacyAction(),	MenuBuilder.AS_CHILD);
+//					builder.addSeparator("/node_popup", MenuBuilder.AS_CHILD);
+//					builder.addAction("/node_popup", new DocearSetNodePrivacyAction(),	MenuBuilder.AS_CHILD);
+//					
+//				}
+//			}
+//		});
 	}
 
 

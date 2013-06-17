@@ -50,6 +50,7 @@ import org.freeplane.core.ui.MenuBuilder;
 import org.freeplane.core.ui.UIBuilder;
 import org.freeplane.core.ui.components.FreeplaneMenuBar;
 import org.freeplane.core.ui.components.UITools;
+import org.freeplane.core.ui.ribbon.RibbonBuilder;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.map.IMapSelectionListener;
@@ -58,6 +59,7 @@ import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.ui.IMapViewManager;
 import org.freeplane.view.swing.map.MapView;
+import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 
 public class UserInputListenerFactory implements IUserInputListenerFactory {
 	public static final String NODE_POPUP = "/node_popup";
@@ -68,6 +70,7 @@ public class UserInputListenerFactory implements IUserInputListenerFactory {
 	private JPopupMenu mapsPopupMenu;
 	private FreeplaneMenuBar menuBar;
 	private final MenuBuilder menuBuilder;
+	private final RibbonBuilder ribbonBuilder;
 	final private HashSet<IMouseWheelEventHandler> mRegisteredMouseWheelEventHandler = new HashSet<IMouseWheelEventHandler>();
 	private DragGestureListener nodeDragListener;
 	private DropTargetListener nodeDropTargetListener;
@@ -82,10 +85,13 @@ public class UserInputListenerFactory implements IUserInputListenerFactory {
 		Controller controller = Controller.getCurrentController();
 		mapsMenuActionListener = new MapsMenuActionListener(controller);
 		menuBuilder = new MenuBuilder(modeController);
+		ribbonBuilder = new RibbonBuilder(modeController, ((JRibbonFrame) UITools.getFrame()).getRibbon());
 		controller.getMapViewManager().addMapSelectionListener(new IMapSelectionListener() {
 			public void afterMapChange(final MapModel oldMap, final MapModel newMap) {
-				if(modeController.equals(Controller.getCurrentModeController()))
-					menuBuilder.afterMapChange(newMap);
+				if(modeController.equals(Controller.getCurrentModeController())) {
+					//RIBBON implement!!
+//					menuBuilder.afterMapChange(newMap);
+				}
 			}
 
 			public void beforeMapChange(final MapModel oldMap, final MapModel newMap) {
@@ -138,8 +144,12 @@ public class UserInputListenerFactory implements IUserInputListenerFactory {
 		return menuBar;
 	}
 
-	public MenuBuilder getMenuBuilder() {
+	public MenuBuilder getMenuBuilder() {		
 		return menuBuilder;
+	}
+	
+	public RibbonBuilder getRibbonBuilder() {
+		return ribbonBuilder;
 	}
 
 	public Set<IMouseWheelEventHandler> getMouseWheelEventHandlers() {
@@ -253,45 +263,49 @@ public class UserInputListenerFactory implements IUserInputListenerFactory {
 	}
 
 	public void updateMapList() {
-		updateModeMenu();
-		updateMapList("main_menu_mindmaps");
+		//RIBBONS implement
+//		updateModeMenu();
+//		updateMapList("main_menu_mindmaps");
 	}
 
-	private void updateMapList(final String mapsMenuPosition) {
-		menuBuilder.removeChildElements(mapsMenuPosition);
-		final IMapViewManager mapViewManager = Controller.getCurrentController().getMapViewManager();
-		final List<? extends Component> mapViewVector = mapViewManager.getMapViewVector();
-		if (mapViewVector == null) {
-			return;
-		}
-		final ButtonGroup group = new ButtonGroup();
-		int i = 0;
-		for (final Component mapView : mapViewVector) {
-			final String displayName = mapView.getName();
-			final JRadioButtonMenuItem newItem = new JRadioButtonMenuItem(displayName);
-			newItem.setSelected(false);
-			group.add(newItem);
-			newItem.addActionListener(mapsMenuActionListener);
-			if (displayName.length() > 0) {
-				newItem.setMnemonic(displayName.charAt(0));
-			}
-			final MapView currentMapView = (MapView) mapViewManager.getMapViewComponent();
-			if (currentMapView != null) {
-				if (mapView == currentMapView) {
-					newItem.setSelected(true);
-				}
-			}
-			menuBuilder.addMenuItem(mapsMenuPosition, newItem, mapsMenuPosition + '-' + i++, UIBuilder.AS_CHILD);
-		}
-	}
+	//RIBBONS implement last opened maps
+//	private void updateMapList(final String mapsMenuPosition) {
+//		menuBuilder.removeChildElements(mapsMenuPosition);
+//		final IMapViewManager mapViewManager = Controller.getCurrentController().getMapViewManager();
+//		final List<? extends Component> mapViewVector = mapViewManager.getMapViewVector();
+//		if (mapViewVector == null) {
+//			return;
+//		}
+//		final ButtonGroup group = new ButtonGroup();
+//		int i = 0;
+//		for (final Component mapView : mapViewVector) {
+//			final String displayName = mapView.getName();
+//			final JRadioButtonMenuItem newItem = new JRadioButtonMenuItem(displayName);
+//			newItem.setSelected(false);
+//			group.add(newItem);
+//			newItem.addActionListener(mapsMenuActionListener);
+//			if (displayName.length() > 0) {
+//				newItem.setMnemonic(displayName.charAt(0));
+//			}
+//			final MapView currentMapView = (MapView) mapViewManager.getMapViewComponent();
+//			if (currentMapView != null) {
+//				if (mapView == currentMapView) {
+//					newItem.setSelected(true);
+//				}
+//			}
+//			menuBuilder.addMenuItem(mapsMenuPosition, newItem, mapsMenuPosition + '-' + i++, UIBuilder.AS_CHILD);
+//		}
+//	}
 
 	//RIBBONS which xml file should be loaded as a menu
 	public void updateMenus(String menuStructureResource, Set<String> plugins) {
 		final FreeplaneMenuBar menuBar = getMenuBar();
+		//RIBBONS ersetzen
 		menuBuilder.addMenuBar(menuBar, FreeplaneMenuBar.MENU_BAR_PREFIX);
 		mapsPopupMenu = new JPopupMenu();
 		menuBuilder.addPopupMenu(mapsPopupMenu, FreeplaneMenuBar.MAP_POPUP_MENU);
 		menuBuilder.addPopupMenu(getNodePopupMenu(), UserInputListenerFactory.NODE_POPUP);
+		//RIBBONS ersetzen
 		menuBuilder.addToolbar((JToolBar) getToolBar("/main_toolbar"), "/main_toolbar");
 		mapsPopupMenu.setName(TextUtils.getText("mindmaps"));
 		final URL menuStructure = ResourceController.getResourceController().getResource(menuStructureResource);
@@ -311,25 +325,28 @@ public class UserInputListenerFactory implements IUserInputListenerFactory {
 				throw e;
 			}
 		}
+		ribbonBuilder.updateRibbon(menuStructureResource);
 		final IMapViewManager viewController = Controller.getCurrentController().getMapViewManager();
-		viewController.updateMenus(menuBuilder);
+		
+//		viewController.updateMenus(menuBuilder);
 	}
 
-	private void updateModeMenu() {
-		menuBuilder.removeChildElements(FreeplaneMenuBar.MODES_MENU);
-		Controller controller = Controller.getCurrentController();
-		for (final String key : new LinkedList<String>(controller.getModes())) {
-			final AFreeplaneAction modesMenuActionListener = new ModesMenuActionListener(key, controller);
-			final ModeController modeController = controller.getModeController();
-			final boolean isSelected;
-			if (modeController != null) {
-				isSelected = modeController.getModeName().equals(key);
-			}
-			else {
-				isSelected = false;
-			}
-			menuBuilder.addRadioItem(FreeplaneMenuBar.MODES_MENU, modesMenuActionListener, isSelected);
-			ResourceController.getResourceController().getProperty(("keystroke_mode_" + key));
-		}
-	}
+	//RIBBONS implement
+//	private void updateModeMenu() {
+//		menuBuilder.removeChildElements(FreeplaneMenuBar.MODES_MENU);
+//		Controller controller = Controller.getCurrentController();
+//		for (final String key : new LinkedList<String>(controller.getModes())) {
+//			final AFreeplaneAction modesMenuActionListener = new ModesMenuActionListener(key, controller);
+//			final ModeController modeController = controller.getModeController();
+//			final boolean isSelected;
+//			if (modeController != null) {
+//				isSelected = modeController.getModeName().equals(key);
+//			}
+//			else {
+//				isSelected = false;
+//			}
+//			menuBuilder.addRadioItem(FreeplaneMenuBar.MODES_MENU, modesMenuActionListener, isSelected);
+//			ResourceController.getResourceController().getProperty(("keystroke_mode_" + key));
+//		}
+//	}
 }
