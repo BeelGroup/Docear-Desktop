@@ -22,6 +22,7 @@
 				<ribbon_action action="font_italic" priority="low"/>
 				<ribbon_contributor name="font_size" priority="low"/>
 			</ribbon_band>
+			<ribbon_contributor name="font_style"/>
 		</ribbon_task>
 		 <ribbon_task name="formatting">
 		     <ribbon_band name="auto_number" resize_policies="Mirror, High2Mid">

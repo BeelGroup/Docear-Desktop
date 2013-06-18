@@ -10,6 +10,7 @@ import javax.swing.JOptionPane;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.IndexedTree;
 import org.freeplane.core.ui.components.UITools;
+import org.freeplane.core.ui.ribbon.special.FontStyleContributorFactory;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.ModeController;
@@ -32,6 +33,7 @@ public class RibbonBuilder {
 		registerContributorFactory("ribbon_task", new RibbonTaskContributorFactory());
 		registerContributorFactory("ribbon_band", new RibbonBandContributorFactory());
 		registerContributorFactory("ribbon_action", new RibbonActionContributorFactory());
+		registerContributorFactory("font_style", new FontStyleContributorFactory());
 	}
 	
 	public void add(IRibbonContributor contributor, RibbonPath path, int position) {
