@@ -195,7 +195,7 @@ public class FButtonBar extends JComponent implements IAcceleratorChangeListener
 			ownWindowAncestor.addWindowFocusListener(this);
 		}
 		final Window windowAncestor = SwingUtilities.getWindowAncestor(e.getComponent());
-		if (windowAncestor == ownWindowAncestor && ownWindowAncestor.getJMenuBar().isEnabled()) {
+		if (windowAncestor == ownWindowAncestor && ownWindowAncestor.getJMenuBar() != null && ownWindowAncestor.getJMenuBar().isEnabled()) {
 			processDispatchedKeyEvent(e);
 		}
 		else {

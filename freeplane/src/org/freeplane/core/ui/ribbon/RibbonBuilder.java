@@ -1,5 +1,6 @@
 package org.freeplane.core.ui.ribbon;
 
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.net.URL;
 import java.util.HashMap;
@@ -30,7 +31,7 @@ public class RibbonBuilder {
 		reader = new RibbonStructureReader(this);
 		registerContributorFactory("ribbon_task", new RibbonTaskContributorFactory());
 		registerContributorFactory("ribbon_band", new RibbonBandContributorFactory());
-		
+		registerContributorFactory("ribbon_action", new RibbonActionContributorFactory());
 	}
 	
 	public void add(IRibbonContributor contributor, RibbonPath path, int position) {
@@ -66,6 +67,7 @@ public class RibbonBuilder {
 			rootContributor.contribute(structure, null);			
 		}
 		Frame f = UITools.getFrame(); 
+		f.setMinimumSize(new Dimension(320,240));
 		f.pack();
 		
 	}

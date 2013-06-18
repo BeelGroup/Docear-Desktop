@@ -22,6 +22,7 @@ public class RibbonTaskContributorFactory implements IRibbonContributorFactory {
 			}
 			
 			public void contribute(IndexedTree structure, IRibbonContributor parent) {
+				bands.clear();
 				String pathKey = (String) structure.getKeyByUserObject(this);
 				IndexedTree.Node n = (Node) structure.get(pathKey);
 				Enumeration<?> children = n.children();
