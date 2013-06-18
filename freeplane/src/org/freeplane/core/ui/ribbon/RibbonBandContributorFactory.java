@@ -7,6 +7,7 @@ import java.util.Properties;
 
 import org.freeplane.core.ui.IndexedTree;
 import org.freeplane.core.ui.IndexedTree.Node;
+import org.freeplane.core.util.TextUtils;
 import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
@@ -31,7 +32,7 @@ public class RibbonBandContributorFactory implements IRibbonContributorFactory {
 				final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
 				Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
 				try {
-    				band = new JRibbonBand(attributes.getProperty("name"), null);
+    				band = new JRibbonBand(TextUtils.getText("ribbon.band."+attributes.getProperty("name")), null);
     				//read policies and sub-contributions
     				String pathKey = (String) structure.getKeyByUserObject(this);
     				IndexedTree.Node n = (Node) structure.get(pathKey);
@@ -51,7 +52,7 @@ public class RibbonBandContributorFactory implements IRibbonContributorFactory {
 			
 			public void addChild(Object child) {
 				if(child instanceof AbstractCommandButton) {
-					band.addCommandButton((AbstractCommandButton) child, RibbonElementPriority.MEDIUM);
+					band.addCommandButton((AbstractCommandButton) child, RibbonElementPriority.TOP);
 				}
 				
 			}

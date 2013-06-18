@@ -1,11 +1,16 @@
 package org.freeplane.core.ui.ribbon;
 
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
-import java.awt.Frame;
+import java.awt.GraphicsEnvironment;
+import java.awt.Rectangle;
+import java.awt.Window;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Locale;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.IndexedTree;
@@ -24,11 +29,13 @@ public class RibbonBuilder {
 	private final IndexedTree structure;
 	private final RootContributor rootContributor;
 	private final RibbonStructureReader reader;
+	private final JRibbon ribbon;
 	
 	public RibbonBuilder(ModeController mode, JRibbon ribbon) {
 		final RibbonApplicationMenu applicationMenu = new RibbonApplicationMenu();
 		structure = new IndexedTree(applicationMenu);
 		this.rootContributor = new RootContributor(ribbon);
+		this.ribbon = ribbon;
 		reader = new RibbonStructureReader(this);
 		registerContributorFactory("ribbon_task", new RibbonTaskContributorFactory());
 		registerContributorFactory("ribbon_band", new RibbonBandContributorFactory());
@@ -68,10 +75,14 @@ public class RibbonBuilder {
 		synchronized (structure) {
 			rootContributor.contribute(structure, null);			
 		}
-		Frame f = UITools.getFrame(); 
-		f.setMinimumSize(new Dimension(320,240));
+		Window f = SwingUtilities.getWindowAncestor(ribbon);
+		Dimension rv = f.getSize();
+		f.applyComponentOrientation(ComponentOrientation.getOrientation(Locale.getDefault()));
+		Rectangle r = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+		f.setPreferredSize(new Dimension(r.width, r.height / 2));
+		f.setMinimumSize(new Dimension(640,240));
 		f.pack();
-		
+		f.getSize(rv);
 	}
 	
 	public void updateRibbon(String xmlResource) {

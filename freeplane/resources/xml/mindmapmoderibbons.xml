@@ -2,10 +2,10 @@
 	<menu_category name="ribbon">
 		<ribbon_task name="home">
 			<ribbon_band name="mind_map" resize_policies="Mirror, High2Mid">
-				<ribbon_action type="dropdown" action="add_child_node" priority="top">
-					<ribbon_action action="add_sibling_node"/>
-					<ribbon_action action="add_summary_node" />
-					<ribbon_action action="add_floating_node" />
+				<ribbon_action type="dropdown" action="NewChildAction" priority="top">
+					<ribbon_action action="NewSiblingAction"/>
+					<ribbon_action action="NewSummaryAction" />
+					<ribbon_action action="NewFreeNodeAction" />
 				</ribbon_action>
 				<ribbon_action action="edit_node" priority="medium"/>
 				<ribbon_action action="delete_node" priority="medium"/>
