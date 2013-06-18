@@ -131,7 +131,7 @@ public class RibbonStructureReader {
 			}
 			
 			final RibbonPath menuPath = new RibbonPath((RibbonPath) parent);
-			menuPath.setName(attributes.getAttribute("name", null));
+			menuPath.setName(attributes.getAttribute("action", null));
 			IRibbonContributorFactory factory = builder.getContributorFactory(tag);
 			if(factory != null && !builder.containsKey(menuPath.getKey())) {
 				builder.add(factory.getContributor(attributes.getAttributes()), menuPath.getParent(), IndexedTree.AS_CHILD);

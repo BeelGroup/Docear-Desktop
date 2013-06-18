@@ -241,6 +241,14 @@ public class OneTouchCollapseResizer extends JResizer {
 						drawExpandLabel(g);			
 					}
 				}
+				
+				public void updateUI() {
+					try {
+						super.updateUI();
+					}
+					catch (Exception e) {
+					}
+				}
 			};
 		}
 		return hotspot;
