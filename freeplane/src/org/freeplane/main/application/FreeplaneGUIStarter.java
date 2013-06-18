@@ -19,12 +19,8 @@
  */
 package org.freeplane.main.application;
 
-import java.awt.ComponentOrientation;
-import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Frame;
-import java.awt.GraphicsEnvironment;
-import java.awt.Rectangle;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
@@ -57,8 +53,6 @@ import org.freeplane.features.map.MapController.Direction;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.mode.QuitAction;
-import org.freeplane.features.mode.browsemode.BModeController;
-import org.freeplane.features.mode.filemode.FModeController;
 import org.freeplane.features.mode.mindmapmode.LoadAcceleratorPresetsAction;
 import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.features.print.PrintController;
@@ -219,10 +213,6 @@ public class FreeplaneGUIStarter implements FreeplaneStarter {
 				splash.toBack();
 				final Frame frame = viewController.getFrame();
 				final int extendedState = frame.getExtendedState();
-				frame.applyComponentOrientation(ComponentOrientation.getOrientation(Locale.getDefault()));
-				Rectangle r = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-				frame.setPreferredSize(new Dimension(r.width, r.height / 2));
-				frame.setMinimumSize(new Dimension(r.width / 10, r.height / 2));
 				frame.setVisible(true);
 				if (extendedState != frame.getExtendedState()) {
 					frame.setExtendedState(extendedState);

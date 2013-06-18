@@ -222,7 +222,19 @@ abstract public class FrameController implements ViewController {
 	}
 
 	public void init(Controller controller) {
-		getContentPane().add(toolbarPanel[TOP], BorderLayout.NORTH);
+		//RIBBONS impl: find ribbon in layout
+		Component comp = ((BorderLayout)getContentPane().getLayout()).getLayoutComponent(BorderLayout.NORTH);
+		if(comp == null) {
+			getContentPane().add(toolbarPanel[TOP], BorderLayout.NORTH);
+		}
+		else {
+			JPanel northPanel = new JPanel();
+			northPanel.setLayout(new BorderLayout());
+			northPanel.add(comp, BorderLayout.NORTH);
+			northPanel.add(toolbarPanel[TOP], BorderLayout.CENTER);
+			getContentPane().add(northPanel, BorderLayout.NORTH);
+		}
+		
 		getContentPane().add(toolbarPanel[LEFT], BorderLayout.WEST);
 		getContentPane().add(toolbarPanel[RIGHT], BorderLayout.EAST);
 		getContentPane().add(toolbarPanel[BOTTOM], BorderLayout.SOUTH);

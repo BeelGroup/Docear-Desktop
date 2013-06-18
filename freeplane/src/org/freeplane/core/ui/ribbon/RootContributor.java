@@ -19,6 +19,7 @@ public class RootContributor implements IRibbonContributor {
 	}
 
 	public void contribute(IndexedTree structure, IRibbonContributor parent) {
+		ribbon.removeAllTaskbarComponents();
 		ribbon.removeAllTasks();
 		Enumeration<?> children = structure.getRoot().children();
 		while(children.hasMoreElements()) {

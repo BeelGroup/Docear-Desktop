@@ -7,7 +7,6 @@ import java.util.Properties;
 
 import org.freeplane.core.ui.IndexedTree;
 import org.freeplane.core.ui.IndexedTree.Node;
-import org.freeplane.core.ui.ribbon.RibbonBuilder.RibbonPath;
 import org.freeplane.core.util.TextUtils;
 import org.pushingpixels.flamingo.api.ribbon.AbstractRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;

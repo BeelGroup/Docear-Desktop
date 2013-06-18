@@ -31,8 +31,6 @@ public class RibbonBuilder {
 		registerContributorFactory("ribbon_task", new RibbonTaskContributorFactory());
 		registerContributorFactory("ribbon_band", new RibbonBandContributorFactory());
 		
-//		//add(this.rootContributor, "/ribbon", IndexedTree.AS_CHILD);
-//		structure.addElement(structure, rootContributor, "/ribbon", IndexedTree.AS_CHILD);
 	}
 	
 	public void add(IRibbonContributor contributor, RibbonPath path, int position) {
@@ -63,6 +61,7 @@ public class RibbonBuilder {
 	}
 	
 	public void buildRibbon() {
+		
 		synchronized (structure) {
 			rootContributor.contribute(structure, null);			
 		}
