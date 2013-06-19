@@ -33,12 +33,12 @@ public class RibbonTaskContributorFactory implements IRibbonContributorFactory {
 				if(!bands.isEmpty()) {
 					RibbonTask task = new RibbonTask(TextUtils.getText("ribbon."+getKey()), bands.toArray(new AbstractRibbonBand<?>[0]));
 					if(parent != null) {
-						parent.addChild(task);
+						parent.addChild(task, null);
 					}
 				}
 			}
 
-			public void addChild(Object child) {
+			public void addChild(Object child, Object properties) {
 				if(child instanceof AbstractRibbonBand) {
 					bands.add((AbstractRibbonBand<?>) child);
 				}

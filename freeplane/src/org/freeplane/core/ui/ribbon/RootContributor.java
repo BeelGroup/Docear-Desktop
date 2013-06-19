@@ -29,7 +29,7 @@ public class RootContributor implements IRibbonContributor {
 
 	}
 
-	public void addChild(Object child) {
+	public void addChild(Object child, Object properties) {
 		if(child instanceof RibbonTask) {
 			this.ribbon.addTask((RibbonTask) child);
 		}
