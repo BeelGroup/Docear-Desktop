@@ -1,5 +1,6 @@
 package org.freeplane.core.ui.ribbon.special;
 
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -7,6 +8,7 @@ import java.net.URL;
 import java.util.Properties;
 
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 
 import org.freeplane.core.io.IElementHandler;
 import org.freeplane.core.resources.ResourceController;
@@ -14,9 +16,11 @@ import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.IndexedTree;
 import org.freeplane.core.ui.ribbon.IRibbonContributor;
 import org.freeplane.core.ui.ribbon.IRibbonContributorFactory;
+import org.freeplane.core.ui.ribbon.RibbonActionContributorFactory;
 import org.freeplane.core.ui.ribbon.RibbonBuilder.RibbonPath;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.Controller;
+import org.freeplane.features.styles.mindmapmode.MUIFactory;
 import org.freeplane.n3.nanoxml.XMLElement;
 import org.freeplane.view.swing.ui.UserInputListenerFactory;
 import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
@@ -38,7 +42,7 @@ public class FontStyleContributorFactory implements IRibbonContributorFactory {
 			}
 
 			UserInputListenerFactory userInputListenerFactory = new UserInputListenerFactory(Controller.getCurrentModeController());
-
+			
 			final RibbonPath menuPath = new RibbonPath((RibbonPath) parent);
 			menuPath.setName(attributes.getAttribute("name", null));
 			IRibbonContributorFactory factory = userInputListenerFactory.getRibbonBuilder().getContributorFactory(tag);
@@ -68,44 +72,30 @@ public class FontStyleContributorFactory implements IRibbonContributorFactory {
 					fontBand.setExpandButtonKeyTip("FN");
 					fontBand.setCollapsedStateKeyTip("ZF");
 
-					JComboBox styleCombo = new JComboBox(new Object[] { "Default", "Details", "Note" });
-					JRibbonComponent styleComboWrapper = new JRibbonComponent(styleCombo);
-					styleComboWrapper.setKeyTip("ST");
-					fontBand.addFlowComponent(styleComboWrapper);
-
-					JComboBox fontCombo = new JComboBox(new Object[] { "+ Minor (Calibri)   ", "+ Minor (Columbus)   ", "+ Minor (Consolas)   ",
-							"+ Minor (Cornelius)   ", "+ Minor (Cleopatra)   ", "+ Minor (Cornucopia)   ", "+ Minor (Candella)   ", "+ Minor (Cambria)   " });
-					JRibbonComponent fontComboWrapper = new JRibbonComponent(fontCombo);
+					MUIFactory uiFactory = new MUIFactory();
+					
+					final Container fontBox = uiFactory.createFontBox();
+//					final Dimension preferredSize = fontBox.getPreferredSize();
+//					preferredSize.width = 150;
+//					fontBox.setPreferredSize(preferredSize);					
+					JRibbonComponent fontComboWrapper = new JRibbonComponent((JComponent) fontBox);
 					fontComboWrapper.setKeyTip("SF");
 					fontBand.addFlowComponent(fontComboWrapper);
-
-					JComboBox sizeCombo = new JComboBox(new Object[] { "11  " });
-					sizeCombo.setEditable(true);
-					JRibbonComponent sizeComboWrapper = new JRibbonComponent(sizeCombo);
+					
+					final Container sizeBox = uiFactory.createSizeBox();
+					JRibbonComponent sizeComboWrapper = new JRibbonComponent((JComponent) sizeBox);
 					sizeComboWrapper.setKeyTip("SS");
 					fontBand.addFlowComponent(sizeComboWrapper);
 					
-					final AFreeplaneAction action = Controller.getCurrentModeController().getAction("BoldAction");
-					String resource = ResourceController.getResourceController().getProperty(action.getIconKey(), null);
-					ResizableIcon icon = null;
-					if (resource != null) {
-						URL location = ResourceController.getResourceController().getResource(resource);
-						icon = ImageWrapperResizableIcon.getIcon(location, new Dimension(16, 16));
-					}
-					
 					JCommandButtonStrip styleStrip = new JCommandButtonStrip();
-					JCommandToggleButton styleBoldButton = new JCommandToggleButton("", icon);
-					styleBoldButton.addActionListener(new ActionListener() {
-						
-						public void actionPerformed(ActionEvent e) {
-							action.actionPerformed(e);
-							
-						}
-					});
-					styleBoldButton.setActionRichTooltip(new RichTooltip(TextUtils.getRawText(action.getTooltipKey()), "makes the node text bold"));
-					styleBoldButton.setActionKeyTip("1");
-					styleStrip.add(styleBoldButton);
-
+					
+//					styleBoldButton.setActionRichTooltip(new RichTooltip(TextUtils.getRawText(action.getTooltipKey()), "makes the node text bold"));
+//					styleBoldButton.setActionKeyTip("1");
+					styleStrip.add(RibbonActionContributorFactory.createCommandButton("BoldAction"));
+					styleStrip.add(RibbonActionContributorFactory.createCommandButton("ItalicAction"));
+					styleStrip.add(RibbonActionContributorFactory.createCommandButton("NodeColorAction"));
+					styleStrip.add(RibbonActionContributorFactory.createCommandButton("NodeBackgroundColorAction"));
+					
 					// JCommandToggleButton styleItalicButton = new
 					// JCommandToggleButton("", new format_text_italic());
 					// styleItalicButton.setActionRichTooltip(new
