@@ -157,7 +157,9 @@ class ApplicationViewController extends FrameController {
 
 	@Override
 	public FreeplaneMenuBar getFreeplaneMenuBar() {
-		return (FreeplaneMenuBar) frame.getJMenuBar();
+		//RIBBONS - replaced
+		//return (FreeplaneMenuBar) frame.getJMenuBar();
+		return Controller.getCurrentModeController().getUserInputListenerFactory().getMenuBar();
 	}
 
 	/*
