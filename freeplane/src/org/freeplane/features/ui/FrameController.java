@@ -62,7 +62,12 @@ import org.freeplane.core.ui.FixedBasicComboBoxEditor;
 import org.freeplane.core.ui.IUserInputListenerFactory;
 import org.freeplane.core.ui.components.ContainerComboBoxEditor;
 import org.freeplane.core.ui.components.FreeplaneMenuBar;
+import org.freeplane.core.ui.components.OneTouchCollapseResizer;
+import org.freeplane.core.ui.components.ResizeEvent;
+import org.freeplane.core.ui.components.ResizerListener;
 import org.freeplane.core.ui.components.UITools;
+import org.freeplane.core.ui.components.JResizer.Direction;
+import org.freeplane.core.ui.components.OneTouchCollapseResizer.CollapseDirection;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.format.FormattedDate;
 import org.freeplane.features.format.FormattedObject;
@@ -223,15 +228,31 @@ abstract public class FrameController implements ViewController {
 
 	public void init(Controller controller) {
 		//RIBBONS impl: find ribbon in layout
-		Component comp = ((BorderLayout)getContentPane().getLayout()).getLayoutComponent(BorderLayout.NORTH);
+		final Component comp = ((BorderLayout)getContentPane().getLayout()).getLayoutComponent(BorderLayout.NORTH);
 		if(comp == null) {
 			getContentPane().add(toolbarPanel[TOP], BorderLayout.NORTH);
 		}
 		else {
 			JPanel northPanel = new JPanel();
 			northPanel.setLayout(new BorderLayout());
-			northPanel.add(comp, BorderLayout.NORTH);
+			
+			Box resizableTabs = Box.createVerticalBox();
+			resizableTabs.add(comp);
+			OneTouchCollapseResizer otcr = new OneTouchCollapseResizer(Direction.UP, CollapseDirection.COLLAPSE_UP);
+			resizableTabs.add(otcr);
+			otcr.addResizerListener(new ResizerListener() {
+				
+				public void componentResized(ResizeEvent event) {
+					if(comp.getHeight() > 151) {
+						comp.setMaximumSize(new Dimension(Integer.MAX_VALUE, 151));
+						comp.setPreferredSize(new Dimension(comp.getWidth(), 151));
+					}
+				}
+			});
+			
+			northPanel.add(resizableTabs, BorderLayout.NORTH);
 			northPanel.add(toolbarPanel[TOP], BorderLayout.CENTER);
+			
 			getContentPane().add(northPanel, BorderLayout.NORTH);
 		}
 		
