@@ -42,7 +42,7 @@ public class RibbonBandContributorFactory implements IRibbonContributorFactory {
     					((IRibbonContributor)node.getUserObject()).contribute(structure, this);
     				}
     				setResizePolicies(attributes.getProperty("resize_policies"));
-    				parent.addChild(band);
+    				parent.addChild(band, null);
 				}
 				finally {
 					Thread.currentThread().setContextClassLoader(contextClassLoader);
@@ -50,9 +50,13 @@ public class RibbonBandContributorFactory implements IRibbonContributorFactory {
 				
 			}
 			
-			public void addChild(Object child) {
+			public void addChild(Object child, Object properties) {
 				if(child instanceof AbstractCommandButton) {
-					band.addCommandButton((AbstractCommandButton) child, RibbonElementPriority.TOP);
+					RibbonElementPriority priority = RibbonElementPriority.TOP;
+					if(properties instanceof RibbonElementPriority) {
+						priority = (RibbonElementPriority) properties;
+					}
+					band.addCommandButton((AbstractCommandButton) child, priority);
 				}
 				
 			}

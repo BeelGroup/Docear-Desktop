@@ -244,7 +244,7 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 				otcr.setExpanded(expanded);
 				try {
 					int width = Integer.parseInt(getWorkspaceSettings().getProperty(WorkspaceSettings.WORKSPACE_VIEW_WIDTH, "250"));
-					getWorkspaceView().setPreferredSize(new Dimension(width, 40));
+					getWorkspaceView().setPreferredSize(new Dimension(width, 100));
 				}
 				catch (Exception e) {
 					// blindly accept
@@ -339,8 +339,8 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 	private TreeView getWorkspaceView() {
 		if (this.view == null) {
 			this.view = new TreeView();
-			this.view.setMinimumSize(new Dimension(100, 40));
-			this.view.setPreferredSize(new Dimension(150, 40));
+			this.view.setMinimumSize(new Dimension(100, 100));
+			this.view.setPreferredSize(new Dimension(150, 100));
 			this.view.addProjectSelectionListener(getProjectSelectionListener());
 			getModel();
 		}

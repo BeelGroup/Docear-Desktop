@@ -25,6 +25,7 @@ import org.pushingpixels.flamingo.api.common.icon.ResizableIcon;
 import org.pushingpixels.flamingo.api.common.popup.JCommandPopupMenu;
 import org.pushingpixels.flamingo.api.common.popup.JPopupPanel;
 import org.pushingpixels.flamingo.api.common.popup.PopupPanelCallback;
+import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 
 public class RibbonActionContributorFactory implements IRibbonContributorFactory {
 
@@ -61,7 +62,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 						button.setPopupCallback(getPopupPanelCallBack(n, structure));
 					}
 					
-					parent.addChild(button);
+					parent.addChild(button, getPriority(attributes.getProperty("priority", "medium")));
 				}
 			}
 			
@@ -84,7 +85,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 				};
 			}
 
-			public void addChild(Object child) {
+			public void addChild(Object child, Object properties) {
 				if(child instanceof AbstractCommandButton) {
 					childButtons.add((AbstractCommandButton) child);
 				}
@@ -93,6 +94,17 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 		};
 	}
 	
+	public static RibbonElementPriority getPriority(String attr) {
+		RibbonElementPriority prio = RibbonElementPriority.MEDIUM;
+		if("top".equals(attr.trim().toLowerCase())) {
+			prio = RibbonElementPriority.TOP;
+		}
+		else if("low".equals(attr.trim().toLowerCase())) {
+			prio = RibbonElementPriority.LOW;
+		}
+		return prio;
+	}
+
 	public static JCommandButton createCommandButton(final String key) {
 		String title = TextUtils.getText(key+".text");
 		if(title == null || title.isEmpty()) {
