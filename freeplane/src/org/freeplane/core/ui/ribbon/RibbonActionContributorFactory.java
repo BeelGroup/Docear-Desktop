@@ -37,6 +37,39 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 	 * METHODS
 	 **********************************************************************************/
 
+	public static RibbonElementPriority getPriority(String attr) {
+		RibbonElementPriority prio = RibbonElementPriority.MEDIUM;
+		if("top".equals(attr.trim().toLowerCase())) {
+			prio = RibbonElementPriority.TOP;
+		}
+		else if("low".equals(attr.trim().toLowerCase())) {
+			prio = RibbonElementPriority.LOW;
+		}
+		return prio;
+	}
+
+	public static JCommandButton createCommandButton(final String key) {
+		String title = TextUtils.getText(key+".text");
+		if(title == null || title.isEmpty()) {
+			title = key;
+		}
+		String resource = ResourceController.getResourceController().getProperty(key+".icon", null);
+		ResizableIcon icon = null;
+		if (resource != null) {
+			URL location = ResourceController.getResourceController().getResource(resource);
+			icon = ImageWrapperResizableIcon.getIcon(location, new Dimension(16, 16));
+		}
+		
+		final JCommandButton button = new JCommandButton(title, icon);
+		
+		final String tooltip = TextUtils.getRawText(key+ ".tooltip", null);
+		if (tooltip != null && !"".equals(tooltip)) {
+			button.setActionRichTooltip(new RichTooltip(tooltip, ""));
+		}
+		button.addActionListener(new RibbonActionListener(key));
+		return button;
+	}
+	
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
 	 **********************************************************************************/
@@ -78,7 +111,13 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 					public JPopupPanel getPopupPanel(JCommandButton commandButton) {
 						JCommandPopupMenu popupmenu = new JCommandPopupMenu();
 						for (AbstractCommandButton button : childButtons) {
-							popupmenu.addMenuButton(new JCommandMenuButton(button.getText(), button.getIcon()));
+							JCommandMenuButton menuButton = new JCommandMenuButton(button.getText(), button.getIcon());
+							for (ActionListener listener : button.getListeners(ActionListener.class)) {
+								if(listener instanceof RibbonActionListener) {
+									menuButton.addActionListener(listener);
+								}
+							}
+							popupmenu.addMenuButton(menuButton);
 						}
 						return popupmenu;
 					}
@@ -94,44 +133,23 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 		};
 	}
 	
-	public static RibbonElementPriority getPriority(String attr) {
-		RibbonElementPriority prio = RibbonElementPriority.MEDIUM;
-		if("top".equals(attr.trim().toLowerCase())) {
-			prio = RibbonElementPriority.TOP;
-		}
-		else if("low".equals(attr.trim().toLowerCase())) {
-			prio = RibbonElementPriority.LOW;
-		}
-		return prio;
-	}
+	/***********************************************************************************
+	 * NESTED TYPE DECLARATIONS
+	 **********************************************************************************/
+	
+	protected static class RibbonActionListener implements ActionListener {
+		private final String key;
 
-	public static JCommandButton createCommandButton(final String key) {
-		String title = TextUtils.getText(key+".text");
-		if(title == null || title.isEmpty()) {
-			title = key;
+		protected RibbonActionListener(String key) {
+			this.key = key;
 		}
-		String resource = ResourceController.getResourceController().getProperty(key+".icon", null);
-		ResizableIcon icon = null;
-		if (resource != null) {
-			URL location = ResourceController.getResourceController().getResource(resource);
-			icon = ImageWrapperResizableIcon.getIcon(location, new Dimension(16, 16));
-		}
-		
-		final JCommandButton button = new JCommandButton(title, icon);
-		
-		final String tooltip = TextUtils.getRawText(key+ ".tooltip", null);
-		if (tooltip != null && !"".equals(tooltip)) {
-			button.setActionRichTooltip(new RichTooltip(tooltip, ""));
-		}
-		button.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				AFreeplaneAction action = Controller.getCurrentModeController().getAction(key);
-				if(action == null) {
-					return;
-				}
-				action.actionPerformed(e);
+
+		public void actionPerformed(ActionEvent e) {
+			AFreeplaneAction action = Controller.getCurrentModeController().getAction(key);
+			if(action == null) {
+				return;
 			}
-		});
-		return button;
+			action.actionPerformed(e);
+		}
 	}
 }
