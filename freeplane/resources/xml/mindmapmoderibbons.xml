@@ -21,61 +21,20 @@
 				    <ribbon_action action="EditDetailsInDialogAction"/>
 				    <ribbon_action action="DeleteDetailsAction"/>		
 				</ribbon_action>
-				<ribbon_action action="DeleteAction" accelerator="DELETE" priority="medium" />				
-				<ribbon_action action="AddLocalLinkAction"	accelerator="alt shift L" type="dropdown" priority="low">
-					<ribbon_action action="SetLinkByFileChooserAction" />
-					<ribbon_action action="SetLinkByTextFieldAction" />
-					<ribbon_action action="ExtractLinkFromTextAction" />
-					<ribbon_action action="AddMenuItemLinkAction" />
-					<ribbon_action action="SetLinkAnchorAction" />
-					<ribbon_action action="MakeLinkFromAnchorAction" />
-					<ribbon_action action="MakeLinkToAnchorAction" />
-					<ribbon_action action="ClearLinkAnchorAction" />
-				</ribbon_action>				
-			</ribbon_band>
-			<ribbon_band name="attributes" resize_policies="Mirror, High2Mid">			    
-			    <ribbon_action action="EditAttributesAction" accelerator="alt F9">			    
-					<ribbon_action action="attributes_AddAttributeAction"/>
-					<ribbon_action action="AssignAttributesAction" />
-					<ribbon_action action="CopyAttributes" />
-					<ribbon_action action="PasteAttributes" />
-					<ribbon_action action="AddStyleAttributes" />
-					<ribbon_action action="attributes_RemoveFirstAttributeAction">
-						<ribbon_action action="attributes_RemoveLastAttributeAction"/>
-						<ribbon_action action="attributes_RemoveAllAttributesAction"/>
-					</ribbon_action>
-				</ribbon_action>
-				<ribbon_action action="ShowAttributeDialogAction" />
-			</ribbon_band>			
-			
-			<ribbon_band name="miscellaneous" resize_policies="Mirror, High2Mid">			    
-			    <ribbon_action action="ExternalImageAddAction" priority="high">
-			        <ribbon_action action="SetImageByFileChooserAction"	accelerator="alt shift K"/>
-					<ribbon_action action="ExternalImageChangeAction" />
-					<ribbon_action action="ExternalImageRemoveAction" />
-				</ribbon_action>				
-				<ribbon_action action="LatexInsertLatexAction" plugin="org.freeplane.plugin.latex" priority="medium">
-					<ribbon_action action="LatexEditLatexAction" plugin="org.freeplane.plugin.latex"/>
-					<ribbon_action action="LatexDeleteLatexAction" plugin="org.freeplane.plugin.latex"/>
-				</ribbon_action>
-				
-				<ribbon_action action="OpenMapsAddLocation" plugin="org.freeplane.plugin.openmaps" priority="low">
-					<ribbon_action action="OpenMapsRemoveLocation" plugin="org.freeplane.plugin.openmaps"/>
-					<ribbon_action action="OpenMapsViewLocation" plugin="org.freeplane.plugin.openmaps"/>
-				</ribbon_action>
-				<ribbon_action action="CopyStyleExtensionsAction" />
+				<ribbon_action action="DeleteAction" accelerator="DELETE" priority="medium" />
 			</ribbon_band>
 			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
+			<ribbon_band name="navigate" resize_policies="Mirror, High2Mid">
+			    <ribbon_action action="UnfoldAllAction" accelerator="alt END" priority="top"/>
+				<ribbon_action action="FoldAllAction" accelerator="alt HOME" priority="top"/>
+				<ribbon_action action="NavigationPreviousMapAction"	accelerator="control shift TAB" priority="low"/>
+				<ribbon_action action="NavigationNextMapAction" accelerator="control TAB" priority="low"/>
+				<ribbon_action action="ToggleFoldedAction" accelerator="SPACE" priority="medium">
+				    <ribbon_action action="ToggleChildrenFoldedAction" accelerator="control SPACE"/>
+				    <ribbon_action action="UnfoldOneLevelAction" accelerator="alt PAGE_DOWN"/>
+				    <ribbon_action action="FoldOneLevelAction" accelerator="alt PAGE_UP"/>	
+				</ribbon_action>											
+			</ribbon_band>
 			
 			<ribbon_band name="basics" resize_policies="Mirror, High2Mid">
 				<ribbon_action action="CutAction" accelerator="control X"
@@ -95,37 +54,52 @@
 				<ribbon_action action="RedoAction" accelerator="control Y"
 					priority="top" />
 			</ribbon_band>
-			<ribbon_band name="navigate" resize_policies="Mirror, High2Mid">
-			    <ribbon_action action="UnfoldAllAction" accelerator="alt END" priority="top"/>
-				<ribbon_action action="FoldAllAction" accelerator="alt HOME" priority="top"/>
-				<ribbon_action action="NavigationPreviousMapAction"	accelerator="control shift TAB" priority="low"/>
-				<ribbon_action action="NavigationNextMapAction" accelerator="control TAB" priority="low"/>
-				<ribbon_action action="ToggleFoldedAction" accelerator="SPACE" priority="medium">
-				    <ribbon_action action="ToggleChildrenFoldedAction" accelerator="control SPACE"/>
-				    <ribbon_action action="UnfoldOneLevelAction" accelerator="alt PAGE_DOWN"/>
-				    <ribbon_action action="FoldOneLevelAction" accelerator="alt PAGE_UP"/>	
-				</ribbon_action>											
+			
+			<ribbon_band name="attachments" resize_policies="Mirror, High2Mid">
+				<ribbon_action action="AddLocalLinkAction"	accelerator="alt shift L" type="dropdown" priority="top">
+					<ribbon_action action="SetLinkByFileChooserAction" />
+					<ribbon_action action="SetLinkByTextFieldAction" />
+					<ribbon_action action="ExtractLinkFromTextAction" />
+					<ribbon_action action="AddMenuItemLinkAction" />
+					<ribbon_action action="SetLinkAnchorAction" />
+					<ribbon_action action="MakeLinkFromAnchorAction" />
+					<ribbon_action action="MakeLinkToAnchorAction" />
+					<ribbon_action action="ClearLinkAnchorAction" />
+				</ribbon_action>
+				<ribbon_action action="ExternalImageAddAction" priority="top">
+			        <ribbon_action action="SetImageByFileChooserAction"	accelerator="alt shift K"/>
+					<ribbon_action action="ExternalImageChangeAction" />
+					<ribbon_action action="ExternalImageRemoveAction" />
+					<ribbon_action action="LatexInsertLatexAction" plugin="org.freeplane.plugin.latex" priority="medium"/>
+					<ribbon_action action="LatexEditLatexAction" plugin="org.freeplane.plugin.latex"/>
+					<ribbon_action action="LatexDeleteLatexAction" plugin="org.freeplane.plugin.latex"/>
+					<ribbon_action action="OpenMapsAddLocation" plugin="org.freeplane.plugin.openmaps" priority="low" />
+					<ribbon_action action="OpenMapsRemoveLocation" plugin="org.freeplane.plugin.openmaps"/>
+					<ribbon_action action="OpenMapsViewLocation" plugin="org.freeplane.plugin.openmaps"/>
+				</ribbon_action>
 			</ribbon_band>
 			
-			<ribbon_band name="search" resize_policies="Mirror, High2Mid">
-
-			</ribbon_band>
+			<ribbon_band name="attributes" resize_policies="Mirror, High2Mid">			    
+			    <ribbon_action action="EditAttributesAction" accelerator="alt F9">			    
+					<ribbon_action action="attributes_AddAttributeAction"/>
+					<ribbon_action action="AssignAttributesAction" />
+					<ribbon_action action="CopyAttributes" />
+					<ribbon_action action="PasteAttributes" />
+					<ribbon_action action="AddStyleAttributes" />
+					<ribbon_action action="attributes_RemoveFirstAttributeAction">
+						<ribbon_action action="attributes_RemoveLastAttributeAction"/>
+						<ribbon_action action="attributes_RemoveAllAttributesAction"/>
+					</ribbon_action>
+				</ribbon_action>
+				<ribbon_action action="ShowAttributeDialogAction" />				
+				<ribbon_action action="CopyStyleExtensionsAction" />
+			</ribbon_band>				
 		</ribbon_task>
-		
-		
-		
-		
-		<ribbon_task name="edit">
-		    
-		</ribbon_task>
-		
-		
-		
-		
 		
 		<ribbon_task name="formatting">
 			<ribbon_contributor name="font_style" />
 			<ribbon_contributor name="default_styles" />
 		</ribbon_task>
+
 	</menu_category>
 </menu_structure>
