@@ -27,6 +27,8 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
+
+import org.freeplane.core.extension.IExtension;
 import org.freeplane.core.ui.FixedBasicComboBoxEditor;
 import org.freeplane.features.map.IMapChangeListener;
 import org.freeplane.features.map.IMapSelection;
@@ -46,7 +48,7 @@ import org.freeplane.features.styles.LogicalStyleController;
 import org.freeplane.features.styles.MapStyle;
 import org.freeplane.features.styles.MapStyleModel;
 
-public class MUIFactory implements INodeSelectionListener, INodeChangeListener, IMapChangeListener,
+public class MUIFactory implements INodeSelectionListener, INodeChangeListener, IMapChangeListener, IExtension,
         IMapSelectionListener {
 // 	final private Controller controller;
 	private boolean ignoreChangeEvent = false;

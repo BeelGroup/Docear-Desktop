@@ -17,22 +17,12 @@
 			<ribbon_band name="basics" resize_policies="Mirror, High2Mid">
 				<ribbon_action action="cut_node" priority="top"/>
 				<ribbon_action action="copy_node" priority="top"/>
-				<ribbon_action action="paste_node" priority="top"/>
-				<ribbon_action action="font_bold" priority="low"/>
-				<ribbon_action action="font_italic" priority="low"/>
-				<ribbon_contributor name="font_size" priority="low"/>
+				<ribbon_action action="paste_node" priority="top"/>				
 			</ribbon_band>
-			<ribbon_contributor name="font_style"/>
 		</ribbon_task>
-		 <ribbon_task name="formatting">
-		     <ribbon_band name="auto_number" resize_policies="Mirror, High2Mid">
-				<ribbon_action action="auto_number" priority="medium"/>
-				<ribbon_contributor name="font_size" priority="top"/>
-				<ribbon_contributor name="font_chooser" priority="top"/>
-				<ribbon_action action="italic" priority="top"/>
-				<ribbon_action action="bold" priority="top"/>
-				<ribbon_contributor name="style_chooser" priority="top"/>
-		     </ribbon_band>
+		 <ribbon_task name="formatting">		     
+			<ribbon_contributor name="font_style"/>
+		    <ribbon_contributor name="default_styles"/>
 		 </ribbon_task>
 	</menu_category>
 </menu_structure>

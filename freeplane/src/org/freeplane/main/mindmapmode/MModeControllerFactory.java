@@ -310,6 +310,7 @@ public class MModeControllerFactory {
 		mapController.addMapChangeListener(uiFactory);
 		controller.getMapViewManager().addMapSelectionListener(uiFactory);
 		final MToolbarContributor menuContributor = new MToolbarContributor(uiFactory);
+		modeController.addExtension(MUIFactory.class, uiFactory);
 		modeController.addMenuContributor(menuContributor);
 	}
 }
