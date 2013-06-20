@@ -91,14 +91,27 @@ public class RemoteController {
 		RemoteController controller = getInstance();
 		controller.closeUnusedMapsJob.cancel();
 		controller.releaseExpiredLocksJob.cancel();
+		controller.saveAndCloseMaps();
+		//polling to wait for all maps to be closed
+		long pollingUntilHardShutdown = 60000; //1 min
+		final long startPoll = System.currentTimeMillis();
+		long currentPollingTime = 0;
+		while(getMapIdentifierInfoMap().size() > 0 && currentPollingTime < pollingUntilHardShutdown) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+			}
+			currentPollingTime = System.currentTimeMillis() - startPoll;
+		}
+		
 		controller.mainActor.tell(PoisonPill.getInstance(), null);
 		controller.system.shutdown();
-		controller.closeMaps();
+		
 		instance = null;
 	}
 	
-	private void closeMaps() {
-		Actions.closeAllOpenMaps(new CloseAllOpenMapsRequest(new UserIdentifier("self", "")));
+	private void saveAndCloseMaps() {
+		Actions.saveAndCloseAllOpenMaps(new CloseAllOpenMapsRequest(new UserIdentifier("self", "")));
 	}
 
 	public static ModeController getModeController() {

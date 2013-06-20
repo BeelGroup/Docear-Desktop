@@ -22,6 +22,7 @@ import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.docear.messages.Messages;
 import org.docear.messages.Messages.AddNodeRequest;
 import org.docear.messages.Messages.AddNodeResponse;
 import org.docear.messages.Messages.ChangeEdgeRequest;
@@ -184,7 +185,7 @@ public class Actions {
 			IOUtils.closeQuietly(writer);
 			IOUtils.closeQuietly(out);
 		}
-		
+
 		final int currentRevision = getOpenMindMapInfo(request.getMapIdentifier()).getCurrentRevision();
 		logger().debug("Actions.getMapModelXml => returning map as XML string");
 		return new MindmapAsXmlResponse(bytes, currentRevision);
@@ -219,7 +220,7 @@ public class Actions {
 		return tempDirPath + "/docear/" + filename + ".mm";
 	}
 
-	public static OpenMindMapResponse openMindmap(final OpenMindMapRequest request) {
+	public static OpenMindMapResponse openMindmap(final OpenMindMapRequest request, final ActorRef sender) {
 		final MapIdentifier mapIdentifier = request.getMapIdentifier();
 		final String mapContent = request.getMindmapFileContent();
 		logger().debug("Actions.openMindmap => mapId: {}; content:'{}...'", mapIdentifier.getMapId(), mapContent.substring(0, Math.min(mapContent.length(), 20)));
@@ -236,7 +237,7 @@ public class Actions {
 
 			// put map in openMap Collection
 			final URL pathURL = file.toURI().toURL();
-			final OpenMindmapInfo info = new OpenMindmapInfo(pathURL);
+			final OpenMindmapInfo info = new OpenMindmapInfo(pathURL, sender);
 			openMindmapInfoMap().put(request.getMapIdentifier(), info);
 			currentRevision = info.getCurrentRevision();
 			logger().debug("Actions.openMindmap => mindmap was put into openMindmapInfoMap ({} => {})", mapIdentifier.getMapId(), info.getMapUrl());
@@ -286,7 +287,7 @@ public class Actions {
 		logger().debug("Actions.closeServer => no parameters");
 
 		logger().debug("Actions.closeServer => closing open maps");
-		closeAllOpenMaps(new CloseAllOpenMapsRequest(request.getUserIdentifier()));
+		saveAndCloseAllOpenMaps(new CloseAllOpenMapsRequest(request.getUserIdentifier()));
 
 		logger().debug("Actions.closeServer => Starting Thread to shutdown App in 2 seconds");
 		new Thread(new Runnable() {
@@ -587,7 +588,7 @@ public class Actions {
 		}
 	}
 
-	public static CreateMindmapResponse createNewMindMap(CreateMindmapRequest request) throws FileNotFoundException, IOException, URISyntaxException, XMLException {
+	public static CreateMindmapResponse createNewMindMap(CreateMindmapRequest request, final ActorRef sender) throws FileNotFoundException, IOException, URISyntaxException, XMLException {
 		final String filename = getTempFileName();
 
 		final File file = new File(filename);
@@ -597,7 +598,7 @@ public class Actions {
 		final URL mapUrl = file.toURI().toURL();
 		mapIO.newMap(mapUrl);
 
-		final OpenMindmapInfo openMindmapInfo = new OpenMindmapInfo(mapUrl);
+		final OpenMindmapInfo openMindmapInfo = new OpenMindmapInfo(mapUrl, sender);
 
 		openMindmapInfoMap().put(request.getMapIdentifier(), openMindmapInfo);
 
@@ -623,15 +624,16 @@ public class Actions {
 		}
 	}
 
-	public static void closeAllOpenMaps(CloseAllOpenMapsRequest request) {
+	public static void saveAndCloseAllOpenMaps(CloseAllOpenMapsRequest request) {
 		logger().debug("Actions.closeAllOpenMaps => no parameters");
+
 		Set<MapIdentifier> mapIds = new HashSet<MapIdentifier>(openMindmapInfoMap().keySet());
 		for (MapIdentifier mapId : mapIds) {
-			logger().debug("Actions.closeAllOpenMaps => closing map with id '{}'", mapId);
-			// silent fail
-			try {
-				closeMap(new CloseMapRequest(request.getUserIdentifier(), mapId));
-			} catch (MapNotFoundException e) {
+			logger().debug("Actions.closeAllOpenMaps => saving map with id '{}'", mapId);
+
+			// only trigger save, play will close maps
+			for (OpenMindmapInfo info : openMindmapInfoMap().values()) {
+				info.getSender().tell(new Messages.ForceSaveAndCloseRequest(mapId), null);
 			}
 		}
 	}
@@ -649,8 +651,7 @@ public class Actions {
 			logger().debug("Actions.closeUnusedMaps => mapId:'{}'; lastAccess:{}; sinceLastAccess:{}", mapId, lastAccessTime, sinceLastAccess);
 
 			if (sinceLastAccess > allowedMsSinceLastAccess) {
-				// TODO tell ZooKeeper and save to hadoop
-				closeMap(new CloseMapRequest(request.getUserIdentifier(), mapId));
+				openMindmapInfoMap().get(mapId).getSender().tell(new Messages.ForceSaveAndCloseRequest(mapId), null);
 				logger().info("Actions.closeUnusedMaps => map was closed, because it havent been used for about {} minutes.", sinceLastAccessInMinutes);
 			}
 		}

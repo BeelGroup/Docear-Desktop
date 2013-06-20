@@ -52,8 +52,8 @@ public class InitCollaborationActor extends FreeplaneClientActor {
 		// xml mindmap wrapped in json
 		else if (message instanceof JsonNode) {
 			final JsonNode responseNode = (JsonNode) message;
-			final int currentRevision = responseNode.get("currentRevision").asInt();
-			final String xmlString = responseNode.get("xmlString").asText();
+			final int currentRevision = 0;//responseNode.get("currentRevision").asInt();
+			final String xmlString = responseNode.toString();// responseNode.get("xmlString").asText();
 			final Random ran = new Random();
 			final String filename = "" + System.currentTimeMillis() + ran.nextInt(100);
 			final String tempDirPath = System.getProperty("java.io.tmpdir");

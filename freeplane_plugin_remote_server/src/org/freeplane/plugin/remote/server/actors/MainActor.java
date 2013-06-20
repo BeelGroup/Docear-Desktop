@@ -85,7 +85,7 @@ public class MainActor extends UntypedActor {
 
 			// Open mindmap
 			else if (message instanceof OpenMindMapRequest) {
-				response = Actions.openMindmap((OpenMindMapRequest) message);
+				response = Actions.openMindmap((OpenMindMapRequest) message, sender);
 			}
 
 			// close map
@@ -95,7 +95,7 @@ public class MainActor extends UntypedActor {
 
 			// close all maps
 			else if (message instanceof CloseAllOpenMapsRequest) {
-				Actions.closeAllOpenMaps((CloseAllOpenMapsRequest) message);
+				Actions.saveAndCloseAllOpenMaps((CloseAllOpenMapsRequest) message);
 			}
 
 			// close server
@@ -125,7 +125,7 @@ public class MainActor extends UntypedActor {
 
 			// create a new map
 			else if (message instanceof CreateMindmapRequest) {
-				response = Actions.createNewMindMap((CreateMindmapRequest) message);
+				response = Actions.createNewMindMap((CreateMindmapRequest) message, sender);
 			}
 
 			// listen if update occurs

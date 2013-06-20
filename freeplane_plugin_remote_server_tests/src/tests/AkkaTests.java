@@ -29,6 +29,7 @@ import org.docear.messages.Messages.CreateMindmapRequest;
 import org.docear.messages.Messages.CreateMindmapResponse;
 import org.docear.messages.Messages.FetchMindmapUpdatesRequest;
 import org.docear.messages.Messages.FetchMindmapUpdatesResponse;
+import org.docear.messages.Messages.ForceSaveAndCloseRequest;
 import org.docear.messages.Messages.GetNodeRequest;
 import org.docear.messages.Messages.GetNodeResponse;
 import org.docear.messages.Messages.MindmapAsJsonReponse;
@@ -1112,6 +1113,10 @@ public class AkkaTests {
 				System.err.println("warning: Error occured.");
 				// org.fest.assertions.Fail.fail("An error occured", ((Failure)
 				// message).cause());
+			}
+			
+			if(message instanceof ForceSaveAndCloseRequest) {
+				getSender().tell(new CloseMapRequest(new UserIdentifier("system", "system"), ((ForceSaveAndCloseRequest) message).getMapIdentifier()), getSelf());
 			}
 
 			if (message instanceof ActorRef) {

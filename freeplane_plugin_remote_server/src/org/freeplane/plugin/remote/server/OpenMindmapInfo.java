@@ -24,20 +24,27 @@ public class OpenMindmapInfo implements Serializable {
 	private final Set<NodeModel> lockedNodes;
 	private long lastAccessTime;
 	private long lastUpdateTime;
+	private final ActorRef sender;
 	private final List<MapUpdate> updateList;
 	private final List<ActorRef> listeningActors;
 
-	public OpenMindmapInfo(URL mapUrl) {
+	public OpenMindmapInfo(URL mapUrl, ActorRef sender) {
 		this.mapUrl = mapUrl;
 		this.lockedNodes = new HashSet<NodeModel>();
 		this.updateList = new ArrayList<MapUpdate>();
 		this.listeningActors = new ArrayList<ActorRef>();
+		this.sender = sender;
 		updateAccessTime();
+		
 	}
 
 	public URL getMapUrl() {
 		updateAccessTime();
 		return mapUrl;
+	}
+
+	public ActorRef getSender() {
+		return sender;
 	}
 
 	public Set<NodeModel> getLockedNodes() {
