@@ -57,8 +57,9 @@ import org.docear.plugin.pdfutilities.PdfUtilitiesController;
 import org.docear.plugin.pdfutilities.map.MapConverter;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.AFreeplaneAction;
-import org.freeplane.core.ui.IKeyStrokeInterceptor;
+import org.freeplane.core.ui.IKeyStrokeProcessor;
 import org.freeplane.core.ui.IMenuContributor;
+import org.freeplane.core.ui.KeyBindingProcessor;
 import org.freeplane.core.ui.MenuBuilder;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
@@ -219,7 +220,7 @@ public class ReferencesController extends ALanguageController implements IDocear
 					
 					jabrefWrapper = new JabrefWrapper(Controller.getCurrentController().getViewController().getJFrame());
 					 
-					modeController.getUserInputListenerFactory().getMenuBar().addKeyStrokeInterceptor(new KeyBindInterceptor());
+					modeController.getExtension(KeyBindingProcessor.class).addKeyStrokeProcessor(new KeyBindInterceptor());
 					createOptionPanel(jabrefWrapper.getJabrefFrame());
 					
 					WorkspaceController.getModeExtension(modeController).getView().addProjectSelectionListener(getProjectSelectionListener());
@@ -553,9 +554,9 @@ public class ReferencesController extends ALanguageController implements IDocear
 		return this.addedEntry;
 	}
 	
-	private class KeyBindInterceptor implements IKeyStrokeInterceptor {
+	private class KeyBindInterceptor implements IKeyStrokeProcessor {
 		
-		public boolean interceptKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed) {
+		public boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed) {
 			Object source = e.getSource();
 			if(hasPackageNameOrAncestor(source, "net.sf.jabref")) {
 				if(jabrefWrapper.getJabrefFrame().getMenuBar().processKeyBinding(ks, e, condition, pressed)) {

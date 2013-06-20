@@ -53,6 +53,8 @@ import org.freeplane.features.map.MapController.Direction;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.mode.QuitAction;
+import org.freeplane.features.mode.browsemode.BModeController;
+import org.freeplane.features.mode.filemode.FModeController;
 import org.freeplane.features.mode.mindmapmode.LoadAcceleratorPresetsAction;
 import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.features.print.PrintController;
@@ -185,11 +187,11 @@ public class FreeplaneGUIStarter implements FreeplaneStarter {
 
 	//RIBBONS build menu from these files --> starting point
 	public void buildMenus(final Controller controller, final Set<String> plugins) {
-		buildMenus(controller, plugins, MModeController.MODENAME, "/xml/mindmapmoderibbons.xml");
-//	    buildMenus(controller, plugins, MModeController.MODENAME, "/xml/mindmapmodemenu.xml");
+		//buildMenus(controller, plugins, MModeController.MODENAME, "/xml/mindmapmoderibbons.xml");
+	    buildMenus(controller, plugins, MModeController.MODENAME, "/xml/mindmapmodemenu.xml");
 	    LoadAcceleratorPresetsAction.install();
-//	    buildMenus(controller, plugins, BModeController.MODENAME, "/xml/browsemodemenu.xml");
-//	    buildMenus(controller, plugins, FModeController.MODENAME, "/xml/filemodemenu.xml");
+	    buildMenus(controller, plugins, BModeController.MODENAME, "/xml/browsemodemenu.xml");
+	    buildMenus(controller, plugins, FModeController.MODENAME, "/xml/filemodemenu.xml");
     }
 
 	private void buildMenus(final Controller controller, final Set<String> plugins, String mode, String xml) {

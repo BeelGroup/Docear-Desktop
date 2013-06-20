@@ -20,21 +20,18 @@
 package org.freeplane.core.ui.components;
 
 import java.awt.event.KeyEvent;
-import java.util.HashSet;
-import java.util.Iterator;
 
-import javax.swing.JComponent;
 import javax.swing.JMenuBar;
 import javax.swing.KeyStroke;
 import javax.swing.text.JTextComponent;
 
-import org.freeplane.core.ui.IKeyStrokeInterceptor;
+import org.freeplane.core.ui.IKeyStrokeProcessor;
 
 /**
  * This is the menu bar for Freeplane. Actions are defined in MenuListener.
  * Moreover, the StructuredMenuHolder of all menus are hold here.
  */
-public class FreeplaneMenuBar extends JMenuBar {
+public class FreeplaneMenuBar extends JMenuBar implements IKeyStrokeProcessor {
 	//RIBBONS basic class handling the old menubar
 	public static final String EDIT_MENU = FreeplaneMenuBar.MENU_BAR_PREFIX + "/edit";
 	public static final String EXTRAS_MENU = FreeplaneMenuBar.MENU_BAR_PREFIX + "/extras";
@@ -50,8 +47,7 @@ public class FreeplaneMenuBar extends JMenuBar {
 	 */
 	private static final long serialVersionUID = 1L;
 	public static final String VIEW_MENU = FreeplaneMenuBar.MENU_BAR_PREFIX + "/view";
-	private final HashSet<IKeyStrokeInterceptor> interceptors = new HashSet<IKeyStrokeInterceptor>();
-
+	
 	public FreeplaneMenuBar() {
 		getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F10, 0), "none");
 	}
@@ -96,10 +92,6 @@ public class FreeplaneMenuBar extends JMenuBar {
 
 	@Override
 	public boolean processKeyBinding(final KeyStroke ks, final KeyEvent e, final int condition, final boolean pressed) {
-		//DOCEAR - added functionality to intercept key binding events (and delegate to the interceptor?)
-		if(intercepted(ks, e, condition, pressed)) {
-			return false;
-		}
 		// ignore key events without modifiers if text component is a source
 		if (e.getKeyChar() != KeyEvent.CHAR_UNDEFINED && e.getKeyChar() != '\0'
 		        && 0 == (e.getModifiers() & ~KEY_MODIFIERS) && e.getSource() instanceof JTextComponent) {
@@ -113,27 +105,5 @@ public class FreeplaneMenuBar extends JMenuBar {
 			return false;
 		}
 		return super.processKeyBinding(derivedKS, e, condition, pressed);
-	}
-	
-	//DOCEAR - added methods for interceptor handling
-	private boolean intercepted(final KeyStroke ks, final KeyEvent e, final int condition, final boolean pressed) {
-		Iterator<IKeyStrokeInterceptor> iter = interceptors.iterator();
-		boolean intercept = false;
-		while(iter.hasNext()) { //maybe break after the first interception?
-			intercept = intercept || iter.next().interceptKeyBinding(ks, e, condition, pressed);
-		}
-		return intercept;
-	}
-	
-	public void addKeyStrokeInterceptor(IKeyStrokeInterceptor interceptor) {
-		if(!interceptors.contains(interceptor)) {
-			interceptors.add(interceptor);
-		}
-	}
-	
-	public void removeKeyStrokeInterceptor(IKeyStrokeInterceptor interceptor) {
-		if(interceptors.contains(interceptor)) {
-			interceptors.remove(interceptor);
-		}
 	}
 }

@@ -72,6 +72,9 @@ public class ToggleToolbarAction extends AFreeplaneAction {
 
 	public boolean isVisible() {
 		final JComponent toolBar = getToolbar();
+		if(toolBar == null) {
+			return false;
+		}
 		final boolean isVisible = ((FrameController) Controller.getCurrentController().getViewController()).isToolbarVisible(toolBar);
 		return isVisible;
 	}

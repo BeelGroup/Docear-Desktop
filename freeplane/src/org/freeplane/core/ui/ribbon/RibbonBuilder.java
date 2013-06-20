@@ -12,7 +12,6 @@ import java.util.Locale;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.IndexedTree;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.ui.ribbon.special.FontStyleContributorFactory;
@@ -85,17 +84,17 @@ public class RibbonBuilder {
 		f.getSize(rv);
 	}
 	
-	public void updateRibbon(String xmlResource) {
-		final URL xmlSource = ResourceController.getResourceController().getResource(xmlResource);
-		if (xmlSource != null) {
-			final boolean isUserDefined = xmlSource.getProtocol().equalsIgnoreCase("file");
+	public void updateRibbon(URL xmlResource) {
+		//final URL xmlSource = ResourceController.getResourceController().getResource(xmlResource);
+		if (xmlResource != null) {
+			final boolean isUserDefined = xmlResource.getProtocol().equalsIgnoreCase("file");
 			try{
-			reader.loadStructure(xmlSource);
+			reader.loadStructure(xmlResource);
 			}
 			catch (RuntimeException e){
 				if(isUserDefined){
 					LogUtils.warn(e);
-					String myMessage = TextUtils.format("ribbon_error", xmlSource.getPath(), e.getMessage());
+					String myMessage = TextUtils.format("ribbon_error", xmlResource.getPath(), e.getMessage());
 					UITools.backOtherWindows();
 					JOptionPane.showMessageDialog(UITools.getFrame(), myMessage, "Freeplane", JOptionPane.ERROR_MESSAGE);
 					System.exit(-1);
