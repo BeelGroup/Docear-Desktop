@@ -19,6 +19,7 @@ import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandButton.CommandButtonKind;
 import org.pushingpixels.flamingo.api.common.JCommandMenuButton;
+import org.pushingpixels.flamingo.api.common.RichTooltip;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.common.icon.ResizableIcon;
 import org.pushingpixels.flamingo.api.common.popup.JCommandPopupMenu;
@@ -63,7 +64,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 		
 		final String tooltip = TextUtils.getRawText(key+ ".tooltip", null);
 		if (tooltip != null && !"".equals(tooltip)) {
-			button.setToolTipText(tooltip);//setActionRichTooltip(new RichTooltip(tooltip, ""));
+			button.setActionRichTooltip(new RichTooltip(tooltip, ""));
 		}
 		button.addActionListener(new RibbonActionListener(key));
 		return button;

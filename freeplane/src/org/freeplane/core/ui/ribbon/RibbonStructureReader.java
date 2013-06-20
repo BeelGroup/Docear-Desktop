@@ -26,7 +26,7 @@ public class RibbonStructureReader {
 		readManager.addElementHandler("resize_policies", new ResizePoliciesCreator());
 		readManager.addElementHandler("resize_policy", new ResizePolicyCreator());
 		readManager.addElementHandler("ribbon_action", new RibbonActionCreator());
-		readManager.addElementHandler("ribbon_contributor", new RibbonContributorCreator());
+		readManager.addElementHandler("ribbon_contributor", new RibbonContributorCreator());		
 		
 		this.builder = ribbonBuilder;
 	}
