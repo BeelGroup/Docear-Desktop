@@ -56,7 +56,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 		
 		final String tooltip = TextUtils.getRawText(key+ ".tooltip", null);
 		if (tooltip != null && !"".equals(tooltip)) {
-			button.setActionRichTooltip(new RichTooltip(tooltip, ""));
+			button.setActionRichTooltip(new RichTooltip("  ", tooltip));
 		}
 		button.addActionListener(new RibbonActionListener(key));
 		return button;
