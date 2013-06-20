@@ -2,26 +2,25 @@
 	<menu_category name="ribbon">
 		<ribbon_task name="home">
 			<ribbon_band name="mind_map" resize_policies="Mirror, High2Mid">
-				<ribbon_action action="NewChildAction" accelerator="INSERT"
-					priority="top">
+				<ribbon_action action="NewChildAction" accelerator="INSERT"	priority="top">					
 					<ribbon_action action="NewSiblingAction" accelerator="ENTER" />
 					<ribbon_action action="NewSummaryAction" />
 					<ribbon_action action="NewFreeNodeAction" />
 					<ribbon_action action="NewPreviousSiblingAction"
 						accelerator="shift ENTER" />
-					<ribbon_action action="NewParentNode" accelerator="shift INSERT" />
+					<ribbon_action action="NewParentNode" accelerator="shift INSERT" />				
 				</ribbon_action>
+				<ribbon_action action="DeleteAction" accelerator="DELETE" priority="top" />
 				<ribbon_action action="EditAction" priority="medium">
 					<ribbon_action action="EditLongAction" accelerator="alt ENTER" />
-					<ribbon_action action="JoinNodesAction" accelerator="control J" />
+				</ribbon_action>
+				<ribbon_action action="JoinNodesAction" accelerator="control J" priority="low">
 					<ribbon_action action="SplitNode" />
-					<ribbon_action action="RevisionPluginAction" />
 				</ribbon_action>
 				<ribbon_action action="EditDetailsAction" priority="medium" >
 				    <ribbon_action action="EditDetailsInDialogAction"/>
 				    <ribbon_action action="DeleteDetailsAction"/>		
-				</ribbon_action>
-				<ribbon_action action="DeleteAction" accelerator="DELETE" priority="medium" />
+				</ribbon_action>				
 			</ribbon_band>
 			
 			<ribbon_band name="navigate" resize_policies="Mirror, High2Mid">
@@ -82,7 +81,7 @@
 			<ribbon_band name="attributes" resize_policies="Mirror, High2Mid">			    
 			    <ribbon_action action="EditAttributesAction" accelerator="alt F9">			    
 					<ribbon_action action="attributes_AddAttributeAction"/>
-					<ribbon_action action="AssignAttributesAction" />
+					<ribbon_action action="AssignAttributesAction" /><ribbon_action action="CopyStyleExtensionsAction" />
 					<ribbon_action action="CopyAttributes" />
 					<ribbon_action action="PasteAttributes" />
 					<ribbon_action action="AddStyleAttributes" />
@@ -91,14 +90,71 @@
 						<ribbon_action action="attributes_RemoveAllAttributesAction"/>
 					</ribbon_action>
 				</ribbon_action>
-				<ribbon_action action="ShowAttributeDialogAction" />				
-				<ribbon_action action="CopyStyleExtensionsAction" />
+				<ribbon_action action="ShowAttributeDialogAction" />			
+				
 			</ribbon_band>				
+			
+			<ribbon_band name="miscellaneous" resize_policies="Mirror, High2Mid">
+				<ribbon_action action="RevisionPluginAction" />
+				<ribbon_action action="CopyStyleExtensionsAction" />
+			</ribbon_band>
 		</ribbon_task>
 		
 		<ribbon_task name="formatting">
 			<ribbon_contributor name="font_style" />
-			<ribbon_contributor name="default_styles" />
+			
+			<ribbon_band name="manage styles" resize_policies="Mirror, High2Mid">
+				
+				<ribbon_action action="NewUserStyleAction" priority="medium">				
+					<ribbon_action action="RedefineStyleAction" />				
+					<ribbon_action action="ManageConditionalStylesAction" />
+					<ribbon_action action="ManageNodeConditionalStylesAction" />
+				</ribbon_action>
+				
+				<ribbon_action action="CopyMapStylesAction" />  
+				<ribbon_action action="EditStylesAction" />
+				
+				<ribbon_action action="FormatCopy" accelerator="alt shift C" priority="medium"/>
+				<ribbon_action action="FormatPaste" accelerator="alt shift V" priority="medium"/>
+			
+				<ribbon_action action="AutomaticLayoutControllerAction.HEADINGS" priority="medium">		
+					<ribbon_action action="AutomaticLayoutControllerAction.ALL" />		
+					<ribbon_action action="AutomaticLayoutControllerAction.null" />
+				</ribbon_action>
+			</ribbon_band>
+			
+			<ribbon_band name="grouping" resize_policies="Mirror, High2Mid">
+			    <ribbon_action action="CloudAction">			
+					<ribbon_action action="CloudShapeAction.ARC" />
+					<ribbon_action action="CloudShapeAction.STAR" />
+					<ribbon_action action="CloudShapeAction.RECT" />
+					<ribbon_action action="CloudShapeAction.ROUND_RECT" />
+				</ribbon_action>
+				<ribbon_action action="CloudColorAction" />				
+			</ribbon_band>
+			
+			<ribbon_band name="node_edges" resize_policies="Mirror, High2Mid">
+				
+				<ribbon_action action="EdgeStyleAsParentAction">
+					<ribbon_action action="EdgeStyleAction.linear" />
+					<ribbon_action action="EdgeStyleAction.bezier" />
+					<ribbon_action action="EdgeStyleAction.sharp_linear" />
+					<ribbon_action action="EdgeStyleAction.sharp_bezier" />
+					<ribbon_action action="EdgeStyleAction.horizontal" />
+					<ribbon_action action="EdgeStyleAction.hide_edge" />
+				</ribbon_action>
+				
+				<ribbon_action action="EdgeWidthAction_width_parent">
+					<ribbon_action action="EdgeWidthAction_width_thin" />
+					<ribbon_action action="EdgeWidthAction_1" />
+					<ribbon_action action="EdgeWidthAction_2" />
+					<ribbon_action action="EdgeWidthAction_4" />
+					<ribbon_action action="EdgeWidthAction_8" />
+				</ribbon_action>
+				
+				<ribbon_action action="EdgeColorAction" accelerator="alt shift E" />
+				<ribbon_action action="AutomaticEdgeColorHookAction" />
+			</ribbon_band>
 		</ribbon_task>
 
 	</menu_category>
