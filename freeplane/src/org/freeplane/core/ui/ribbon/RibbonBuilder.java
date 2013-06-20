@@ -43,6 +43,7 @@ public class RibbonBuilder {
 		this.ribbon = ribbon;
 		reader = new RibbonStructureReader(this);
 		registerContributorFactory("ribbon_menu", new RibbonMenuContributorFactory());
+		registerContributorFactory("ribbon_taskbar", new RibbonTaskbarContributorFactory());
 		registerContributorFactory("primary_entry", new RibbonMenuPrimaryContributorFactory());
 		registerContributorFactory("entry_group", new RibbonMenuSecondaryGroupContributorFactory());
 		registerContributorFactory("footer_entry", new RibbonMenuFooterContributorFactory());

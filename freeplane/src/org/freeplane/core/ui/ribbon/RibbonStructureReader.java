@@ -21,6 +21,7 @@ public class RibbonStructureReader {
 		readManager = new ReadManager();
 		readManager.addElementHandler("menu_structure", new StructureCreator());
 		readManager.addElementHandler("menu_category", new CategoryCreator());
+		readManager.addElementHandler("ribbon_taskbar", new DefaultCreator());
 		readManager.addElementHandler("ribbon_menu", new DefaultCreator());
 		readManager.addElementHandler("primary_entry", new DefaultCreator());
 		readManager.addElementHandler("entry_group", new DefaultCreator());

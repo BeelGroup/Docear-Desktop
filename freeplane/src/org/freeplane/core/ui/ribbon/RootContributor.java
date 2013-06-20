@@ -1,5 +1,6 @@
 package org.freeplane.core.ui.ribbon;
 
+import java.awt.Component;
 import java.util.Enumeration;
 
 import org.freeplane.core.ui.IndexedTree;
@@ -36,7 +37,8 @@ public class RootContributor implements IRibbonContributor {
 		else if(child instanceof RibbonApplicationMenu) {
 			this.ribbon.setApplicationMenu((RibbonApplicationMenu) child);
 		}
-
+		else if(child instanceof RibbonTaskBarComponent) {
+			this.ribbon.addTaskbarComponent(((RibbonTaskBarComponent) child).getComponent());
+		}
 	}
-
 }
