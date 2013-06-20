@@ -51,6 +51,7 @@ import javax.swing.text.JTextComponent;
 
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.IAcceleratorChangeListener;
+import org.freeplane.core.ui.KeyBindingProcessor;
 import org.freeplane.core.ui.SetAcceleratorOnNextClickAction;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.Controller;
@@ -77,18 +78,26 @@ public class FButtonBar extends JComponent implements IAcceleratorChangeListener
 			onModifierChangeImpl();
 		}
 	});
+	private final KeyBindingProcessor keyProcessor;
+	
+	
+
 	
 	@SuppressWarnings("serial")
     private class ContentPane extends JPanel{
 		@Override
         protected boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed) {
-			if (condition == JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+			if (condition == JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT) {
+				if(keyProcessor.processKeyBinding(ks, e, condition, pressed)) {
+					return true;
+				}
 				return processFKey(e);
+			}
 			return false;
         }
 	}
 
-	public FButtonBar(JRootPane rootPane) {
+	public FButtonBar(JRootPane rootPane, KeyBindingProcessor proc) {
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(this);
 		final Container oldContentPane = rootPane.getContentPane();
 		final ContentPane newContentPane = new ContentPane();
@@ -107,6 +116,11 @@ public class FButtonBar extends JComponent implements IAcceleratorChangeListener
 		rootPane.setContentPane(newContentPane);
 		buttons = new HashMap<Integer, JButton[]>();
 		onModifierChange();
+		this.keyProcessor = proc;
+	}
+	
+	public FButtonBar(JRootPane rootPane) {
+		this(rootPane, null);
 	}
 
 	public void acceleratorChanged(final JMenuItem action, final KeyStroke oldStroke, final KeyStroke newStroke) {

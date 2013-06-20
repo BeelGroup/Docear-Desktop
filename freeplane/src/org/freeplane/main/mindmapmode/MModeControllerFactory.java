@@ -32,6 +32,7 @@ import javax.swing.SwingConstants;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.IEditHandler;
 import org.freeplane.core.ui.IMouseListener;
+import org.freeplane.core.ui.KeyBindingProcessor;
 import org.freeplane.core.ui.SetAcceleratorOnNextClickAction;
 import org.freeplane.core.ui.components.FButtonBar;
 import org.freeplane.core.ui.components.FreeplaneToolBar;
@@ -237,9 +238,9 @@ public class MModeControllerFactory {
 		MapStyle.install(true);
 		final FreeplaneToolBar toolbar = new FreeplaneToolBar("main_toolbar", SwingConstants.HORIZONTAL);
 		toolbar.putClientProperty(ViewController.VISIBLE_PROPERTY_KEY, "toolbarVisible");
-		userInputListenerFactory.addToolBar("/main_toolbar", ViewController.TOP, toolbar);
-		userInputListenerFactory.addToolBar("/filter_toolbar", ViewController.TOP, FilterController.getController(
-		    controller).getFilterToolbar());
+		//RIBBONS - disable top toolbars
+		//userInputListenerFactory.addToolBar("/main_toolbar", ViewController.TOP, toolbar);
+		//userInputListenerFactory.addToolBar("/filter_toolbar", ViewController.TOP, FilterController.getController(controller).getFilterToolbar());
 		userInputListenerFactory.addToolBar("/status", ViewController.BOTTOM, controller.getViewController()
 		    .getStatusBar());
 		final JTabbedPane tabs = new JTabbedPane();
@@ -289,7 +290,10 @@ public class MModeControllerFactory {
 		otcr.setExpanded(expanded);
 		resisableTabs.putClientProperty(ViewController.VISIBLE_PROPERTY_KEY, "styleScrollPaneVisible");
 		modeController.getUserInputListenerFactory().addToolBar("/format", ViewController.RIGHT, resisableTabs);
-		final FButtonBar fButtonToolBar = new FButtonBar(controller.getViewController().getRootPaneContainer().getRootPane());
+		KeyBindingProcessor keyProcessor = new KeyBindingProcessor();
+		modeController.addExtension(KeyBindingProcessor.class, keyProcessor);
+		keyProcessor.addKeyStrokeProcessor(modeController.getUserInputListenerFactory().getMenuBar());
+		final FButtonBar fButtonToolBar = new FButtonBar(controller.getViewController().getRootPaneContainer().getRootPane(), keyProcessor);
 		fButtonToolBar.putClientProperty(ViewController.VISIBLE_PROPERTY_KEY, "fbarVisible");
 		fButtonToolBar.setVisible(ResourceController.getResourceController().getBooleanProperty("fbarVisible"));
 		userInputListenerFactory.addToolBar("/fbuttons", ViewController.TOP, fButtonToolBar);
