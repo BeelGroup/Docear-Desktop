@@ -120,6 +120,12 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 							if(button.getToolTipText() != null) {
 								menuButton.setToolTipText(button.getToolTipText());
 							}
+							if(button instanceof JCommandButton) {
+								if(((JCommandButton) button).getPopupCallback() != null) {
+									menuButton.setCommandButtonKind(((JCommandButton) button).getCommandButtonKind());
+									menuButton.setPopupCallback(((JCommandButton) button).getPopupCallback());
+								}
+							}
 							popupmenu.addMenuButton(menuButton);
 						}
 						return popupmenu;

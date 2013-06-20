@@ -26,7 +26,7 @@
 				<ribbon_action action="CutAction" accelerator="control X" priority="top"/>
 				<ribbon_action action="CopyAction" accelerator="control C" priority="top">
 				    <ribbon_action action="CopySingleAction" accelerator="control shift C"/>
-				    <ribbon_action action="CopyIDAction">				    
+				    <ribbon_action action="CopyIDAction"/>
 				    <ribbon_action action="CopyNodeURIAction"/>
 				</ribbon_action>    
 				<ribbon_action action="PasteAction" accelerator="control V" priority="top">
@@ -35,8 +35,16 @@
 				<ribbon_action action="UndoAction" accelerator="control Z" priority="top"/>
 				<ribbon_action action="RedoAction" accelerator="control Y" priority="top"/>
 			</ribbon_band>
+			<ribbon_band name="test" resize_policies="Mirror">
+				<ribbon_action action="blupp" priority="top">
+                    <ribbon_action action="bla" priority="medium">
+	                    <ribbon_action action="bjö"/>
+	                </ribbon_action>
+	                <ribbon_action action="plautz" priority="medium" />
+	           </ribbon_action>
+	   </ribbon_band>
 		</ribbon_task>
-		 <ribbon_task name="formatting">		     
+		<ribbon_task name="formatting">
 			<ribbon_contributor name="font_style"/>
 		    <ribbon_contributor name="default_styles"/>
 		 </ribbon_task>
