@@ -24,7 +24,7 @@ public class KeyBindingProcessor implements IExtension {
 			Iterator<IKeyStrokeProcessor> iter = processors.iterator();
 			boolean intercept = false;
 			while(iter.hasNext()) { //maybe break after the first interception?
-				intercept = intercept || iter.next().processKeyBinding(ks, e, condition, pressed);
+				intercept = iter.next().processKeyBinding(ks, e, condition, pressed) || intercept;
 			}
 			return intercept;
 		}

@@ -187,7 +187,6 @@ public class FreeplaneGUIStarter implements FreeplaneStarter {
 
 	//RIBBONS build menu from these files --> starting point
 	public void buildMenus(final Controller controller, final Set<String> plugins) {
-		//buildMenus(controller, plugins, MModeController.MODENAME, "/xml/mindmapmoderibbons.xml");
 	    buildMenus(controller, plugins, MModeController.MODENAME, "/xml/mindmapmodemenu.xml");
 	    LoadAcceleratorPresetsAction.install();
 	    buildMenus(controller, plugins, BModeController.MODENAME, "/xml/browsemodemenu.xml");
