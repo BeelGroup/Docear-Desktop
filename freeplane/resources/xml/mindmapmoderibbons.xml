@@ -7,17 +7,33 @@
 					<ribbon_action action="NewSummaryAction" />
 					<ribbon_action action="NewFreeNodeAction" />
 				</ribbon_action>
-				<ribbon_action action="edit_node" priority="medium"/>
-				<ribbon_action action="delete_node" priority="medium"/>
-				<ribbon_action action="connect_ndes" tyoe ="dropdown" priority="low">
-					<ribbon_action action="connect_nodes_visual_link"/>
-					<ribbon_action action="connect_nodes_internal_link"/>
+				<ribbon_action action="EditAction" priority="medium"/>
+				<ribbon_action action="EditDetailsAction" priority="medium"/>
+				<ribbon_action action="EditAttributesAction" priority="medium"/>	
+				<ribbon_action action="DeleteAction" accelerator="DELETE" priority="medium"/>				
+				<ribbon_action action="AddLocalLinkAction" accelerator="alt shift L" type ="dropdown" priority="low">
+					<ribbon_action action="SetLinkByFileChooserAction"/>
+					<ribbon_action action="SetLinkByTextFieldAction"/>
+					<ribbon_action action="ExtractLinkFromTextAction"/>
+					<ribbon_action action="AddMenuItemLinkAction"/>
+					<ribbon_action action="SetLinkAnchorAction"/>
+					<ribbon_action action="MakeLinkFromAnchorAction"/>
+					<ribbon_action action="MakeLinkToAnchorAction"/>
+					<ribbon_action action="ClearLinkAnchorAction"/>
 				</ribbon_action>
 			</ribbon_band>
 			<ribbon_band name="basics" resize_policies="Mirror, High2Mid">
-				<ribbon_action action="cut_node" priority="top"/>
-				<ribbon_action action="copy_node" priority="top"/>
-				<ribbon_action action="paste_node" priority="top"/>				
+				<ribbon_action action="CutAction" accelerator="control X" priority="top"/>
+				<ribbon_action action="CopyAction" accelerator="control C" priority="top">
+				    <ribbon_action action="CopySingleAction" accelerator="control shift C"/>
+				    <ribbon_action action="CopyIDAction"/>
+				    <ribbon_action action="CopyNodeURIAction"/>
+				</ribbon_action>    
+				<ribbon_action action="PasteAction" accelerator="control V" priority="top">
+				    <ribbon_action action="SelectedPasteAction" priority="top"/>
+				</ribbon_action>
+				<ribbon_action action="UndoAction" accelerator="control Z" priority="top"/>
+				<ribbon_action action="RedoAction" accelerator="control Y" priority="top"/>
 			</ribbon_band>
 		</ribbon_task>
 		 <ribbon_task name="formatting">		     
