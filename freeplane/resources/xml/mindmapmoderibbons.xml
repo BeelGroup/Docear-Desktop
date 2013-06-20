@@ -1,5 +1,31 @@
 <menu_structure>
 	<menu_category name="ribbon">
+	<ribbon_menu>
+        <primary_entry name="actionWithSubs" action="actionWithSubsAction">
+            <entry_group name="group 1">
+                <ribbon_action action="NewSiblingAction"/>
+                <ribbon_action action="NewSummaryAction" />
+                <ribbon_action action="NewFreeNodeAction" />
+            </entry_group>
+            <entry_group name="group 2">
+                <ribbon_action action="NewSiblingAction"/>
+            </entry_group>
+        </primary_entry>
+        <primary_entry name="actionWithSubs2">
+            <entry_group name="group 1">
+                <ribbon_action action="NewSiblingAction"/>
+            </entry_group>
+            <entry_group name="group 2">
+                <ribbon_action action="NewSiblingAction"/>
+                <ribbon_action action="NewFreeNodeAction" />
+            </entry_group>
+            <entry_group name="group 3">
+                <ribbon_action action="NewFreeNodeAction" />
+            </entry_group>
+        </primary_entry>
+        <primary_entry action="onlyAction" />
+        <footer_entry action="QuitAction" />
+    </ribbon_menu>
 		<ribbon_task name="home">
 			<ribbon_band name="mind_map" resize_policies="Mirror, High2Mid">
 				<ribbon_action action="NewChildAction" accelerator="INSERT"	priority="top">					
