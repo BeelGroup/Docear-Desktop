@@ -652,7 +652,7 @@ public class Actions {
 
 			if (sinceLastAccess > allowedMsSinceLastAccess) {
 				openMindmapInfoMap().get(mapId).getSender().tell(new Messages.ForceSaveAndCloseRequest(mapId), null);
-				logger().info("Actions.closeUnusedMaps => map was closed, because it havent been used for about {} minutes.", sinceLastAccessInMinutes);
+				logger().info("Actions.closeUnusedMaps => map will be closed, because it havent been used for about {} minutes.", sinceLastAccessInMinutes);
 			}
 		}
 	}
