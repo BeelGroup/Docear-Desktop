@@ -49,16 +49,8 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 	}
 
 	public static JCommandButton createCommandButton(final String key) {
-		String title = TextUtils.getText(key+".text");
-		if(title == null || title.isEmpty()) {
-			title = key;
-		}
-		String resource = ResourceController.getResourceController().getProperty(key+".icon", null);
-		ResizableIcon icon = null;
-		if (resource != null) {
-			URL location = ResourceController.getResourceController().getResource(resource);
-			icon = ImageWrapperResizableIcon.getIcon(location, new Dimension(16, 16));
-		}
+		String title = getActionTitle(key);
+		ResizableIcon icon = getActionIcon(key);
 		
 		final JCommandButton button = new JCommandButton(title, icon);
 		
@@ -68,6 +60,24 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 		}
 		button.addActionListener(new RibbonActionListener(key));
 		return button;
+	}
+
+	public static ResizableIcon getActionIcon(final String key) {
+		String resource = ResourceController.getResourceController().getProperty(key+".icon", null);
+		ResizableIcon icon = null;
+		if (resource != null) {
+			URL location = ResourceController.getResourceController().getResource(resource);
+			icon = ImageWrapperResizableIcon.getIcon(location, new Dimension(16, 16));
+		}
+		return icon;
+	}
+
+	public static String getActionTitle(final String key) {
+		String title = TextUtils.getText(key+".text");
+		if(title == null || title.isEmpty()) {
+			title = key;
+		}
+		return title;
 	}
 	
 	/***********************************************************************************
@@ -146,7 +156,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 	 * NESTED TYPE DECLARATIONS
 	 **********************************************************************************/
 	
-	protected static class RibbonActionListener implements ActionListener {
+	public static class RibbonActionListener implements ActionListener {
 		private final String key;
 
 		protected RibbonActionListener(String key) {

@@ -1,5 +1,7 @@
 package org.freeplane.core.ui.ribbon;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
@@ -12,14 +14,18 @@ import java.util.Locale;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.IndexedTree;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.ui.ribbon.special.FontStyleContributorFactory;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.ModeController;
+import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
+import org.pushingpixels.flamingo.api.common.icon.ResizableIcon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.RibbonApplicationMenu;
+import org.pushingpixels.flamingo.internal.ui.ribbon.appmenu.JRibbonApplicationMenuButton;
 
 
 public class RibbonBuilder {
@@ -36,10 +42,31 @@ public class RibbonBuilder {
 		this.rootContributor = new RootContributor(ribbon);
 		this.ribbon = ribbon;
 		reader = new RibbonStructureReader(this);
+		registerContributorFactory("ribbon_menu", new RibbonMenuContributorFactory());
+		registerContributorFactory("primary_entry", new RibbonMenuPrimaryContributorFactory());
+		registerContributorFactory("entry_group", new RibbonMenuSecondaryGroupContributorFactory());
+		registerContributorFactory("footer_entry", new RibbonMenuFooterContributorFactory());
 		registerContributorFactory("ribbon_task", new RibbonTaskContributorFactory());
 		registerContributorFactory("ribbon_band", new RibbonBandContributorFactory());
 		registerContributorFactory("ribbon_action", new RibbonActionContributorFactory());
 		registerContributorFactory("font_style", new FontStyleContributorFactory());
+		
+		updateApplicationMenuButton(ribbon);
+	}
+
+	public void updateApplicationMenuButton(JRibbon ribbon) {
+		for(Component comp : ribbon.getComponents()) {
+			if(comp instanceof JRibbonApplicationMenuButton) {
+				String appName = ResourceController.getResourceController().getProperty("ApplicationName", "Freeplane");
+				URL location = ResourceController.getResourceController().getResource("/images/"+appName.trim()+"_app_menu_128.png");
+				if (location != null) {
+					ResizableIcon icon = ImageWrapperResizableIcon.getIcon(location, new Dimension(32, 32));
+					((JRibbonApplicationMenuButton) comp).setIcon(icon);
+					((JRibbonApplicationMenuButton) comp).setBackground(Color.blue);
+				}
+				
+			}
+		}
 	}
 	
 	public void add(IRibbonContributor contributor, RibbonPath path, int position) {

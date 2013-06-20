@@ -21,12 +21,15 @@ public class RibbonStructureReader {
 		readManager = new ReadManager();
 		readManager.addElementHandler("menu_structure", new StructureCreator());
 		readManager.addElementHandler("menu_category", new CategoryCreator());
-		readManager.addElementHandler("ribbon_task", new RibbonTaskCreator());
-		readManager.addElementHandler("ribbon_band", new RibbonBandCreator());
-		readManager.addElementHandler("resize_policies", new ResizePoliciesCreator());
-		readManager.addElementHandler("resize_policy", new ResizePolicyCreator());
-		readManager.addElementHandler("ribbon_action", new RibbonActionCreator());
-		readManager.addElementHandler("ribbon_contributor", new RibbonContributorCreator());		
+		readManager.addElementHandler("ribbon_menu", new DefaultCreator());
+		readManager.addElementHandler("primary_entry", new DefaultCreator());
+		readManager.addElementHandler("entry_group", new DefaultCreator());
+		readManager.addElementHandler("footer_entry", new DefaultCreator());
+		readManager.addElementHandler("ribbon_menu", new DefaultCreator());
+		readManager.addElementHandler("ribbon_task", new DefaultCreator());
+		readManager.addElementHandler("ribbon_band", new DefaultCreator());
+		readManager.addElementHandler("ribbon_action", new DefaultCreator());
+		readManager.addElementHandler("ribbon_contributor", new RibbonContributorCreator());
 		
 		this.builder = ribbonBuilder;
 	}
@@ -68,75 +71,29 @@ public class RibbonStructureReader {
 			String name = attributes.getAttribute("name", null);
 			if("ribbon".equals(name)) {
 				path.setName(name);
-    			return path;
+				return path;
 			}
 			return null;
 		}
 	}
 	
-	private final class RibbonTaskCreator implements IElementHandler {
+	private final class DefaultCreator implements IElementHandler {
 		public Object createElement(final Object parent, final String tag, final XMLElement attributes) {
 			if (attributes == null) {
 				return null;
 			}
 			
 			final RibbonPath menuPath = new RibbonPath((RibbonPath) parent);
-			menuPath.setName(attributes.getAttribute("name", null));
 			IRibbonContributorFactory factory = builder.getContributorFactory(tag);
-			if(factory != null && !builder.containsKey(menuPath.getKey())) {
-				builder.add(factory.getContributor(attributes.getAttributes()), menuPath.getParent(), IndexedTree.AS_CHILD);
+			if(factory != null) {
+				IRibbonContributor contributor = factory.getContributor(attributes.getAttributes());
+				menuPath.setName(contributor.getKey());
+				if(!builder.containsKey(menuPath.getKey())) {
+					builder.add(contributor, menuPath.getParent(), IndexedTree.AS_CHILD);
+				}
+				return menuPath;
 			}
-			return menuPath;
-		}
-	}
-	
-	private final class RibbonBandCreator implements IElementHandler {
-		public Object createElement(final Object parent, final String tag, final XMLElement attributes) {
-			if (attributes == null) {
-				return null;
-			}
-			
-			final RibbonPath menuPath = new RibbonPath((RibbonPath) parent);
-			menuPath.setName(attributes.getAttribute("name", null));
-			IRibbonContributorFactory factory = builder.getContributorFactory(tag);
-			if(factory != null && !builder.containsKey(menuPath.getKey())) {
-				builder.add(factory.getContributor(attributes.getAttributes()), menuPath.getParent(), IndexedTree.AS_CHILD);
-			}
-			return menuPath;
-		}
-	}
-	
-	private final class ResizePoliciesCreator implements IElementHandler {
-		public Object createElement(final Object parent, final String tag, final XMLElement attributes) {
-			if (attributes == null) {
-				return null;
-			}
-			return parent;
-		}
-	}
-	
-	private final class ResizePolicyCreator implements IElementHandler {
-		public Object createElement(final Object parent, final String tag, final XMLElement attributes) {
-			if (attributes == null) {
-				return null;
-			}
-			return parent;
-		}
-	}
-
-	private final class RibbonActionCreator implements IElementHandler {
-		public Object createElement(final Object parent, final String tag, final XMLElement attributes) {
-			if (attributes == null) {
-				return null;
-			}
-			
-			final RibbonPath menuPath = new RibbonPath((RibbonPath) parent);
-			menuPath.setName(attributes.getAttribute("action", null));
-			IRibbonContributorFactory factory = builder.getContributorFactory(tag);
-			if(factory != null && !builder.containsKey(menuPath.getKey())) {
-				builder.add(factory.getContributor(attributes.getAttributes()), menuPath.getParent(), IndexedTree.AS_CHILD);
-			}
-			return menuPath;
+			return null;
 		}
 	}
 	
@@ -149,12 +106,15 @@ public class RibbonStructureReader {
 			final RibbonPath menuPath = new RibbonPath((RibbonPath) parent);
 			String name = attributes.getAttribute("name", null);
 			if(name != null) {
-				menuPath.setName(name);
 				IRibbonContributorFactory factory = builder.getContributorFactory(name);
-				if(factory != null && !builder.containsKey(menuPath.getKey())) {
-					builder.add(factory.getContributor(attributes.getAttributes()), menuPath.getParent(), IndexedTree.AS_CHILD);
+				if(factory != null) {
+					IRibbonContributor contributor = factory.getContributor(attributes.getAttributes());
+					menuPath.setName(contributor.getKey());
+					if(!builder.containsKey(menuPath.getKey())) {
+						builder.add(contributor, menuPath.getParent(), IndexedTree.AS_CHILD);
+					}
+					return menuPath;
 				}
-				return menuPath;
 			}
 			return null;
 		}
