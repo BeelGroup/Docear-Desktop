@@ -2,7 +2,7 @@
 	<menu_category name="ribbon">
 		<ribbon_task name="home">
 			<ribbon_band name="mind_map" resize_policies="Mirror, High2Mid">
-				<ribbon_action type="dropdown" action="NewChildAction" priority="top">
+				<ribbon_action action="NewChildAction" priority="top">
 					<ribbon_action action="NewSiblingAction"/>
 					<ribbon_action action="NewSummaryAction" />
 					<ribbon_action action="NewFreeNodeAction" />
@@ -26,7 +26,7 @@
 				<ribbon_action action="CutAction" accelerator="control X" priority="top"/>
 				<ribbon_action action="CopyAction" accelerator="control C" priority="top">
 				    <ribbon_action action="CopySingleAction" accelerator="control shift C"/>
-				    <ribbon_action action="CopyIDAction"/>
+				    <ribbon_action action="CopyIDAction">				    
 				    <ribbon_action action="CopyNodeURIAction"/>
 				</ribbon_action>    
 				<ribbon_action action="PasteAction" accelerator="control V" priority="top">
