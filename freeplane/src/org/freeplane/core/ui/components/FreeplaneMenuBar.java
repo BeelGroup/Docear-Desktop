@@ -21,8 +21,11 @@ package org.freeplane.core.ui.components;
 
 import java.awt.event.KeyEvent;
 
+import javax.swing.Action;
+import javax.swing.InputMap;
 import javax.swing.JMenuBar;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.text.JTextComponent;
 
 import org.freeplane.core.ui.IKeyStrokeProcessor;
@@ -31,7 +34,7 @@ import org.freeplane.core.ui.IKeyStrokeProcessor;
  * This is the menu bar for Freeplane. Actions are defined in MenuListener.
  * Moreover, the StructuredMenuHolder of all menus are hold here.
  */
-public class FreeplaneMenuBar extends JMenuBar implements IKeyStrokeProcessor {
+public class FreeplaneMenuBar extends JMenuBar {
 	//RIBBONS basic class handling the old menubar
 	public static final String EDIT_MENU = FreeplaneMenuBar.MENU_BAR_PREFIX + "/edit";
 	public static final String EXTRAS_MENU = FreeplaneMenuBar.MENU_BAR_PREFIX + "/extras";
@@ -100,6 +103,7 @@ public class FreeplaneMenuBar extends JMenuBar implements IKeyStrokeProcessor {
 		if (super.processKeyBinding(ks, e, condition, pressed)) {
 			return true;
 		}
+		
 		final KeyStroke derivedKS = FreeplaneMenuBar.derive(ks, e.getKeyChar());
 		if (derivedKS == ks) {
 			return false;

@@ -60,7 +60,6 @@ import org.freeplane.features.edge.mindmapmode.MEdgeController;
 import org.freeplane.features.encrypt.mindmapmode.MEncryptionController;
 import org.freeplane.features.export.mindmapmode.ExportController;
 import org.freeplane.features.export.mindmapmode.ImportMindmanagerFiles;
-import org.freeplane.features.filter.FilterController;
 import org.freeplane.features.icon.HierarchicalIcons;
 import org.freeplane.features.icon.IconController;
 import org.freeplane.features.icon.mindmapmode.IconSelectionPlugin;
@@ -292,7 +291,7 @@ public class MModeControllerFactory {
 		modeController.getUserInputListenerFactory().addToolBar("/format", ViewController.RIGHT, resisableTabs);
 		KeyBindingProcessor keyProcessor = new KeyBindingProcessor();
 		modeController.addExtension(KeyBindingProcessor.class, keyProcessor);
-		keyProcessor.addKeyStrokeProcessor(modeController.getUserInputListenerFactory().getMenuBar());
+		keyProcessor.addKeyStrokeProcessor(userInputListenerFactory.getMenuBuilder());
 		final FButtonBar fButtonToolBar = new FButtonBar(controller.getViewController().getRootPaneContainer().getRootPane(), keyProcessor);
 		fButtonToolBar.putClientProperty(ViewController.VISIBLE_PROPERTY_KEY, "fbarVisible");
 		fButtonToolBar.setVisible(ResourceController.getResourceController().getBooleanProperty("fbarVisible"));
