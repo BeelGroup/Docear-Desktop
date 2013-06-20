@@ -42,6 +42,7 @@ public class RibbonBuilder {
 		this.rootContributor = new RootContributor(ribbon);
 		this.ribbon = ribbon;
 		reader = new RibbonStructureReader(this);
+		registerContributorFactory("separator", new RibbonSeparatorContributorFactory());
 		registerContributorFactory("ribbon_menu", new RibbonMenuContributorFactory());
 		registerContributorFactory("ribbon_taskbar", new RibbonTaskbarContributorFactory());
 		registerContributorFactory("primary_entry", new RibbonMenuPrimaryContributorFactory());

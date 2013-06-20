@@ -1,5 +1,6 @@
 package org.freeplane.core.ui.ribbon;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,10 +10,13 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
+import javax.swing.JSeparator;
+
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.IndexedTree;
 import org.freeplane.core.ui.IndexedTree.Node;
+import org.freeplane.core.ui.ribbon.RibbonSeparatorContributorFactory.RibbonSeparator;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.Controller;
 import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
@@ -56,7 +60,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 		
 		final String tooltip = TextUtils.getRawText(key+ ".tooltip", null);
 		if (tooltip != null && !"".equals(tooltip)) {
-			button.setActionRichTooltip(new RichTooltip("  ", tooltip));
+			button.setActionRichTooltip(new RichTooltip(title, tooltip));
 		}
 		button.addActionListener(new RibbonActionListener(key));
 		return button;
@@ -87,7 +91,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 	public IRibbonContributor getContributor(final Properties attributes) {
 		return new IRibbonContributor() {
 			
-			private List<AbstractCommandButton> childButtons = new ArrayList<AbstractCommandButton>();
+			private List<Component> childButtons = new ArrayList<Component>();
 
 			public String getKey() {
 				return attributes.getProperty("action");
@@ -120,23 +124,29 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 					
 					public JPopupPanel getPopupPanel(JCommandButton commandButton) {
 						JCommandPopupMenu popupmenu = new JCommandPopupMenu();
-						for (AbstractCommandButton button : childButtons) {
-							JCommandMenuButton menuButton = new JCommandMenuButton(button.getText(), button.getIcon());
-							for (ActionListener listener : button.getListeners(ActionListener.class)) {
-								if(listener instanceof RibbonActionListener) {
-									menuButton.addActionListener(listener);
+						for (Component comp : childButtons) {
+							if(comp instanceof JSeparator) {
+								popupmenu.addMenuSeparator();
+							}
+							else if(comp instanceof AbstractCommandButton) {
+								AbstractCommandButton button = (AbstractCommandButton) comp;
+								JCommandMenuButton menuButton = new JCommandMenuButton(button.getText(), button.getIcon());
+								for (ActionListener listener : button.getListeners(ActionListener.class)) {
+									if(listener instanceof RibbonActionListener) {
+										menuButton.addActionListener(listener);
+									}
 								}
-							}
-							if(button.getToolTipText() != null) {
-								menuButton.setToolTipText(button.getToolTipText());
-							}
-							if(button instanceof JCommandButton) {
-								if(((JCommandButton) button).getPopupCallback() != null) {
-									menuButton.setCommandButtonKind(((JCommandButton) button).getCommandButtonKind());
-									menuButton.setPopupCallback(((JCommandButton) button).getPopupCallback());
+								if(button.getToolTipText() != null) {
+									menuButton.setToolTipText(button.getToolTipText());
 								}
+								if(button instanceof JCommandButton) {
+									if(((JCommandButton) button).getPopupCallback() != null) {
+										menuButton.setCommandButtonKind(((JCommandButton) button).getCommandButtonKind());
+										menuButton.setPopupCallback(((JCommandButton) button).getPopupCallback());
+									}
+								}
+								popupmenu.addMenuButton(menuButton);
 							}
-							popupmenu.addMenuButton(menuButton);
 						}
 						return popupmenu;
 					}
@@ -146,6 +156,9 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 			public void addChild(Object child, Object properties) {
 				if(child instanceof AbstractCommandButton) {
 					childButtons.add((AbstractCommandButton) child);
+				}
+				if(child instanceof RibbonSeparator) {
+					childButtons.add(new JSeparator(JSeparator.HORIZONTAL));
 				}
 				
 			}

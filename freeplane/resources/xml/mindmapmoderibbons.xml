@@ -3,6 +3,7 @@
 	<ribbon_taskbar>
 	   <ribbon_action action="NewMapAction" accelerator="control N" />
        <ribbon_action action="EncryptedMap" />
+       <separator />
        <ribbon_action action="SaveAction" accelerator="control S" />
        <ribbon_action action="SaveAsAction" accelerator="control shift S" />
        <ribbon_action action="SaveAll" />
@@ -38,6 +39,7 @@
 				<ribbon_action action="NewChildAction" accelerator="INSERT"	priority="top">					
 					<ribbon_action action="NewSiblingAction" accelerator="ENTER" />
 					<ribbon_action action="NewSummaryAction" />
+					<separator />
 					<ribbon_action action="NewFreeNodeAction" />
 					<ribbon_action action="NewPreviousSiblingAction"
 						accelerator="shift ENTER" />

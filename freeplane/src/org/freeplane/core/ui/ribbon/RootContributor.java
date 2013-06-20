@@ -1,6 +1,5 @@
 package org.freeplane.core.ui.ribbon;
 
-import java.awt.Component;
 import java.util.Enumeration;
 
 import org.freeplane.core.ui.IndexedTree;

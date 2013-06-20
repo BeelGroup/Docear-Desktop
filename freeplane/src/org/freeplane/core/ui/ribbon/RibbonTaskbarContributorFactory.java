@@ -4,7 +4,10 @@ import java.awt.Component;
 import java.util.Enumeration;
 import java.util.Properties;
 
+import javax.swing.JSeparator;
+
 import org.freeplane.core.ui.IndexedTree;
+import org.freeplane.core.ui.ribbon.RibbonSeparatorContributorFactory.RibbonSeparator;
 
 public class RibbonTaskbarContributorFactory implements IRibbonContributorFactory {
 
@@ -38,6 +41,11 @@ public class RibbonTaskbarContributorFactory implements IRibbonContributorFactor
 			}
 			
 			public void addChild(Object child, Object properties) {
+				if(child instanceof RibbonSeparator) {
+					if(delegator != null) {
+						delegator.addChild(new RibbonTaskBarComponent(new JSeparator(JSeparator.VERTICAL)), null);
+					}
+				}
 				if(child instanceof Component) {
 					if(delegator != null) {
 						delegator.addChild(new RibbonTaskBarComponent((Component) child), null);
