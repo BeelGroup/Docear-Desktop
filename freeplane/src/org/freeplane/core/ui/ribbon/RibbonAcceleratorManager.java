@@ -73,6 +73,10 @@ public class RibbonAcceleratorManager implements IKeyStrokeProcessor, IAccelerat
 		if (null == ResourceController.getResourceController().getProperty(shortcutKey, null)) {
 			ResourceController.getResourceController().setDefaultProperty(shortcutKey, accelerator);
 		}
+		KeyStroke ks = KeyStroke.getKeyStroke(accelerator);
+		AFreeplaneAction action = builder.getMode().getAction(itemKey);
+		setAccelerator(action, ks);
+		
 	}
  	
  	public KeyStroke removeAccelerator(final AFreeplaneAction action) throws AssertionError {

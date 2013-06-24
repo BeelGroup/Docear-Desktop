@@ -126,13 +126,14 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 						if (Compat.isMacOsX()) {
 							accel = accel.replaceFirst("CONTROL", "META").replaceFirst("control", "meta");
 						}
-						//KeyStroke k = KeyStroke.getKeyStroke(accel);
+						KeyStroke ks = KeyStroke.getKeyStroke(accel);
 						context.getBuilder().getAcceleratorManager().setDefaultAccelerator(actionKey, accel);
+//						KeyStroke ks = context.getBuilder().getAcceleratorManager().getAccelerator(actionKey);
+						if(ks != null) {
+							updateRichTooltip(button, actionKey, ks);
+						}
 					}
-					KeyStroke ks = context.getBuilder().getAcceleratorManager().getAccelerator(actionKey);
-					if(ks != null) {
-						updateRichTooltip(button, actionKey, ks);
-					}
+					
 					getAccelChangeListener().addAction(actionKey, button);
 					context.getBuilder().getAcceleratorManager().addAcceleratorChangeListener(getAccelChangeListener());
 					IndexedTree.Node n = context.getStructureNode(this);
