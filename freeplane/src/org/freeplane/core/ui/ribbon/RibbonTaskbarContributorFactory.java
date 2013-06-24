@@ -22,20 +22,20 @@ public class RibbonTaskbarContributorFactory implements IRibbonContributorFactor
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
 	 **********************************************************************************/
-	public IRibbonContributor getContributor(final Properties attributes) {
-		return new IRibbonContributor() {
-			private IRibbonContributor delegator = null;
+	public ARibbonContributor getContributor(final Properties attributes) {
+		return new ARibbonContributor() {
+			private ARibbonContributor delegator = null;
 			
 			public String getKey() {
 				return "taskbar";
 			}
 			
-			public void contribute(RibbonBuildContext context, IRibbonContributor parent) {
+			public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
 				delegator = parent;
 				Enumeration<?> children = context.getStructureNode(this).children();
 				while(children.hasMoreElements()) {
 					IndexedTree.Node node = (IndexedTree.Node) children.nextElement();
-					((IRibbonContributor)node.getUserObject()).contribute(context, this);
+					((ARibbonContributor)node.getUserObject()).contribute(context, this);
 				}
 			}
 			

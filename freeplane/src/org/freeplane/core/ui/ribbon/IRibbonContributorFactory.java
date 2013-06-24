@@ -4,5 +4,5 @@ import java.util.Properties;
 
 
 public interface IRibbonContributorFactory {
-	public IRibbonContributor getContributor(final Properties attributes);
+	public ARibbonContributor getContributor(final Properties attributes);
 }

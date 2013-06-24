@@ -48,8 +48,8 @@ public class RibbonMenuPrimaryContributorFactory implements IRibbonContributorFa
 	 * REQUIRED METHODS FOR INTERFACES
 	 **********************************************************************************/
 	
-	public IRibbonContributor getContributor(final Properties attributes) {
-		return new IRibbonContributor() {
+	public ARibbonContributor getContributor(final Properties attributes) {
+		return new ARibbonContributor() {
 			RibbonApplicationMenuEntryPrimary entry;
 			public String getKey() {
 				String key = attributes.getProperty("action", null);
@@ -59,7 +59,7 @@ public class RibbonMenuPrimaryContributorFactory implements IRibbonContributorFa
 				return key;
 			}
 			
-			public void contribute(RibbonBuildContext context, IRibbonContributor parent) {
+			public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
 				entry = null;
 				Node n = context.getStructureNode(this);
 				if(n.getChildCount() > 0) {
@@ -67,7 +67,7 @@ public class RibbonMenuPrimaryContributorFactory implements IRibbonContributorFa
 					Enumeration<?> children = n.children();
 					while(children.hasMoreElements()) {
 						IndexedTree.Node node = (IndexedTree.Node) children.nextElement();
-						((IRibbonContributor)node.getUserObject()).contribute(context, this);
+						((ARibbonContributor)node.getUserObject()).contribute(context, this);
 					}
 				}
 				else {

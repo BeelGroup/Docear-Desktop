@@ -30,6 +30,7 @@ import org.pushingpixels.flamingo.internal.ui.ribbon.appmenu.JRibbonApplicationM
 
 
 public class RibbonBuilder {
+	
 	private final HashMap<String, IRibbonContributorFactory> contributorFactories = new HashMap<String, IRibbonContributorFactory>();
 	
 	final IndexedTree structure;
@@ -40,7 +41,9 @@ public class RibbonBuilder {
 
 	private final RibbonAcceleratorManager accelManager;
 
-	private boolean enabled = true;;
+	private boolean enabled = true;
+
+	private RibbonMapChangeAdapter changeAdapter;;
 	
 	public RibbonBuilder(ModeController mode, JRibbon ribbon) {
 		final RibbonApplicationMenu applicationMenu = new RibbonApplicationMenu();
@@ -80,7 +83,7 @@ public class RibbonBuilder {
 		}
 	}
 	
-	public void add(IRibbonContributor contributor, RibbonPath path, int position) {
+	public void add(ARibbonContributor contributor, RibbonPath path, int position) {
 		if(contributor == null || path == null) {
 			throw new IllegalArgumentException("NULL");
 		}
@@ -109,7 +112,10 @@ public class RibbonBuilder {
 	
 	public void buildRibbon() {
 		Window f = SwingUtilities.getWindowAncestor(ribbon);
-		if(isEnabled())
+		if(!isEnabled()) {
+			return;
+		}
+		getMapChangeAdapter().clear();
 		synchronized (structure) {
 			rootContributor.contribute(new RibbonBuildContext(this), null);
 		}
@@ -156,6 +162,23 @@ public class RibbonBuilder {
 			return structure.contains(key);
 		}		
 	}
+	
+	public ModeController getMode() {
+		return mode;
+	}
+
+	public RibbonAcceleratorManager getAcceleratorManager() {
+		return accelManager;
+	}
+	
+	public RibbonMapChangeAdapter getMapChangeAdapter() {
+		if(changeAdapter == null) {
+			changeAdapter = new RibbonMapChangeAdapter();
+		}
+		return changeAdapter;
+	}
+	
+	
 
 	public static class RibbonPath {
 		public static RibbonPath emptyPath() {
@@ -186,14 +209,6 @@ public class RibbonBuilder {
 		public String toString() {
 			return getKey();
 		}
-	}
-
-	public ModeController getMode() {
-		return mode;
-	}
-
-	public RibbonAcceleratorManager getAcceleratorManager() {
-		return accelManager;
 	}
 
 }

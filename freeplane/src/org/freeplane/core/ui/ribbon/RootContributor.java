@@ -7,7 +7,7 @@ import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.RibbonApplicationMenu;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
-public class RootContributor implements IRibbonContributor {
+public class RootContributor extends ARibbonContributor {
 	private final JRibbon ribbon; 
 	
 	public RootContributor(JRibbon ribbon) {
@@ -18,13 +18,13 @@ public class RootContributor implements IRibbonContributor {
 		return "/";
 	}
 
-	public void contribute(RibbonBuildContext context, IRibbonContributor parent) {
+	public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
 		ribbon.removeAllTaskbarComponents();
 		ribbon.removeAllTasks();
 		Enumeration<?> children = context.getStructureRoot().children();
 		while(children.hasMoreElements()) {
 			IndexedTree.Node node = (IndexedTree.Node) children.nextElement();
-			((IRibbonContributor)node.getUserObject()).contribute(context, this);
+			((ARibbonContributor)node.getUserObject()).contribute(context, this);
 		}
 
 	}

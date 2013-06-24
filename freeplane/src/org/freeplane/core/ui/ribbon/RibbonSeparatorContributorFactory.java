@@ -15,14 +15,14 @@ public class RibbonSeparatorContributorFactory implements IRibbonContributorFact
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
 	 **********************************************************************************/
-	public IRibbonContributor getContributor(Properties attributes) {
-		return new IRibbonContributor() {
+	public ARibbonContributor getContributor(Properties attributes) {
+		return new ARibbonContributor() {
 			
 			public String getKey() {
 				return "separator_"+hashCode();
 			}
 			
-			public void contribute(RibbonBuildContext context, IRibbonContributor parent) {
+			public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
 				parent.addChild(new RibbonSeparator(), null);
 			}
 			

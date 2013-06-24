@@ -10,20 +10,20 @@ import org.pushingpixels.flamingo.api.ribbon.RibbonApplicationMenuEntryPrimary;
 
 public class RibbonMenuContributorFactory implements IRibbonContributorFactory {
 
-	public IRibbonContributor getContributor(final Properties attributes) {
-		return new IRibbonContributor() {
+	public ARibbonContributor getContributor(final Properties attributes) {
+		return new ARibbonContributor() {
 			private RibbonApplicationMenu menu;
 
 			public String getKey() {
 				return "app_menu";
 			}
 			
-			public void contribute(RibbonBuildContext context, IRibbonContributor parent) {
+			public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
 				menu = new RibbonApplicationMenu();
 				Enumeration<?> children = context.getStructureNode(this).children();
 				while(children.hasMoreElements()) {
 					IndexedTree.Node node = (IndexedTree.Node) children.nextElement();
-					((IRibbonContributor)node.getUserObject()).contribute(context, this);
+					((ARibbonContributor)node.getUserObject()).contribute(context, this);
 				}				
 				parent.addChild(menu, null);
 			}

@@ -88,7 +88,7 @@ public class RibbonStructureReader {
 			final RibbonPath menuPath = new RibbonPath((RibbonPath) parent);
 			IRibbonContributorFactory factory = builder.getContributorFactory(tag);
 			if(factory != null) {
-				IRibbonContributor contributor = factory.getContributor(attributes.getAttributes());
+				ARibbonContributor contributor = factory.getContributor(attributes.getAttributes());
 				menuPath.setName(contributor.getKey());
 				if(!builder.containsKey(menuPath.getKey())) {
 					builder.add(contributor, menuPath.getParent(), IndexedTree.AS_CHILD);
@@ -110,7 +110,7 @@ public class RibbonStructureReader {
 			if(name != null) {
 				IRibbonContributorFactory factory = builder.getContributorFactory(name);
 				if(factory != null) {
-					IRibbonContributor contributor = factory.getContributor(attributes.getAttributes());
+					ARibbonContributor contributor = factory.getContributor(attributes.getAttributes());
 					menuPath.setName(contributor.getKey());
 					if(!builder.containsKey(menuPath.getKey())) {
 						builder.add(contributor, menuPath.getParent(), IndexedTree.AS_CHILD);

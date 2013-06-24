@@ -2,31 +2,38 @@ package org.freeplane.core.ui.ribbon.special;
 
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.util.Properties;
 
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 
-import org.freeplane.core.ui.ribbon.IRibbonContributor;
+import org.freeplane.core.ui.AFreeplaneAction;
+import org.freeplane.core.ui.ribbon.ARibbonContributor;
+import org.freeplane.core.ui.ribbon.IChangeObserver;
 import org.freeplane.core.ui.ribbon.IRibbonContributorFactory;
 import org.freeplane.core.ui.ribbon.RibbonActionContributorFactory;
 import org.freeplane.core.ui.ribbon.RibbonBuildContext;
 import org.freeplane.core.util.TextUtils;
+import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
+import org.freeplane.features.nodestyle.NodeStyleController;
 import org.freeplane.features.styles.mindmapmode.MUIFactory;
 import org.pushingpixels.flamingo.api.common.JCommandButtonStrip;
+import org.pushingpixels.flamingo.api.common.JCommandToggleButton;
 import org.pushingpixels.flamingo.api.ribbon.JFlowRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
 
 public class FontStyleContributorFactory implements IRibbonContributorFactory {
 
-	public IRibbonContributor getContributor(final Properties attributes) {
-		return new IRibbonContributor() {
+	public ARibbonContributor getContributor(final Properties attributes) {
+		return new ARibbonContributor() {
 
 			public String getKey() {
 				return attributes.getProperty("name");
 			}
 
-			public void contribute(RibbonBuildContext context, IRibbonContributor parent) {
+			public void contribute(final RibbonBuildContext context, ARibbonContributor parent) {
 				if (parent == null) {
 					return;
 				}
@@ -53,6 +60,14 @@ public class FontStyleContributorFactory implements IRibbonContributorFactory {
 					JRibbonComponent sizeComboWrapper = new JRibbonComponent((JComponent) sizeBox);
 					sizeComboWrapper.setKeyTip("SS");
 					fontBand.addFlowComponent(sizeComboWrapper);
+					context.getBuilder().getMapChangeAdapter().addListener(new IChangeObserver() {
+    					public void updateState(NodeModel n) {
+    						final NodeModel node = Controller.getCurrentModeController().getMapController().getSelectedNode();
+    						Font f = NodeStyleController.getController().getFont(node);
+    						((JComboBox)sizeBox).getModel().setSelectedItem(Integer.toString(f.getSize()));
+    					}
+    				});
+					
 					
 					final Container styleBox = uiFactory.createStyleBox();
 					final Dimension preferredSize = styleBox.getPreferredSize();
@@ -66,10 +81,36 @@ public class FontStyleContributorFactory implements IRibbonContributorFactory {
 					
 //					styleBoldButton.setActionRichTooltip(new RichTooltip(TextUtils.getRawText(action.getTooltipKey()), "makes the node text bold"));
 //					styleBoldButton.setActionKeyTip("1");
-					styleStrip.add(RibbonActionContributorFactory.createCommandButton("BoldAction"));
-					styleStrip.add(RibbonActionContributorFactory.createCommandButton("ItalicAction"));
+					final JCommandToggleButton boldButton = RibbonActionContributorFactory.createCommandToggleButton("BoldAction");
+					
+    				context.getBuilder().getMapChangeAdapter().addListener(new IChangeObserver() {
+    					public void updateState(NodeModel node) {
+    						AFreeplaneAction action = context.getBuilder().getMode().getAction("BoldAction");
+    						if(AFreeplaneAction.checkSelectionOnChange(action)) {
+    							action.setSelected();
+    							boldButton.getActionModel().setSelected(action.isSelected());
+    						}
+    					}
+    				});
+					styleStrip.add(boldButton);
+					final JCommandToggleButton italicButton = RibbonActionContributorFactory.createCommandToggleButton("ItalicAction");
+					
+					context.getBuilder().getMapChangeAdapter().addListener(new IChangeObserver() {
+						public void updateState(NodeModel node) {
+							AFreeplaneAction action = context.getBuilder().getMode().getAction("ItalicAction");
+							if(AFreeplaneAction.checkSelectionOnChange(action)) {
+								action.setSelected();
+								italicButton.getActionModel().setSelected(action.isSelected());
+							}
+						}
+					});
+					styleStrip.add(italicButton);
+					
 					styleStrip.add(RibbonActionContributorFactory.createCommandButton("NodeColorAction"));
 					styleStrip.add(RibbonActionContributorFactory.createCommandButton("NodeBackgroundColorAction"));
+					
+					
+					
 					
 					// JCommandToggleButton styleItalicButton = new
 					// JCommandToggleButton("", new format_text_italic());

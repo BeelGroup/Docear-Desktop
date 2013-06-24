@@ -15,8 +15,8 @@ import org.pushingpixels.flamingo.api.ribbon.resize.RibbonBandResizePolicy;
 
 public class RibbonBandContributorFactory implements IRibbonContributorFactory {
 
-	public IRibbonContributor getContributor(final Properties attributes) {
-		return new IRibbonContributor() {
+	public ARibbonContributor getContributor(final Properties attributes) {
+		return new ARibbonContributor() {
 			
 			private JRibbonBand band;
 			
@@ -24,7 +24,7 @@ public class RibbonBandContributorFactory implements IRibbonContributorFactory {
 				return attributes.getProperty("name");
 			}
 			
-			public void contribute(RibbonBuildContext context, IRibbonContributor parent) {
+			public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
 				if(parent == null) {
 					return;
 				}
@@ -36,7 +36,7 @@ public class RibbonBandContributorFactory implements IRibbonContributorFactory {
     				Enumeration<?> children = context.getStructureNode(this).children();
     				while(children.hasMoreElements()) {
     					IndexedTree.Node node = (IndexedTree.Node) children.nextElement();
-    					((IRibbonContributor)node.getUserObject()).contribute(context, this);
+    					((ARibbonContributor)node.getUserObject()).contribute(context, this);
     				}
     				setResizePolicies(attributes.getProperty("resize_policies"));
     				parent.addChild(band, null);

@@ -6,7 +6,7 @@ import java.util.Properties;
 
 import javax.swing.ButtonGroup;
 
-import org.freeplane.core.ui.ribbon.IRibbonContributor;
+import org.freeplane.core.ui.ribbon.ARibbonContributor;
 import org.freeplane.core.ui.ribbon.IRibbonContributorFactory;
 import org.freeplane.core.ui.ribbon.RibbonActionContributorFactory;
 import org.freeplane.core.ui.ribbon.RibbonBuildContext;
@@ -24,14 +24,14 @@ import org.pushingpixels.flamingo.api.ribbon.resize.RibbonBandResizePolicy;
 
 public class EdgeStyleContributorFactory implements IRibbonContributorFactory {
 
-	public IRibbonContributor getContributor(final Properties attributes) {
-		return new IRibbonContributor() {
+	public ARibbonContributor getContributor(final Properties attributes) {
+		return new ARibbonContributor() {
 
 			public String getKey() {
 				return attributes.getProperty("name");
 			}
 
-			public void contribute(RibbonBuildContext context, IRibbonContributor parent) {
+			public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
 				if (parent == null) {
 					return;
 				}

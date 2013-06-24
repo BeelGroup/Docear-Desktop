@@ -29,6 +29,7 @@ import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandButton.CommandButtonKind;
 import org.pushingpixels.flamingo.api.common.JCommandMenuButton;
+import org.pushingpixels.flamingo.api.common.JCommandToggleButton;
 import org.pushingpixels.flamingo.api.common.JCommandToggleMenuButton;
 import org.pushingpixels.flamingo.api.common.RichTooltip;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
@@ -71,6 +72,17 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 		ResizableIcon icon = getActionIcon(key);
 		
 		final JCommandButton button = new JCommandButton(title, icon);
+		
+		updateRichTooltip(button, key, null);
+		button.addActionListener(new RibbonActionListener(key));
+		return button;
+	}
+	
+	public static JCommandToggleButton createCommandToggleButton(final String key) {
+		String title = getActionTitle(key);
+		ResizableIcon icon = getActionIcon(key);
+		
+		final JCommandToggleButton button = new JCommandToggleButton(title, icon);
 		
 		updateRichTooltip(button, key, null);
 		button.addActionListener(new RibbonActionListener(key));
@@ -158,8 +170,8 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 	 * REQUIRED METHODS FOR INTERFACES
 	 **********************************************************************************/
 	
-	public IRibbonContributor getContributor(final Properties attributes) {
-		return new IRibbonContributor() {
+	public ARibbonContributor getContributor(final Properties attributes) {
+		return new ARibbonContributor() {
 			
 			private List<Component> childButtons = new ArrayList<Component>();
 
@@ -167,7 +179,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 				return attributes.getProperty("action");
 			}
 			
-			public void contribute(RibbonBuildContext context, IRibbonContributor parent) {
+			public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
 				final String actionKey = attributes.getProperty("action");
 				if(actionKey != null) {
 					final JCommandButton button = createCommandButton(actionKey);
@@ -216,7 +228,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 				Enumeration<?> children = n.children();
 				while(children.hasMoreElements()) {
 					IndexedTree.Node node = (IndexedTree.Node) children.nextElement();
-					((IRibbonContributor)node.getUserObject()).contribute(context, this);
+					((ARibbonContributor)node.getUserObject()).contribute(context, this);
 				}
 				return new PopupPanelCallback() {
 					
@@ -266,7 +278,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 					childButtons.add(new JSeparator(JSeparator.HORIZONTAL));
 				}
 				
-			}
+			}		
 		};
 	}
 	

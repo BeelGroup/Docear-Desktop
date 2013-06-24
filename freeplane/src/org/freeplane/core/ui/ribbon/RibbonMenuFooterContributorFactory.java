@@ -20,13 +20,13 @@ public class RibbonMenuFooterContributorFactory implements IRibbonContributorFac
 	 * REQUIRED METHODS FOR INTERFACES
 	 **********************************************************************************/
 	
-	public IRibbonContributor getContributor(final Properties attributes) {
-		return new IRibbonContributor() {
+	public ARibbonContributor getContributor(final Properties attributes) {
+		return new ARibbonContributor() {
 			public String getKey() {
 				return attributes.getProperty("action");
 			}
 			
-			public void contribute(RibbonBuildContext context, IRibbonContributor parent) {
+			public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
 				final String key = attributes.getProperty("action");
 				if(key != null) {
 					String title = RibbonActionContributorFactory.getActionTitle(getKey());
