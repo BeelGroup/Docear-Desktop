@@ -40,12 +40,17 @@ import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 
 public class RibbonActionContributorFactory implements IRibbonContributorFactory {
 
+	private static final String ACTION_KEY_PROPERTY = "ACTION_KEY";
+	private static final String ACTION_NAME_PROPERTY = "ACTION_NAME";
+
+	
 	/***********************************************************************************
 	 * CONSTRUCTORS
 	 **********************************************************************************/
 
 
 
+	
 	/***********************************************************************************
 	 * METHODS
 	 **********************************************************************************/
@@ -99,11 +104,34 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 		final String tooltip = TextUtils.getRawText(key+ ".tooltip", null);
 		if (tooltip != null && !"".equals(tooltip)) {
 			tip = new RichTooltip(getActionTitle(key), tooltip);
-			if(ks != null) {
-				tip.addFooterSection(ks.toString());
+		}
+		if(ks != null) {
+			if(tip == null) {
+				tip = new RichTooltip(getActionTitle(key), "  ");
 			}
+			tip.addFooterSection(formatShortcut(ks));
+		}
+		if(tip != null) {
 			button.setActionRichTooltip(tip);
 		}
+	}
+
+	public static String formatShortcut(KeyStroke ks) {
+		StringBuilder sb = new StringBuilder();
+		if(ks != null) {
+			String[] st = ks.toString().split("[\\s]+");
+			for (String s : st) {
+				if("pressed".equals(s.trim())) {
+					continue;
+				}
+				if(sb.length() > 0) {
+					sb.append(" + ");
+				}
+				sb.append(s.substring(0, 1).toUpperCase());
+				sb.append(s.substring(1));
+			}
+		}
+		return sb.toString();
 	}
 
 	public static ResizableIcon getActionIcon(final String key) {
@@ -143,19 +171,20 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 				final String actionKey = attributes.getProperty("action");
 				if(actionKey != null) {
 					final JCommandButton button = createCommandButton(actionKey);
-					
+					button.putClientProperty(ACTION_KEY_PROPERTY, actionKey);
 					String accel = attributes.getProperty("accelerator", null);
 					if (accel != null) {
 						if (Compat.isMacOsX()) {
 							accel = accel.replaceFirst("CONTROL", "META").replaceFirst("control", "meta");
 						}
-						//KeyStroke k = KeyStroke.getKeyStroke(accel);
+						KeyStroke ks = KeyStroke.getKeyStroke(accel);
 						context.getBuilder().getAcceleratorManager().setDefaultAccelerator(actionKey, accel);
+//						KeyStroke ks = context.getBuilder().getAcceleratorManager().getAccelerator(actionKey);
+						if(ks != null) {
+							updateRichTooltip(button, actionKey, ks);
+						}
 					}
-					KeyStroke ks = context.getBuilder().getAcceleratorManager().getAccelerator(actionKey);
-					if(ks != null) {
-						updateRichTooltip(button, actionKey, ks);
-					}
+					
 					getAccelChangeListener().addAction(actionKey, button);
 					context.getBuilder().getAcceleratorManager().addAcceleratorChangeListener(getAccelChangeListener());
 					IndexedTree.Node n = context.getStructureNode(this);
@@ -170,6 +199,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 					final String name = attributes.getProperty("name");
 					if(name != null) {
 						final JCommandButton button = new JCommandButton(getActionTitle(name), getActionIcon(name));
+						button.putClientProperty(ACTION_NAME_PROPERTY, name);
 						updateRichTooltip(button, name, null);
 						IndexedTree.Node n = context.getStructureNode(this);
 						if(n.getChildCount() > 0) {
@@ -181,7 +211,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 				}
 			}
 			
-			private PopupPanelCallback getPopupPanelCallBack(Node n, RibbonBuildContext context) {
+			private PopupPanelCallback getPopupPanelCallBack(Node n, final RibbonBuildContext context) {
 				childButtons.clear();
 				Enumeration<?> children = n.children();
 				while(children.hasMoreElements()) {
@@ -204,8 +234,15 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 										menuButton.addActionListener(listener);
 									}
 								}
-								if(button.getToolTipText() != null) {
-									menuButton.setToolTipText(button.getToolTipText());
+								String actionKey = (String)button.getClientProperty(ACTION_KEY_PROPERTY);
+								if(actionKey != null) {
+									updateRichTooltip(menuButton, actionKey, context.getBuilder().getAcceleratorManager().getAccelerator(actionKey));
+								}
+								else {
+									String actionName = (String)button.getClientProperty(ACTION_NAME_PROPERTY);
+									if(actionName != null) {
+										updateRichTooltip(menuButton, actionName, null);
+									}
 								}
 								if(button instanceof JCommandButton) {
 									if(((JCommandButton) button).getPopupCallback() != null) {

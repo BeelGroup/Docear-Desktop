@@ -324,7 +324,7 @@ public class UserInputListenerFactory implements IUserInputListenerFactory {
 				throw e;
 			}
 		}
-		ribbonBuilder.updateRibbon(ResourceController.getResourceController().getResource("/xml/mindmapmoderibbons.xml"));
+//		ribbonBuilder.updateRibbon(ResourceController.getResourceController().getResource("/xml/mindmapmoderibbons.xml"));
 		final IMapViewManager viewController = Controller.getCurrentController().getMapViewManager();
 		
 		viewController.updateMenus(menuBuilder);

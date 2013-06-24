@@ -29,6 +29,7 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 import org.freeplane.core.resources.ResourceController;
+import org.freeplane.core.ui.KeyBindingProcessor;
 import org.freeplane.core.ui.ShowSelectionAsRectangleAction;
 import org.freeplane.core.ui.components.FreeplaneToolBar;
 import org.freeplane.core.ui.components.UITools;
@@ -67,6 +68,7 @@ import org.freeplane.features.styles.MapStyle;
 import org.freeplane.features.styles.MapStyleModel;
 import org.freeplane.features.styles.MapViewLayout;
 import org.freeplane.features.styles.mindmapmode.MLogicalStyleController;
+import org.freeplane.features.styles.mindmapmode.MUIFactory;
 import org.freeplane.features.styles.mindmapmode.StyleEditorPanel;
 import org.freeplane.features.text.TextController;
 import org.freeplane.features.text.mindmapmode.MTextController;
@@ -117,6 +119,8 @@ public class SModeControllerFactory {
 		modeController.setUserInputListenerFactory(userInputListenerFactory);
 		controller.addExtension(ModelessAttributeController.class, new ModelessAttributeController());
 		new MMapController(modeController);
+		
+		userInputListenerFactory.getRibbonBuilder().setEnabled(false);
 		TextController.install(new MTextController(modeController));
 		SpellCheckerController.install(modeController);
 		IconController.install(new MIconController(modeController));
@@ -201,8 +205,10 @@ public class SModeControllerFactory {
 		UITools.setScrollbarIncrement(styleScrollPane);
 		//		styleEditorPanel.setPreferredSize(new Dimension(200, 200));
 		userInputListenerFactory.addToolBar("/format", ViewController.RIGHT, styleScrollPane);
-		final Set<String> emptySet = Collections.emptySet();
+		modeController.addExtension(MUIFactory.class, new MUIFactory());
+		final Set<String> emptySet = Collections.emptySet();		
 		modeController.updateMenus("/xml/stylemodemenu.xml", emptySet);
+		//userInputListenerFactory.getRibbonBuilder().updateRibbon(ResourceController.getResourceController().getResource("/xml/stylemoderibbons.xml"));
 		this.modeController = null;
 		return controller;
 	}

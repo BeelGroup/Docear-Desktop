@@ -39,6 +39,8 @@ public class RibbonBuilder {
 	private final ModeController mode;
 
 	private final RibbonAcceleratorManager accelManager;
+
+	private boolean enabled = true;;
 	
 	public RibbonBuilder(ModeController mode, JRibbon ribbon) {
 		final RibbonApplicationMenu applicationMenu = new RibbonApplicationMenu();
@@ -106,11 +108,12 @@ public class RibbonBuilder {
 	}
 	
 	public void buildRibbon() {
-		
+		Window f = SwingUtilities.getWindowAncestor(ribbon);
+		if(isEnabled())
 		synchronized (structure) {
 			rootContributor.contribute(new RibbonBuildContext(this), null);
 		}
-		Window f = SwingUtilities.getWindowAncestor(ribbon);
+		
 		Dimension rv = f.getSize();
 		f.applyComponentOrientation(ComponentOrientation.getOrientation(Locale.getDefault()));
 		Rectangle r = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
@@ -118,6 +121,14 @@ public class RibbonBuilder {
 		f.setMinimumSize(new Dimension(640,240));
 		f.pack();
 		f.getSize(rv);
+	}
+	
+	public boolean isEnabled() {
+		return enabled ;
+	}
+	
+	public void setEnabled(boolean b) {
+		enabled = b;
 	}
 	
 	public void updateRibbon(URL xmlResource) {

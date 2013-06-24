@@ -107,6 +107,7 @@ class SModeController extends MModeController {
 	    }
 	    setStatus(returnVal == JOptionPane.YES_OPTION ? JOptionPane.OK_OPTION : JOptionPane.CANCEL_OPTION);
 	    dialog.setVisible(false);
+	    Controller.getCurrentModeController().getUserInputListenerFactory().getRibbonBuilder().setEnabled(true);
     }
 
 	@Override
