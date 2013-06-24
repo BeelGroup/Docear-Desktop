@@ -10,6 +10,7 @@ import org.freeplane.core.ui.ribbon.IRibbonContributor;
 import org.freeplane.core.ui.ribbon.IRibbonContributorFactory;
 import org.freeplane.core.ui.ribbon.RibbonActionContributorFactory;
 import org.freeplane.core.ui.ribbon.RibbonBuildContext;
+import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.styles.mindmapmode.MUIFactory;
 import org.pushingpixels.flamingo.api.common.JCommandButtonStrip;
@@ -33,7 +34,7 @@ public class FontStyleContributorFactory implements IRibbonContributorFactory {
 				Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
 				try {
 					// RIBBONS expandlistener and icon
-					JFlowRibbonBand fontBand = new JFlowRibbonBand("Font", null, null);
+					JFlowRibbonBand fontBand = new JFlowRibbonBand(TextUtils.getText("ribbon.band.font"), null, null);
 					fontBand.setExpandButtonKeyTip("FN");
 					fontBand.setCollapsedStateKeyTip("ZF");
 

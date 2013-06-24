@@ -29,6 +29,7 @@ import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandButton.CommandButtonKind;
 import org.pushingpixels.flamingo.api.common.JCommandMenuButton;
+import org.pushingpixels.flamingo.api.common.JCommandToggleMenuButton;
 import org.pushingpixels.flamingo.api.common.RichTooltip;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.common.icon.ResizableIcon;
@@ -71,7 +72,29 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 		return button;
 	}
 	
-	public static void updateRichTooltip(final JCommandButton button, String key, KeyStroke ks) {
+	public static JCommandMenuButton createCommandMenuButton(final String key) {
+		String title = getActionTitle(key);
+		ResizableIcon icon = getActionIcon(key);
+		
+		final JCommandMenuButton button = new JCommandMenuButton(title, icon);
+		
+		updateRichTooltip(button, key, null);
+		button.addActionListener(new RibbonActionListener(key));
+		return button;
+	}
+	
+	public static JCommandToggleMenuButton createCommandToggleMenuButton(final String key) {
+		String title = getActionTitle(key);
+		ResizableIcon icon = getActionIcon(key);
+		
+		final JCommandToggleMenuButton button = new JCommandToggleMenuButton(title, icon);
+		
+		updateRichTooltip(button, key, null);
+		button.addActionListener(new RibbonActionListener(key));
+		return button;
+	}
+	
+	public static void updateRichTooltip(final AbstractCommandButton button, String key, KeyStroke ks) {
 		RichTooltip tip = null;
 		final String tooltip = TextUtils.getRawText(key+ ".tooltip", null);
 		if (tooltip != null && !"".equals(tooltip)) {

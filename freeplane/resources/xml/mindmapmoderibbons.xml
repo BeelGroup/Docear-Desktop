@@ -100,7 +100,8 @@
 					<ribbon_action action="MakeLinkToAnchorAction" />
 					<ribbon_action action="ClearLinkAnchorAction" />
 				</ribbon_action>
-				<ribbon_action action="ExternalImageAddAction" priority="top">
+				<ribbon_action name="add_node_attachement" priority="top">
+				    <ribbon_action action="ExternalImageAddAction"/>
 			        <ribbon_action action="SetImageByFileChooserAction"	accelerator="alt shift K"/>
 					<ribbon_action action="ExternalImageChangeAction" />
 					<ribbon_action action="ExternalImageRemoveAction" />
@@ -136,7 +137,7 @@
 		</ribbon_task>
 		
 		<ribbon_task name="formatting">
-			<ribbon_contributor name="font_style" />
+			<ribbon_contributor name="fontStyleContributor" />
 			
 			<ribbon_band name="manage styles" resize_policies="Mirror, High2Mid">
 				
@@ -167,8 +168,9 @@
 				</ribbon_action>
 				<ribbon_action action="CloudColorAction" />				
 			</ribbon_band>
-			
-			<ribbon_band name="node_edges" resize_policies="Mirror, High2Mid">
+
+			<ribbon_contributor name="edgeStyleContributor"/>
+			<!-- ribbon_band name="nodeEdges" resize_policies="Mirror, High2Mid">
 				
 				<ribbon_action action="EdgeStyleAsParentAction">
 					<ribbon_action action="EdgeStyleAction.linear" />
@@ -189,7 +191,7 @@
 				
 				<ribbon_action action="EdgeColorAction" accelerator="alt shift E" />
 				<ribbon_action action="AutomaticEdgeColorHookAction" />
-			</ribbon_band>
+			</ribbon_band-->
 		</ribbon_task>
 
 	</menu_category>

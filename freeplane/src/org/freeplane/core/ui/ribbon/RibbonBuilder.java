@@ -17,6 +17,7 @@ import javax.swing.SwingUtilities;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.IndexedTree;
 import org.freeplane.core.ui.components.UITools;
+import org.freeplane.core.ui.ribbon.special.EdgeStyleContributorFactory;
 import org.freeplane.core.ui.ribbon.special.FontStyleContributorFactory;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
@@ -56,7 +57,8 @@ public class RibbonBuilder {
 		registerContributorFactory("ribbon_task", new RibbonTaskContributorFactory());
 		registerContributorFactory("ribbon_band", new RibbonBandContributorFactory());
 		registerContributorFactory("ribbon_action", new RibbonActionContributorFactory());
-		registerContributorFactory("font_style", new FontStyleContributorFactory());
+		registerContributorFactory("fontStyleContributor", new FontStyleContributorFactory());
+		registerContributorFactory("edgeStyleContributor", new EdgeStyleContributorFactory());
 		
 		updateApplicationMenuButton(ribbon);
 	}
