@@ -86,9 +86,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 			if(tip == null) {
 				tip = new RichTooltip(getActionTitle(key), "  ");
 			}
-			//else {
-				tip.addFooterSection(formatShortcut(ks));
-			//}
+			tip.addFooterSection(formatShortcut(ks));
 		}
 		if(tip != null) {
 			button.setActionRichTooltip(tip);

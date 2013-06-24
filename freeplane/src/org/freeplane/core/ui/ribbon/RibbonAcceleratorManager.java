@@ -43,6 +43,9 @@ public class RibbonAcceleratorManager implements IKeyStrokeProcessor, IAccelerat
 	 **********************************************************************************/
 
  	public void setAccelerator(final AFreeplaneAction action, final KeyStroke keyStroke) {
+ 		if(action == null || keyStroke == null) {
+ 			return;
+ 		}
 		final AFreeplaneAction oldAction = accelerators.put(keyStroke, action);
 		if (keyStroke != null && oldAction != null) {
 			UITools.errorMessage(TextUtils.format("action_keystroke_in_use_error", keyStroke, getActionTitle(action.getKey()), getActionTitle(oldAction.getKey())));
@@ -80,6 +83,9 @@ public class RibbonAcceleratorManager implements IKeyStrokeProcessor, IAccelerat
 	}
  	
  	public KeyStroke removeAccelerator(final AFreeplaneAction action) throws AssertionError {
+ 		if(action == null) {
+ 			return null;
+ 		}
 		final KeyStroke oldAccelerator = actionMap.get(action.getKey());
 		if (oldAccelerator != null) {
 			final AFreeplaneAction oldAction = accelerators.remove(oldAccelerator);

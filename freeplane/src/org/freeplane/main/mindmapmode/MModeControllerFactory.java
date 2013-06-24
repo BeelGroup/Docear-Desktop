@@ -316,5 +316,6 @@ public class MModeControllerFactory {
 		final MToolbarContributor menuContributor = new MToolbarContributor(uiFactory);
 		modeController.addExtension(MUIFactory.class, uiFactory);
 		modeController.addMenuContributor(menuContributor);
+		userInputListenerFactory.getRibbonBuilder().updateRibbon(ResourceController.getResourceController().getResource("/xml/mindmapmoderibbons.xml"));
 	}
 }
