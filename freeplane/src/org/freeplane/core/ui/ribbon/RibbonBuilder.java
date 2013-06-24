@@ -7,6 +7,8 @@ import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.Window;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Locale;
@@ -61,7 +63,7 @@ public class RibbonBuilder {
 		registerContributorFactory("footer_entry", new RibbonMenuFooterContributorFactory());
 		registerContributorFactory("ribbon_task", new RibbonTaskContributorFactory());
 		registerContributorFactory("ribbon_band", new RibbonBandContributorFactory());
-		registerContributorFactory("ribbon_action", new RibbonActionContributorFactory());
+		registerContributorFactory("ribbon_action", new RibbonActionContributorFactory(this));
 		registerContributorFactory("fontStyleContributor", new FontStyleContributorFactory());
 		registerContributorFactory("edgeStyleContributor", new EdgeStyleContributorFactory());
 		
@@ -142,7 +144,14 @@ public class RibbonBuilder {
 		if (xmlResource != null) {
 			final boolean isUserDefined = xmlResource.getProtocol().equalsIgnoreCase("file");
 			try{
-			reader.loadStructure(xmlResource);
+				reader.loadStructure(xmlResource);
+				try {
+					getAcceleratorManager().loadAcceleratorPresets(new FileInputStream(getAcceleratorManager().getPresetsFile()));
+				}
+				catch (IOException ex) {
+					LogUtils.info("not accelerator presets found: "+ex);
+					ex.printStackTrace();
+				}
 			}
 			catch (RuntimeException e){
 				if(isUserDefined){

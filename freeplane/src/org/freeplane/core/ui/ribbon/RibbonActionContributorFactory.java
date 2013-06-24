@@ -43,13 +43,16 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 
 	private static final String ACTION_KEY_PROPERTY = "ACTION_KEY";
 	private static final String ACTION_NAME_PROPERTY = "ACTION_NAME";
+	private final RibbonBuilder builder;
 
 	
 	/***********************************************************************************
 	 * CONSTRUCTORS
 	 **********************************************************************************/
 
-
+	public RibbonActionContributorFactory(RibbonBuilder builder) {
+		this.builder = builder;
+	}
 
 	
 	/***********************************************************************************
@@ -171,6 +174,16 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 	 **********************************************************************************/
 	
 	public ARibbonContributor getContributor(final Properties attributes) {
+		final String actionKey = attributes.getProperty("action");
+			if(actionKey != null) {
+			String accel = attributes.getProperty("accelerator", null);
+			if (accel != null) {
+				if (Compat.isMacOsX()) {
+					accel = accel.replaceFirst("CONTROL", "META").replaceFirst("control", "meta");
+				}
+				builder.getAcceleratorManager().setDefaultAccelerator(actionKey, accel);
+			}
+		}
 		return new ARibbonContributor() {
 			
 			private List<Component> childButtons = new ArrayList<Component>();
@@ -184,19 +197,11 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 				if(actionKey != null) {
 					final JCommandButton button = createCommandButton(actionKey);
 					button.putClientProperty(ACTION_KEY_PROPERTY, actionKey);
-					String accel = attributes.getProperty("accelerator", null);
-					if (accel != null) {
-						if (Compat.isMacOsX()) {
-							accel = accel.replaceFirst("CONTROL", "META").replaceFirst("control", "meta");
-						}
-						KeyStroke ks = KeyStroke.getKeyStroke(accel);
-						context.getBuilder().getAcceleratorManager().setDefaultAccelerator(actionKey, accel);
-//						KeyStroke ks = context.getBuilder().getAcceleratorManager().getAccelerator(actionKey);
-						if(ks != null) {
-							updateRichTooltip(button, actionKey, ks);
-						}
-					}
 					
+					KeyStroke ks = context.getBuilder().getAcceleratorManager().getAccelerator(actionKey);
+					if(ks != null) {
+						updateRichTooltip(button, actionKey, ks);
+					}
 					getAccelChangeListener().addAction(actionKey, button);
 					context.getBuilder().getAcceleratorManager().addAcceleratorChangeListener(getAccelChangeListener());
 					IndexedTree.Node n = context.getStructureNode(this);
@@ -248,11 +253,13 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 								}
 								String actionKey = (String)button.getClientProperty(ACTION_KEY_PROPERTY);
 								if(actionKey != null) {
+									menuButton.putClientProperty(ACTION_KEY_PROPERTY, actionKey);
 									updateRichTooltip(menuButton, actionKey, context.getBuilder().getAcceleratorManager().getAccelerator(actionKey));
 								}
 								else {
 									String actionName = (String)button.getClientProperty(ACTION_NAME_PROPERTY);
 									if(actionName != null) {
+										menuButton.putClientProperty(ACTION_NAME_PROPERTY, actionName);
 										updateRichTooltip(menuButton, actionName, null);
 									}
 								}
@@ -295,9 +302,11 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 	
 	public static class RibbonActionListener implements ActionListener {
 		private final String key;
+		private final RibbonBuilder builder;
 
 		protected RibbonActionListener(String key) {
 			this.key = key;
+			this.builder = Controller.getCurrentModeController().getUserInputListenerFactory().getRibbonBuilder();
 		}
 
 		public void actionPerformed(ActionEvent e) {
@@ -305,14 +314,11 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 			if(action == null) {
 				return;
 			}
-//			final Object source = e.getSource();
-//			if ((0 != (e.getModifiers() & ActionEvent.CTRL_MASK))
-//			        && source instanceof IKeyBindingManager && !((IKeyBindingManager) source).isKeyBindingProcessed()
-//			        && source instanceof JMenuItem) {
-//				final JMenuItem item = (JMenuItem) source;
-//				newAccelerator(item, null);
-//				return;
-//			}
+			if ((0 != (e.getModifiers() & ActionEvent.CTRL_MASK))/*
+			        && source instanceof IKeyBindingManager && !((IKeyBindingManager) source).isKeyBindingProcessed()/**/) {
+				builder.getAcceleratorManager().newAccelerator(action, null);				
+				return;
+			}
 			action.actionPerformed(e);
 		}
 		
