@@ -28,4 +28,5 @@ import javax.swing.KeyStroke;
  */
 public interface IAcceleratorChangeListener {
 	void acceleratorChanged(JMenuItem action, KeyStroke oldStroke, KeyStroke newStroke);
+	void acceleratorChanged(AFreeplaneAction action, KeyStroke oldStroke, KeyStroke newStroke);
 }

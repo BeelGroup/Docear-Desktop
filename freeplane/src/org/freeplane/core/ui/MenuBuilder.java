@@ -961,8 +961,8 @@ public class MenuBuilder extends UIBuilder implements IKeyStrokeProcessor {
 		return Collections.unmodifiableMap(accelerators);
 	}
 
-	public boolean processKeyBinding(KeyStroke ks, KeyEvent event, int condition, boolean pressed) {
-		if (condition == JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT) {
+	public boolean processKeyBinding(KeyStroke ks, KeyEvent event, int condition, boolean pressed, boolean consumed) {
+		if (!consumed && condition == JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT) {
 			Node node = accelerators.get(ks);
 			if(node != null) {
 				JFreeplaneMenuItem item = (JFreeplaneMenuItem) node.getUserObject();

@@ -18,15 +18,12 @@ public class RibbonMenuContributorFactory implements IRibbonContributorFactory {
 				return "app_menu";
 			}
 			
-			public void contribute(IndexedTree structure, IRibbonContributor parent) {
+			public void contribute(RibbonBuildContext context, IRibbonContributor parent) {
 				menu = new RibbonApplicationMenu();
-				String key = (String) structure.getKeyByUserObject(this);
-				if(key != null) {
-					Enumeration<?> children = structure.get(key).children();
-					while(children.hasMoreElements()) {
-						IndexedTree.Node node = (IndexedTree.Node) children.nextElement();
-						((IRibbonContributor)node.getUserObject()).contribute(structure, this);
-					}
+				Enumeration<?> children = context.getStructureNode(this).children();
+				while(children.hasMoreElements()) {
+					IndexedTree.Node node = (IndexedTree.Node) children.nextElement();
+					((IRibbonContributor)node.getUserObject()).contribute(context, this);
 				}				
 				parent.addChild(menu, null);
 			}

@@ -2,8 +2,6 @@ package org.freeplane.core.ui.ribbon;
 
 import java.util.Properties;
 
-import org.freeplane.core.ui.IndexedTree;
-
 public class RibbonSeparatorContributorFactory implements IRibbonContributorFactory {
 
 	/***********************************************************************************
@@ -24,7 +22,7 @@ public class RibbonSeparatorContributorFactory implements IRibbonContributorFact
 				return "separator_"+hashCode();
 			}
 			
-			public void contribute(IndexedTree structure, IRibbonContributor parent) {
+			public void contribute(RibbonBuildContext context, IRibbonContributor parent) {
 				parent.addChild(new RibbonSeparator(), null);
 			}
 			

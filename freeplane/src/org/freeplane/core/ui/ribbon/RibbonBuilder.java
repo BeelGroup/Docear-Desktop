@@ -31,17 +31,22 @@ import org.pushingpixels.flamingo.internal.ui.ribbon.appmenu.JRibbonApplicationM
 public class RibbonBuilder {
 	private final HashMap<String, IRibbonContributorFactory> contributorFactories = new HashMap<String, IRibbonContributorFactory>();
 	
-	private final IndexedTree structure;
+	final IndexedTree structure;
 	private final RootContributor rootContributor;
 	private final RibbonStructureReader reader;
 	private final JRibbon ribbon;
+	private final ModeController mode;
+
+	private final RibbonAcceleratorManager accelManager;
 	
 	public RibbonBuilder(ModeController mode, JRibbon ribbon) {
 		final RibbonApplicationMenu applicationMenu = new RibbonApplicationMenu();
 		structure = new IndexedTree(applicationMenu);
 		this.rootContributor = new RootContributor(ribbon);
 		this.ribbon = ribbon;
+		this.mode = mode;
 		reader = new RibbonStructureReader(this);
+		accelManager = new RibbonAcceleratorManager(this);
 		registerContributorFactory("separator", new RibbonSeparatorContributorFactory());
 		registerContributorFactory("ribbon_menu", new RibbonMenuContributorFactory());
 		registerContributorFactory("ribbon_taskbar", new RibbonTaskbarContributorFactory());
@@ -101,7 +106,7 @@ public class RibbonBuilder {
 	public void buildRibbon() {
 		
 		synchronized (structure) {
-			rootContributor.contribute(structure, null);			
+			rootContributor.contribute(new RibbonBuildContext(this), null);
 		}
 		Window f = SwingUtilities.getWindowAncestor(ribbon);
 		Dimension rv = f.getSize();
@@ -168,6 +173,14 @@ public class RibbonBuilder {
 		public String toString() {
 			return getKey();
 		}
+	}
+
+	public ModeController getMode() {
+		return mode;
+	}
+
+	public RibbonAcceleratorManager getAcceleratorManager() {
+		return accelManager;
 	}
 
 }

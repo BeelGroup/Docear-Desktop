@@ -59,22 +59,19 @@ public class RibbonMenuPrimaryContributorFactory implements IRibbonContributorFa
 				return key;
 			}
 			
-			public void contribute(IndexedTree structure, IRibbonContributor parent) {
+			public void contribute(RibbonBuildContext context, IRibbonContributor parent) {
 				entry = null;
-				String key = (String) structure.getKeyByUserObject(this);
-				if(key != null) {
-					Node n = (Node) structure.get(key);
-					if(n.getChildCount() > 0) {
-						entry = createMenuEntry(getKey(), (attributes.get("action") == null ? CommandButtonKind.POPUP_ONLY : CommandButtonKind.ACTION_AND_POPUP_MAIN_ACTION));
-						Enumeration<?> children = n.children();
-						while(children.hasMoreElements()) {
-							IndexedTree.Node node = (IndexedTree.Node) children.nextElement();
-							((IRibbonContributor)node.getUserObject()).contribute(structure, this);
-						}
+				Node n = context.getStructureNode(this);
+				if(n.getChildCount() > 0) {
+					entry = createMenuEntry(getKey(), (attributes.get("action") == null ? CommandButtonKind.POPUP_ONLY : CommandButtonKind.ACTION_AND_POPUP_MAIN_ACTION));
+					Enumeration<?> children = n.children();
+					while(children.hasMoreElements()) {
+						IndexedTree.Node node = (IndexedTree.Node) children.nextElement();
+						((IRibbonContributor)node.getUserObject()).contribute(context, this);
 					}
-					else {
-						entry = createMenuEntry(getKey(), CommandButtonKind.ACTION_ONLY);
-					}
+				}
+				else {
+					entry = createMenuEntry(getKey(), CommandButtonKind.ACTION_ONLY);
 				}
 				parent.addChild(entry, null);
 			}

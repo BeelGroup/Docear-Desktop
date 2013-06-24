@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Properties;
 
 import org.freeplane.core.ui.IndexedTree;
-import org.freeplane.core.ui.IndexedTree.Node;
 import org.freeplane.core.util.TextUtils;
 import org.pushingpixels.flamingo.api.ribbon.AbstractRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
@@ -21,14 +20,12 @@ public class RibbonTaskContributorFactory implements IRibbonContributorFactory {
 				return attributes.getProperty("name");				
 			}
 			
-			public void contribute(IndexedTree structure, IRibbonContributor parent) {
+			public void contribute(RibbonBuildContext context, IRibbonContributor parent) {
 				bands.clear();
-				String pathKey = (String) structure.getKeyByUserObject(this);
-				IndexedTree.Node n = (Node) structure.get(pathKey);
-				Enumeration<?> children = n.children();
+				Enumeration<?> children = context.getStructureNode(this).children();
 				while(children.hasMoreElements()) {
 					IndexedTree.Node node = (IndexedTree.Node) children.nextElement();
-					((IRibbonContributor)node.getUserObject()).contribute(structure, this);
+					((IRibbonContributor)node.getUserObject()).contribute(context, this);
 				}
 				if(!bands.isEmpty()) {
 					RibbonTask task = new RibbonTask(TextUtils.getText("ribbon."+getKey()), bands.toArray(new AbstractRibbonBand<?>[0]));

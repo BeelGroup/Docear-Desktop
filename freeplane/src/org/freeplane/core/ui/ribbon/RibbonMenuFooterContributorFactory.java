@@ -3,7 +3,6 @@ package org.freeplane.core.ui.ribbon;
 import java.awt.event.ActionListener;
 import java.util.Properties;
 
-import org.freeplane.core.ui.IndexedTree;
 import org.pushingpixels.flamingo.api.common.icon.ResizableIcon;
 import org.pushingpixels.flamingo.api.ribbon.RibbonApplicationMenuEntryFooter;
 
@@ -27,7 +26,7 @@ public class RibbonMenuFooterContributorFactory implements IRibbonContributorFac
 				return attributes.getProperty("action");
 			}
 			
-			public void contribute(IndexedTree structure, IRibbonContributor parent) {
+			public void contribute(RibbonBuildContext context, IRibbonContributor parent) {
 				final String key = attributes.getProperty("action");
 				if(key != null) {
 					String title = RibbonActionContributorFactory.getActionTitle(getKey());

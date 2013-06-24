@@ -1,8 +1,8 @@
 package org.freeplane.core.ui;
 
 import java.awt.event.KeyEvent;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.KeyStroke;
 
@@ -10,7 +10,7 @@ import org.freeplane.core.extension.IExtension;
 
 public class KeyBindingProcessor implements IExtension {
 	
-	private final HashSet<IKeyStrokeProcessor> processors = new HashSet<IKeyStrokeProcessor>();
+	private final List<IKeyStrokeProcessor> processors = new ArrayList<IKeyStrokeProcessor>();
 	/***********************************************************************************
 	 * CONSTRUCTORS
 	 **********************************************************************************/
@@ -21,12 +21,12 @@ public class KeyBindingProcessor implements IExtension {
 
 	public boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed) {
 		synchronized (processors) {
-			Iterator<IKeyStrokeProcessor> iter = processors.iterator();
-			boolean intercept = false;
-			while(iter.hasNext()) { //maybe break after the first interception?
-				intercept = iter.next().processKeyBinding(ks, e, condition, pressed) || intercept;
+			boolean consumed = false;
+			for(int i = processors.size()-1; i >= 0; i--) { 
+				//maybe break after the first interception?
+				consumed = processors.get(i).processKeyBinding(ks, e, condition, pressed, consumed) || consumed;
 			}
-			return intercept;
+			return consumed;
 		}
 	}
 	

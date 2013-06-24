@@ -18,13 +18,13 @@ public class RootContributor implements IRibbonContributor {
 		return "/";
 	}
 
-	public void contribute(IndexedTree structure, IRibbonContributor parent) {
+	public void contribute(RibbonBuildContext context, IRibbonContributor parent) {
 		ribbon.removeAllTaskbarComponents();
 		ribbon.removeAllTasks();
-		Enumeration<?> children = structure.getRoot().children();
+		Enumeration<?> children = context.getStructureRoot().children();
 		while(children.hasMoreElements()) {
 			IndexedTree.Node node = (IndexedTree.Node) children.nextElement();
-			((IRibbonContributor)node.getUserObject()).contribute(structure, this);
+			((IRibbonContributor)node.getUserObject()).contribute(context, this);
 		}
 
 	}

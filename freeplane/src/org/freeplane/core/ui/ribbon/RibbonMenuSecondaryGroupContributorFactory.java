@@ -5,7 +5,6 @@ import java.util.Enumeration;
 import java.util.Properties;
 
 import org.freeplane.core.ui.IndexedTree;
-import org.freeplane.core.ui.IndexedTree.Node;
 import org.freeplane.core.ui.ribbon.RibbonActionContributorFactory.RibbonActionListener;
 import org.freeplane.core.ui.ribbon.RibbonMenuPrimaryContributorFactory.SecondaryEntryGroup;
 import org.freeplane.core.util.TextUtils;
@@ -35,16 +34,12 @@ public class RibbonMenuSecondaryGroupContributorFactory implements IRibbonContri
 				return attributes.getProperty("name", null);
 			}
 			
-			public void contribute(IndexedTree structure, IRibbonContributor parent) {
+			public void contribute(RibbonBuildContext context, IRibbonContributor parent) {
 				group = new SecondaryEntryGroup(TextUtils.getRawText("ribbon.menu.group."+getKey()));
-				String key = (String) structure.getKeyByUserObject(this);
-				if(key != null) {
-					Node n = (Node) structure.get(key);
-					Enumeration<?> children = n.children();
-					while(children.hasMoreElements()) {
-						IndexedTree.Node node = (IndexedTree.Node) children.nextElement();
-						((IRibbonContributor)node.getUserObject()).contribute(structure, this);
-					}
+				Enumeration<?> children = context.getStructureNode(this).children();
+				while(children.hasMoreElements()) {
+					IndexedTree.Node node = (IndexedTree.Node) children.nextElement();
+					((IRibbonContributor)node.getUserObject()).contribute(context, this);
 				}
 				parent.addChild(group, null);
 			}

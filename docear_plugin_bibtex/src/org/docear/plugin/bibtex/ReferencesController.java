@@ -556,12 +556,11 @@ public class ReferencesController extends ALanguageController implements IDocear
 	
 	private class KeyBindInterceptor implements IKeyStrokeProcessor {
 		
-		public boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed) {
+		public boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed, boolean consumed) {
 			Object source = e.getSource();
 			if(hasPackageNameOrAncestor(source, "net.sf.jabref")) {
 				if(jabrefWrapper.getJabrefFrame().getMenuBar().processKeyBinding(ks, e, condition, pressed)) {
 					e.consume();
-					
 				}
 				return true;
 			}

@@ -6,12 +6,11 @@ import java.util.Properties;
 
 import javax.swing.JComponent;
 
-import org.freeplane.core.ui.IndexedTree;
 import org.freeplane.core.ui.ribbon.IRibbonContributor;
 import org.freeplane.core.ui.ribbon.IRibbonContributorFactory;
 import org.freeplane.core.ui.ribbon.RibbonActionContributorFactory;
+import org.freeplane.core.ui.ribbon.RibbonBuildContext;
 import org.freeplane.features.mode.Controller;
-import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.styles.mindmapmode.MUIFactory;
 import org.pushingpixels.flamingo.api.common.JCommandButtonStrip;
 import org.pushingpixels.flamingo.api.ribbon.JFlowRibbonBand;
@@ -26,7 +25,7 @@ public class FontStyleContributorFactory implements IRibbonContributorFactory {
 				return attributes.getProperty("name");
 			}
 
-			public void contribute(IndexedTree structure, IRibbonContributor parent) {
+			public void contribute(RibbonBuildContext context, IRibbonContributor parent) {
 				if (parent == null) {
 					return;
 				}

@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Properties;
 
 import org.freeplane.core.ui.IndexedTree;
-import org.freeplane.core.ui.IndexedTree.Node;
 import org.freeplane.core.util.TextUtils;
 import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
@@ -25,7 +24,7 @@ public class RibbonBandContributorFactory implements IRibbonContributorFactory {
 				return attributes.getProperty("name");
 			}
 			
-			public void contribute(IndexedTree structure, IRibbonContributor parent) {
+			public void contribute(RibbonBuildContext context, IRibbonContributor parent) {
 				if(parent == null) {
 					return;
 				}
@@ -34,12 +33,10 @@ public class RibbonBandContributorFactory implements IRibbonContributorFactory {
 				try {
     				band = new JRibbonBand(TextUtils.getText("ribbon.band."+attributes.getProperty("name")), null);
     				//read policies and sub-contributions
-    				String pathKey = (String) structure.getKeyByUserObject(this);
-    				IndexedTree.Node n = (Node) structure.get(pathKey);
-    				Enumeration<?> children = n.children();
+    				Enumeration<?> children = context.getStructureNode(this).children();
     				while(children.hasMoreElements()) {
     					IndexedTree.Node node = (IndexedTree.Node) children.nextElement();
-    					((IRibbonContributor)node.getUserObject()).contribute(structure, this);
+    					((IRibbonContributor)node.getUserObject()).contribute(context, this);
     				}
     				setResizePolicies(attributes.getProperty("resize_policies"));
     				parent.addChild(band, null);

@@ -12,6 +12,6 @@ import javax.swing.KeyStroke;
  * 
  */
 public interface IKeyStrokeProcessor {
-	public boolean processKeyBinding(final KeyStroke ks, final KeyEvent e, final int condition, final boolean pressed);
+	public boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed, boolean consumed);
 
 }

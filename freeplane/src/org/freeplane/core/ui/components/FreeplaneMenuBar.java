@@ -89,6 +89,14 @@ public class FreeplaneMenuBar extends JMenuBar implements IKeyStrokeProcessor {
 		}
 		return ks;
 	}
+	
+	public boolean processKeyBinding(final KeyStroke ks, final KeyEvent e, final int condition, final boolean pressed, boolean consumed) {
+		if(!consumed) {
+			return processKeyBinding(ks, e, condition, pressed);
+		}
+		return false;
+	}
+		
 
 	@Override
 	public boolean processKeyBinding(final KeyStroke ks, final KeyEvent e, final int condition, final boolean pressed) {

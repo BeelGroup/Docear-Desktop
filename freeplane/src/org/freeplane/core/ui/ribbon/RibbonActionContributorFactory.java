@@ -7,16 +7,22 @@ import java.awt.event.ActionListener;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
+import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
+import javax.swing.KeyStroke;
 
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.AFreeplaneAction;
+import org.freeplane.core.ui.IAcceleratorChangeListener;
 import org.freeplane.core.ui.IndexedTree;
 import org.freeplane.core.ui.IndexedTree.Node;
 import org.freeplane.core.ui.ribbon.RibbonSeparatorContributorFactory.RibbonSeparator;
+import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.Controller;
 import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
@@ -36,6 +42,8 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 	/***********************************************************************************
 	 * CONSTRUCTORS
 	 **********************************************************************************/
+
+
 
 	/***********************************************************************************
 	 * METHODS
@@ -58,12 +66,21 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 		
 		final JCommandButton button = new JCommandButton(title, icon);
 		
-		final String tooltip = TextUtils.getRawText(key+ ".tooltip", null);
-		if (tooltip != null && !"".equals(tooltip)) {
-			button.setActionRichTooltip(new RichTooltip(title, tooltip));
-		}
+		updateRichTooltip(button, key, null);
 		button.addActionListener(new RibbonActionListener(key));
 		return button;
+	}
+	
+	public static void updateRichTooltip(final JCommandButton button, String key, KeyStroke ks) {
+		RichTooltip tip = null;
+		final String tooltip = TextUtils.getRawText(key+ ".tooltip", null);
+		if (tooltip != null && !"".equals(tooltip)) {
+			tip = new RichTooltip(getActionTitle(key), tooltip);
+			if(ks != null) {
+				tip.addFooterSection(ks.toString());
+			}
+			button.setActionRichTooltip(tip);
+		}
 	}
 
 	public static ResizableIcon getActionIcon(final String key) {
@@ -83,6 +100,8 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 		}
 		return title;
 	}
+
+	private ActionAcceleratorChangeListener changeListener;
 	
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
@@ -97,28 +116,54 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 				return attributes.getProperty("action");
 			}
 			
-			public void contribute(IndexedTree structure, IRibbonContributor parent) {
-				final String key = attributes.getProperty("action");
-				if(key != null) {
-					final JCommandButton button = createCommandButton(key);
+			public void contribute(RibbonBuildContext context, IRibbonContributor parent) {
+				final String actionKey = attributes.getProperty("action");
+				if(actionKey != null) {
+					final JCommandButton button = createCommandButton(actionKey);
 					
-					String pathKey = (String) structure.getKeyByUserObject(this);
-					IndexedTree.Node n = (Node) structure.get(pathKey);
+					String accel = attributes.getProperty("accelerator", null);
+					if (accel != null) {
+						if (Compat.isMacOsX()) {
+							accel = accel.replaceFirst("CONTROL", "META").replaceFirst("control", "meta");
+						}
+						//KeyStroke k = KeyStroke.getKeyStroke(accel);
+						context.getBuilder().getAcceleratorManager().setDefaultAccelerator(actionKey, accel);
+					}
+					KeyStroke ks = context.getBuilder().getAcceleratorManager().getAccelerator(actionKey);
+					if(ks != null) {
+						updateRichTooltip(button, actionKey, ks);
+					}
+					getAccelChangeListener().addAction(actionKey, button);
+					context.getBuilder().getAcceleratorManager().addAcceleratorChangeListener(getAccelChangeListener());
+					IndexedTree.Node n = context.getStructureNode(this);
 					if(n.getChildCount() > 0) {
 						button.setCommandButtonKind(CommandButtonKind.ACTION_AND_POPUP_MAIN_ACTION);
-						button.setPopupCallback(getPopupPanelCallBack(n, structure));
+						button.setPopupCallback(getPopupPanelCallBack(n, context));
 					}
 					
 					parent.addChild(button, getPriority(attributes.getProperty("priority", "medium")));
 				}
+				else {
+					final String name = attributes.getProperty("name");
+					if(name != null) {
+						final JCommandButton button = new JCommandButton(getActionTitle(name), getActionIcon(name));
+						updateRichTooltip(button, name, null);
+						IndexedTree.Node n = context.getStructureNode(this);
+						if(n.getChildCount() > 0) {
+							button.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
+							button.setPopupCallback(getPopupPanelCallBack(n, context));
+						}
+						parent.addChild(button, getPriority(attributes.getProperty("priority", "medium")));
+					}
+				}
 			}
 			
-			private PopupPanelCallback getPopupPanelCallBack(Node n, IndexedTree structure) {
+			private PopupPanelCallback getPopupPanelCallBack(Node n, RibbonBuildContext context) {
 				childButtons.clear();
 				Enumeration<?> children = n.children();
 				while(children.hasMoreElements()) {
 					IndexedTree.Node node = (IndexedTree.Node) children.nextElement();
-					((IRibbonContributor)node.getUserObject()).contribute(structure, this);
+					((IRibbonContributor)node.getUserObject()).contribute(context, this);
 				}
 				return new PopupPanelCallback() {
 					
@@ -165,6 +210,13 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 		};
 	}
 	
+	protected ActionAcceleratorChangeListener getAccelChangeListener() {
+		if(changeListener == null) {
+			changeListener = new ActionAcceleratorChangeListener();
+		}
+		return changeListener;
+	}
+
 	/***********************************************************************************
 	 * NESTED TYPE DECLARATIONS
 	 **********************************************************************************/
@@ -181,7 +233,52 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 			if(action == null) {
 				return;
 			}
+//			final Object source = e.getSource();
+//			if ((0 != (e.getModifiers() & ActionEvent.CTRL_MASK))
+//			        && source instanceof IKeyBindingManager && !((IKeyBindingManager) source).isKeyBindingProcessed()
+//			        && source instanceof JMenuItem) {
+//				final JMenuItem item = (JMenuItem) source;
+//				newAccelerator(item, null);
+//				return;
+//			}
 			action.actionPerformed(e);
+		}
+		
+		
+	}
+	
+	public static class ActionAcceleratorChangeListener implements IAcceleratorChangeListener {
+		private final Map<String, JCommandButton> actionMap = new HashMap<String, JCommandButton>();
+		
+		/***********************************************************************************
+		 * CONSTRUCTORS
+		 **********************************************************************************/
+
+		/***********************************************************************************
+		 * METHODS
+		 **********************************************************************************/
+		
+		public void addAction(String actionKey, JCommandButton button) {
+			actionMap.put(actionKey, button);
+		}
+		
+		public void clear() {
+			actionMap.clear();
+		}
+		/***********************************************************************************
+		 * REQUIRED METHODS FOR INTERFACES
+		 **********************************************************************************/
+		
+		public void acceleratorChanged(JMenuItem action, KeyStroke oldStroke, KeyStroke newStroke) {
+			
+		}
+		
+		public void acceleratorChanged(AFreeplaneAction action, KeyStroke oldStroke, KeyStroke newStroke) {
+			JCommandButton button = actionMap.get(action.getKey()); 
+			if(button != null) {
+				updateRichTooltip(button, action.getKey(), newStroke);
+			}
+
 		}
 	}
 }
