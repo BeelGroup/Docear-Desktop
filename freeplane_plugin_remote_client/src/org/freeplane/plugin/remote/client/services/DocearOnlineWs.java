@@ -2,7 +2,9 @@ package org.freeplane.plugin.remote.client.services;
 
 import java.io.PrintStream;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -103,19 +105,60 @@ public class DocearOnlineWs implements WS {
 		}, clientController.system().dispatcher());
 
 	}
+	
+	@Override
+	public List<Project> getProjectsForUser(final User user) {
+		try {
+			final WebResource projectsResource = preparedResource(user).path("user/projects");
+			final Project[] projects = new ObjectMapper().readValue(projectsResource.get(String.class),Project[].class);
+			
+			return Arrays.asList(projects);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	@Override
+	public Project getProject(final User user,String projectId) {
+		try {
+			final WebResource projectResource = preparedResource(user).path("project/"+projectId);
+			final Project projects = new ObjectMapper().readValue(projectResource.get(String.class),Project.class);
+			
+			return projects;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	@Override
+	public void createMindmap(User user, MapIdentifier mapIdentifier) {
+		try {
+			final WebResource createResource = preparedResource(user).path("project/" + mapIdentifier.getProjectId() + "/map/create");
+			final MultivaluedMap<String, String> formData = new MultivaluedMapImpl();
+			formData.add("path", mapIdentifier.getMapId());
+			
+			createResource.post(ClientResponse.class,formData);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	@Override
-	public Future<JsonNode> getMapAsXml(final User user, final MapIdentifier mapIdentifier) {
-		
+	public Future<MapAsXmlResponse> getMapAsXml(final User user, final MapIdentifier mapIdentifier) {		
 		try {
-			final WebResource mapAsXmlResource = preparedResource(user).path("project/" + mapIdentifier.getProjectId() + "/map/" + mapIdentifier.getMapId() + "/xml");
-			final JsonNode response = new ObjectMapper().readTree(mapAsXmlResource.get(String.class));
-			return Futures.successful(response);
+			final String urlEncodedPath = URLEncoder.encode(mapIdentifier.getMapId(),"UTF-8");
+			final WebResource mapAsXmlResource = preparedResource(user).path("project/" + mapIdentifier.getProjectId() + "/map/" + urlEncodedPath + "/xml");
+			final ClientResponse response = mapAsXmlResource.get(ClientResponse.class);
+			final String xmlString = response.getEntity(String.class);
+			
+			final long revision = Long.parseLong(response.getHeaders().get("currentRevision").get(0));
+			return Futures.successful(new MapAsXmlResponse(xmlString, revision));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return Futures.failed(e);
 		}
-
 	}
 
 	@Override

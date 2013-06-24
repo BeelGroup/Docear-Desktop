@@ -18,6 +18,7 @@ import org.freeplane.plugin.remote.client.ClientController.CheckForChangesRunnab
 import org.freeplane.plugin.remote.client.User;
 import org.freeplane.plugin.remote.client.actors.InitCollaborationActor.Messages.InitCollaborationMode;
 import org.freeplane.plugin.remote.client.actors.ListenForUpdatesActor.Messages.SetMapAndRevision;
+import org.freeplane.plugin.remote.client.services.MapAsXmlResponse;
 import org.freeplane.plugin.remote.client.services.WS;
 
 import scala.concurrent.Future;
@@ -25,8 +26,6 @@ import scala.concurrent.duration.Duration;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.pattern.Patterns;
-
-import com.fasterxml.jackson.databind.JsonNode;
 
 public class InitCollaborationActor extends FreeplaneClientActor {
 
@@ -46,14 +45,14 @@ public class InitCollaborationActor extends FreeplaneClientActor {
 			final User user = msg.getUser();
 			Validate.notNull(user);
 
-			final Future<JsonNode> mindmapFuture = ws.getMapAsXml(user, mapIdentifier);
+			final Future<MapAsXmlResponse> mindmapFuture = ws.getMapAsXml(user, mapIdentifier);
 			Patterns.pipe(mindmapFuture, getContext().system().dispatcher()).to(getSelf());
 		}
 		// xml mindmap wrapped in json
-		else if (message instanceof JsonNode) {
-			final JsonNode responseNode = (JsonNode) message;
-			final int currentRevision = 0;//responseNode.get("currentRevision").asInt();
-			final String xmlString = responseNode.toString();// responseNode.get("xmlString").asText();
+		else if (message instanceof MapAsXmlResponse) {
+			final MapAsXmlResponse response = (MapAsXmlResponse) message;
+			final int currentRevision = (int)response.getRevision();
+			final String xmlString = response.getXmlString();
 			final Random ran = new Random();
 			final String filename = "" + System.currentTimeMillis() + ran.nextInt(100);
 			final String tempDirPath = System.getProperty("java.io.tmpdir");

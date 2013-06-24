@@ -1,11 +1,11 @@
 package org.freeplane.plugin.remote.client.services;
 
+import java.util.List;
+
 import org.docear.messages.models.MapIdentifier;
 import org.freeplane.plugin.remote.client.User;
 
 import scala.concurrent.Future;
-
-import com.fasterxml.jackson.databind.JsonNode;
 
 public interface WS {
 	/**
@@ -19,7 +19,11 @@ public interface WS {
 	
 	Future<Boolean> listenIfUpdatesOccur(User user, MapIdentifier mapIdentifier);
 	
-	Future<JsonNode> getMapAsXml(User user, MapIdentifier mapIdentifier);
+	Project getProject(final User user,String projectId);
+	List<Project> getProjectsForUser(final User user);
+	void createMindmap(final User user, MapIdentifier mapIdentifier);
+	
+	Future<MapAsXmlResponse> getMapAsXml(User user, MapIdentifier mapIdentifier);
 	
 	Future<GetUpdatesResponse> getUpdatesSinceRevision(User user, MapIdentifier mapIdentifier, int sinceRevision);
 	

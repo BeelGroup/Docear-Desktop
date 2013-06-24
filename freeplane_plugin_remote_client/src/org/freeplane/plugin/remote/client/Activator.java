@@ -1,8 +1,10 @@
 package org.freeplane.plugin.remote.client;
 
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Hashtable;
+import java.util.List;
 
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -14,8 +16,13 @@ import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.main.osgi.IModeControllerExtensionProvider;
+import org.freeplane.plugin.remote.client.services.Project;
+import org.freeplane.plugin.remote.client.services.WS;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+
+import scala.concurrent.CanAwait;
+import scala.concurrent.duration.Duration;
 
 public class Activator implements BundleActivator {
 
@@ -46,8 +53,18 @@ public class Activator implements BundleActivator {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				final User user = new User("Julius", "Julius-token");
+				final ClientController ctrl = ClientController.getClientController();
+				final WS webservice = ctrl.webservice();
+				final List<Project> projects = webservice.getProjectsForUser(user);
+				final MapIdentifier mapIdentifier = new MapIdentifier(projects.get(0).getId(), "desktop/desktopSync.mm");
+				try {
+					webservice.getMapAsXml(user, mapIdentifier).result(Duration.apply("5 seconds"),new CanAwait(){});
+				} catch (Exception e) {
+					webservice.createMindmap(user, mapIdentifier);
+				}
 				
-				ClientController.getClientController().startListeningForMap(new User("Julius", "Julius-token"), new MapIdentifier("-1", "5"));
+				ctrl.startListeningForMap(user, mapIdentifier);
 			}
 		});
 
