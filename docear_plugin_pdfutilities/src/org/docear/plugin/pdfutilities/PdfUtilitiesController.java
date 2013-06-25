@@ -99,8 +99,13 @@ import org.freeplane.core.resources.components.IPropertyControl;
 import org.freeplane.core.resources.components.RadioButtonProperty;
 import org.freeplane.core.ui.IMenuContributor;
 import org.freeplane.core.ui.IMouseListener;
+import org.freeplane.core.ui.IndexedTree;
 import org.freeplane.core.ui.MenuBuilder;
 import org.freeplane.core.ui.components.UITools;
+import org.freeplane.core.ui.ribbon.ARibbonContributor;
+import org.freeplane.core.ui.ribbon.RibbonBuildContext;
+import org.freeplane.core.ui.ribbon.RibbonBuilder;
+import org.freeplane.core.ui.ribbon.RibbonBuilder.RibbonPath;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.FileUtils;
 import org.freeplane.core.util.LogUtils;
@@ -840,6 +845,9 @@ public class PdfUtilitiesController extends ALanguageController {
 				deleteFileAction.addPropertyChangeListener(pdfManagementPopupMenu);
 			}
 		});
+		
+		//modecontroller.getUserInputListenerFactory().getRibbonBuilder().registerContributorFactory("pdfutilities", new DocearPdfUtilitiesBandContributorFactory());
+		modecontroller.getUserInputListenerFactory().getRibbonBuilder().updateRibbon(PdfUtilitiesController.class.getResource("/xml/ribbons.xml"));
 	}
 
 	public static String getParentCategory(MenuBuilder builder, String parentMenu) {

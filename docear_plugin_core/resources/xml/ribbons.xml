@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menu_structure>
+    <menu_category name="ribbon">
+	    <ribbon_taskbar></ribbon_taskbar>
+	    <ribbon_menu>
+	       <primary_entry name="help">
+	           <entry_group name="licenses">
+	               <ribbon_action action="DocearShowTermsOfUse" />
+	               <ribbon_action action="DocearShowDataPrivacyStatement" />
+	               <ribbon_action action="DocearShowDataProcessingTerms" />
+            </entry_group>
+            </primary_entry>
+	    </ribbon_menu>
+	    <ribbon_task name="docear">
+	    </ribbon_task>
+	    <ribbon_task name="project">
+	       <ribbon_band name="Literature" resize_policies="Mirror, High2Mid">
+		       <ribbon_action action="workspace.action.node.add.repository" priority="TOP" />
+		       <ribbon_action action="workspace.action.node.remove.repository"  priority="TOP" />
+	       </ribbon_band>
+        </ribbon_task>
+    </menu_category>
+</menu_structure>

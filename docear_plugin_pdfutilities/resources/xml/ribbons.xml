@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menu_structure>
+    <menu_category name="ribbon">
+	    <ribbon_taskbar></ribbon_taskbar>
+	    <ribbon_menu></ribbon_menu>
+	    <ribbon_task name="docear">
+	       
+	    </ribbon_task>
+    </menu_category>
+</menu_structure>
