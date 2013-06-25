@@ -41,8 +41,7 @@ public class EdgeStyleContributorFactory implements IRibbonContributorFactory {
 					JRibbonBand band = new JRibbonBand(TextUtils.getText("ribbon.band.edgeStyles"), null, null);
 					band.setExpandButtonKeyTip("ES");
 					band.setCollapsedStateKeyTip("ZE");
-
-//					MUIFactory uiFactory = Controller.getCurrentModeController().getExtension(MUIFactory.class);
+					MUIFactory uiFactory = Controller.getCurrentModeController().getExtension(MUIFactory.class);
 					
 					JCommandButton styleGroupButton = new JCommandButton(TextUtils.getText("edgeStyleGroupAction.text"));
 					styleGroupButton.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
