@@ -232,7 +232,7 @@ public class RibbonAcceleratorManager implements IKeyStrokeProcessor, IAccelerat
 			}
 		}
 		catch (final IOException e) {
-			e.printStackTrace();
+			LogUtils.warn("shortcut presets not stored: "+e.getMessage());
 		}
 	}
  	

@@ -150,7 +150,6 @@ public class RibbonBuilder {
 				}
 				catch (IOException ex) {
 					LogUtils.info("not accelerator presets found: "+ex);
-					ex.printStackTrace();
 				}
 			}
 			catch (RuntimeException e){
