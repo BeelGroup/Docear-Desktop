@@ -485,7 +485,11 @@ public class CoreConfiguration extends ALanguageController {
 		WorkspaceController.replaceAction(new DocearOpenUrlAction(OPEN_FREEPLANE_SITE_ACTION, resourceController.getProperty(WEB_FREEPLANE_LOCATION)));
 		WorkspaceController.replaceAction(new DocearOpenUrlAction(DOCUMENTATION_ACTION, resourceController.getProperty(WEB_DOCU_LOCATION)));
 		WorkspaceController.replaceAction(new GettingStartedAction());
-		WorkspaceController.replaceAction(new OnlineDocumentationAction("OnlineReference", "docu-online"));		
+		WorkspaceController.replaceAction(new OnlineDocumentationAction("OnlineReference", "docu-online"));
+		
+		WorkspaceController.replaceAction(new DocearShowTermsOfUseAction());
+		WorkspaceController.replaceAction(new DocearShowDataPrivacyStatementAction());
+		WorkspaceController.replaceAction(new DocearShowDataProcessingTermsAction());
 	}
 
 	private void replaceResourceBundleStrings() {

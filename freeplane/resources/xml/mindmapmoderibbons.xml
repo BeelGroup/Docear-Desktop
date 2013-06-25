@@ -9,29 +9,19 @@
        <ribbon_action action="SaveAll" />
 	</ribbon_taskbar>
 	<ribbon_menu>
-        <primary_entry name="actionWithSubs" action="actionWithSubsAction">
-            <entry_group name="group 1">
-                <ribbon_action action="NewSiblingAction"><ribbon_action action="NewSummaryAction" /></ribbon_action>
-                <ribbon_action action="NewSummaryAction" />
-                <ribbon_action action="NewFreeNodeAction" />
-            </entry_group>
-            <entry_group name="group 2">
-                <ribbon_action action="NewSiblingAction"/>
+        <primary_entry name="new">
+            <entry_group name="new">
+                <ribbon_action action="NewMapAction" accelerator="control N" />
+                <ribbon_action action="EncryptedMap" />
             </entry_group>
         </primary_entry>
-        <primary_entry name="actionWithSubs2">
-            <entry_group name="group 1">
-                <ribbon_action action="NewSiblingAction"/>
-            </entry_group>
-            <entry_group name="group 2">
-                <ribbon_action action="NewSiblingAction"/>
-                <ribbon_action action="NewFreeNodeAction" />
-            </entry_group>
-            <entry_group name="group 3">
-                <ribbon_action action="NewFreeNodeAction" />
+        <primary_entry name="save">
+            <entry_group name="save">
+                <ribbon_action action="SaveAction" accelerator="control S" />
+                <ribbon_action action="SaveAsAction" accelerator="control shift S" />
+                <ribbon_action action="SaveAll" />
             </entry_group>
         </primary_entry>
-        <primary_entry action="onlyAction" />
         <footer_entry action="QuitAction" />
     </ribbon_menu>
 		<ribbon_task name="home">
