@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.swing.Action;
+import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
@@ -70,59 +72,59 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 		return prio;
 	}
 
-	public static JCommandButton createCommandButton(final String key) {
-		String title = getActionTitle(key);
-		ResizableIcon icon = getActionIcon(key);
+	public static JCommandButton createCommandButton(final AFreeplaneAction action) {
+		String title = getActionTitle(action);
+		ResizableIcon icon = getActionIcon(action);
 		
 		final JCommandButton button = new JCommandButton(title, icon);
 		
-		updateRichTooltip(button, key, null);
-		button.addActionListener(new RibbonActionListener(key));
+		updateRichTooltip(button, action, null);
+		button.addActionListener(new RibbonActionListener(action));
 		return button;
 	}
 	
-	public static JCommandToggleButton createCommandToggleButton(final String key) {
-		String title = getActionTitle(key);
-		ResizableIcon icon = getActionIcon(key);
+	public static JCommandToggleButton createCommandToggleButton(final AFreeplaneAction action) {
+		String title = getActionTitle(action);
+		ResizableIcon icon = getActionIcon(action);
 		
 		final JCommandToggleButton button = new JCommandToggleButton(title, icon);
 		
-		updateRichTooltip(button, key, null);
-		button.addActionListener(new RibbonActionListener(key));
+		updateRichTooltip(button, action, null);
+		button.addActionListener(new RibbonActionListener(action));
 		return button;
 	}
 	
-	public static JCommandMenuButton createCommandMenuButton(final String key) {
-		String title = getActionTitle(key);
-		ResizableIcon icon = getActionIcon(key);
+	public static JCommandMenuButton createCommandMenuButton(final AFreeplaneAction action) {
+		String title = getActionTitle(action);
+		ResizableIcon icon = getActionIcon(action);
 		
 		final JCommandMenuButton button = new JCommandMenuButton(title, icon);
 		
-		updateRichTooltip(button, key, null);
-		button.addActionListener(new RibbonActionListener(key));
+		updateRichTooltip(button, action, null);
+		button.addActionListener(new RibbonActionListener(action));
 		return button;
 	}
 	
-	public static JCommandToggleMenuButton createCommandToggleMenuButton(final String key) {
-		String title = getActionTitle(key);
-		ResizableIcon icon = getActionIcon(key);
+	public static JCommandToggleMenuButton createCommandToggleMenuButton(final AFreeplaneAction action) {
+		String title = getActionTitle(action);
+		ResizableIcon icon = getActionIcon(action);
 		
 		final JCommandToggleMenuButton button = new JCommandToggleMenuButton(title, icon);
 		
-		updateRichTooltip(button, key, null);
-		button.addActionListener(new RibbonActionListener(key));
+		updateRichTooltip(button, action, null);
+		button.addActionListener(new RibbonActionListener(action));
 		return button;
 	}
 	
-	public static void updateRichTooltip(final AbstractCommandButton button, String key, KeyStroke ks) {
+	public static void updateRichTooltip(final AbstractCommandButton button, AFreeplaneAction action, KeyStroke ks) {
 		RichTooltip tip = null;
-		final String tooltip = TextUtils.getRawText(key+ ".tooltip", null);
+		final String tooltip = TextUtils.getRawText(action.getTooltipKey(), null);
 		if (tooltip != null && !"".equals(tooltip)) {
-			tip = new RichTooltip(getActionTitle(key), tooltip);
+			tip = new RichTooltip(getActionTitle(action), tooltip);
 		}
 		if(ks != null) {
 			if(tip == null) {
-				tip = new RichTooltip(getActionTitle(key), "  ");
+				tip = new RichTooltip(getActionTitle(action), "  ");
 			}
 			tip.addFooterSection(formatShortcut(ks));
 		}
@@ -149,22 +151,38 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 		return sb.toString();
 	}
 
-	public static ResizableIcon getActionIcon(final String key) {
-		String resource = ResourceController.getResourceController().getProperty(key+".icon", null);
+	public static ResizableIcon getActionIcon(final AFreeplaneAction action) {
 		ResizableIcon icon = null;
-		if (resource != null) {
-			URL location = ResourceController.getResourceController().getResource(resource);
-			icon = ImageWrapperResizableIcon.getIcon(location, new Dimension(16, 16));
+		ImageIcon ico = (ImageIcon) action.getValue(Action.SMALL_ICON);
+		if(ico != null) {
+			icon = ImageWrapperResizableIcon.getIcon(ico.getImage(), new Dimension(ico.getIconWidth(), ico.getIconHeight()));
+		}
+		else {
+			String resource = ResourceController.getResourceController().getProperty(action.getIconKey(), null);
+			if (resource != null) {
+				URL location = ResourceController.getResourceController().getResource(resource);
+				icon = ImageWrapperResizableIcon.getIcon(location, new Dimension(16, 16));
+			}
 		}
 		return icon;
 	}
 
-	public static String getActionTitle(final String key) {
-		String title = TextUtils.getText(key+".text");
+	public static String getActionTitle(final AFreeplaneAction action) {
+		String title = TextUtils.getText(action.getTextKey());
 		if(title == null || title.isEmpty()) {
-			title = key;
+			title = action.getTextKey();
 		}
 		return title;
+	}
+	
+	public static AFreeplaneAction getDummyAction(final String key) {
+		return new AFreeplaneAction(key) {
+			private static final long serialVersionUID = -5405032373977903024L;
+
+			public void actionPerformed(ActionEvent e) {
+				//RIBBONS - do nothing
+			}
+		};
 	}
 
 	private ActionAcceleratorChangeListener changeListener;
@@ -195,29 +213,33 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 			public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
 				final String actionKey = attributes.getProperty("action");
 				if(actionKey != null) {
-					final JCommandButton button = createCommandButton(actionKey);
-					button.putClientProperty(ACTION_KEY_PROPERTY, actionKey);
-					
-					KeyStroke ks = context.getBuilder().getAcceleratorManager().getAccelerator(actionKey);
-					if(ks != null) {
-						updateRichTooltip(button, actionKey, ks);
+					AFreeplaneAction action = context.getBuilder().getMode().getAction(actionKey);
+					if(action != null) {
+						final JCommandButton button = createCommandButton(action);
+						button.putClientProperty(ACTION_KEY_PROPERTY, action);
+						
+						KeyStroke ks = context.getBuilder().getAcceleratorManager().getAccelerator(actionKey);
+						if(ks != null) {
+							updateRichTooltip(button, action, ks);
+						}
+						getAccelChangeListener().addAction(actionKey, button);
+						context.getBuilder().getAcceleratorManager().addAcceleratorChangeListener(getAccelChangeListener());
+						IndexedTree.Node n = context.getStructureNode(this);
+						if(n.getChildCount() > 0) {
+							button.setCommandButtonKind(CommandButtonKind.ACTION_AND_POPUP_MAIN_ACTION);
+							button.setPopupCallback(getPopupPanelCallBack(n, context));
+						}
+						
+						parent.addChild(button, getPriority(attributes.getProperty("priority", "medium")));
 					}
-					getAccelChangeListener().addAction(actionKey, button);
-					context.getBuilder().getAcceleratorManager().addAcceleratorChangeListener(getAccelChangeListener());
-					IndexedTree.Node n = context.getStructureNode(this);
-					if(n.getChildCount() > 0) {
-						button.setCommandButtonKind(CommandButtonKind.ACTION_AND_POPUP_MAIN_ACTION);
-						button.setPopupCallback(getPopupPanelCallBack(n, context));
-					}
-					
-					parent.addChild(button, getPriority(attributes.getProperty("priority", "medium")));
 				}
 				else {
 					final String name = attributes.getProperty("name");
 					if(name != null) {
-						final JCommandButton button = new JCommandButton(getActionTitle(name), getActionIcon(name));
-						button.putClientProperty(ACTION_NAME_PROPERTY, name);
-						updateRichTooltip(button, name, null);
+						AFreeplaneAction action = getDummyAction(name);
+						final JCommandButton button = new JCommandButton(getActionTitle(action), getActionIcon(action));
+						button.putClientProperty(ACTION_NAME_PROPERTY, action);
+						updateRichTooltip(button, action, null);
 						IndexedTree.Node n = context.getStructureNode(this);
 						if(n.getChildCount() > 0) {
 							button.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
@@ -251,16 +273,16 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 										menuButton.addActionListener(listener);
 									}
 								}
-								String actionKey = (String)button.getClientProperty(ACTION_KEY_PROPERTY);
-								if(actionKey != null) {
-									menuButton.putClientProperty(ACTION_KEY_PROPERTY, actionKey);
-									updateRichTooltip(menuButton, actionKey, context.getBuilder().getAcceleratorManager().getAccelerator(actionKey));
+								AFreeplaneAction action = (AFreeplaneAction)button.getClientProperty(ACTION_KEY_PROPERTY);
+								if(action != null) {
+									menuButton.putClientProperty(ACTION_KEY_PROPERTY, action);
+									updateRichTooltip(menuButton, action, context.getBuilder().getAcceleratorManager().getAccelerator(actionKey));
 								}
 								else {
-									String actionName = (String)button.getClientProperty(ACTION_NAME_PROPERTY);
-									if(actionName != null) {
-										menuButton.putClientProperty(ACTION_NAME_PROPERTY, actionName);
-										updateRichTooltip(menuButton, actionName, null);
+									action = (AFreeplaneAction)button.getClientProperty(ACTION_NAME_PROPERTY);
+									if(action != null) {
+										menuButton.putClientProperty(ACTION_NAME_PROPERTY, action);
+										updateRichTooltip(menuButton, action, null);
 									}
 								}
 								if(button instanceof JCommandButton) {
@@ -304,8 +326,8 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 		private final String key;
 		private final RibbonBuilder builder;
 
-		protected RibbonActionListener(String key) {
-			this.key = key;
+		protected RibbonActionListener(AFreeplaneAction action) {
+			this.key = action.getKey();
 			this.builder = Controller.getCurrentModeController().getUserInputListenerFactory().getRibbonBuilder();
 		}
 
@@ -354,7 +376,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 		public void acceleratorChanged(AFreeplaneAction action, KeyStroke oldStroke, KeyStroke newStroke) {
 			JCommandButton button = actionMap.get(action.getKey()); 
 			if(button != null) {
-				updateRichTooltip(button, action.getKey(), newStroke);
+				updateRichTooltip(button, action, newStroke);
 			}
 
 		}

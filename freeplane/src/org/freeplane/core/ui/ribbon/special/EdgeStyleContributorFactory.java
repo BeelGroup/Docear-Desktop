@@ -51,21 +51,27 @@ public class EdgeStyleContributorFactory implements IRibbonContributorFactory {
 					
 					JCommandButton styleGroupButton = new JCommandButton(TextUtils.getText("edgeStyleGroupAction.text"));
 					styleGroupButton.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
-
-					final JCommandToggleMenuButton styleAsParent = RibbonActionContributorFactory.createCommandToggleMenuButton("EdgeStyleAsParentAction");
-					addDefaultToggleHandler(context, "EdgeStyleAsParentAction", styleAsParent);
-					final JCommandToggleMenuButton styleLinear = RibbonActionContributorFactory.createCommandToggleMenuButton("EdgeStyleAction.linear");
-					addDefaultToggleHandler(context, "EdgeStyleAction.linear", styleLinear);
-					final JCommandToggleMenuButton styleBezier = RibbonActionContributorFactory.createCommandToggleMenuButton("EdgeStyleAction.bezier");
-					addDefaultToggleHandler(context, "EdgeStyleAction.bezier", styleBezier);
-					final JCommandToggleMenuButton styleSharpLinear = RibbonActionContributorFactory.createCommandToggleMenuButton("EdgeStyleAction.sharp_linear");
-					addDefaultToggleHandler(context, "EdgeStyleAction.sharp_linear", styleSharpLinear);
-					final JCommandToggleMenuButton styleSharpBezier = RibbonActionContributorFactory.createCommandToggleMenuButton("EdgeStyleAction.sharp_bezier");
-					addDefaultToggleHandler(context, "EdgeStyleAction.sharp_bezier", styleSharpBezier);
-					final JCommandToggleMenuButton styleHorizontal = RibbonActionContributorFactory.createCommandToggleMenuButton("EdgeStyleAction.horizontal");
-					addDefaultToggleHandler(context, "EdgeStyleAction.horizontal", styleHorizontal);
-					final JCommandToggleMenuButton styleHideEdge = RibbonActionContributorFactory.createCommandToggleMenuButton("EdgeStyleAction.hide_edge");
-					addDefaultToggleHandler(context, "EdgeStyleAction.hide_edge", styleHideEdge);
+					AFreeplaneAction action = context.getBuilder().getMode().getAction("EdgeStyleAsParentAction");
+					final JCommandToggleMenuButton styleAsParent = RibbonActionContributorFactory.createCommandToggleMenuButton(action);
+					addDefaultToggleHandler(context, action, styleAsParent);
+					action = context.getBuilder().getMode().getAction("EdgeStyleAction.linear");
+					final JCommandToggleMenuButton styleLinear = RibbonActionContributorFactory.createCommandToggleMenuButton(action);
+					addDefaultToggleHandler(context, action, styleLinear);
+					action = context.getBuilder().getMode().getAction("EdgeStyleAction.bezier");
+					final JCommandToggleMenuButton styleBezier = RibbonActionContributorFactory.createCommandToggleMenuButton(action);
+					addDefaultToggleHandler(context, action, styleBezier);
+					action = context.getBuilder().getMode().getAction("EdgeStyleAction.sharp_linear");
+					final JCommandToggleMenuButton styleSharpLinear = RibbonActionContributorFactory.createCommandToggleMenuButton(action);
+					addDefaultToggleHandler(context, action, styleSharpLinear);
+					action = context.getBuilder().getMode().getAction("EdgeStyleAction.sharp_bezier");
+					final JCommandToggleMenuButton styleSharpBezier = RibbonActionContributorFactory.createCommandToggleMenuButton(action);
+					addDefaultToggleHandler(context, action, styleSharpBezier);
+					action = context.getBuilder().getMode().getAction("EdgeStyleAction.horizontal");
+					final JCommandToggleMenuButton styleHorizontal = RibbonActionContributorFactory.createCommandToggleMenuButton(action);
+					addDefaultToggleHandler(context, action, styleHorizontal);
+					action = context.getBuilder().getMode().getAction("EdgeStyleAction.hide_edge");
+					final JCommandToggleMenuButton styleHideEdge = RibbonActionContributorFactory.createCommandToggleMenuButton(action);
+					addDefaultToggleHandler(context, action, styleHideEdge);
 					
 					ButtonGroup group = new ButtonGroup();
 					styleAsParent.getActionModel().setGroup(group);
@@ -138,10 +144,9 @@ public class EdgeStyleContributorFactory implements IRibbonContributorFactory {
 		};
 	}
 	
-	private void addDefaultToggleHandler(final RibbonBuildContext context, final String actionKey, final JCommandToggleButton button) {
+	private void addDefaultToggleHandler(final RibbonBuildContext context, final AFreeplaneAction action, final JCommandToggleButton button) {
 		context.getBuilder().getMapChangeAdapter().addListener(new IChangeObserver() {
 			public void updateState(NodeModel node) {
-				AFreeplaneAction action = context.getBuilder().getMode().getAction(actionKey);
 				if(AFreeplaneAction.checkSelectionOnChange(action)) {
 					action.setSelected();
 					button.getActionModel().setSelected(action.isSelected());

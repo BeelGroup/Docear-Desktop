@@ -32,7 +32,7 @@ public abstract class AWorkspaceAction extends AFreeplaneAction {
 	}
 
 	public AWorkspaceAction(String key) {
-		super(key, TextUtils.getRawText(key + ".label"), null);
+		super(key, TextUtils.getRawText(getTextKey(key)), null);
 		setIcon();
 	}
 	
@@ -46,6 +46,14 @@ public abstract class AWorkspaceAction extends AFreeplaneAction {
 	
 	public void setSelectedFor(AWorkspaceTreeNode node, TreePath[] selectedPaths) {
 		super.setSelected();
+	}
+	
+	public String getTextKey() {
+		return getTextKey(getKey());
+	}
+	
+	private static String getTextKey(String key) {
+		return key + ".label";
 	}
 	
 	public void afterMapChange(final Object newMap) {

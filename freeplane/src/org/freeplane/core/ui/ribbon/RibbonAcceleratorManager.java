@@ -155,7 +155,7 @@ public class RibbonAcceleratorManager implements IKeyStrokeProcessor, IAccelerat
 				setAccelerator(action, accelerator);
 				keysetProps.setProperty(shortcutKey, shortcut);
 				LogUtils.info("created shortcut '" + shortcut + "' for action '" + action.getKey() + "', shortcutKey '"
-				+ shortcutKey + "' (" + RibbonActionContributorFactory.getActionTitle(action.getKey()) + ")");
+				+ shortcutKey + "' (" + RibbonActionContributorFactory.getActionTitle(action) + ")");
 			}
 		}
 		else{
@@ -167,7 +167,7 @@ public class RibbonAcceleratorManager implements IKeyStrokeProcessor, IAccelerat
 			}
 			setAccelerator(action, newAccelerator);
 			keysetProps.setProperty(shortcutKey, toString(newAccelerator));
-			LogUtils.info("created shortcut '" + toString(newAccelerator) + "' for action '" + action.getKey()+ "', shortcutKey '" + shortcutKey + "' (" + RibbonActionContributorFactory.getActionTitle(action.getKey()) + ")");
+			LogUtils.info("created shortcut '" + toString(newAccelerator) + "' for action '" + action+ "', shortcutKey '" + shortcutKey + "' (" + RibbonActionContributorFactory.getActionTitle(action) + ")");
 		}
 		try {
 			if(!getPresetsFile().exists()) {
@@ -304,7 +304,7 @@ public class RibbonAcceleratorManager implements IKeyStrokeProcessor, IAccelerat
 			if (priorAssigned == null || action.getKey().equals(priorAssigned.getKey())) {
 				return true;
 			}
-			return replaceOrCancel(priorAssigned, RibbonActionContributorFactory.getActionTitle(priorAssigned.getKey()));
+			return replaceOrCancel(priorAssigned, RibbonActionContributorFactory.getActionTitle(priorAssigned));
 		}
 
 		private boolean replaceOrCancel(AFreeplaneAction action, String oldMenuItemTitle) {

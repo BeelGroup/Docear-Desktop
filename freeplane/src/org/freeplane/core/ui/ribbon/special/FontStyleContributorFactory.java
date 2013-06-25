@@ -60,18 +60,21 @@ public class FontStyleContributorFactory implements IRibbonContributorFactory {
 					fontBand.addFlowComponent(styleComboWrapper);
 					
 					JCommandButtonStrip styleStrip = new JCommandButtonStrip();
-
-					final JCommandToggleButton boldButton = RibbonActionContributorFactory.createCommandToggleButton("BoldAction");
-					addDefaultToggleHandler(context, "BoldAction", boldButton);
 					
+					AFreeplaneAction action = context.getBuilder().getMode().getAction("BoldAction");
+					final JCommandToggleButton boldButton = RibbonActionContributorFactory.createCommandToggleButton(action);
+					addDefaultToggleHandler(context, action, boldButton);					
 					styleStrip.add(boldButton);
-					final JCommandToggleButton italicButton = RibbonActionContributorFactory.createCommandToggleButton("ItalicAction");
-					addDefaultToggleHandler(context, "ItalicAction", italicButton);
 					
+					action = context.getBuilder().getMode().getAction("ItalicAction");
+					final JCommandToggleButton italicButton = RibbonActionContributorFactory.createCommandToggleButton(action);
+					addDefaultToggleHandler(context, action, italicButton);					
 					styleStrip.add(italicButton);
 					
-					styleStrip.add(RibbonActionContributorFactory.createCommandButton("NodeColorAction"));
-					styleStrip.add(RibbonActionContributorFactory.createCommandButton("NodeBackgroundColorAction"));
+					action = context.getBuilder().getMode().getAction("NodeColorAction");
+					styleStrip.add(RibbonActionContributorFactory.createCommandButton(action));
+					action = context.getBuilder().getMode().getAction("NodeBackgroundColorAction");
+					styleStrip.add(RibbonActionContributorFactory.createCommandButton(action));
 					
 					fontBand.addFlowComponent(styleStrip);
 
@@ -88,10 +91,9 @@ public class FontStyleContributorFactory implements IRibbonContributorFactory {
 		};
 	}
 	
-	private void addDefaultToggleHandler(final RibbonBuildContext context, final String actionKey, final JCommandToggleButton button) {
+	private void addDefaultToggleHandler(final RibbonBuildContext context, final AFreeplaneAction action, final JCommandToggleButton button) {
 		context.getBuilder().getMapChangeAdapter().addListener(new IChangeObserver() {
 			public void updateState(NodeModel node) {
-				AFreeplaneAction action = context.getBuilder().getMode().getAction(actionKey);
 				if(AFreeplaneAction.checkSelectionOnChange(action)) {
 					action.setSelected();
 					button.getActionModel().setSelected(action.isSelected());
