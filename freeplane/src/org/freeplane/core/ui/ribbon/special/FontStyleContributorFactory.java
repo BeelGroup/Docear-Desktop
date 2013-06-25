@@ -62,27 +62,12 @@ public class FontStyleContributorFactory implements IRibbonContributorFactory {
 					JCommandButtonStrip styleStrip = new JCommandButtonStrip();
 
 					final JCommandToggleButton boldButton = RibbonActionContributorFactory.createCommandToggleButton("BoldAction");
-    				context.getBuilder().getMapChangeAdapter().addListener(new IChangeObserver() {
-    					public void updateState(NodeModel node) {
-    						AFreeplaneAction action = context.getBuilder().getMode().getAction("BoldAction");
-    						if(AFreeplaneAction.checkSelectionOnChange(action)) {
-    							action.setSelected();
-    							boldButton.getActionModel().setSelected(action.isSelected());
-    						}
-    					}
-    				});
+					addDefaultToggleHandler(context, "BoldAction", boldButton);
+					
 					styleStrip.add(boldButton);
 					final JCommandToggleButton italicButton = RibbonActionContributorFactory.createCommandToggleButton("ItalicAction");
+					addDefaultToggleHandler(context, "ItalicAction", italicButton);
 					
-					context.getBuilder().getMapChangeAdapter().addListener(new IChangeObserver() {
-						public void updateState(NodeModel node) {
-							AFreeplaneAction action = context.getBuilder().getMode().getAction("ItalicAction");
-							if(AFreeplaneAction.checkSelectionOnChange(action)) {
-								action.setSelected();
-								italicButton.getActionModel().setSelected(action.isSelected());
-							}
-						}
-					});
 					styleStrip.add(italicButton);
 					
 					styleStrip.add(RibbonActionContributorFactory.createCommandButton("NodeColorAction"));
@@ -101,6 +86,18 @@ public class FontStyleContributorFactory implements IRibbonContributorFactory {
 			public void addChild(Object child, Object properties) {
 			}
 		};
+	}
+	
+	private void addDefaultToggleHandler(final RibbonBuildContext context, final String actionKey, final JCommandToggleButton button) {
+		context.getBuilder().getMapChangeAdapter().addListener(new IChangeObserver() {
+			public void updateState(NodeModel node) {
+				AFreeplaneAction action = context.getBuilder().getMode().getAction(actionKey);
+				if(AFreeplaneAction.checkSelectionOnChange(action)) {
+					action.setSelected();
+					button.getActionModel().setSelected(action.isSelected());
+				}
+			}
+		});
 	}
 	/***********************************************************************************
 	 * CONSTRUCTORS

@@ -41,8 +41,8 @@ import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 
 public class RibbonActionContributorFactory implements IRibbonContributorFactory {
 
-	private static final String ACTION_KEY_PROPERTY = "ACTION_KEY";
-	private static final String ACTION_NAME_PROPERTY = "ACTION_NAME";
+	public static final String ACTION_KEY_PROPERTY = "ACTION_KEY";
+	public static final String ACTION_NAME_PROPERTY = "ACTION_NAME";
 	private final RibbonBuilder builder;
 
 	
