@@ -30,6 +30,7 @@ public class RibbonStructureReader {
 		readManager.addElementHandler("ribbon_menu", new DefaultCreator());
 		readManager.addElementHandler("ribbon_task", new DefaultCreator());
 		readManager.addElementHandler("ribbon_band", new DefaultCreator());
+		readManager.addElementHandler("ribbon_flowband", new DefaultCreator());
 		readManager.addElementHandler("ribbon_action", new DefaultCreator());
 		readManager.addElementHandler("ribbon_contributor", new RibbonContributorCreator());
 		

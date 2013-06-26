@@ -39,6 +39,7 @@ import java.util.Set;
 import javax.swing.JScrollPane;
 
 import org.freeplane.core.ui.MenuBuilder;
+import org.freeplane.core.ui.ribbon.RibbonBuilder;
 import org.freeplane.features.map.IMapSelection;
 import org.freeplane.features.map.IMapSelectionListener;
 import org.freeplane.features.map.MapModel;
@@ -238,6 +239,10 @@ public class HeadlessMapViewController implements IMapViewManager {
 	}
 
 	public void updateMenus(MenuBuilder menuBuilder) {
+		
+	}
+	
+	public void updateRibbon(RibbonBuilder ribbonBuilder) {
 		
 	}
 

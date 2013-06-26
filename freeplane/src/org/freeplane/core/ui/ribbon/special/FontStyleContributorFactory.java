@@ -33,56 +33,49 @@ public class FontStyleContributorFactory implements IRibbonContributorFactory {
 				if (parent == null) {
 					return;
 				}
-				final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-				Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-				try {
-					// RIBBONS expandlistener and icon
-					JFlowRibbonBand fontBand = new JFlowRibbonBand(TextUtils.getText("ribbon.band.font"), null, null);
-					fontBand.setExpandButtonKeyTip("FN");
-					fontBand.setCollapsedStateKeyTip("ZF");
 
-					
-					MUIFactory uiFactory = Controller.getCurrentModeController().getExtension(MUIFactory.class);
-					
-					final Container fontBox = uiFactory.createFontBox();					
-					JRibbonComponent fontComboWrapper = new JRibbonComponent((JComponent) fontBox);
-					fontComboWrapper.setKeyTip("SF");
-					fontBand.addFlowComponent(fontComboWrapper);
-					
-					final Container sizeBox = uiFactory.createSizeBox();
-					JRibbonComponent sizeComboWrapper = new JRibbonComponent((JComponent) sizeBox);
-					sizeComboWrapper.setKeyTip("SS");
-					fontBand.addFlowComponent(sizeComboWrapper);
-					
-					final Container styleBox = uiFactory.createStyleBox();
-					JRibbonComponent styleComboWrapper = new JRibbonComponent((JComponent) styleBox);
-					styleComboWrapper.setKeyTip("SD");
-					fontBand.addFlowComponent(styleComboWrapper);
-					
-					JCommandButtonStrip styleStrip = new JCommandButtonStrip();
-					
-					AFreeplaneAction action = context.getBuilder().getMode().getAction("BoldAction");
-					final JCommandToggleButton boldButton = RibbonActionContributorFactory.createCommandToggleButton(action);
-					addDefaultToggleHandler(context, action, boldButton);					
-					styleStrip.add(boldButton);
-					
-					action = context.getBuilder().getMode().getAction("ItalicAction");
-					final JCommandToggleButton italicButton = RibbonActionContributorFactory.createCommandToggleButton(action);
-					addDefaultToggleHandler(context, action, italicButton);					
-					styleStrip.add(italicButton);
-					
-					action = context.getBuilder().getMode().getAction("NodeColorAction");
-					styleStrip.add(RibbonActionContributorFactory.createCommandButton(action));
-					action = context.getBuilder().getMode().getAction("NodeBackgroundColorAction");
-					styleStrip.add(RibbonActionContributorFactory.createCommandButton(action));
-					
-					fontBand.addFlowComponent(styleStrip);
+				// RIBBONS expandlistener and icon
+				JFlowRibbonBand fontBand = new JFlowRibbonBand(TextUtils.getText("ribbon.band.font"), null, null);
+				fontBand.setExpandButtonKeyTip("FN");
+				fontBand.setCollapsedStateKeyTip("ZF");
 
-					parent.addChild(fontBand, null);
-				}
-				finally {
-					Thread.currentThread().setContextClassLoader(contextClassLoader);
-				}
+				MUIFactory uiFactory = Controller.getCurrentModeController().getExtension(MUIFactory.class);
+
+				final Container fontBox = uiFactory.createFontBox();
+				JRibbonComponent fontComboWrapper = new JRibbonComponent((JComponent) fontBox);
+				fontComboWrapper.setKeyTip("SF");
+				fontBand.addFlowComponent(fontComboWrapper);
+
+				final Container sizeBox = uiFactory.createSizeBox();
+				JRibbonComponent sizeComboWrapper = new JRibbonComponent((JComponent) sizeBox);
+				sizeComboWrapper.setKeyTip("SS");
+				fontBand.addFlowComponent(sizeComboWrapper);
+
+				final Container styleBox = uiFactory.createStyleBox();
+				JRibbonComponent styleComboWrapper = new JRibbonComponent((JComponent) styleBox);
+				styleComboWrapper.setKeyTip("SD");
+				fontBand.addFlowComponent(styleComboWrapper);
+
+				JCommandButtonStrip styleStrip = new JCommandButtonStrip();
+
+				AFreeplaneAction action = context.getBuilder().getMode().getAction("BoldAction");
+				final JCommandToggleButton boldButton = RibbonActionContributorFactory.createCommandToggleButton(action);
+				addDefaultToggleHandler(context, action, boldButton);
+				styleStrip.add(boldButton);
+
+				action = context.getBuilder().getMode().getAction("ItalicAction");
+				final JCommandToggleButton italicButton = RibbonActionContributorFactory.createCommandToggleButton(action);
+				addDefaultToggleHandler(context, action, italicButton);
+				styleStrip.add(italicButton);
+
+				action = context.getBuilder().getMode().getAction("NodeColorAction");
+				styleStrip.add(RibbonActionContributorFactory.createCommandButton(action));
+				action = context.getBuilder().getMode().getAction("NodeBackgroundColorAction");
+				styleStrip.add(RibbonActionContributorFactory.createCommandButton(action));
+
+				fontBand.addFlowComponent(styleStrip);
+
+				parent.addChild(fontBand, null);
 
 			}
 
@@ -90,11 +83,11 @@ public class FontStyleContributorFactory implements IRibbonContributorFactory {
 			}
 		};
 	}
-	
+
 	private void addDefaultToggleHandler(final RibbonBuildContext context, final AFreeplaneAction action, final JCommandToggleButton button) {
 		context.getBuilder().getMapChangeAdapter().addListener(new IChangeObserver() {
 			public void updateState(NodeModel node) {
-				if(AFreeplaneAction.checkSelectionOnChange(action)) {
+				if (AFreeplaneAction.checkSelectionOnChange(action)) {
 					action.setSelected();
 					button.getActionModel().setSelected(action.isSelected());
 				}
