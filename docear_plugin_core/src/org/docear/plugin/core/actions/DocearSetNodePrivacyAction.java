@@ -1,7 +1,6 @@
 package org.docear.plugin.core.actions;
 
 import java.awt.event.ActionEvent;
-import java.nio.channels.FileChannel.MapMode;
 import java.util.Collection;
 import java.util.Date;
 
@@ -17,7 +16,7 @@ import org.freeplane.features.mode.Controller;
 
 public class DocearSetNodePrivacyAction extends AFreeplaneAction {
 	private static final long serialVersionUID = 1L;
-	private static final String KEY = "DocearNodePrivacyAction";
+	public static final String KEY = "DocearNodePrivacyAction";
 
 	public DocearSetNodePrivacyAction() {
 		super(KEY);

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menu_structure>
+    <menu_category name="ribbon">
+        <ribbon_taskbar></ribbon_taskbar>
+        <ribbon_menu></ribbon_menu>
+        <ribbon_task name="docear">
+            <ribbon_band name="references" resize_policies="Mirror, High2Mid">
+                <ribbon_action action="AddNewReferenceAction" priority="TOP" />
+                <ribbon_action action="AddExistingReferenceAction" priority="TOP" />
+                <ribbon_action action="RemoveReferenceAction" priority="TOP" />
+                <ribbon_action action="ShowInRefManagerAction" priority="Medium" />
+                <ribbon_action action="CopyBibtexKeyToClipboardAction" priority="Medium" />
+                <ribbon_action action="CopyCiteKeyToClipboardAction" priority="Medium" />
+            </ribbon_band>
+            <ribbon_band name="update" resize_policies="Mirror">
+                <ribbon_action action="UpdateReferencesCurrentMapAction" priority="Medium" />
+                <ribbon_action action="UpdateReferencesAllOpenMapsAction" priority="Medium" />
+                <ribbon_contributor name="UpdateReferencesAllMapsAction" priority="Medium" />
+            </ribbon_band>
+        </ribbon_task>
+    </menu_category>
+</menu_structure>

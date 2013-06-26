@@ -12,13 +12,14 @@ import org.freeplane.view.swing.map.MapView;
 @EnabledAction(checkOnNodeChange=true)
 public class RemoveReferenceAction extends AFreeplaneAction {
 
+	public static final String KEY = "RemoveReferenceAction";
     /**
 	 * 
 	 */
     private static final long serialVersionUID = 1L;
 
-    public RemoveReferenceAction(String key) {
-	super(key);
+    public RemoveReferenceAction() {
+	super(KEY);
     }
 
     public void actionPerformed(ActionEvent e) {

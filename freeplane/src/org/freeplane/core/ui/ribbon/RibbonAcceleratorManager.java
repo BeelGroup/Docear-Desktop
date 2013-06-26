@@ -126,8 +126,8 @@ public class RibbonAcceleratorManager implements IKeyStrokeProcessor, IAccelerat
 		return SHORTCUT_PROPERTY_PREFIX + builder.getMode().getModeName() + "/" + key;
 	}
  	
- 	public KeyStroke getAccelerator(String key) {
- 		return actionMap.get(key);
+ 	public KeyStroke getAccelerator(String actionKey) {
+ 		return actionMap.get(actionKey);
  	}
  	
  	public void addAcceleratorChangeListener(IAcceleratorChangeListener changeListener) {

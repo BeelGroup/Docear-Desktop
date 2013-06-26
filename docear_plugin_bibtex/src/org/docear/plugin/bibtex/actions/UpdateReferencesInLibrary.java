@@ -16,7 +16,7 @@ public class UpdateReferencesInLibrary extends AFreeplaneAction{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public static final String KEY = "menu_update_references_in_library";
+	public static final String KEY = "UpdateReferencesInLibraryAction";
 
 	public UpdateReferencesInLibrary() {
 		super(KEY);		
