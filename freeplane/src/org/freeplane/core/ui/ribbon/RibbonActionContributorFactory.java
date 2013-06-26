@@ -14,6 +14,7 @@ import java.util.Properties;
 
 import javax.swing.Action;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
@@ -70,6 +71,17 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 			prio = RibbonElementPriority.LOW;
 		}
 		return prio;
+	}
+	
+	public static JButton createButton(final AFreeplaneAction action) {
+		String title = getActionTitle(action);
+		ResizableIcon icon = getActionIcon(action);
+		
+		final JButton button = new JButton(title, icon);
+		
+//		updateRichTooltip(button, action, null);
+		button.addActionListener(new RibbonActionListener(action));
+		return button;
 	}
 
 	public static JCommandButton createCommandButton(final AFreeplaneAction action) {

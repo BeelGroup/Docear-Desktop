@@ -54,6 +54,8 @@ import javax.swing.event.ListDataListener;
 import org.freeplane.core.resources.IFreeplanePropertyListener;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.MenuBuilder;
+import org.freeplane.core.ui.ribbon.RibbonBuilder;
+import org.freeplane.core.ui.ribbon.special.ZoomContributorFactory;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.map.IMapSelection;
 import org.freeplane.features.map.IMapSelectionListener;
@@ -124,6 +126,7 @@ public class MapViewController implements IMapViewManager , IMapViewChangeListen
 				}
 			}
 		}) ;
+		
 		final String antialiasProperty = resourceController.getProperty(ViewController.RESOURCE_ANTIALIAS);
 		changeAntialias(antialiasProperty);
 	}
@@ -684,7 +687,7 @@ public class MapViewController implements IMapViewManager , IMapViewChangeListen
 
 	final private String userDefinedZoom;
 	final private ZoomInAction zoomIn;
-	private final DefaultComboBoxModel zoomModel;
+	final private DefaultComboBoxModel zoomModel;
 	final private ZoomOutAction zoomOut;
 	
 	private float getCurrentZoomIndex() {
@@ -730,8 +733,12 @@ public class MapViewController implements IMapViewManager , IMapViewChangeListen
 			setZoomByItem(zoomModel.getElementAt((int) (currentZoomIndex - 0.5f)));
 		}
 	}
-
-	public void updateMenus(final MenuBuilder menuBuilder) {
+		
+	public JComboBox createZoomBox() {
+		return new JComboBox(zoomModel);
+	}
+	
+	public void updateMenus(final MenuBuilder menuBuilder) {		
 		if (menuBuilder.contains("main_toolbar_zoom")) {
 			final JComboBox zoomBox = new JComboBox(zoomModel);
 			menuBuilder.addElement("main_toolbar_zoom", zoomBox, MenuBuilder.AS_CHILD);
@@ -739,7 +746,7 @@ public class MapViewController implements IMapViewManager , IMapViewChangeListen
 			//zoomBox.setRenderer(new ComboBoxRendererWithTooltip(zoomBox));
 		}
 	}
-
+	
 	public String[] getZooms() {
 		return zooms;
 	}

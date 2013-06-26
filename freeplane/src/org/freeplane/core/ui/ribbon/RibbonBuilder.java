@@ -21,6 +21,7 @@ import org.freeplane.core.ui.IndexedTree;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.ui.ribbon.special.EdgeStyleContributorFactory;
 import org.freeplane.core.ui.ribbon.special.FontStyleContributorFactory;
+import org.freeplane.core.ui.ribbon.special.ZoomContributorFactory;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.ModeController;
@@ -65,7 +66,10 @@ public class RibbonBuilder {
 		registerContributorFactory("ribbon_band", new RibbonBandContributorFactory());
 		registerContributorFactory("ribbon_action", new RibbonActionContributorFactory(this));
 		registerContributorFactory("fontStyleContributor", new FontStyleContributorFactory());
-		registerContributorFactory("edgeStyleContributor", new EdgeStyleContributorFactory());
+		registerContributorFactory("edgeStyleContributor", new EdgeStyleContributorFactory());		
+		registerContributorFactory("ribbon_flowband", new FlowRibbonBandContributorFactory());
+		
+		registerContributorFactory("zoomContributor", new ZoomContributorFactory());		
 		
 		updateApplicationMenuButton(ribbon);
 	}

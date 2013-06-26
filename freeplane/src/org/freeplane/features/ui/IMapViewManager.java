@@ -33,6 +33,7 @@ import java.util.Map;
 import javax.swing.JScrollPane;
 
 import org.freeplane.core.ui.MenuBuilder;
+import org.freeplane.core.ui.ribbon.RibbonBuilder;
 import org.freeplane.features.map.IMapSelection;
 import org.freeplane.features.map.IMapSelectionListener;
 import org.freeplane.features.map.MapModel;
@@ -148,5 +149,5 @@ public interface IMapViewManager {
 	public void setTextRenderingHint(final Graphics2D g);
 	public boolean closeAllMaps();
 
-	public void setScrollbarsVisible(boolean areScrollbarsVisible);
+	public void setScrollbarsVisible(boolean areScrollbarsVisible);	
 }
