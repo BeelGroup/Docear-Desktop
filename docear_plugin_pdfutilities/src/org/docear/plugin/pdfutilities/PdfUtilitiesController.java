@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -92,6 +93,7 @@ import org.docear.plugin.pdfutilities.ui.JMonitoringMenu;
 import org.docear.plugin.pdfutilities.ui.ViewerSettingsChangeErrorDialog;
 import org.docear.plugin.pdfutilities.util.MonitoringUtils;
 import org.docear.plugin.pdfutilities.workspace.action.IncomingReReadMonitoringAction;
+import org.freeplane.core.resources.IFreeplanePropertyListener;
 import org.freeplane.core.resources.OptionPanelController;
 import org.freeplane.core.resources.OptionPanelController.PropertyLoadListener;
 import org.freeplane.core.resources.ResourceController;
@@ -99,13 +101,13 @@ import org.freeplane.core.resources.components.IPropertyControl;
 import org.freeplane.core.resources.components.RadioButtonProperty;
 import org.freeplane.core.ui.IMenuContributor;
 import org.freeplane.core.ui.IMouseListener;
-import org.freeplane.core.ui.IndexedTree;
 import org.freeplane.core.ui.MenuBuilder;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.ui.ribbon.ARibbonContributor;
+import org.freeplane.core.ui.ribbon.IChangeObserver;
+import org.freeplane.core.ui.ribbon.IRibbonContributorFactory;
+import org.freeplane.core.ui.ribbon.RibbonActionContributorFactory;
 import org.freeplane.core.ui.ribbon.RibbonBuildContext;
-import org.freeplane.core.ui.ribbon.RibbonBuilder;
-import org.freeplane.core.ui.ribbon.RibbonBuilder.RibbonPath;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.FileUtils;
 import org.freeplane.core.util.LogUtils;
@@ -131,6 +133,14 @@ import org.freeplane.plugin.workspace.model.project.IProjectModelListener;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
 import org.freeplane.view.swing.map.NodeView;
+import org.pushingpixels.flamingo.api.common.JCommandButton;
+import org.pushingpixels.flamingo.api.common.JCommandButton.CommandButtonKind;
+import org.pushingpixels.flamingo.api.common.JCommandButtonStrip;
+import org.pushingpixels.flamingo.api.common.JCommandButtonStrip.StripOrientation;
+import org.pushingpixels.flamingo.api.common.JCommandToggleButton;
+import org.pushingpixels.flamingo.api.common.popup.JCommandPopupMenu;
+import org.pushingpixels.flamingo.api.common.popup.JPopupPanel;
+import org.pushingpixels.flamingo.api.common.popup.PopupPanelCallback;
 
 public class PdfUtilitiesController extends ALanguageController {
 
@@ -171,7 +181,6 @@ public class PdfUtilitiesController extends ALanguageController {
 	public static final String PDF_MANAGEMENT_MENU_LANG_KEY = "menu_pdf_utilities"; //$NON-NLS-1$
 	public static final String MONITORING_MENU_LANG_KEY = "menu_monitoring_utilities"; //$NON-NLS-1$
 
-	//private ModeController modecontroller;
 	private ImportAllAnnotationsAction importAllAnnotationsAction;
 	private ImportNewAnnotationsAction importNewAnnotationsAction;
 	private DeleteFileAction deleteFileAction;
@@ -844,8 +853,8 @@ public class PdfUtilitiesController extends ALanguageController {
 				deleteFileAction.addPropertyChangeListener(pdfManagementPopupMenu);
 			}
 		});
-		
-		//modeController.getUserInputListenerFactory().getRibbonBuilder().registerContributorFactory("pdfutilities", new DocearPdfUtilitiesBandContributorFactory());
+		modeController.getUserInputListenerFactory().getRibbonBuilder().registerContributorFactory("pdf_annotations", new DocearImportAnnotationsActionContributorFactory());
+		modeController.getUserInputListenerFactory().getRibbonBuilder().registerContributorFactory("pdf_monitoring", new DocearPdfMonitoringContributorFactory());
 		modeController.getUserInputListenerFactory().getRibbonBuilder().updateRibbon(PdfUtilitiesController.class.getResource("/xml/ribbons.xml"));
 	}
 
@@ -1498,6 +1507,140 @@ public class PdfUtilitiesController extends ALanguageController {
 		public void treeNodesInserted(TreeModelEvent e) {}
 
 		public void treeNodesChanged(TreeModelEvent e) {}
+	}
+	
+	private class DocearPdfMonitoringContributorFactory implements IRibbonContributorFactory {
+
+		/***********************************************************************************
+		 * CONSTRUCTORS
+		 **********************************************************************************/
+
+		/***********************************************************************************
+		 * METHODS
+		 **********************************************************************************/
+
+		/***********************************************************************************
+		 * REQUIRED METHODS FOR INTERFACES
+		 **********************************************************************************/
+		public ARibbonContributor getContributor(final Properties attributes) {
+			return new ARibbonContributor() {
+				
+				@Override
+				public String getKey() {
+					return attributes.getProperty("name");
+				}
+				
+				@Override
+				public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
+					JCommandButtonStrip strip = new JCommandButtonStrip(StripOrientation.HORIZONTAL);
+				}
+				
+				@Override
+				public void addChild(Object child, Object properties) {
+				}
+			};
+		}
+	}
+	
+	private class DocearImportAnnotationsActionContributorFactory implements IRibbonContributorFactory {
+		
+		private JCommandToggleButton importAnnotationEnabledButton;
+		
+		/***********************************************************************************
+		 * CONSTRUCTORS
+		 **********************************************************************************/
+		public DocearImportAnnotationsActionContributorFactory() {
+			ResourceController.getResourceController().addPropertyChangeListener(new IFreeplanePropertyListener() {
+				
+				public void propertyChanged(String propertyName, String newValue, String oldValue) {
+					if(AUTO_IMPORT_ANNOTATIONS_KEY.equals(propertyName)) {
+						if(importAnnotationEnabledButton != null) {
+							importAnnotationEnabledButton.getActionModel().setSelected(DocearController.getPropertiesController().getBooleanProperty(AUTO_IMPORT_ANNOTATIONS_KEY));
+						}
+					}
+					
+				}
+				
+			});
+			
+		}
+		
+		/***********************************************************************************
+		 * METHODS
+		 **********************************************************************************/
+
+		/***********************************************************************************
+		 * REQUIRED METHODS FOR INTERFACES
+		 **********************************************************************************/
+		public ARibbonContributor getContributor(final Properties attributes) {
+			
+			return new ARibbonContributor() {
+				
+				@Override
+				public String getKey() {
+					return attributes.getProperty("name");
+				}
+				
+				@Override
+				public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
+					
+					final RadioButtonAction importAnnotationsAction = new RadioButtonAction("menu_auto_import_annotations", AUTO_IMPORT_ANNOTATIONS_KEY);
+					importAnnotationEnabledButton = RibbonActionContributorFactory.createCommandToggleButton(importAnnotationsAction);
+					importAnnotationEnabledButton.getActionModel().setSelected(DocearController.getPropertiesController().getBooleanProperty(AUTO_IMPORT_ANNOTATIONS_KEY));
+					importAnnotationEnabledButton.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							importAnnotationsAction.actionPerformed(e);
+						}
+					});
+					parent.addChild(importAnnotationEnabledButton, RibbonActionContributorFactory.getPriority(attributes.getProperty("priority", "")));
+					
+					importAllAnnotationsAction.setEnabled();
+					importAllChildAnnotationsAction.setEnabled();
+					final JCommandButton annoButton = RibbonActionContributorFactory.createCommandButton(RibbonActionContributorFactory.getDummyAction("annotations")); 
+					annoButton.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
+					annoButton.setPopupCallback(new PopupPanelCallback() {
+						
+						public JPopupPanel getPopupPanel(JCommandButton commandButton) {
+							JCommandPopupMenu popupmenu = new JCommandPopupMenu();
+							if(importAllAnnotationsAction.isEnabled()) {
+								popupmenu.addMenuButton(RibbonActionContributorFactory.createCommandMenuButton(importAllAnnotationsAction));
+								popupmenu.addMenuButton(RibbonActionContributorFactory.createCommandMenuButton(importNewAnnotationsAction));
+							}
+							else {
+								popupmenu.addMenuButton(RibbonActionContributorFactory.createCommandMenuButton(importAllChildAnnotationsAction));
+								popupmenu.addMenuButton(RibbonActionContributorFactory.createCommandMenuButton(importNewChildAnnotationsAction));
+								popupmenu.addMenuButton(RibbonActionContributorFactory.createCommandMenuButton(removeLinebreaksAction));
+							}
+							return popupmenu;
+						}
+					});
+					parent.addChild(annoButton, RibbonActionContributorFactory.getPriority(attributes.getProperty("priority", "")));
+					
+
+					final JCommandButton delButton = RibbonActionContributorFactory.createCommandButton(deleteFileAction); 
+					deleteFileAction.setEnabled();
+					delButton.setEnabled(deleteFileAction.isEnabled());
+					parent.addChild(delButton, RibbonActionContributorFactory.getPriority(attributes.getProperty("priority", "")));
+					
+					
+					
+					context.getBuilder().getMapChangeAdapter().addListener(new IChangeObserver() {
+						public void updateState(NodeModel node) {
+							importAllAnnotationsAction.setEnabled();
+							importAllChildAnnotationsAction.setEnabled();
+							annoButton.setEnabled(importAllAnnotationsAction.isEnabled() || importAllChildAnnotationsAction.isEnabled());
+							deleteFileAction.setEnabled();
+							delButton.setEnabled(deleteFileAction.isEnabled());
+						}
+					});
+					
+				}
+				
+				@Override
+				public void addChild(Object child, Object properties) {
+				}
+			};
+		}
 	}
 
 }

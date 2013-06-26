@@ -4,8 +4,11 @@
         <ribbon_taskbar></ribbon_taskbar>
         <ribbon_menu></ribbon_menu>
         <ribbon_task name="docear">
-            <ribbon_band name="pdfutilities" >
-            
+            <ribbon_band name="pdfutilities" resize_policies="Mirror, High2Mid">
+                <ribbon_contributor name="pdf_annotations" />
+            </ribbon_band>
+            <ribbon_band name="monitoring" resize_policies="Mirror, High2Mid">
+                <ribbon_contributor name="pdf_monitoring" />
             </ribbon_band>
         </ribbon_task>
     </menu_category>
