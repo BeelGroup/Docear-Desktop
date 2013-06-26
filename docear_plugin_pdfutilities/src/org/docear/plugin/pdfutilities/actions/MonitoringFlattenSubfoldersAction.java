@@ -35,9 +35,10 @@ public class MonitoringFlattenSubfoldersAction extends DocearAction {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	public static final String KEY = "MonitoringFlattenSubfoldersAction";
 	
-	public MonitoringFlattenSubfoldersAction(String key) {
-		super(key);		
+	public MonitoringFlattenSubfoldersAction() {
+		super(KEY);		
 	}
 
 	public void actionPerformed(ActionEvent arg0) {

@@ -168,22 +168,10 @@ public class PdfUtilitiesController extends ALanguageController {
 	public static final String TOOLS_MENU = "/extras"; //$NON-NLS-1$
 	public static final String PDF_MANAGEMENT_MENU = "/pdf_management"; //$NON-NLS-1$
 	public static final String MONITORING_MENU = "/monitoring"; //$NON-NLS-1$
-	public static final String AUTO_IMPORT_LANG_KEY = "menu_auto_import_annotations"; //$NON-NLS-1$
 	public static final String PDF_MANAGEMENT_MENU_LANG_KEY = "menu_pdf_utilities"; //$NON-NLS-1$
 	public static final String MONITORING_MENU_LANG_KEY = "menu_monitoring_utilities"; //$NON-NLS-1$
-	public static final String IMPORT_ALL_ANNOTATIONS_LANG_KEY = "menu_import_all_annotations"; //$NON-NLS-1$
-	public static final String IMPORT_NEW_ANNOTATIONS_LANG_KEY = "menu_import_new_annotations"; //$NON-NLS-1$	
-	
-	public static final String IMPORT_ALL_CHILD_ANNOTATIONS_LANG_KEY = "menu_import_all_child_annotations"; //$NON-NLS-1$
-	public static final String IMPORT_NEW_CHILD_ANNOTATIONS_LANG_KEY = "menu_import_new_child_annotations"; //$NON-NLS-1$
-	public static final String REMOVE_LINEBREAKS_LANG_KEY = "menu_remove_linebreaks"; //$NON-NLS-1$
-	public static final String ADD_MONITORING_FOLDER_LANG_KEY = "menu_import_add_monitoring_folder"; //$NON-NLS-1$
-	public static final String UPDATE_MONITORING_FOLDER_LANG_KEY = "menu_import_update_monitoring_folder"; //$NON-NLS-1$
-	public static final String DELETE_MONITORING_FOLDER_LANG_KEY = "menu_import_delete_monitoring_folder"; //$NON-NLS-1$
-	public static final String EDIT_MONITORING_FOLDER_LANG_KEY = "menu_import_edit_monitoring_folder"; //$NON-NLS-1$
-	public static final String TOGGLE_FOLDER_VIEW_LANG_KEY = "menu_import_folder_view"; //$NON-NLS-1$
 
-	private ModeController modecontroller;
+	//private ModeController modecontroller;
 	private ImportAllAnnotationsAction importAllAnnotationsAction;
 	private ImportNewAnnotationsAction importNewAnnotationsAction;
 	private DeleteFileAction deleteFileAction;
@@ -216,13 +204,13 @@ public class PdfUtilitiesController extends ALanguageController {
 		controller = this;
 
 		LogUtils.info("starting DocearPdfUtilitiesStarter(ModeController)..."); //$NON-NLS-1$
-		this.modecontroller = modeController;
-		this.addPropertiesToOptionPanel();
-		this.addPluginDefaults();
-		this.registerController();
-		this.registerActions();
-		this.registerListener();
-		this.addMenuEntries();
+		//this.modecontroller = modeController;
+		this.addPropertiesToOptionPanel(modeController);
+		this.addPluginDefaults(modeController);
+		this.registerController(modeController);
+		this.registerActions(modeController);
+		this.registerListener(modeController);
+		this.addMenuEntries(modeController);
 		
 		MapVersionInterpreter.addMapVersionInterpreter(new MapVersionInterpreter("SciploreMM", 1, "0.9.0\" software_name=\"SciPlore_", false, false, "SciploreMM", "http://sciplore.org", null, new MapConverter()));
 	}
@@ -627,9 +615,9 @@ public class PdfUtilitiesController extends ALanguageController {
 		}		
 	}
 
-	private void registerController() {
-		AnnotationController.install(new AnnotationController(modecontroller));
-		IconController.getController(modecontroller).addStateIconProvider(new IStateIconProvider() {			
+	private void registerController(ModeController modeController) {
+		AnnotationController.install(new AnnotationController(modeController));
+		IconController.getController(modeController).addStateIconProvider(new IStateIconProvider() {			
 			public UIIcon getStateIcon(NodeModel node) {
 				if(MonitoringUtils.isMonitoringNode(node)) {
 					if (refreshMonitoringIcon  == null) {
@@ -660,42 +648,53 @@ public class PdfUtilitiesController extends ALanguageController {
 				return null;
 			}
 		});
-		DocearNodeMonitoringExtensionController.install(new DocearNodeMonitoringExtensionController(modecontroller));
+		DocearNodeMonitoringExtensionController.install(new DocearNodeMonitoringExtensionController(modeController));
 		
 	}
 
-	private void registerActions() {
-		this.importAllAnnotationsAction = new ImportAllAnnotationsAction(IMPORT_ALL_ANNOTATIONS_LANG_KEY);
-		this.modecontroller.getMapController().addListenerForAction(importAllAnnotationsAction);
-		this.importNewAnnotationsAction = new ImportNewAnnotationsAction(IMPORT_NEW_ANNOTATIONS_LANG_KEY);
-		this.modecontroller.getMapController().addListenerForAction(importNewAnnotationsAction);
+	private void registerActions(ModeController modeController) {
+		this.importAllAnnotationsAction = new ImportAllAnnotationsAction();
+		modeController.addAction(importAllAnnotationsAction);
+		//modeController.getMapController().addListenerForAction(importAllAnnotationsAction);
+		this.importNewAnnotationsAction = new ImportNewAnnotationsAction();
+		modeController.addAction(importNewAnnotationsAction);
+		//modeController.getMapController().addListenerForAction(importNewAnnotationsAction);
 		this.deleteFileAction = new DeleteFileAction();
-		this.modecontroller.getMapController().addListenerForAction(deleteFileAction);
+		modeController.addAction(deleteFileAction);
+		//modeController.getMapController().addListenerForAction(deleteFileAction);
 		
-		this.addMonitoringFolderAction = new AddMonitoringFolderAction(ADD_MONITORING_FOLDER_LANG_KEY);
-		this.modecontroller.getMapController().addListenerForAction(addMonitoringFolderAction);
-		this.updateMonitoringFolderAction = new UpdateMonitoringFolderAction(UPDATE_MONITORING_FOLDER_LANG_KEY);		
-		this.modecontroller.getMapController().addListenerForAction(updateMonitoringFolderAction);
-		this.importAllChildAnnotationsAction = new ImportAllChildAnnotationsAction(IMPORT_ALL_CHILD_ANNOTATIONS_LANG_KEY);
-		this.modecontroller.getMapController().addListenerForAction(importAllChildAnnotationsAction);
-		this.importNewChildAnnotationsAction = new ImportNewChildAnnotationsAction(IMPORT_NEW_CHILD_ANNOTATIONS_LANG_KEY);
-		this.modecontroller.getMapController().addListenerForAction(importNewChildAnnotationsAction);
-		this.removeLinebreaksAction = new RemoveLinebreaksAction(REMOVE_LINEBREAKS_LANG_KEY);
-		this.modecontroller.getMapController().addListenerForAction(removeLinebreaksAction);
-		this.deleteMonitoringFolderAction = new DeleteMonitoringFolderAction(DELETE_MONITORING_FOLDER_LANG_KEY);
-		this.modecontroller.getMapController().addListenerForAction(deleteMonitoringFolderAction);
-		this.editMonitoringFolderAction = new EditMonitoringFolderAction(EDIT_MONITORING_FOLDER_LANG_KEY);
-		this.modecontroller.getMapController().addListenerForAction(editMonitoringFolderAction);
-		this.monitoringFlattenSubfoldersAction = new MonitoringFlattenSubfoldersAction(TOGGLE_FOLDER_VIEW_LANG_KEY);
-		this.modecontroller.getMapController().addListenerForAction(monitoringFlattenSubfoldersAction);
+		this.addMonitoringFolderAction = new AddMonitoringFolderAction();
+		modeController.addAction(addMonitoringFolderAction);
+//		modeController.getMapController().addListenerForAction(addMonitoringFolderAction);
+		this.updateMonitoringFolderAction = new UpdateMonitoringFolderAction();
+		modeController.addAction(updateMonitoringFolderAction);
+//		modeController.getMapController().addListenerForAction(updateMonitoringFolderAction);
+		this.importAllChildAnnotationsAction = new ImportAllChildAnnotationsAction();
+		modeController.addAction(importAllChildAnnotationsAction);
+//		modeController.getMapController().addListenerForAction(importAllChildAnnotationsAction);
+		this.importNewChildAnnotationsAction = new ImportNewChildAnnotationsAction();
+		modeController.addAction(importNewChildAnnotationsAction);
+//		modeController.getMapController().addListenerForAction(importNewChildAnnotationsAction);
+		this.removeLinebreaksAction = new RemoveLinebreaksAction();
+		modeController.addAction(removeLinebreaksAction);
+//		modeController.getMapController().addListenerForAction(removeLinebreaksAction);
+		this.deleteMonitoringFolderAction = new DeleteMonitoringFolderAction();
+		modeController.addAction(deleteMonitoringFolderAction);
+//		modeController.getMapController().addListenerForAction(deleteMonitoringFolderAction);
+		this.editMonitoringFolderAction = new EditMonitoringFolderAction();
+		modeController.addAction(editMonitoringFolderAction);
+//		modeController.getMapController().addListenerForAction(editMonitoringFolderAction);
+		this.monitoringFlattenSubfoldersAction = new MonitoringFlattenSubfoldersAction();
+		modeController.addAction(monitoringFlattenSubfoldersAction);
+		//modeController.getMapController().addListenerForAction(monitoringFlattenSubfoldersAction);
 
-		Controller.getCurrentController().addAction(new ShowInstalledPdfReadersDialogAction());
-		Controller.getCurrentController().addAction(new ShowPdfReaderDefinitionDialogAction());
-		Controller.getCurrentController().addAction(new IncomingReReadMonitoringAction());
-		Controller.getCurrentController().addAction(new DocearSendPdfxcRegistryAction());
+		WorkspaceController.addAction(new ShowInstalledPdfReadersDialogAction());
+		WorkspaceController.addAction(new ShowPdfReaderDefinitionDialogAction());
+		WorkspaceController.addAction(new IncomingReReadMonitoringAction());
+		WorkspaceController.addAction(new DocearSendPdfxcRegistryAction());
 
-		this.modecontroller.removeAction("PasteAction"); //$NON-NLS-1$
-		this.modecontroller.addAction(new DocearPasteAction());
+		modeController.removeAction("PasteAction"); //$NON-NLS-1$
+		modeController.addAction(new DocearPasteAction());
 
 		WorkspaceController.getCurrentModeExtension().getIOController().registerNodeActionListener(DefaultFileNode.class, WorkspaceActionEvent.WSNODE_OPEN_DOCUMENT,
 				new WorkspaceNodeOpenDocumentListener());
@@ -703,8 +702,8 @@ public class PdfUtilitiesController extends ALanguageController {
 				new WorkspaceNodeOpenDocumentListener());
 	}
 
-	private void addMenuEntries() {
-		this.modecontroller.addMenuContributor(new IMenuContributor() {
+	private void addMenuEntries(ModeController modeController) {
+		modeController.addMenuContributor(new IMenuContributor() {
 
 			public void updateMenus(ModeController modeController, MenuBuilder builder) {
 				if(!Compat.isMacOsX()){
@@ -716,7 +715,7 @@ public class PdfUtilitiesController extends ALanguageController {
 				builder.addMenuItem(MENU_BAR + TOOLS_MENU, new JMenu(TextUtils.getText(PDF_MANAGEMENT_MENU_LANG_KEY)), MENU_BAR + PDF_MANAGEMENT_MENU,
 						MenuBuilder.BEFORE);
 
-				builder.addRadioItem(MENU_BAR + PDF_MANAGEMENT_MENU, new RadioButtonAction(AUTO_IMPORT_LANG_KEY, AUTO_IMPORT_ANNOTATIONS_KEY),
+				builder.addRadioItem(MENU_BAR + PDF_MANAGEMENT_MENU, new RadioButtonAction("menu_auto_import_annotations", AUTO_IMPORT_ANNOTATIONS_KEY),
 						DocearController.getPropertiesController().getBooleanProperty(AUTO_IMPORT_ANNOTATIONS_KEY));
 				builder.addAction(MENU_BAR + PDF_MANAGEMENT_MENU, importAllAnnotationsAction, MenuBuilder.AS_CHILD);
 				builder.addAction(MENU_BAR + PDF_MANAGEMENT_MENU, importNewAnnotationsAction, MenuBuilder.AS_CHILD);				
@@ -846,8 +845,8 @@ public class PdfUtilitiesController extends ALanguageController {
 			}
 		});
 		
-		//modecontroller.getUserInputListenerFactory().getRibbonBuilder().registerContributorFactory("pdfutilities", new DocearPdfUtilitiesBandContributorFactory());
-		modecontroller.getUserInputListenerFactory().getRibbonBuilder().updateRibbon(PdfUtilitiesController.class.getResource("/xml/ribbons.xml"));
+		//modeController.getUserInputListenerFactory().getRibbonBuilder().registerContributorFactory("pdfutilities", new DocearPdfUtilitiesBandContributorFactory());
+		modeController.getUserInputListenerFactory().getRibbonBuilder().updateRibbon(PdfUtilitiesController.class.getResource("/xml/ribbons.xml"));
 	}
 
 	public static String getParentCategory(MenuBuilder builder, String parentMenu) {
@@ -857,17 +856,17 @@ public class PdfUtilitiesController extends ALanguageController {
 			return NODE_POPUP_MENU;
 	}
 
-	private void registerListener() {
+	private void registerListener(final ModeController modeController) {
 		MapConverter.addMapsConvertedListener(new MonitorungNodeUpdater(TextUtils.getText("MapConverter.1")));
 		AnnotationController.addAnnotationImporter(new PdfAnnotationImporter());
-		this.modecontroller.addINodeViewLifeCycleListener(new INodeViewLifeCycleListener() {
+		modeController.addINodeViewLifeCycleListener(new INodeViewLifeCycleListener() {
 
 			public void onViewCreated(Container nodeView) {
 				NodeView node = (NodeView) nodeView;
 				final DropTarget dropTarget = new DropTarget(node.getMainView(), new DocearNodeDropListener());
 				dropTarget.setActive(true);
 
-				IMouseListener defaultMouseListener = modecontroller.getUserInputListenerFactory().getNodeMouseMotionListener();
+				IMouseListener defaultMouseListener = modeController.getUserInputListenerFactory().getNodeMouseMotionListener();
 				IMouseListener docearMouseListener = new DocearNodeMouseMotionListener(defaultMouseListener);
 				node.getMainView().removeMouseMotionListener(defaultMouseListener);
 				node.getMainView().addMouseMotionListener(docearMouseListener);
@@ -986,7 +985,7 @@ public class PdfUtilitiesController extends ALanguageController {
 			}
 		});
 
-		this.modecontroller.getMapController().addNodeSelectionListener(new DocearNodeSelectionListener());
+		modeController.getMapController().addNodeSelectionListener(new DocearNodeSelectionListener());
 
 		DocearController.getController().addDocearEventListener(new IDocearEventListener() {
 
@@ -1028,9 +1027,9 @@ public class PdfUtilitiesController extends ALanguageController {
 				
 		WorkspaceController.getCurrentModel().addWorldModelListener(new DefaultWorkspaceModelListener());
 
-		this.modecontroller.getMapController().addNodeChangeListener(new PdfNodeChangeListener());		
+		modeController.getMapController().addNodeChangeListener(new PdfNodeChangeListener());		
 		DocearAutoMonitoringListener autoMonitoringListener = new DocearAutoMonitoringListener();
-		this.modecontroller.getMapController().addMapLifeCycleListener(autoMonitoringListener);
+		modeController.getMapController().addMapLifeCycleListener(autoMonitoringListener);
 		Controller.getCurrentController().getViewController().getJFrame().addWindowFocusListener(autoMonitoringListener);
 	}
 
@@ -1041,7 +1040,7 @@ public class PdfUtilitiesController extends ALanguageController {
 		return this.projectModelListener;
 	}
 
-	private void addPluginDefaults() {
+	private void addPluginDefaults(ModeController modeController) {
 		final URL defaults = this.getClass().getResource(ResourceController.PLUGIN_DEFAULTS_RESOURCE);
 		if (defaults == null) throw new RuntimeException("cannot open " + ResourceController.PLUGIN_DEFAULTS_RESOURCE); //$NON-NLS-1$
 		Controller.getCurrentController().getResourceController().addDefaults(defaults);
@@ -1082,12 +1081,11 @@ public class PdfUtilitiesController extends ALanguageController {
 		return readerCommand;
 	}	
 
-	private void addPropertiesToOptionPanel() {
+	private void addPropertiesToOptionPanel(ModeController modeController) {
 		final URL preferences = this.getClass().getResource("preferences.xml"); //$NON-NLS-1$
 		if (preferences == null) throw new RuntimeException("cannot open docear.pdf_utilities plugin preferences"); //$NON-NLS-1$
-		MModeController modeController = (MModeController) this.modecontroller;
 
-		modeController.getOptionPanelBuilder().load(preferences);
+		((MModeController)modeController).getOptionPanelBuilder().load(preferences);
 		//DOCEAR - todo: Does not work, because the properties are set in an extra dialog with the validator still using the old values
 //		Controller.getCurrentController().addOptionValidator(new IValidator() {
 //			

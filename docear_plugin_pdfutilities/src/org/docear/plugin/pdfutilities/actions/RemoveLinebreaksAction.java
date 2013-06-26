@@ -28,10 +28,11 @@ public class RemoveLinebreaksAction extends ImportAnnotationsAction {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	public static final String KEY = "RemoveLinebreaksAction";
 
 	@SuppressWarnings("serial")
-	public RemoveLinebreaksAction(String key) {
-		super(key);
+	public RemoveLinebreaksAction() {
+		super(KEY);
 		this.setEnableType(new ArrayList<AnnotationType>(){{ add(AnnotationType.BOOKMARK); 
 															 add(AnnotationType.BOOKMARK_WITH_URI);
 															 add(AnnotationType.BOOKMARK_WITHOUT_DESTINATION);

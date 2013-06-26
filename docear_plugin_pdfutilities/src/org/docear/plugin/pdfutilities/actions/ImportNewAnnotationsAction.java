@@ -31,10 +31,11 @@ public class ImportNewAnnotationsAction extends ImportAnnotationsAction {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	public static final String KEY = "ImportNewAnnotationsAction";
 
 	@SuppressWarnings("serial")
-	public ImportNewAnnotationsAction(String key) {
-		super(key);
+	public ImportNewAnnotationsAction() {
+		super(KEY);
 		this.setEnableType(new ArrayList<AnnotationType>(){{ add(AnnotationType.PDF_FILE); }});
 	}
 

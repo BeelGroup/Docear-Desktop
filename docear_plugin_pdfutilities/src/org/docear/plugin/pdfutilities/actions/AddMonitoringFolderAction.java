@@ -30,11 +30,12 @@ public class AddMonitoringFolderAction extends AbstractMonitoringAction {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	public static final String KEY = "AddMonitoringFolderAction";
 
 
 
-	public AddMonitoringFolderAction(String key) {
-		super(key);		
+	public AddMonitoringFolderAction() {
+		super(KEY);		
 	}
 
 	public void actionPerformed(ActionEvent e) {

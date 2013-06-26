@@ -17,6 +17,7 @@ import org.freeplane.plugin.workspace.actions.WorkspaceProjectOpenLocationAction
 import org.freeplane.plugin.workspace.model.project.IProjectSelectionListener;
 import org.freeplane.plugin.workspace.model.project.ProjectSelectionEvent;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
+import org.pushingpixels.flamingo.api.common.JCommandButton.CommandButtonKind;
 import org.pushingpixels.flamingo.api.common.JCommandMenuButton;
 import org.pushingpixels.flamingo.api.common.popup.JCommandPopupMenu;
 import org.pushingpixels.flamingo.api.common.popup.JPopupPanel;
@@ -96,6 +97,7 @@ public class WorkspaceProjectBandContributorFactory implements IRibbonContributo
 						return popupmenu;
 					}
 				});
+				newButton.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
 				newButton.setEnabled(enabled);
 				parent.addChild(newButton, RibbonElementPriority.MEDIUM);
 				
