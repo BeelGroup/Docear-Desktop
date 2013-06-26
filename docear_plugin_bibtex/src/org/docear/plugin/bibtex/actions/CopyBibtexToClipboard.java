@@ -17,7 +17,7 @@ import org.freeplane.features.mode.Controller;
 
 @EnabledAction(checkOnNodeChange=true)
 public class CopyBibtexToClipboard extends AFreeplaneAction{
-	private static final String KEY = "menu_copy_bibtex";
+	public static final String KEY = "CopyBibtexKeyToClipboardAction";
 	/**
 	 * 
 	 */

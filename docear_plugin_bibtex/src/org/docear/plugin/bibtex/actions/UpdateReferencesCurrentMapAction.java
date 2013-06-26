@@ -19,9 +19,10 @@ public class UpdateReferencesCurrentMapAction extends AFreeplaneAction implement
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	public static final String KEY = "UpdateReferencesCurrentMapAction";
 
-	public UpdateReferencesCurrentMapAction(String key) {
-		super(key);
+	public UpdateReferencesCurrentMapAction() {
+		super(KEY);
 		DocearController.getController().addDocearEventListener(this);
 	}
 

@@ -15,9 +15,10 @@ public class UpdateReferencesAllOpenMapsAction extends AFreeplaneAction {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	public static final String KEY = "UpdateReferencesAllOpenMapsAction";
 
-	public UpdateReferencesAllOpenMapsAction(String key) {
-		super(key);		
+	public UpdateReferencesAllOpenMapsAction() {
+		super(KEY);		
 	}
 
 	

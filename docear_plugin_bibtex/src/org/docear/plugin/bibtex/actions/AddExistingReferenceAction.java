@@ -18,13 +18,14 @@ import org.freeplane.features.url.UrlManager;
 
 public class AddExistingReferenceAction extends AFreeplaneAction {
 	
+	public static final String KEY = "AddExistingReferenceAction";
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public AddExistingReferenceAction(String key) {
-		super(key);
+	public AddExistingReferenceAction() {
+		super(KEY);
 	}
 
 	public void actionPerformed(ActionEvent arg0) {

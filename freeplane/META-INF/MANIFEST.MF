@@ -126,5 +126,11 @@ Export-Package: com.inet.jortho,
  org.freeplane.view.swing.map.link,
  org.freeplane.view.swing.map.mindmapmode,
  org.freeplane.view.swing.ui,
- org.freeplane.view.swing.ui.mindmapmode
+ org.freeplane.view.swing.ui.mindmapmode,
+ org.pushingpixels.flamingo.api.common,
+ org.pushingpixels.flamingo.api.common.icon,
+ org.pushingpixels.flamingo.api.common.model,
+ org.pushingpixels.flamingo.api.common.popup,
+ org.pushingpixels.flamingo.api.ribbon,
+ org.pushingpixels.flamingo.api.ribbon.resize
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

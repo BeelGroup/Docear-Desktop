@@ -28,14 +28,14 @@ import org.freeplane.features.mode.Controller;
 import org.freeplane.features.url.UrlManager;
 
 public class AddNewReferenceAction extends AFreeplaneAction {
-
+	public static final String KEY = "AddNewReferenceAction";
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public AddNewReferenceAction(String key) {
-		super(key);
+	public AddNewReferenceAction() {
+		super(KEY);
 	}
 
 	public void actionPerformed(ActionEvent e) {		

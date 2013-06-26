@@ -19,7 +19,7 @@ public class RibbonBandContributorFactory implements IRibbonContributorFactory {
 		return new ARibbonContributor() {
 			
 			private JRibbonBand band;
-			
+			private boolean valid = false;
 			public String getKey() {
 				return attributes.getProperty("name");
 			}
@@ -39,7 +39,9 @@ public class RibbonBandContributorFactory implements IRibbonContributorFactory {
     					((ARibbonContributor)node.getUserObject()).contribute(context, this);
     				}
     				setResizePolicies(attributes.getProperty("resize_policies"));
-    				parent.addChild(band, null);
+    				if(valid) {
+    					parent.addChild(band, null);
+    				}
 				}
 				finally {
 					Thread.currentThread().setContextClassLoader(contextClassLoader);
@@ -54,6 +56,7 @@ public class RibbonBandContributorFactory implements IRibbonContributorFactory {
 						priority = (RibbonElementPriority) properties;
 					}
 					band.addCommandButton((AbstractCommandButton) child, priority);
+					valid = true;
 				}
 				
 			}

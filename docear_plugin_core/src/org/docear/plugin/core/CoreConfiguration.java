@@ -40,6 +40,7 @@ import org.docear.plugin.core.listeners.PropertyListener;
 import org.docear.plugin.core.listeners.PropertyLoadListener;
 import org.docear.plugin.core.listeners.WorkspaceOpenDocumentListener;
 import org.docear.plugin.core.logger.DocearLogEvent;
+import org.docear.plugin.core.ui.ribbons.DocearNodePrivacyContributorFactory;
 import org.docear.plugin.core.workspace.actions.DocearAddRepositoryPathAction;
 import org.docear.plugin.core.workspace.actions.DocearImportProjectAction;
 import org.docear.plugin.core.workspace.actions.DocearLibraryNewMindmap;
@@ -386,6 +387,9 @@ public class CoreConfiguration extends ALanguageController {
 		
 	private void addMenus(ModeController modeController) {
 		//RIBBONS implement
+		if("true".equals(System.getProperty("docear.debug", "false"))) {
+			modeController.addAction(new DocearSetNodePrivacyAction());
+		}
 		modeController.addMenuContributor(new IMenuContributor() {
 			public void updateMenus(ModeController modeController, MenuBuilder builder) {
 				//add entries to project menu
@@ -417,7 +421,6 @@ public class CoreConfiguration extends ALanguageController {
 				
 				//add node privacy actions
 				if("true".equals(System.getProperty("docear.debug", "false"))) {
-					modeController.addAction(new DocearSetNodePrivacyAction());
 					builder.addSeparator("/menu_bar/edit", MenuBuilder.AS_CHILD);
 					builder.addAction("/menu_bar/edit", new DocearSetNodePrivacyAction(),	MenuBuilder.AS_CHILD);
 					builder.addSeparator("/node_popup", MenuBuilder.AS_CHILD);
@@ -426,8 +429,9 @@ public class CoreConfiguration extends ALanguageController {
 				}
 			}
 		});
-		
+		modeController.getUserInputListenerFactory().getRibbonBuilder().registerContributorFactory("node_privacy", new DocearNodePrivacyContributorFactory());
 		modeController.getUserInputListenerFactory().getRibbonBuilder().updateRibbon(DocearController.class.getResource("/xml/ribbons.xml"));
+		
 	}
 
 
