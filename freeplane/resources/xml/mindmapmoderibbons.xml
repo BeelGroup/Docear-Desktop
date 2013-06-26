@@ -178,10 +178,9 @@
 
 			<ribbon_contributor name="edgeStyleContributor" />
 
-			<ribbon_band name="miscellaneous" resize_policies="Mirror, High2Mid">
+			<ribbon_band name="miscellaneous" resize_policies="High2Low">
 				<ribbon_action action="RevisionPluginAction" priority="top" />
-				<ribbon_action action="CopyStyleExtensionsAction"
-					priority="top" />
+				<ribbon_action action="CopyStyleExtensionsAction" priority="top" />
 			</ribbon_band>
 		</ribbon_task>
 

@@ -17,9 +17,10 @@ public class DeleteMonitoringFolderAction extends AbstractMonitoringAction {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	public static final String KEY = "DeleteMonitoringFolderAction";
 
-	public DeleteMonitoringFolderAction(String key) {
-		super(key);		
+	public DeleteMonitoringFolderAction() {
+		super(KEY);		
 	}
 
 	public void actionPerformed(ActionEvent e) {

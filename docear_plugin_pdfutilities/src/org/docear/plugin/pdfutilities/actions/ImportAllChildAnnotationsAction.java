@@ -21,10 +21,11 @@ public class ImportAllChildAnnotationsAction extends ImportAnnotationsAction {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	public static final String KEY = "ImportAllChildAnnotationsAction";
 
 	@SuppressWarnings("serial")
-	public ImportAllChildAnnotationsAction(String key) {
-		super(key);
+	public ImportAllChildAnnotationsAction() {
+		super(KEY);
 		this.setEnableType(new ArrayList<AnnotationType>(){{ add(AnnotationType.BOOKMARK); 
 															 add(AnnotationType.BOOKMARK_WITH_URI);
 															 add(AnnotationType.BOOKMARK_WITHOUT_DESTINATION);

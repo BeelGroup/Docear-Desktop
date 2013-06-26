@@ -17,6 +17,7 @@ import org.freeplane.plugin.workspace.actions.WorkspaceProjectOpenLocationAction
 import org.freeplane.plugin.workspace.model.project.IProjectSelectionListener;
 import org.freeplane.plugin.workspace.model.project.ProjectSelectionEvent;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
+import org.pushingpixels.flamingo.api.common.JCommandButton.CommandButtonKind;
 import org.pushingpixels.flamingo.api.common.JCommandMenuButton;
 import org.pushingpixels.flamingo.api.common.popup.JCommandPopupMenu;
 import org.pushingpixels.flamingo.api.common.popup.JPopupPanel;
@@ -72,7 +73,21 @@ public class WorkspaceProjectBandContributorFactory implements IRibbonContributo
 				removeButton.setEnabled(enabled);
 				parent.addChild(removeButton, RibbonElementPriority.TOP);
 				
+				final WorkspaceProjectOpenLocationAction openLocAction = new WorkspaceProjectOpenLocationAction();
+				openButton = new JCommandButton(RibbonActionContributorFactory.getActionTitle(openLocAction), RibbonActionContributorFactory.getActionIcon(openLocAction));
+				KeyStroke ks = RibbonAcceleratorManager.parseKeyStroke("control alt L");
+				context.getBuilder().getAcceleratorManager().setAccelerator(openLocAction, ks);
+				RibbonActionContributorFactory.updateRichTooltip(openButton, openLocAction, ks);
+				openButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						openLocAction.actionPerformed(e);
+					}
+				});
+				openButton.setEnabled(enabled);
+				parent.addChild(openButton, RibbonElementPriority.MEDIUM);
+				
 				newButton = RibbonActionContributorFactory.createCommandButton(RibbonActionContributorFactory.getDummyAction("workspace.action.new"));
+				newButton.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
 				newButton.setPopupCallback(new PopupPanelCallback() {
 					
 					public JPopupPanel getPopupPanel(JCommandButton commandButton) {
@@ -98,19 +113,6 @@ public class WorkspaceProjectBandContributorFactory implements IRibbonContributo
 				});
 				newButton.setEnabled(enabled);
 				parent.addChild(newButton, RibbonElementPriority.MEDIUM);
-				
-				final WorkspaceProjectOpenLocationAction openLocAction = new WorkspaceProjectOpenLocationAction();
-				openButton = new JCommandButton(RibbonActionContributorFactory.getActionTitle(openLocAction), RibbonActionContributorFactory.getActionIcon(openLocAction));
-				KeyStroke ks = RibbonAcceleratorManager.parseKeyStroke("control alt L");
-				context.getBuilder().getAcceleratorManager().setAccelerator(openLocAction, ks);
-				RibbonActionContributorFactory.updateRichTooltip(openButton, openLocAction, ks);
-				openButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						openLocAction.actionPerformed(e);
-					}
-				});
-				openButton.setEnabled(enabled);
-				parent.addChild(openButton, RibbonElementPriority.MEDIUM);
 			}
 			
 			@Override
