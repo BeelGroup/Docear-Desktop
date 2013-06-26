@@ -31,7 +31,7 @@ public class EdgeModel implements Serializable {
 		try {
 			color = edgeController.getColor(freeplaneNode, false);
 		} catch (NullPointerException e) {
-			//TODO do something useful
+			//ignore, none is present, but exception has to be catched
 		}
 		this.color = color != null ? color.getRGB() : null;
 		this.style = edgeController.getStyle(freeplaneNode, false);

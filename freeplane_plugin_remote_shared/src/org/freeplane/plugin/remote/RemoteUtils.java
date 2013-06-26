@@ -40,7 +40,6 @@ public final class RemoteUtils {
 	}
 
 	public static NodeModel addNodeToOpenMap(MMapController mapController, NodeModel parentNode, Side side) {
-		// logger().debug("Actions.addNode => creating new node");
 		NodeModel node = mapController.newNode("", parentNode.getMap());
 
 		// insert node
@@ -56,10 +55,8 @@ public final class RemoteUtils {
 
 			node.createID();
 		} catch (NullPointerException e) {
-			//TODO do something useful
-			
+			//TODO handle exception
 		}
-		// logger().debug("Actions.addNode => node with id '{}' successfully created",
 
 		return node;
 	}

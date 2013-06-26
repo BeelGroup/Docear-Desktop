@@ -94,12 +94,6 @@ public class NodeViewListener extends NodeView implements INodeView {
 				else if (property.equals(ExternalResource.class)) {
 					LogUtils.info("image");
 					// TODO is not handled by the server side, yet.
-					// use this code when handling is implemented
-
-					// final ExternalResource resource = (ExternalResource)
-					// event.getNewValue();
-					// webservice().changeNode("5", event.getNode().getID(),
-					// "image", resource.getUri().toString());
 				}
 				// link
 				else if (property.equals("hyperlink_changed")) {
