@@ -30,6 +30,7 @@ import org.freeplane.core.ui.IEditHandler.FirstAction;
 import org.freeplane.core.ui.IKeyStrokeProcessor;
 import org.freeplane.core.ui.components.FreeplaneMenuBar;
 import org.freeplane.core.ui.components.UITools;
+import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.Controller;
@@ -218,7 +219,7 @@ public class RibbonAcceleratorManager implements IKeyStrokeProcessor, IAccelerat
 				}
 				final KeyStroke keyStroke;
 				if (!keystrokeString.equals("")) {
-					keyStroke = UITools.getKeyStroke(keystrokeString);
+					keyStroke = UITools.getKeyStroke(parseKeyStroke(keystrokeString).toString());
 					final AFreeplaneAction oldAction = accelerators.get(keyStroke);
 					if (oldAction != null) {
 						setAccelerator(oldAction, null);
@@ -340,5 +341,18 @@ public class RibbonAcceleratorManager implements IKeyStrokeProcessor, IAccelerat
 			}
 			return checkForOverwriteShortcut(derivedKS);
 		}
+	}
+
+	public static KeyStroke parseKeyStroke(String accelerator) {
+		if (accelerator != null) {				
+			if (Compat.isMacOsX()) {
+				accelerator = accelerator.replaceFirst("CONTROL", "META").replaceFirst("control", "meta");
+			}
+			else {
+				accelerator = accelerator.replaceFirst("META", "CONTROL").replaceFirst("meta", "control");
+			}
+			return KeyStroke.getKeyStroke(accelerator);
+		}
+		return null;
 	}
 }

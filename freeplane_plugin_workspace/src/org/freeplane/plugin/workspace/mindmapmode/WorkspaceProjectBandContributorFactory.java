@@ -1,5 +1,7 @@
 package org.freeplane.plugin.workspace.mindmapmode;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Properties;
 
 import javax.swing.KeyStroke;
@@ -7,9 +9,11 @@ import javax.swing.KeyStroke;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.ribbon.ARibbonContributor;
 import org.freeplane.core.ui.ribbon.IRibbonContributorFactory;
+import org.freeplane.core.ui.ribbon.RibbonAcceleratorManager;
 import org.freeplane.core.ui.ribbon.RibbonActionContributorFactory;
 import org.freeplane.core.ui.ribbon.RibbonBuildContext;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.actions.WorkspaceProjectOpenLocationAction;
 import org.freeplane.plugin.workspace.model.project.IProjectSelectionListener;
 import org.freeplane.plugin.workspace.model.project.ProjectSelectionEvent;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
@@ -23,6 +27,7 @@ public class WorkspaceProjectBandContributorFactory implements IRibbonContributo
 	
 	private JCommandButton removeButton;
 	private JCommandButton newButton;
+	private JCommandButton openButton;
 	/***********************************************************************************
 	 * CONSTRUCTORS
 	 **********************************************************************************/
@@ -36,6 +41,9 @@ public class WorkspaceProjectBandContributorFactory implements IRibbonContributo
 				}
 				if(removeButton != null) {
 					removeButton.setEnabled(enabled);
+				}
+				if(removeButton != null) {
+					openButton.setEnabled(enabled);
 				}
 			}
 		});
@@ -90,6 +98,19 @@ public class WorkspaceProjectBandContributorFactory implements IRibbonContributo
 				});
 				newButton.setEnabled(enabled);
 				parent.addChild(newButton, RibbonElementPriority.MEDIUM);
+				
+				final WorkspaceProjectOpenLocationAction openLocAction = new WorkspaceProjectOpenLocationAction();
+				openButton = new JCommandButton(RibbonActionContributorFactory.getActionTitle(openLocAction), RibbonActionContributorFactory.getActionIcon(openLocAction));
+				KeyStroke ks = RibbonAcceleratorManager.parseKeyStroke("control alt L");
+				context.getBuilder().getAcceleratorManager().setAccelerator(openLocAction, ks);
+				RibbonActionContributorFactory.updateRichTooltip(openButton, openLocAction, ks);
+				openButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						openLocAction.actionPerformed(e);
+					}
+				});
+				openButton.setEnabled(enabled);
+				parent.addChild(openButton, RibbonElementPriority.MEDIUM);
 			}
 			
 			@Override
