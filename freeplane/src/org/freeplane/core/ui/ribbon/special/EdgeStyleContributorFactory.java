@@ -14,11 +14,9 @@ import org.freeplane.core.ui.ribbon.RibbonActionContributorFactory;
 import org.freeplane.core.ui.ribbon.RibbonBuildContext;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.map.NodeModel;
-import org.freeplane.features.mode.Controller;
-import org.freeplane.features.styles.mindmapmode.MUIFactory;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
-import org.pushingpixels.flamingo.api.common.JCommandToggleButton;
 import org.pushingpixels.flamingo.api.common.JCommandButton.CommandButtonKind;
+import org.pushingpixels.flamingo.api.common.JCommandToggleButton;
 import org.pushingpixels.flamingo.api.common.JCommandToggleMenuButton;
 import org.pushingpixels.flamingo.api.common.popup.JCommandPopupMenu;
 import org.pushingpixels.flamingo.api.common.popup.JPopupPanel;
@@ -47,7 +45,6 @@ public class EdgeStyleContributorFactory implements IRibbonContributorFactory {
 					JRibbonBand band = new JRibbonBand(TextUtils.getText("ribbon.band.edgeStyles"), null, null);
 					band.setExpandButtonKeyTip("ES");
 					band.setCollapsedStateKeyTip("ZE");
-					MUIFactory uiFactory = Controller.getCurrentModeController().getExtension(MUIFactory.class);
 					
 					JCommandButton styleGroupButton = new JCommandButton(TextUtils.getText("edgeStyleGroupAction.text"));
 					styleGroupButton.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
@@ -98,38 +95,53 @@ public class EdgeStyleContributorFactory implements IRibbonContributorFactory {
 										
 					band.addCommandButton(styleGroupButton, RibbonElementPriority.TOP);
 
-					// final Container sizeBox = uiFactory.createSizeBox();
-					// JRibbonComponent sizeComboWrapper = new
-					// JRibbonComponent((JComponent) sizeBox);
-					// sizeComboWrapper.setKeyTip("SS");
-					// band.addFlowComponent(sizeComboWrapper);
-					//
-					// final Container styleBox = uiFactory.createStyleBox();
-					// final Dimension preferredSize =
-					// styleBox.getPreferredSize();
-					// preferredSize.width = 90;
-					// styleBox.setPreferredSize(preferredSize);
-					// JRibbonComponent styleComboWrapper = new
-					// JRibbonComponent((JComponent) styleBox);
-					// styleComboWrapper.setKeyTip("SD");
-					// band.addFlowComponent(styleComboWrapper);
-					//
-					// JCommandButtonStrip styleStrip = new
-					// JCommandButtonStrip();
-					//
-					// //
-					// styleStrip.add(RibbonActionContributorFactory.createCommandButton("BoldAction"));
-					// styleStrip.add(RibbonActionContributorFactory.createCommandButton("ItalicAction"));
-					// styleStrip.add(RibbonActionContributorFactory.createCommandButton("NodeColorAction"));
-					// styleStrip.add(RibbonActionContributorFactory.createCommandButton("NodeBackgroundColorAction"));
-					//
-					// band.addFlowComponent(styleStrip);
+					JCommandButton lineWidthGroupButton = new JCommandButton(TextUtils.getText("edgeLineWidthGroupAction.text"));
+					lineWidthGroupButton.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
+					action = context.getBuilder().getMode().getAction("EdgeWidthAction_width_parent");
+					final JCommandToggleMenuButton widthParent = RibbonActionContributorFactory.createCommandToggleMenuButton(action);
+					addDefaultToggleHandler(context, action, widthParent);
+					action = context.getBuilder().getMode().getAction("EdgeWidthAction_width_thin");
+					final JCommandToggleMenuButton widthThin = RibbonActionContributorFactory.createCommandToggleMenuButton(action);
+					addDefaultToggleHandler(context, action, widthThin);
+					action = context.getBuilder().getMode().getAction("EdgeWidthAction_1");
+					final JCommandToggleMenuButton width1 = RibbonActionContributorFactory.createCommandToggleMenuButton(action);
+					addDefaultToggleHandler(context, action, width1);
+					action = context.getBuilder().getMode().getAction("EdgeWidthAction_2");
+					final JCommandToggleMenuButton width2 = RibbonActionContributorFactory.createCommandToggleMenuButton(action);
+					addDefaultToggleHandler(context, action, width2);
+					action = context.getBuilder().getMode().getAction("EdgeWidthAction_4");
+					final JCommandToggleMenuButton width4 = RibbonActionContributorFactory.createCommandToggleMenuButton(action);
+					addDefaultToggleHandler(context, action, width4);
+					action = context.getBuilder().getMode().getAction("EdgeWidthAction_8");
+					final JCommandToggleMenuButton width8 = RibbonActionContributorFactory.createCommandToggleMenuButton(action);
+					addDefaultToggleHandler(context, action, width8);					
+				
+					lineWidthGroupButton.setPopupCallback(new PopupPanelCallback() {						
+						public JPopupPanel getPopupPanel(JCommandButton commandButton) {
+							JCommandPopupMenu popupmenu = new JCommandPopupMenu();
+							popupmenu.addMenuButton(widthParent);
+							popupmenu.addMenuButton(widthThin);
+							popupmenu.addMenuButton(width1);
+							popupmenu.addMenuButton(width2);
+							popupmenu.addMenuButton(width4);
+							popupmenu.addMenuButton(width8);
+							return popupmenu;
+						}
+					});
+					
+					band.addCommandButton(lineWidthGroupButton, RibbonElementPriority.TOP);
+					
+					action = context.getBuilder().getMode().getAction("EdgeColorAction");
+					final JCommandButton edgeColorButton = RibbonActionContributorFactory.createCommandButton(action);
+					band.addCommandButton(edgeColorButton, RibbonElementPriority.MEDIUM);
+					
+					action = context.getBuilder().getMode().getAction("AutomaticEdgeColorHookAction");
+					final JCommandButton automaticColorButton = RibbonActionContributorFactory.createCommandButton(action);
+					band.addCommandButton(automaticColorButton, RibbonElementPriority.MEDIUM);
 
 					List<RibbonBandResizePolicy> policies = new ArrayList<RibbonBandResizePolicy>();
-					// policies.add(new
-					// CoreRibbonResizePolicies.None(mindMapBand.getControlPanel()));
 					policies.add(new CoreRibbonResizePolicies.Mirror(band.getControlPanel()));
-//					policies.add(new CoreRibbonResizePolicies.High2Mid(band.getControlPanel()));
+					policies.add(new CoreRibbonResizePolicies.High2Mid(band.getControlPanel()));
 					band.setResizePolicies(policies);
 					parent.addChild(band, null);
 				}
