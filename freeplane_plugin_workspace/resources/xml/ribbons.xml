@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menu_structure>
+    <menu_category name="ribbon">
+        <ribbon_taskbar></ribbon_taskbar>
+        <ribbon_menu></ribbon_menu>
+        <ribbon_task name="project">
+            <ribbon_band name="main" resize_policies="Mirror, High2Mid">
+                <ribbon_action action="workspace.action.project.new" priority="TOP" />
+                <ribbon_action action="workspace.action.project.import"  priority="TOP" />
+                
+                <ribbon_contributor name="project_band_main" />
+           </ribbon_band>
+        </ribbon_task>
+    </menu_category>
+</menu_structure>

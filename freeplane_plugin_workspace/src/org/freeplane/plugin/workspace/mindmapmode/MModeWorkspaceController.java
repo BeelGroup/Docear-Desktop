@@ -189,6 +189,8 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 				}
 			}
 		});
+		modeController.getUserInputListenerFactory().getRibbonBuilder().registerContributorFactory("project_band_main", new WorkspaceProjectBandContributorFactory(this));
+		modeController.getUserInputListenerFactory().getRibbonBuilder().updateRibbon(MModeWorkspaceController.class.getResource("/xml/ribbons.xml"));
 	}
 
 //	private void setupSettings(ModeController modeController) {
