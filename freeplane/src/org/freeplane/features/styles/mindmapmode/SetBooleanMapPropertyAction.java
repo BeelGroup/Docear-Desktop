@@ -57,6 +57,11 @@ public class SetBooleanMapPropertyAction extends AFreeplaneAction{
 		mapStyleController.setProperty(map, propertyName, Boolean.toString(set));
 		setSelected(set);
     }
+	
+	public String getTextKey() {
+		return "OptionPanel." + propertyName;
+	}
+	
 	@Override
 	public void setSelected() {
 		final Controller controller = Controller.getCurrentController();

@@ -67,7 +67,7 @@ public class FontStyleContributorFactory implements IRibbonContributorFactory {
 				final JCommandToggleButton italicButton = RibbonActionContributorFactory.createCommandToggleButton(action);
 				addDefaultToggleHandler(context, action, italicButton);
 				styleStrip.add(italicButton);
-
+				
 				action = context.getBuilder().getMode().getAction("NodeColorAction");
 				styleStrip.add(RibbonActionContributorFactory.createCommandButton(action));
 				action = context.getBuilder().getMode().getAction("NodeBackgroundColorAction");

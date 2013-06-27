@@ -185,8 +185,8 @@
 		</ribbon_task>
 
 		<ribbon_task name="view">
-		    <ribbon_contributor	name="zoomContributor" /> 
-			
+		    <ribbon_contributor	name="zoomContributor" />
+			<ribbon_contributor	name="viewSettingsContributor" />
 		</ribbon_task>
 
 	</menu_category>
