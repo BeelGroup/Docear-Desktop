@@ -294,7 +294,7 @@ public class MModeControllerFactory {
 		modeController.getUserInputListenerFactory().addToolBar("/format", ViewController.RIGHT, resisableTabs);
 		KeyBindingProcessor keyProcessor = new KeyBindingProcessor();
 		modeController.addExtension(KeyBindingProcessor.class, keyProcessor);
-		keyProcessor.addKeyStrokeProcessor(userInputListenerFactory.getMenuBuilder());
+//		keyProcessor.addKeyStrokeProcessor(userInputListenerFactory.getMenuBuilder());
 		keyProcessor.addKeyStrokeProcessor(userInputListenerFactory.getRibbonBuilder().getAcceleratorManager());
 		final FButtonBar fButtonToolBar = new FButtonBar(controller.getViewController().getRootPaneContainer().getRootPane(), keyProcessor);
 		fButtonToolBar.putClientProperty(ViewController.VISIBLE_PROPERTY_KEY, "fbarVisible");

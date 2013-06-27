@@ -26,8 +26,7 @@
 		</ribbon_menu>
 		<ribbon_task name="home">
 			<ribbon_band name="mind_map" resize_policies="Mirror, High2Mid">
-				<ribbon_action action="NewChildAction" accelerator="INSERT"
-					priority="top">
+				<ribbon_action action="NewChildAction" accelerator="INSERT"	priority="top">
 					<ribbon_action action="NewSiblingAction" accelerator="ENTER" />
 					<ribbon_action action="NewSummaryAction" />
 					<separator />
@@ -36,14 +35,16 @@
 						accelerator="shift ENTER" />
 					<ribbon_action action="NewParentNode" accelerator="shift INSERT" />
 				</ribbon_action>
-				<ribbon_action action="DeleteAction" accelerator="DELETE"
-					priority="top" />
+				<ribbon_action action="DeleteAction" accelerator="DELETE" priority="medium" />
+				<ribbon_action action="JoinNodesAction" accelerator="control J"	priority="medium">
+					<ribbon_action action="SplitNode" />
+				</ribbon_action>
+				<ribbon_action action="ShowHideNoteAction" accelerator="control GREATER" priority="medium" >
+					<ribbon_action action="EditNoteInDialogAction" />
+					<ribbon_action action="RemoveNoteAction" />
+				</ribbon_action>
 				<ribbon_action action="EditAction" priority="medium">
 					<ribbon_action action="EditLongAction" accelerator="alt ENTER" />
-				</ribbon_action>
-				<ribbon_action action="JoinNodesAction" accelerator="control J"
-					priority="low">
-					<ribbon_action action="SplitNode" />
 				</ribbon_action>
 				<ribbon_action action="EditDetailsAction" priority="medium">
 					<ribbon_action action="EditDetailsInDialogAction" />
@@ -60,50 +61,47 @@
 						<ribbon_action action="attributes_RemoveLastAttributeAction" />
 						<ribbon_action action="attributes_RemoveAllAttributesAction" />
 					</ribbon_action>
-				</ribbon_action>
-				<ribbon_action action="ShowHideNoteAction" accelerator="control GREATER" priority="medium" >
-					<ribbon_action action="EditNoteInDialogAction" />
-					<ribbon_action action="RemoveNoteAction" />
-				</ribbon_action>	
+				</ribbon_action>					
 			</ribbon_band>
 
 			<ribbon_band name="navigate" resize_policies="Mirror, High2Mid">
-				<ribbon_action action="UnfoldAllAction" accelerator="alt END"
-					priority="top" />
-				<ribbon_action action="FoldAllAction" accelerator="alt HOME"
-					priority="top" />
-				<ribbon_action action="NavigationPreviousMapAction"
-					accelerator="control shift TAB" priority="low" />
-				<ribbon_action action="NavigationNextMapAction"
-					accelerator="control TAB" priority="low" />
-				<ribbon_action action="ToggleFoldedAction"
-					accelerator="SPACE" priority="medium">
-					<ribbon_action action="ToggleChildrenFoldedAction"
-						accelerator="control SPACE" />
-					<ribbon_action action="UnfoldOneLevelAction"
-						accelerator="alt PAGE_DOWN" />
-					<ribbon_action action="FoldOneLevelAction"
-						accelerator="alt PAGE_UP" />
+				<ribbon_action action="UnfoldAllAction" accelerator="alt END" priority="top" />
+				<ribbon_action action="FoldAllAction" accelerator="alt HOME" priority="top" />
+				<ribbon_action action="MoveToRootAction" accelerator="ESCAPE" priority="medium">
+				    <ribbon_action action="FollowLinkAction" accelerator="control ENTER" />
+					<ribbon_action action="GotoNodeAction"/>					
+					<ribbon_action action="NextNodeAction.BACK" accelerator="control alt LEFT" />
+					<ribbon_action action="NextNodeAction.FORWARD" accelerator="control alt RIGHT" />
+					<ribbon_action action="NextNodeAction.BACK_N_FOLD" accelerator="control shift LEFT" />
+					<ribbon_action action="NextNodeAction.FORWARD_N_FOLD" accelerator="control shift RIGHT" />
+					<ribbon_action action="NextPresentationItemAction"  accelerator="control shift SPACE"/>
+					<ribbon_action action="BackAction" accelerator="alt LEFT" />
+					<ribbon_action action="ForwardAction" accelerator="alt RIGHT" />
+					<ribbon_action action="NavigationPreviousMapAction"	accelerator="control shift TAB" priority="low" />
+					<ribbon_action action="NavigationNextMapAction" accelerator="control TAB" priority="low" />
+				</ribbon_action>				
+				<ribbon_action action="ToggleFoldedAction" accelerator="SPACE" priority="medium">
+					<ribbon_action action="ToggleChildrenFoldedAction" accelerator="control SPACE" />
+					<ribbon_action action="UnfoldOneLevelAction" accelerator="alt PAGE_DOWN" />
+					<ribbon_action action="FoldOneLevelAction" accelerator="alt PAGE_UP" />
 				</ribbon_action>
 			</ribbon_band>
 
-			<ribbon_band name="basics" resize_policies="Mirror, High2Mid">
-				<ribbon_action action="CutAction" accelerator="control X"
-					priority="top" />
-				<ribbon_action action="CopyAction" accelerator="control C"
-					priority="top">
+			<ribbon_band name="basics" resize_policies="Mirror, High2Mid">			
+				<ribbon_action action="SelectAllAction" accelerator="control A" priority="medium">
+					<ribbon_action action="SelectBranchAction" accelerator="control shift A" />
+				</ribbon_action>
+				<ribbon_action action="UndoAction" accelerator="control Z" priority="medium" />
+				<ribbon_action action="RedoAction" accelerator="control Y" priority="medium" />			
+				<ribbon_action action="CutAction" accelerator="control X" priority="medium" />
+				<ribbon_action action="CopyAction" accelerator="control C" priority="medium">
 					<ribbon_action action="CopySingleAction" accelerator="control shift C" />
 					<ribbon_action action="CopyIDAction" />
 					<ribbon_action action="CopyNodeURIAction" />
 				</ribbon_action>
-				<ribbon_action action="PasteAction" accelerator="control V"
-					priority="top">
-					<ribbon_action action="SelectedPasteAction" priority="top" />
-				</ribbon_action>
-				<ribbon_action action="UndoAction" accelerator="control Z"
-					priority="top" />
-				<ribbon_action action="RedoAction" accelerator="control Y"
-					priority="top" />
+				<ribbon_action action="PasteAction" accelerator="control V"	priority="medium">
+					<ribbon_action action="SelectedPasteAction"/>
+				</ribbon_action>				
 			</ribbon_band>
 
 			<ribbon_band name="attachments" resize_policies="Mirror, High2Low">
@@ -123,15 +121,11 @@
 						accelerator="alt shift K" />
 					<ribbon_action action="ExternalImageChangeAction" />
 					<ribbon_action action="ExternalImageRemoveAction" />
-					<ribbon_action action="LatexInsertLatexAction"
-						plugin="org.freeplane.plugin.latex" priority="medium" />
+					<ribbon_action action="LatexInsertLatexAction" plugin="org.freeplane.plugin.latex" priority="medium" />
 					<ribbon_action action="LatexEditLatexAction" plugin="org.freeplane.plugin.latex" />
-					<ribbon_action action="LatexDeleteLatexAction"
-						plugin="org.freeplane.plugin.latex" />
-					<ribbon_action action="OpenMapsAddLocation" plugin="org.freeplane.plugin.openmaps"
-						priority="low" />
-					<ribbon_action action="OpenMapsRemoveLocation"
-						plugin="org.freeplane.plugin.openmaps" />
+					<ribbon_action action="LatexDeleteLatexAction" plugin="org.freeplane.plugin.latex" />
+					<ribbon_action action="OpenMapsAddLocation" plugin="org.freeplane.plugin.openmaps" priority="low" />
+					<ribbon_action action="OpenMapsRemoveLocation" plugin="org.freeplane.plugin.openmaps" />
 					<ribbon_action action="OpenMapsViewLocation" plugin="org.freeplane.plugin.openmaps" />
 				</ribbon_action>
 			</ribbon_band>
@@ -174,23 +168,23 @@
 			</ribbon_band>
 
 			<ribbon_contributor name="edgeStyleContributor" />
-
-			<ribbon_band name="miscellaneous" resize_policies="High2Low">
-				<ribbon_action action="RevisionPluginAction" priority="top" />
-				<ribbon_action action="CopyStyleExtensionsAction" priority="top" />
-			</ribbon_band>
 		</ribbon_task>
 
 		<ribbon_task name="view">
 		    <ribbon_contributor	name="zoomContributor" />
 			<ribbon_contributor	name="viewSettingsContributor" />
-			<ribbon_band name="filter" resize_policies="Mirror, High2Mid">
-			    <ribbon_action action="EditFilterAction" priority="top"/>
-			    <ribbon_action action="QuickFindAction.BACK" priority="top"/>
-				<ribbon_action action="QuickFindAction.FORWARD" priority="top"/>
-							    
-				<ribbon_action action="UndoFilterAction" priority="medium"/>
-				<ribbon_action action="RedoFilterAction" priority="medium"/>
+			<ribbon_band name="filter" resize_policies="Mirror, High2Low">
+			    <ribbon_action action="EditFilterAction" priority="top"/>	
+				<ribbon_action action="FindAction" accelerator="control G" priority="top">
+					<ribbon_action action="NodeListAction" accelerator="control shift F"/>
+					<ribbon_action action="AllMapsNodeListAction" />
+				</ribbon_action>
+				<!-- QuickFindAction.FORWARD and QuickFindAction.BACK throw exceptions>	
+				<ribbon_action action="QuickFindAction.FORWARD" accelerator="control shift G" />
+				<ribbon_action action="QuickFindAction.BACK"/-->			    
+				<ribbon_action action="UndoFilterAction" priority="medium">
+				    <ribbon_action action="RedoFilterAction"/>
+				</ribbon_action>
 				<ribbon_action action="ReapplyFilterAction" priority="medium"/>				
 				<!--uses quick filter bar -> not applicable for ribbons
 				<menu_action action="QuickFilterAction" /-->
@@ -202,7 +196,12 @@
 			</ribbon_band>
 		</ribbon_task>
 
-			
+		<ribbon_task name="miscellaneous">
+		    <ribbon_band name="miscellaneous" resize_policies="Mirror, High2Mid">
+				<ribbon_action action="RevisionPluginAction" priority="top" />
+				<ribbon_action action="CopyStyleExtensionsAction" priority="top" />
+			</ribbon_band>
+		</ribbon_task>
 			
 	</menu_category>
 </menu_structure>

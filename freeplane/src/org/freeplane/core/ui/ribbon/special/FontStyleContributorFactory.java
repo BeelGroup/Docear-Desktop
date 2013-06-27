@@ -1,6 +1,8 @@
 package org.freeplane.core.ui.ribbon.special;
 
 import java.awt.Container;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import javax.swing.JComponent;
@@ -15,10 +17,15 @@ import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.styles.mindmapmode.MUIFactory;
+import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
+import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandButtonStrip;
 import org.pushingpixels.flamingo.api.common.JCommandToggleButton;
 import org.pushingpixels.flamingo.api.ribbon.JFlowRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
+import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies;
+import org.pushingpixels.flamingo.api.ribbon.resize.IconRibbonBandResizePolicy;
+import org.pushingpixels.flamingo.api.ribbon.resize.RibbonBandResizePolicy;
 
 public class FontStyleContributorFactory implements IRibbonContributorFactory {
 
@@ -35,26 +42,26 @@ public class FontStyleContributorFactory implements IRibbonContributorFactory {
 				}
 
 				// RIBBONS expandlistener and icon
-				JFlowRibbonBand fontBand = new JFlowRibbonBand(TextUtils.getText("ribbon.band.font"), null, null);
-				fontBand.setExpandButtonKeyTip("FN");
-				fontBand.setCollapsedStateKeyTip("ZF");
+				JFlowRibbonBand band = new JFlowRibbonBand(TextUtils.getText("ribbon.band.font"), null, null);
+				band.setExpandButtonKeyTip("FN");
+				band.setCollapsedStateKeyTip("ZF");
 
 				MUIFactory uiFactory = Controller.getCurrentModeController().getExtension(MUIFactory.class);
 
 				final Container fontBox = uiFactory.createFontBox();
 				JRibbonComponent fontComboWrapper = new JRibbonComponent((JComponent) fontBox);
 				fontComboWrapper.setKeyTip("SF");
-				fontBand.addFlowComponent(fontComboWrapper);
+				band.addFlowComponent(fontComboWrapper);
 
 				final Container sizeBox = uiFactory.createSizeBox();
 				JRibbonComponent sizeComboWrapper = new JRibbonComponent((JComponent) sizeBox);
 				sizeComboWrapper.setKeyTip("SS");
-				fontBand.addFlowComponent(sizeComboWrapper);
+				band.addFlowComponent(sizeComboWrapper);
 
 				final Container styleBox = uiFactory.createStyleBox();
 				JRibbonComponent styleComboWrapper = new JRibbonComponent((JComponent) styleBox);
 				styleComboWrapper.setKeyTip("SD");
-				fontBand.addFlowComponent(styleComboWrapper);
+				band.addFlowComponent(styleComboWrapper);
 
 				JCommandButtonStrip styleStrip = new JCommandButtonStrip();
 
@@ -72,10 +79,31 @@ public class FontStyleContributorFactory implements IRibbonContributorFactory {
 				styleStrip.add(RibbonActionContributorFactory.createCommandButton(action));
 				action = context.getBuilder().getMode().getAction("NodeBackgroundColorAction");
 				styleStrip.add(RibbonActionContributorFactory.createCommandButton(action));
+				action = context.getBuilder().getMode().getAction("NodeColorBlendAction");
+				styleStrip.add(RibbonActionContributorFactory.createCommandButton(action));
+				action = context.getBuilder().getMode().getAction("BlinkingNodeHookAction");
+				styleStrip.add(RibbonActionContributorFactory.createCommandButton(action));
+				action = context.getBuilder().getMode().getAction("MapBackgroundColorAction");
+				styleStrip.add(RibbonActionContributorFactory.createCommandButton(action));				
+				
+				band.addFlowComponent(styleStrip);
+				
+				action = context.getBuilder().getMode().getAction("RemoveFormatAction");				
+				JCommandButton button = RibbonActionContributorFactory.createCommandButton(action);
+				button.setDisplayState(CommandButtonDisplayState.MEDIUM);
+				band.addFlowComponent(button);
+				
+				action = context.getBuilder().getMode().getAction("UsePlainTextAction");
+				button = RibbonActionContributorFactory.createCommandButton(action);
+				button.setDisplayState(CommandButtonDisplayState.MEDIUM);				
+				band.addFlowComponent(button);
+				
+				List<RibbonBandResizePolicy> policies = new ArrayList<RibbonBandResizePolicy>();				
+				policies.add(new CoreRibbonResizePolicies.FlowThreeRows(band.getControlPanel()));
+				policies.add(new IconRibbonBandResizePolicy(band.getControlPanel()));
+				band.setResizePolicies(policies);	
 
-				fontBand.addFlowComponent(styleStrip);
-
-				parent.addChild(fontBand, null);
+				parent.addChild(band, null);
 
 			}
 
