@@ -135,12 +135,12 @@ import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
 import org.freeplane.view.swing.map.NodeView;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandButton.CommandButtonKind;
-import org.pushingpixels.flamingo.api.common.JCommandButtonStrip;
-import org.pushingpixels.flamingo.api.common.JCommandButtonStrip.StripOrientation;
 import org.pushingpixels.flamingo.api.common.JCommandToggleButton;
+import org.pushingpixels.flamingo.api.common.JCommandToggleMenuButton;
 import org.pushingpixels.flamingo.api.common.popup.JCommandPopupMenu;
 import org.pushingpixels.flamingo.api.common.popup.JPopupPanel;
 import org.pushingpixels.flamingo.api.common.popup.PopupPanelCallback;
+import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 
 public class PdfUtilitiesController extends ALanguageController {
 
@@ -192,6 +192,13 @@ public class PdfUtilitiesController extends ALanguageController {
 	private ImportNewChildAnnotationsAction importNewChildAnnotationsAction;
 	private RemoveLinebreaksAction removeLinebreaksAction;
 	private MonitoringFlattenSubfoldersAction monitoringFlattenSubfoldersAction;
+	private MonitoringGroupRadioButtonAction autoOnAction;
+	private MonitoringGroupRadioButtonAction autoOffAction;
+	private MonitoringGroupRadioButtonAction autoDefaultAction;
+	private MonitoringGroupRadioButtonAction subdirsOnAction;
+	private MonitoringGroupRadioButtonAction subdirsOffAction;
+	private MonitoringGroupRadioButtonAction subdirsDefaultAction;
+	
 	private List<PDFReaderHandle> pdfViewerList = null;
 	private PdfReaderFileFilter readerFilter = new PdfReaderFileFilter();
 	private FileFilter appFilter = new FileFilter() {
@@ -696,6 +703,21 @@ public class PdfUtilitiesController extends ALanguageController {
 		this.monitoringFlattenSubfoldersAction = new MonitoringFlattenSubfoldersAction();
 		modeController.addAction(monitoringFlattenSubfoldersAction);
 		//modeController.getMapController().addListenerForAction(monitoringFlattenSubfoldersAction);
+		
+		autoOnAction = new MonitoringGroupRadioButtonAction("mon_auto_on", MON_AUTO, 1, modeController);
+		autoOffAction = new MonitoringGroupRadioButtonAction("mon_auto_off", MON_AUTO, 0, modeController);
+		autoDefaultAction = new MonitoringGroupRadioButtonAction("mon_auto_default", MON_AUTO, 2, modeController);
+		WorkspaceController.addAction(autoOnAction);
+		WorkspaceController.addAction(autoOffAction);
+		WorkspaceController.addAction(autoDefaultAction);
+		
+		subdirsOnAction = new MonitoringGroupRadioButtonAction("mon_subdirs_on", MON_SUBDIRS, 1, modeController);
+		subdirsOffAction = new MonitoringGroupRadioButtonAction("mon_subdirs_off", MON_SUBDIRS, 0, modeController);
+		subdirsDefaultAction = new MonitoringGroupRadioButtonAction("mon_subdirs_default", MON_SUBDIRS, 2, modeController);
+		WorkspaceController.addAction(subdirsOnAction);
+		WorkspaceController.addAction(subdirsOffAction);
+		WorkspaceController.addAction(subdirsDefaultAction);
+		
 
 		WorkspaceController.addAction(new ShowInstalledPdfReadersDialogAction());
 		WorkspaceController.addAction(new ShowPdfReaderDefinitionDialogAction());
@@ -776,11 +798,7 @@ public class PdfUtilitiesController extends ALanguageController {
 				builder.addMenuItem(monitoringCategory + MONITORING_MENU + SETTINGS_MENU,
 						new JMenu(TextUtils.getText("PdfUtilitiesController_14")), monitoringCategory + MONITORING_MENU + SETTINGS_MENU + SUBFOLDERS_MENU, //$NON-NLS-1$
 						MenuBuilder.AS_CHILD);
-
-				MonitoringGroupRadioButtonAction autoOnAction = new MonitoringGroupRadioButtonAction("mon_auto_on", MON_AUTO, 1, modeController); //$NON-NLS-1$
-				MonitoringGroupRadioButtonAction autoOffAction = new MonitoringGroupRadioButtonAction("mon_auto_off", MON_AUTO, 0, modeController); //$NON-NLS-1$
-				MonitoringGroupRadioButtonAction autoDefaultAction = new MonitoringGroupRadioButtonAction("mon_auto_default", MON_AUTO, 2, modeController); //$NON-NLS-1$
-
+				
 				autoOnAction.addGroupItem(autoDefaultAction);
 				autoOnAction.addGroupItem(autoOffAction);
 				autoOffAction.addGroupItem(autoDefaultAction);
@@ -802,11 +820,6 @@ public class PdfUtilitiesController extends ALanguageController {
 				autoOnAction.initView(builder);
 				autoOffAction.initView(builder);
 				autoDefaultAction.initView(builder);
-
-				MonitoringGroupRadioButtonAction subdirsOnAction = new MonitoringGroupRadioButtonAction("mon_subdirs_on", MON_SUBDIRS, 1, modeController); //$NON-NLS-1$
-				MonitoringGroupRadioButtonAction subdirsOffAction = new MonitoringGroupRadioButtonAction("mon_subdirs_off", MON_SUBDIRS, 0, modeController); //$NON-NLS-1$
-				MonitoringGroupRadioButtonAction subdirsDefaultAction = new MonitoringGroupRadioButtonAction(
-						"mon_subdirs_default", MON_SUBDIRS, 2, modeController); //$NON-NLS-1$
 
 				subdirsOnAction.addGroupItem(subdirsDefaultAction);
 				subdirsOnAction.addGroupItem(subdirsOffAction);
@@ -1532,7 +1545,91 @@ public class PdfUtilitiesController extends ALanguageController {
 				
 				@Override
 				public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
-					JCommandButtonStrip strip = new JCommandButtonStrip(StripOrientation.HORIZONTAL);
+					
+					final JCommandButton updateButton = RibbonActionContributorFactory.createCommandButton(updateMonitoringFolderAction);
+					parent.addChild(updateButton, RibbonElementPriority.TOP);
+					
+					final JCommandButton addFolderButton = RibbonActionContributorFactory.createCommandButton(addMonitoringFolderAction);
+					parent.addChild(addFolderButton, RibbonElementPriority.MEDIUM);
+					final JCommandButton editButton = RibbonActionContributorFactory.createCommandButton(editMonitoringFolderAction);
+					parent.addChild(editButton, RibbonElementPriority.MEDIUM);
+					final JCommandButton delFolderButton = RibbonActionContributorFactory.createCommandButton(deleteMonitoringFolderAction);
+					parent.addChild(delFolderButton, RibbonElementPriority.MEDIUM);
+					
+					final JCommandToggleButton flattenButton = RibbonActionContributorFactory.createCommandToggleButton(monitoringFlattenSubfoldersAction);
+					parent.addChild(flattenButton, RibbonElementPriority.MEDIUM);
+					
+					final JCommandButton autoMonitoringButton = RibbonActionContributorFactory.createCommandButton(RibbonActionContributorFactory.getDummyAction("auto_monitoring")); 
+					autoMonitoringButton.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
+					autoMonitoringButton.setPopupCallback(new PopupPanelCallback() {
+						
+						public JPopupPanel getPopupPanel(JCommandButton commandButton) {
+							JCommandPopupMenu popupmenu = new JCommandPopupMenu();
+							JCommandToggleMenuButton defaultButton = RibbonActionContributorFactory.createCommandToggleMenuButton(autoDefaultAction);	
+							defaultButton.getActionModel().setSelected(autoDefaultAction.isSelected());
+							JCommandToggleMenuButton onButton = RibbonActionContributorFactory.createCommandToggleMenuButton(autoOnAction);
+							onButton.getActionModel().setSelected(autoOnAction.isSelected());
+							JCommandToggleMenuButton offButton = RibbonActionContributorFactory.createCommandToggleMenuButton(autoOffAction);
+							offButton.getActionModel().setSelected(autoOffAction.isSelected());
+							
+							popupmenu.addMenuButton(defaultButton);
+							popupmenu.addMenuButton(onButton);
+							popupmenu.addMenuButton(offButton);
+							return popupmenu;
+						}
+					});
+					parent.addChild(autoMonitoringButton, RibbonElementPriority.MEDIUM);
+					
+					final JCommandButton subfoldersButton = RibbonActionContributorFactory.createCommandButton(RibbonActionContributorFactory.getDummyAction("subfolders")); 
+					subfoldersButton.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
+					subfoldersButton.setPopupCallback(new PopupPanelCallback() {
+						
+						public JPopupPanel getPopupPanel(JCommandButton commandButton) {
+							JCommandPopupMenu popupmenu = new JCommandPopupMenu();
+							JCommandToggleMenuButton defaultButton = RibbonActionContributorFactory.createCommandToggleMenuButton(subdirsDefaultAction);	
+							defaultButton.getActionModel().setSelected(subdirsDefaultAction.isSelected());
+							JCommandToggleMenuButton onButton = RibbonActionContributorFactory.createCommandToggleMenuButton(subdirsOnAction);
+							onButton.getActionModel().setSelected(subdirsOnAction.isSelected());
+							JCommandToggleMenuButton offButton = RibbonActionContributorFactory.createCommandToggleMenuButton(subdirsOffAction);
+							offButton.getActionModel().setSelected(subdirsOffAction.isSelected());
+							
+							popupmenu.addMenuButton(defaultButton);
+							popupmenu.addMenuButton(onButton);
+							popupmenu.addMenuButton(offButton);
+							return popupmenu;
+						}
+					});
+					parent.addChild(subfoldersButton, RibbonElementPriority.MEDIUM);
+					
+					context.getBuilder().getMapChangeAdapter().addListener(new IChangeObserver() {
+						public void updateState(NodeModel node) {
+							boolean selected = true;
+							int value = NodeUtilities.getAttributeIntValue(node, PdfUtilitiesController.MON_FLATTEN_DIRS);
+							if(value == 0){
+								selected = false;
+							}
+							
+							updateMonitoringFolderAction.setEnabled();
+							updateButton.setEnabled(updateMonitoringFolderAction.isEnabled());
+							
+							flattenButton.getActionModel().setSelected(selected);
+							flattenButton.setEnabled(updateMonitoringFolderAction.isEnabled());
+							
+							updateMonitoringFolderAction.setEnabled();
+							updateButton.setEnabled(updateMonitoringFolderAction.isEnabled());
+							
+							addMonitoringFolderAction.setEnabled();
+							addFolderButton.setEnabled(addMonitoringFolderAction.isEnabled());
+							
+							editMonitoringFolderAction.setEnabled();
+							editButton.setEnabled(editMonitoringFolderAction.isEnabled());
+							
+							deleteMonitoringFolderAction.setEnabled();
+							delFolderButton.setEnabled(deleteMonitoringFolderAction.isEnabled());
+							
+							autoMonitoringButton.setEnabled(MonitoringUtils.isMonitoringNode(node));
+						}
+					});
 				}
 				
 				@Override

@@ -34,6 +34,7 @@ public abstract class DocearAction extends AFreeplaneAction {
 	}
 	
 	public void setSelected(boolean selected){
+		super.setSelected(selected);
 		for(Component view : views){
 			if(view instanceof AbstractButton){
 				((AbstractButton)view).setSelected(selected);
