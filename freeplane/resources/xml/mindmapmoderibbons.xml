@@ -106,9 +106,8 @@
 					priority="top" />
 			</ribbon_band>
 
-			<ribbon_band name="attachments" resize_policies="Mirror, High2Mid">
-				<ribbon_action action="AddLocalLinkAction"
-					accelerator="alt shift L" type="dropdown" priority="top">
+			<ribbon_band name="attachments" resize_policies="Mirror, High2Low">
+				<ribbon_action action="AddLocalLinkAction" accelerator="alt shift L" type="dropdown" priority="nedium">
 					<ribbon_action action="SetLinkByFileChooserAction" />
 					<ribbon_action action="SetLinkByTextFieldAction" />
 					<ribbon_action action="ExtractLinkFromTextAction" />
@@ -118,7 +117,7 @@
 					<ribbon_action action="MakeLinkToAnchorAction" />
 					<ribbon_action action="ClearLinkAnchorAction" />
 				</ribbon_action>
-				<ribbon_action name="add_node_attachement" priority="top">
+				<ribbon_action name="add_node_attachement" priority="medium">
 					<ribbon_action action="ExternalImageAddAction" />
 					<ribbon_action action="SetImageByFileChooserAction"
 						accelerator="alt shift K" />

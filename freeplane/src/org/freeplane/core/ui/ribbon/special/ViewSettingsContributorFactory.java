@@ -49,6 +49,7 @@ public class ViewSettingsContributorFactory implements IRibbonContributorFactory
 				createAttributeViewMenu(context, band);
 				createNoteViewMenu(context, band);
 				createToolTipMenu(context, band);
+				createToolbarsMenu(context, band);
 				
 				List<RibbonBandResizePolicy> policies = new ArrayList<RibbonBandResizePolicy>();				
 				policies.add(new CoreRibbonResizePolicies.Mirror(band.getControlPanel()));				
@@ -57,6 +58,52 @@ public class ViewSettingsContributorFactory implements IRibbonContributorFactory
 				
 				parent.addChild(band, null);		    	
 			}
+
+			private void createToolbarsMenu(final RibbonBuildContext context, JRibbonBand band) {
+				JCommandButton button = new JCommandButton(TextUtils.getText("menu_toolbars"));
+				button.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
+				button.setPopupCallback(new PopupPanelCallback() {
+					public JPopupPanel getPopupPanel(JCommandButton commandButton) {
+						JCommandPopupMenu popupmenu = new JCommandPopupMenu();					
+    					
+    					final AFreeplaneAction toggleFBarAction = context.getBuilder().getMode().getAction("ToggleFBarAction");
+    					final JCommandToggleMenuButton toggleFBarButton = RibbonActionContributorFactory.createCommandToggleMenuButton(toggleFBarAction);
+    					toggleFBarAction.setSelected();
+    					toggleFBarButton.getActionModel().setSelected(toggleFBarAction.isSelected());
+    					popupmenu.addMenuButton(toggleFBarButton);
+    					
+    					final AFreeplaneAction toggleLeftToolbarAction = context.getBuilder().getMode().getAction("ToggleLeftToolbarAction");
+    					final JCommandToggleMenuButton toggleLeftToolbarButton = RibbonActionContributorFactory.createCommandToggleMenuButton(toggleLeftToolbarAction);
+    					toggleLeftToolbarAction.setSelected();
+    					toggleLeftToolbarButton.getActionModel().setSelected(toggleLeftToolbarAction.isSelected());
+    					popupmenu.addMenuButton(toggleLeftToolbarButton);
+    					
+    					final AFreeplaneAction toggleStatusAction = context.getBuilder().getMode().getAction("ToggleStatusAction");
+    					final JCommandToggleMenuButton toggleStatusButton = RibbonActionContributorFactory.createCommandToggleMenuButton(toggleStatusAction);
+    					toggleStatusAction.setSelected();
+    					toggleStatusButton.getActionModel().setSelected(toggleStatusAction.isSelected());
+    					popupmenu.addMenuButton(toggleStatusButton);
+    					
+    					final AFreeplaneAction toggleScrollbarsAction = context.getBuilder().getMode().getAction("ToggleScrollbarsAction");
+    					final JCommandToggleMenuButton toggleScrollbarsButton = RibbonActionContributorFactory.createCommandToggleMenuButton(toggleScrollbarsAction);
+    					toggleScrollbarsAction.setSelected();
+    					toggleScrollbarsButton.getActionModel().setSelected(toggleScrollbarsAction.isSelected());
+    					popupmenu.addMenuButton(toggleScrollbarsButton);
+    					
+						return popupmenu;
+					}
+				});
+				band.addCommandButton(button, RibbonElementPriority.MEDIUM);
+				
+				AFreeplaneAction action = context.getBuilder().getMode().getAction("SetShortenerStateAction");
+				button = RibbonActionContributorFactory.createCommandButton(action);
+				band.addCommandButton(button, RibbonElementPriority.MEDIUM);
+				
+				action = context.getBuilder().getMode().getAction("ToggleDetailsAction");				
+				button = RibbonActionContributorFactory.createCommandButton(action);
+				band.addCommandButton(button, RibbonElementPriority.MEDIUM);				
+			}
+
 
 			private void createToolTipMenu(final RibbonBuildContext context, final JRibbonBand band) {
 				JCommandButton button = new JCommandButton(TextUtils.getText("menu_hoverView"));
