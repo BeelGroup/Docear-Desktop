@@ -111,9 +111,10 @@
 					<ribbon_action action="ExtractLinkFromTextAction" />
 					<ribbon_action action="AddMenuItemLinkAction" />
 					<ribbon_action action="SetLinkAnchorAction" />
+					<!-- ribbon_contributor name="attachmentsContributor" /-->
 					<ribbon_action action="MakeLinkFromAnchorAction" />
 					<ribbon_action action="MakeLinkToAnchorAction" />
-					<ribbon_action action="ClearLinkAnchorAction" />
+					<ribbon_action action="ClearLinkAnchorAction" />										
 				</ribbon_action>
 				<ribbon_action name="add_node_attachement" priority="medium">
 					<ribbon_action action="ExternalImageAddAction" />

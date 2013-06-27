@@ -19,6 +19,7 @@ import javax.swing.SwingUtilities;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.IndexedTree;
 import org.freeplane.core.ui.components.UITools;
+import org.freeplane.core.ui.ribbon.special.AttachmentsContributorFactory;
 import org.freeplane.core.ui.ribbon.special.EdgeStyleContributorFactory;
 import org.freeplane.core.ui.ribbon.special.FilterConditionsContributorFactory;
 import org.freeplane.core.ui.ribbon.special.FontStyleContributorFactory;
