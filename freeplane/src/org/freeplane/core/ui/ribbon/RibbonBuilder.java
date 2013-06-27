@@ -17,10 +17,10 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.freeplane.core.resources.ResourceController;
-import org.freeplane.core.ui.IndexedTree;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.ui.ribbon.StructureTree.StructurePath;
 import org.freeplane.core.ui.ribbon.special.EdgeStyleContributorFactory;
+import org.freeplane.core.ui.ribbon.special.FilterConditionsContributorFactory;
 import org.freeplane.core.ui.ribbon.special.FontStyleContributorFactory;
 import org.freeplane.core.ui.ribbon.special.ViewSettingsContributorFactory;
 import org.freeplane.core.ui.ribbon.special.ZoomContributorFactory;
@@ -30,7 +30,6 @@ import org.freeplane.features.mode.ModeController;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.common.icon.ResizableIcon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
-import org.pushingpixels.flamingo.api.ribbon.RibbonApplicationMenu;
 import org.pushingpixels.flamingo.internal.ui.ribbon.appmenu.JRibbonApplicationMenuButton;
 
 
@@ -72,6 +71,7 @@ public class RibbonBuilder {
 		
 		registerContributorFactory("zoomContributor", new ZoomContributorFactory());		
 		registerContributorFactory("viewSettingsContributor", new ViewSettingsContributorFactory());
+		registerContributorFactory("filterConditionsContributor", new FilterConditionsContributorFactory());
 		
 		updateApplicationMenuButton(ribbon);
 	}

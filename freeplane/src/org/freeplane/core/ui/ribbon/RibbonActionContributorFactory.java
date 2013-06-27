@@ -278,6 +278,8 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 							else if(comp instanceof AbstractCommandButton) {
 								AbstractCommandButton button = (AbstractCommandButton) comp;
 								JCommandMenuButton menuButton = new JCommandMenuButton(button.getText(), button.getIcon());
+								menuButton.setEnabled(button.isEnabled());
+								
 								for (ActionListener listener : button.getListeners(ActionListener.class)) {
 									if(listener instanceof RibbonActionListener) {
 										menuButton.addActionListener(listener);
@@ -287,6 +289,14 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 								if(action != null) {
 									menuButton.putClientProperty(ACTION_KEY_PROPERTY, action);
 									updateRichTooltip(menuButton, action, context.getBuilder().getAcceleratorManager().getAccelerator(actionKey));
+									if(AFreeplaneAction.checkEnabledOnChange(action)) {
+										action.setEnabled();
+										menuButton.setEnabled(action.isEnabled());
+									}
+									if(AFreeplaneAction.checkSelectionOnChange(action)||AFreeplaneAction.checkSelectionOnPopup(action)|| AFreeplaneAction.checkSelectionOnPropertyChange(action)) {
+										action.setSelected();
+										menuButton.getActionModel().setSelected(action.isSelected());
+									}
 								}
 								else {
 									action = (AFreeplaneAction)button.getClientProperty(ACTION_NAME_PROPERTY);

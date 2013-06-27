@@ -27,9 +27,8 @@ import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies;
 import org.pushingpixels.flamingo.api.ribbon.resize.RibbonBandResizePolicy;
 
 public class EdgeStyleContributorFactory implements IRibbonContributorFactory {
-
-	public ARibbonContributor getContributor(final Properties attributes) {
-		return new ARibbonContributor() {
+	public ARibbonContributor getContributor(final Properties attributes) {		
+		return new ARibbonContributor() {			
 
 			public String getKey() {
 				return attributes.getProperty("name");
@@ -44,7 +43,7 @@ public class EdgeStyleContributorFactory implements IRibbonContributorFactory {
 				band.setExpandButtonKeyTip("ES");
 				band.setCollapsedStateKeyTip("ZE");
 
-				JCommandButton styleGroupButton = new JCommandButton(TextUtils.getText("edgeStyleGroupAction.text"));
+				JCommandButton styleGroupButton = new JCommandButton(TextUtils.getText("edgeStyleGroupAction.text"));				
 				styleGroupButton.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
 				AFreeplaneAction action = context.getBuilder().getMode().getAction("EdgeStyleAsParentAction");
 				final JCommandToggleMenuButton styleAsParent = RibbonActionContributorFactory.createCommandToggleMenuButton(action);
@@ -97,10 +96,10 @@ public class EdgeStyleContributorFactory implements IRibbonContributorFactory {
 					}
 				});
 
-				band.addCommandButton(styleGroupButton, RibbonElementPriority.TOP);
+				band.addCommandButton(styleGroupButton, RibbonElementPriority.MEDIUM);
 
 				JCommandButton lineWidthGroupButton = new JCommandButton(TextUtils.getText("edgeLineWidthGroupAction.text"));
-				lineWidthGroupButton.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
+				lineWidthGroupButton.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);				
 				action = context.getBuilder().getMode().getAction("EdgeWidthAction_width_parent");
 				final JCommandToggleMenuButton widthParent = RibbonActionContributorFactory.createCommandToggleMenuButton(action);
 				addDefaultToggleHandler(context, action, widthParent);
@@ -133,13 +132,17 @@ public class EdgeStyleContributorFactory implements IRibbonContributorFactory {
 					}
 				});
 
-				band.addCommandButton(lineWidthGroupButton, RibbonElementPriority.TOP);
+				band.addCommandButton(lineWidthGroupButton, RibbonElementPriority.MEDIUM);
 
 				action = context.getBuilder().getMode().getAction("EdgeColorAction");
 				final JCommandButton edgeColorButton = RibbonActionContributorFactory.createCommandButton(action);
 				band.addCommandButton(edgeColorButton, RibbonElementPriority.MEDIUM);
 
 				action = context.getBuilder().getMode().getAction("AutomaticEdgeColorHookAction");
+				//RIBBONS
+//				KeyStroke ks =RibbonAcceleratorManager.parseKeyStroke("j2ef2");
+//				context.getBuilder().getAcceleratorManager().setAccelerator(action, ks);
+//				RibbonActionContributorFactory.updateRichTooltip(button, action, ks);
 				final JCommandButton automaticColorButton = RibbonActionContributorFactory.createCommandButton(action);
 				band.addCommandButton(automaticColorButton, RibbonElementPriority.MEDIUM);
 
