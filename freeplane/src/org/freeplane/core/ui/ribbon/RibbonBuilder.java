@@ -20,6 +20,7 @@ import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.IndexedTree;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.ui.ribbon.special.EdgeStyleContributorFactory;
+import org.freeplane.core.ui.ribbon.special.FilterConditionsContributorFactory;
 import org.freeplane.core.ui.ribbon.special.FontStyleContributorFactory;
 import org.freeplane.core.ui.ribbon.special.ViewSettingsContributorFactory;
 import org.freeplane.core.ui.ribbon.special.ZoomContributorFactory;
@@ -72,6 +73,7 @@ public class RibbonBuilder {
 		
 		registerContributorFactory("zoomContributor", new ZoomContributorFactory());		
 		registerContributorFactory("viewSettingsContributor", new ViewSettingsContributorFactory());
+		registerContributorFactory("filterConditionsContributor", new FilterConditionsContributorFactory());
 		
 		updateApplicationMenuButton(ribbon);
 	}

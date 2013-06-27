@@ -184,7 +184,25 @@
 		<ribbon_task name="view">
 		    <ribbon_contributor	name="zoomContributor" />
 			<ribbon_contributor	name="viewSettingsContributor" />
+			<ribbon_band name="filter" resize_policies="Mirror, High2Mid">
+			    <ribbon_action action="EditFilterAction" priority="top"/>
+			    <ribbon_action action="QuickFindAction.BACK" priority="top"/>
+				<ribbon_action action="QuickFindAction.FORWARD" priority="top"/>
+							    
+				<ribbon_action action="UndoFilterAction" priority="medium"/>
+				<ribbon_action action="RedoFilterAction" priority="medium"/>
+				<ribbon_action action="ReapplyFilterAction" priority="medium"/>				
+				<!--uses quick filter bar -> not applicable for ribbons
+				<menu_action action="QuickFilterAction" /-->
+				<ribbon_action action="ApplySelectedViewConditionAction" priority="medium"/>
+				<ribbon_action action="QuickFindAllAction" priority="medium"/>
+				<ribbon_action action="ApplyNoFilteringAction" priority="medium"/>				
+			
+				<ribbon_contributor name="filterConditionsContributor" />
+			</ribbon_band>
 		</ribbon_task>
 
+			
+			
 	</menu_category>
 </menu_structure>
