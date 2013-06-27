@@ -188,7 +188,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 	}
 	
 	public static AFreeplaneAction getDummyAction(final String key) {
-		return new AFreeplaneAction(key) {
+		return new AFreeplaneAction("ribbon.action."+key) {
 			private static final long serialVersionUID = -5405032373977903024L;
 
 			public void actionPerformed(ActionEvent e) {

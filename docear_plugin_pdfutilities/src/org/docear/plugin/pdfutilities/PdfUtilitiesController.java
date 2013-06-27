@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -92,6 +93,7 @@ import org.docear.plugin.pdfutilities.ui.JMonitoringMenu;
 import org.docear.plugin.pdfutilities.ui.ViewerSettingsChangeErrorDialog;
 import org.docear.plugin.pdfutilities.util.MonitoringUtils;
 import org.docear.plugin.pdfutilities.workspace.action.IncomingReReadMonitoringAction;
+import org.freeplane.core.resources.IFreeplanePropertyListener;
 import org.freeplane.core.resources.OptionPanelController;
 import org.freeplane.core.resources.OptionPanelController.PropertyLoadListener;
 import org.freeplane.core.resources.ResourceController;
@@ -99,13 +101,13 @@ import org.freeplane.core.resources.components.IPropertyControl;
 import org.freeplane.core.resources.components.RadioButtonProperty;
 import org.freeplane.core.ui.IMenuContributor;
 import org.freeplane.core.ui.IMouseListener;
-import org.freeplane.core.ui.IndexedTree;
 import org.freeplane.core.ui.MenuBuilder;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.ui.ribbon.ARibbonContributor;
+import org.freeplane.core.ui.ribbon.IChangeObserver;
+import org.freeplane.core.ui.ribbon.IRibbonContributorFactory;
+import org.freeplane.core.ui.ribbon.RibbonActionContributorFactory;
 import org.freeplane.core.ui.ribbon.RibbonBuildContext;
-import org.freeplane.core.ui.ribbon.RibbonBuilder;
-import org.freeplane.core.ui.ribbon.RibbonBuilder.RibbonPath;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.FileUtils;
 import org.freeplane.core.util.LogUtils;
@@ -131,6 +133,14 @@ import org.freeplane.plugin.workspace.model.project.IProjectModelListener;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
 import org.freeplane.view.swing.map.NodeView;
+import org.pushingpixels.flamingo.api.common.JCommandButton;
+import org.pushingpixels.flamingo.api.common.JCommandButton.CommandButtonKind;
+import org.pushingpixels.flamingo.api.common.JCommandToggleButton;
+import org.pushingpixels.flamingo.api.common.JCommandToggleMenuButton;
+import org.pushingpixels.flamingo.api.common.popup.JCommandPopupMenu;
+import org.pushingpixels.flamingo.api.common.popup.JPopupPanel;
+import org.pushingpixels.flamingo.api.common.popup.PopupPanelCallback;
+import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 
 public class PdfUtilitiesController extends ALanguageController {
 
@@ -171,7 +181,6 @@ public class PdfUtilitiesController extends ALanguageController {
 	public static final String PDF_MANAGEMENT_MENU_LANG_KEY = "menu_pdf_utilities"; //$NON-NLS-1$
 	public static final String MONITORING_MENU_LANG_KEY = "menu_monitoring_utilities"; //$NON-NLS-1$
 
-	//private ModeController modecontroller;
 	private ImportAllAnnotationsAction importAllAnnotationsAction;
 	private ImportNewAnnotationsAction importNewAnnotationsAction;
 	private DeleteFileAction deleteFileAction;
@@ -183,6 +192,13 @@ public class PdfUtilitiesController extends ALanguageController {
 	private ImportNewChildAnnotationsAction importNewChildAnnotationsAction;
 	private RemoveLinebreaksAction removeLinebreaksAction;
 	private MonitoringFlattenSubfoldersAction monitoringFlattenSubfoldersAction;
+	private MonitoringGroupRadioButtonAction autoOnAction;
+	private MonitoringGroupRadioButtonAction autoOffAction;
+	private MonitoringGroupRadioButtonAction autoDefaultAction;
+	private MonitoringGroupRadioButtonAction subdirsOnAction;
+	private MonitoringGroupRadioButtonAction subdirsOffAction;
+	private MonitoringGroupRadioButtonAction subdirsDefaultAction;
+	
 	private List<PDFReaderHandle> pdfViewerList = null;
 	private PdfReaderFileFilter readerFilter = new PdfReaderFileFilter();
 	private FileFilter appFilter = new FileFilter() {
@@ -687,6 +703,21 @@ public class PdfUtilitiesController extends ALanguageController {
 		this.monitoringFlattenSubfoldersAction = new MonitoringFlattenSubfoldersAction();
 		modeController.addAction(monitoringFlattenSubfoldersAction);
 		//modeController.getMapController().addListenerForAction(monitoringFlattenSubfoldersAction);
+		
+		autoOnAction = new MonitoringGroupRadioButtonAction("mon_auto_on", MON_AUTO, 1, modeController);
+		autoOffAction = new MonitoringGroupRadioButtonAction("mon_auto_off", MON_AUTO, 0, modeController);
+		autoDefaultAction = new MonitoringGroupRadioButtonAction("mon_auto_default", MON_AUTO, 2, modeController);
+		WorkspaceController.addAction(autoOnAction);
+		WorkspaceController.addAction(autoOffAction);
+		WorkspaceController.addAction(autoDefaultAction);
+		
+		subdirsOnAction = new MonitoringGroupRadioButtonAction("mon_subdirs_on", MON_SUBDIRS, 1, modeController);
+		subdirsOffAction = new MonitoringGroupRadioButtonAction("mon_subdirs_off", MON_SUBDIRS, 0, modeController);
+		subdirsDefaultAction = new MonitoringGroupRadioButtonAction("mon_subdirs_default", MON_SUBDIRS, 2, modeController);
+		WorkspaceController.addAction(subdirsOnAction);
+		WorkspaceController.addAction(subdirsOffAction);
+		WorkspaceController.addAction(subdirsDefaultAction);
+		
 
 		WorkspaceController.addAction(new ShowInstalledPdfReadersDialogAction());
 		WorkspaceController.addAction(new ShowPdfReaderDefinitionDialogAction());
@@ -767,11 +798,7 @@ public class PdfUtilitiesController extends ALanguageController {
 				builder.addMenuItem(monitoringCategory + MONITORING_MENU + SETTINGS_MENU,
 						new JMenu(TextUtils.getText("PdfUtilitiesController_14")), monitoringCategory + MONITORING_MENU + SETTINGS_MENU + SUBFOLDERS_MENU, //$NON-NLS-1$
 						MenuBuilder.AS_CHILD);
-
-				MonitoringGroupRadioButtonAction autoOnAction = new MonitoringGroupRadioButtonAction("mon_auto_on", MON_AUTO, 1, modeController); //$NON-NLS-1$
-				MonitoringGroupRadioButtonAction autoOffAction = new MonitoringGroupRadioButtonAction("mon_auto_off", MON_AUTO, 0, modeController); //$NON-NLS-1$
-				MonitoringGroupRadioButtonAction autoDefaultAction = new MonitoringGroupRadioButtonAction("mon_auto_default", MON_AUTO, 2, modeController); //$NON-NLS-1$
-
+				
 				autoOnAction.addGroupItem(autoDefaultAction);
 				autoOnAction.addGroupItem(autoOffAction);
 				autoOffAction.addGroupItem(autoDefaultAction);
@@ -793,11 +820,6 @@ public class PdfUtilitiesController extends ALanguageController {
 				autoOnAction.initView(builder);
 				autoOffAction.initView(builder);
 				autoDefaultAction.initView(builder);
-
-				MonitoringGroupRadioButtonAction subdirsOnAction = new MonitoringGroupRadioButtonAction("mon_subdirs_on", MON_SUBDIRS, 1, modeController); //$NON-NLS-1$
-				MonitoringGroupRadioButtonAction subdirsOffAction = new MonitoringGroupRadioButtonAction("mon_subdirs_off", MON_SUBDIRS, 0, modeController); //$NON-NLS-1$
-				MonitoringGroupRadioButtonAction subdirsDefaultAction = new MonitoringGroupRadioButtonAction(
-						"mon_subdirs_default", MON_SUBDIRS, 2, modeController); //$NON-NLS-1$
 
 				subdirsOnAction.addGroupItem(subdirsDefaultAction);
 				subdirsOnAction.addGroupItem(subdirsOffAction);
@@ -844,8 +866,8 @@ public class PdfUtilitiesController extends ALanguageController {
 				deleteFileAction.addPropertyChangeListener(pdfManagementPopupMenu);
 			}
 		});
-		
-		//modeController.getUserInputListenerFactory().getRibbonBuilder().registerContributorFactory("pdfutilities", new DocearPdfUtilitiesBandContributorFactory());
+		modeController.getUserInputListenerFactory().getRibbonBuilder().registerContributorFactory("pdf_annotations", new DocearImportAnnotationsActionContributorFactory());
+		modeController.getUserInputListenerFactory().getRibbonBuilder().registerContributorFactory("pdf_monitoring", new DocearPdfMonitoringContributorFactory());
 		modeController.getUserInputListenerFactory().getRibbonBuilder().updateRibbon(PdfUtilitiesController.class.getResource("/xml/ribbons.xml"));
 	}
 
@@ -1498,6 +1520,224 @@ public class PdfUtilitiesController extends ALanguageController {
 		public void treeNodesInserted(TreeModelEvent e) {}
 
 		public void treeNodesChanged(TreeModelEvent e) {}
+	}
+	
+	private class DocearPdfMonitoringContributorFactory implements IRibbonContributorFactory {
+
+		/***********************************************************************************
+		 * CONSTRUCTORS
+		 **********************************************************************************/
+
+		/***********************************************************************************
+		 * METHODS
+		 **********************************************************************************/
+
+		/***********************************************************************************
+		 * REQUIRED METHODS FOR INTERFACES
+		 **********************************************************************************/
+		public ARibbonContributor getContributor(final Properties attributes) {
+			return new ARibbonContributor() {
+				
+				@Override
+				public String getKey() {
+					return attributes.getProperty("name");
+				}
+				
+				@Override
+				public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
+					
+					final JCommandButton updateButton = RibbonActionContributorFactory.createCommandButton(updateMonitoringFolderAction);
+					parent.addChild(updateButton, RibbonElementPriority.TOP);
+					
+					final JCommandButton addFolderButton = RibbonActionContributorFactory.createCommandButton(addMonitoringFolderAction);
+					parent.addChild(addFolderButton, RibbonElementPriority.MEDIUM);
+					final JCommandButton editButton = RibbonActionContributorFactory.createCommandButton(editMonitoringFolderAction);
+					parent.addChild(editButton, RibbonElementPriority.MEDIUM);
+					final JCommandButton delFolderButton = RibbonActionContributorFactory.createCommandButton(deleteMonitoringFolderAction);
+					parent.addChild(delFolderButton, RibbonElementPriority.MEDIUM);
+					
+					final JCommandToggleButton flattenButton = RibbonActionContributorFactory.createCommandToggleButton(monitoringFlattenSubfoldersAction);
+					parent.addChild(flattenButton, RibbonElementPriority.MEDIUM);
+					
+					final JCommandButton autoMonitoringButton = RibbonActionContributorFactory.createCommandButton(RibbonActionContributorFactory.getDummyAction("auto_monitoring")); 
+					autoMonitoringButton.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
+					autoMonitoringButton.setPopupCallback(new PopupPanelCallback() {
+						
+						public JPopupPanel getPopupPanel(JCommandButton commandButton) {
+							JCommandPopupMenu popupmenu = new JCommandPopupMenu();
+							JCommandToggleMenuButton defaultButton = RibbonActionContributorFactory.createCommandToggleMenuButton(autoDefaultAction);	
+							defaultButton.getActionModel().setSelected(autoDefaultAction.isSelected());
+							JCommandToggleMenuButton onButton = RibbonActionContributorFactory.createCommandToggleMenuButton(autoOnAction);
+							onButton.getActionModel().setSelected(autoOnAction.isSelected());
+							JCommandToggleMenuButton offButton = RibbonActionContributorFactory.createCommandToggleMenuButton(autoOffAction);
+							offButton.getActionModel().setSelected(autoOffAction.isSelected());
+							
+							popupmenu.addMenuButton(defaultButton);
+							popupmenu.addMenuButton(onButton);
+							popupmenu.addMenuButton(offButton);
+							return popupmenu;
+						}
+					});
+					parent.addChild(autoMonitoringButton, RibbonElementPriority.MEDIUM);
+					
+					final JCommandButton subfoldersButton = RibbonActionContributorFactory.createCommandButton(RibbonActionContributorFactory.getDummyAction("subfolders")); 
+					subfoldersButton.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
+					subfoldersButton.setPopupCallback(new PopupPanelCallback() {
+						
+						public JPopupPanel getPopupPanel(JCommandButton commandButton) {
+							JCommandPopupMenu popupmenu = new JCommandPopupMenu();
+							JCommandToggleMenuButton defaultButton = RibbonActionContributorFactory.createCommandToggleMenuButton(subdirsDefaultAction);	
+							defaultButton.getActionModel().setSelected(subdirsDefaultAction.isSelected());
+							JCommandToggleMenuButton onButton = RibbonActionContributorFactory.createCommandToggleMenuButton(subdirsOnAction);
+							onButton.getActionModel().setSelected(subdirsOnAction.isSelected());
+							JCommandToggleMenuButton offButton = RibbonActionContributorFactory.createCommandToggleMenuButton(subdirsOffAction);
+							offButton.getActionModel().setSelected(subdirsOffAction.isSelected());
+							
+							popupmenu.addMenuButton(defaultButton);
+							popupmenu.addMenuButton(onButton);
+							popupmenu.addMenuButton(offButton);
+							return popupmenu;
+						}
+					});
+					parent.addChild(subfoldersButton, RibbonElementPriority.MEDIUM);
+					
+					context.getBuilder().getMapChangeAdapter().addListener(new IChangeObserver() {
+						public void updateState(NodeModel node) {
+							boolean selected = true;
+							int value = NodeUtilities.getAttributeIntValue(node, PdfUtilitiesController.MON_FLATTEN_DIRS);
+							if(value == 0){
+								selected = false;
+							}
+							
+							updateMonitoringFolderAction.setEnabled();
+							updateButton.setEnabled(updateMonitoringFolderAction.isEnabled());
+							
+							flattenButton.getActionModel().setSelected(selected);
+							flattenButton.setEnabled(updateMonitoringFolderAction.isEnabled());
+							
+							updateMonitoringFolderAction.setEnabled();
+							updateButton.setEnabled(updateMonitoringFolderAction.isEnabled());
+							
+							addMonitoringFolderAction.setEnabled();
+							addFolderButton.setEnabled(addMonitoringFolderAction.isEnabled());
+							
+							editMonitoringFolderAction.setEnabled();
+							editButton.setEnabled(editMonitoringFolderAction.isEnabled());
+							
+							deleteMonitoringFolderAction.setEnabled();
+							delFolderButton.setEnabled(deleteMonitoringFolderAction.isEnabled());
+							
+							autoMonitoringButton.setEnabled(MonitoringUtils.isMonitoringNode(node));
+						}
+					});
+				}
+				
+				@Override
+				public void addChild(Object child, Object properties) {
+				}
+			};
+		}
+	}
+	
+	private class DocearImportAnnotationsActionContributorFactory implements IRibbonContributorFactory {
+		
+		private JCommandToggleButton importAnnotationEnabledButton;
+		
+		/***********************************************************************************
+		 * CONSTRUCTORS
+		 **********************************************************************************/
+		public DocearImportAnnotationsActionContributorFactory() {
+			ResourceController.getResourceController().addPropertyChangeListener(new IFreeplanePropertyListener() {
+				
+				public void propertyChanged(String propertyName, String newValue, String oldValue) {
+					if(AUTO_IMPORT_ANNOTATIONS_KEY.equals(propertyName)) {
+						if(importAnnotationEnabledButton != null) {
+							importAnnotationEnabledButton.getActionModel().setSelected(DocearController.getPropertiesController().getBooleanProperty(AUTO_IMPORT_ANNOTATIONS_KEY));
+						}
+					}
+					
+				}
+				
+			});
+			
+		}
+		
+		/***********************************************************************************
+		 * METHODS
+		 **********************************************************************************/
+
+		/***********************************************************************************
+		 * REQUIRED METHODS FOR INTERFACES
+		 **********************************************************************************/
+		public ARibbonContributor getContributor(final Properties attributes) {
+			
+			return new ARibbonContributor() {
+				
+				@Override
+				public String getKey() {
+					return attributes.getProperty("name");
+				}
+				
+				@Override
+				public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
+					
+					final RadioButtonAction importAnnotationsAction = new RadioButtonAction("menu_auto_import_annotations", AUTO_IMPORT_ANNOTATIONS_KEY);
+					importAnnotationEnabledButton = RibbonActionContributorFactory.createCommandToggleButton(importAnnotationsAction);
+					importAnnotationEnabledButton.getActionModel().setSelected(DocearController.getPropertiesController().getBooleanProperty(AUTO_IMPORT_ANNOTATIONS_KEY));
+					importAnnotationEnabledButton.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							importAnnotationsAction.actionPerformed(e);
+						}
+					});
+					parent.addChild(importAnnotationEnabledButton, RibbonActionContributorFactory.getPriority(attributes.getProperty("priority", "")));
+					
+					importAllAnnotationsAction.setEnabled();
+					importAllChildAnnotationsAction.setEnabled();
+					final JCommandButton annoButton = RibbonActionContributorFactory.createCommandButton(RibbonActionContributorFactory.getDummyAction("annotations")); 
+					annoButton.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
+					annoButton.setPopupCallback(new PopupPanelCallback() {
+						
+						public JPopupPanel getPopupPanel(JCommandButton commandButton) {
+							JCommandPopupMenu popupmenu = new JCommandPopupMenu();
+							if(importAllAnnotationsAction.isEnabled()) {
+								popupmenu.addMenuButton(RibbonActionContributorFactory.createCommandMenuButton(importAllAnnotationsAction));
+								popupmenu.addMenuButton(RibbonActionContributorFactory.createCommandMenuButton(importNewAnnotationsAction));
+							}
+							else {
+								popupmenu.addMenuButton(RibbonActionContributorFactory.createCommandMenuButton(importAllChildAnnotationsAction));
+								popupmenu.addMenuButton(RibbonActionContributorFactory.createCommandMenuButton(importNewChildAnnotationsAction));
+								popupmenu.addMenuButton(RibbonActionContributorFactory.createCommandMenuButton(removeLinebreaksAction));
+							}
+							return popupmenu;
+						}
+					});
+					parent.addChild(annoButton, RibbonActionContributorFactory.getPriority(attributes.getProperty("priority", "")));
+					
+
+					final JCommandButton delButton = RibbonActionContributorFactory.createCommandButton(deleteFileAction); 
+					deleteFileAction.setEnabled();
+					delButton.setEnabled(deleteFileAction.isEnabled());
+					parent.addChild(delButton, RibbonActionContributorFactory.getPriority(attributes.getProperty("priority", "")));
+					
+					
+					
+					context.getBuilder().getMapChangeAdapter().addListener(new IChangeObserver() {
+						public void updateState(NodeModel node) {
+							importAllAnnotationsAction.setEnabled();
+							importAllChildAnnotationsAction.setEnabled();
+							annoButton.setEnabled(importAllAnnotationsAction.isEnabled() || importAllChildAnnotationsAction.isEnabled());
+							deleteFileAction.setEnabled();
+							delButton.setEnabled(deleteFileAction.isEnabled());
+						}
+					});
+					
+				}
+				
+				@Override
+				public void addChild(Object child, Object properties) {
+				}
+			};
+		}
 	}
 
 }
