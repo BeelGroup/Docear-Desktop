@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.freeplane.core.resources.SetBooleanPropertyAction;
+import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.ribbon.ARibbonContributor;
 import org.freeplane.core.ui.ribbon.IChangeObserver;
 import org.freeplane.core.ui.ribbon.IRibbonContributorFactory;
@@ -12,10 +14,13 @@ import org.freeplane.core.ui.ribbon.RibbonBuildContext;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.attribute.AttributeViewTypeAction;
 import org.freeplane.features.map.NodeModel;
+import org.freeplane.features.note.mindmapmode.SetNoteWindowPosition;
 import org.freeplane.features.styles.mindmapmode.SetBooleanMapPropertyAction;
+import org.freeplane.view.swing.map.ShowNotesInMapAction;
 import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandButton.CommandButtonKind;
+import org.pushingpixels.flamingo.api.common.JCommandMenuButton;
 import org.pushingpixels.flamingo.api.common.JCommandToggleMenuButton;
 import org.pushingpixels.flamingo.api.common.popup.JCommandPopupMenu;
 import org.pushingpixels.flamingo.api.common.popup.JPopupPanel;
@@ -33,6 +38,7 @@ public class ViewSettingsContributorFactory implements IRibbonContributorFactory
 			public String getKey() {
 				return attributes.getProperty("name");
 			}
+		
 
 			public void contribute(final RibbonBuildContext context, ARibbonContributor parent) {
 				if (parent == null) {
@@ -40,6 +46,112 @@ public class ViewSettingsContributorFactory implements IRibbonContributorFactory
 				}				
 				JRibbonBand band = new JRibbonBand(TextUtils.getText("ribbon.band.viewsettings"), null, null);
 								
+				createAttributeViewMenu(context, band);
+				createNoteViewMenu(context, band);
+				createToolTipMenu(context, band);
+				
+				List<RibbonBandResizePolicy> policies = new ArrayList<RibbonBandResizePolicy>();				
+				policies.add(new CoreRibbonResizePolicies.Mirror(band.getControlPanel()));				
+				policies.add(new CoreRibbonResizePolicies.High2Low(band.getControlPanel()));
+				band.setResizePolicies(policies);			
+				
+				parent.addChild(band, null);		    	
+			}
+
+			private void createToolTipMenu(final RibbonBuildContext context, final JRibbonBand band) {
+				JCommandButton button = new JCommandButton(TextUtils.getText("menu_hoverView"));
+				button.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
+				button.setPopupCallback(new PopupPanelCallback() {
+					public JPopupPanel getPopupPanel(JCommandButton commandButton) {
+						JCommandPopupMenu popupmenu = new JCommandPopupMenu();
+						
+						final SetBooleanPropertyAction showAction = (SetBooleanPropertyAction) context.getBuilder().getMode().getAction("SetBooleanPropertyAction.show_node_tooltips");
+    					final JCommandToggleMenuButton showButton = RibbonActionContributorFactory.createCommandToggleMenuButton(showAction);
+    					showAction.setSelected();
+    					showButton.getActionModel().setSelected(showAction.isSelected());
+    					popupmenu.addMenuButton(showButton);
+    					
+    					final SetBooleanPropertyAction showStylesAction = (SetBooleanPropertyAction) context.getBuilder().getMode().getAction("SetBooleanPropertyAction.show_styles_in_tooltip");
+    					final JCommandToggleMenuButton showStylesButton = RibbonActionContributorFactory.createCommandToggleMenuButton(showStylesAction);
+    					showStylesAction.setSelected();
+    					showStylesButton.getActionModel().setSelected(showStylesAction.isSelected());
+    					popupmenu.addMenuButton(showStylesButton);
+    					
+    					final AFreeplaneAction modificationAction = context.getBuilder().getMode().getAction("CreationModificationPluginAction");
+    					final JCommandToggleMenuButton modificationButton = RibbonActionContributorFactory.createCommandToggleMenuButton(modificationAction);
+    					modificationAction.setSelected();
+    					modificationButton.getActionModel().setSelected(modificationAction.isSelected());
+    					popupmenu.addMenuButton(modificationButton);
+    					
+						return popupmenu;
+					}
+				});
+				band.addCommandButton(button, RibbonElementPriority.MEDIUM);
+			}
+
+
+			private void createNoteViewMenu(final RibbonBuildContext context, final JRibbonBand band) {				
+				JCommandButton displayNotesButton = new JCommandButton(TextUtils.getText("menu_noteView"));
+				displayNotesButton.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
+				displayNotesButton.setPopupCallback(new PopupPanelCallback() {
+					public JPopupPanel getPopupPanel(JCommandButton commandButton) {
+						JCommandPopupMenu popupmenu = new JCommandPopupMenu();
+						
+						final ShowNotesInMapAction showNotesInMapAction = (ShowNotesInMapAction) context.getBuilder().getMode().getAction("ShowNotesInMapAction");
+						final JCommandToggleMenuButton showNotedsInMapButton = RibbonActionContributorFactory.createCommandToggleMenuButton(showNotesInMapAction);
+						showNotesInMapAction.setSelected();
+						showNotedsInMapButton.getActionModel().setSelected(showNotesInMapAction.isSelected());
+    					popupmenu.addMenuButton(showNotedsInMapButton);
+    					
+						final SetBooleanMapPropertyAction showIconAction = (SetBooleanMapPropertyAction) context.getBuilder().getMode().getAction("SetBooleanMapPropertyAction.show_note_icons");
+    					final JCommandToggleMenuButton toggleButton = RibbonActionContributorFactory.createCommandToggleMenuButton(showIconAction);
+    					showIconAction.setSelected();
+    					toggleButton.getActionModel().setSelected(showIconAction.isSelected());
+    					popupmenu.addMenuButton(toggleButton);
+    					
+    					JCommandMenuButton button = new JCommandMenuButton(TextUtils.getText("note_window_location"), null);
+    					button.setDisplayState(CommandButtonDisplayState.MEDIUM);
+    					button.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
+    					button.setPopupCallback(new PopupPanelCallback() {
+    						public JPopupPanel getPopupPanel(JCommandButton commandButton) {
+    							JCommandPopupMenu popupmenu = new JCommandPopupMenu();
+    						
+    							final SetNoteWindowPosition posTopAction = (SetNoteWindowPosition) context.getBuilder().getMode().getAction("SetNoteWindowPosition.top");
+    							final JCommandToggleMenuButton posTopButton = RibbonActionContributorFactory.createCommandToggleMenuButton(posTopAction);							
+    							popupmenu.addMenuButton(posTopButton);
+    							posTopAction.setSelected();
+    							posTopButton.getActionModel().setSelected(posTopAction.isSelected());
+    							
+    							final SetNoteWindowPosition posLeftAction = (SetNoteWindowPosition) context.getBuilder().getMode().getAction("SetNoteWindowPosition.left");
+    							final JCommandToggleMenuButton posLeftButton = RibbonActionContributorFactory.createCommandToggleMenuButton(posLeftAction);							
+    							popupmenu.addMenuButton(posLeftButton);
+    							posLeftAction.setSelected();
+    							posLeftButton.getActionModel().setSelected(posLeftAction.isSelected());
+    							
+    							final SetNoteWindowPosition posRightAction = (SetNoteWindowPosition) context.getBuilder().getMode().getAction("SetNoteWindowPosition.right");
+    							final JCommandToggleMenuButton posRightButton = RibbonActionContributorFactory.createCommandToggleMenuButton(posRightAction);							
+    							popupmenu.addMenuButton(posRightButton);
+    							posRightAction.setSelected();
+    							posRightButton.getActionModel().setSelected(posRightAction.isSelected());
+    							
+    							final SetNoteWindowPosition posBottomAction = (SetNoteWindowPosition) context.getBuilder().getMode().getAction("SetNoteWindowPosition.bottom");
+    							final JCommandToggleMenuButton posBottomButton = RibbonActionContributorFactory.createCommandToggleMenuButton(posBottomAction);							
+    							popupmenu.addMenuButton(posBottomButton);
+    							posBottomAction.setSelected();
+    							posBottomButton.getActionModel().setSelected(posBottomAction.isSelected());
+    							
+    							return popupmenu;
+    						}
+    					});    					
+    					popupmenu.addMenuButton(button);
+    					
+						return popupmenu;
+					}
+				});
+				band.addCommandButton(displayNotesButton, RibbonElementPriority.MEDIUM);
+			}
+
+			private void createAttributeViewMenu(final RibbonBuildContext context, JRibbonBand band) {
 				JCommandButton button = new JCommandButton(TextUtils.getText("menu_displayAttributes"));
 				button.setDisplayState(CommandButtonDisplayState.MEDIUM);
 				button.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
@@ -83,17 +195,14 @@ public class ViewSettingsContributorFactory implements IRibbonContributorFactory
 								toggleButton.getActionModel().setSelected(showIconAction.isSelected());
 							}
 						});
+						
+						JCommandMenuButton button = RibbonActionContributorFactory.createCommandMenuButton(context.getBuilder().getMode().getAction("ShowAttributeDialogAction"));
+						popupmenu.addMenuButton(button);
+						
 						return popupmenu;
 					}
 				});
-				band.addCommandButton(button, RibbonElementPriority.TOP);
-								
-				
-				List<RibbonBandResizePolicy> policies = new ArrayList<RibbonBandResizePolicy>();				
-				policies.add(new CoreRibbonResizePolicies.None(band.getControlPanel()));				
-				band.setResizePolicies(policies);			
-				
-				parent.addChild(band, null);		    	
+				band.addCommandButton(button, RibbonElementPriority.MEDIUM);
 			}
 
 			public void addChild(Object child, Object properties) {

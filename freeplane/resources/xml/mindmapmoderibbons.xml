@@ -49,6 +49,22 @@
 					<ribbon_action action="EditDetailsInDialogAction" />
 					<ribbon_action action="DeleteDetailsAction" />
 				</ribbon_action>
+				<ribbon_action action="EditAttributesAction" accelerator="alt F9" priority="medium">
+					<ribbon_action action="attributes_AddAttributeAction" />
+					<ribbon_action action="AssignAttributesAction" />
+					<ribbon_action action="CopyStyleExtensionsAction" />
+					<ribbon_action action="CopyAttributes" />
+					<ribbon_action action="PasteAttributes" />
+					<ribbon_action action="AddStyleAttributes" />
+					<ribbon_action action="attributes_RemoveFirstAttributeAction">
+						<ribbon_action action="attributes_RemoveLastAttributeAction" />
+						<ribbon_action action="attributes_RemoveAllAttributesAction" />
+					</ribbon_action>
+				</ribbon_action>
+				<ribbon_action action="ShowHideNoteAction" accelerator="control GREATER" priority="medium" >
+					<ribbon_action action="EditNoteInDialogAction" />
+					<ribbon_action action="RemoveNoteAction" />
+				</ribbon_action>	
 			</ribbon_band>
 
 			<ribbon_band name="navigate" resize_policies="Mirror, High2Mid">
@@ -119,24 +135,6 @@
 						plugin="org.freeplane.plugin.openmaps" />
 					<ribbon_action action="OpenMapsViewLocation" plugin="org.freeplane.plugin.openmaps" />
 				</ribbon_action>
-			</ribbon_band>
-
-			<ribbon_band name="attributes" resize_policies="Mirror, High2Mid">
-				<ribbon_action action="EditAttributesAction"
-					accelerator="alt F9">
-					<ribbon_action action="attributes_AddAttributeAction" />
-					<ribbon_action action="AssignAttributesAction" />
-					<ribbon_action action="CopyStyleExtensionsAction" />
-					<ribbon_action action="CopyAttributes" />
-					<ribbon_action action="PasteAttributes" />
-					<ribbon_action action="AddStyleAttributes" />
-					<ribbon_action action="attributes_RemoveFirstAttributeAction">
-						<ribbon_action action="attributes_RemoveLastAttributeAction" />
-						<ribbon_action action="attributes_RemoveAllAttributesAction" />
-					</ribbon_action>
-				</ribbon_action>
-				<ribbon_action action="ShowAttributeDialogAction" />
-
 			</ribbon_band>
 		</ribbon_task>
 
