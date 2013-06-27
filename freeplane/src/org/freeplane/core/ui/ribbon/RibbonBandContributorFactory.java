@@ -1,11 +1,9 @@
 package org.freeplane.core.ui.ribbon;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
-import org.freeplane.core.ui.IndexedTree;
 import org.freeplane.core.util.TextUtils;
 import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
@@ -33,11 +31,7 @@ public class RibbonBandContributorFactory implements IRibbonContributorFactory {
 				try {
     				band = new JRibbonBand(TextUtils.getText("ribbon.band."+attributes.getProperty("name")), null);
     				//read policies and sub-contributions
-    				Enumeration<?> children = context.getStructureNode(this).children();
-    				while(children.hasMoreElements()) {
-    					IndexedTree.Node node = (IndexedTree.Node) children.nextElement();
-    					((ARibbonContributor)node.getUserObject()).contribute(context, this);
-    				}
+    				context.processChildren(context.getCurrentPath(), this);
     				setResizePolicies(attributes.getProperty("resize_policies"));
     				if(valid) {
     					parent.addChild(band, null);

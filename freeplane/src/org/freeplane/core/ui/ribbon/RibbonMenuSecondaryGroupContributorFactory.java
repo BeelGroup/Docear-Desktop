@@ -1,10 +1,8 @@
 package org.freeplane.core.ui.ribbon;
 
 import java.awt.event.ActionListener;
-import java.util.Enumeration;
 import java.util.Properties;
 
-import org.freeplane.core.ui.IndexedTree;
 import org.freeplane.core.ui.ribbon.RibbonActionContributorFactory.RibbonActionListener;
 import org.freeplane.core.ui.ribbon.RibbonMenuPrimaryContributorFactory.SecondaryEntryGroup;
 import org.freeplane.core.util.TextUtils;
@@ -36,11 +34,7 @@ public class RibbonMenuSecondaryGroupContributorFactory implements IRibbonContri
 			
 			public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
 				group = new SecondaryEntryGroup(TextUtils.getRawText("ribbon.menu.group."+getKey()));
-				Enumeration<?> children = context.getStructureNode(this).children();
-				while(children.hasMoreElements()) {
-					IndexedTree.Node node = (IndexedTree.Node) children.nextElement();
-					((ARibbonContributor)node.getUserObject()).contribute(context, this);
-				}
+				context.processChildren(context.getCurrentPath(), this);
 				parent.addChild(group, null);
 			}
 			

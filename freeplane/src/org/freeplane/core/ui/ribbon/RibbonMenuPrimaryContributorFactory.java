@@ -2,13 +2,10 @@ package org.freeplane.core.ui.ribbon;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
 import org.freeplane.core.ui.AFreeplaneAction;
-import org.freeplane.core.ui.IndexedTree;
-import org.freeplane.core.ui.IndexedTree.Node;
 import org.pushingpixels.flamingo.api.common.JCommandButton.CommandButtonKind;
 import org.pushingpixels.flamingo.api.common.icon.ResizableIcon;
 import org.pushingpixels.flamingo.api.ribbon.RibbonApplicationMenuEntryPrimary;
@@ -48,8 +45,7 @@ public class RibbonMenuPrimaryContributorFactory implements IRibbonContributorFa
 			
 			public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
 				entry = null;
-				Node n = context.getStructureNode(this);
-				if(n.getChildCount() > 0) {
+				if(context.hasChildren(context.getCurrentPath())) {
 					
 					if(attributes.get("action") == null) {
 						AFreeplaneAction action = RibbonActionContributorFactory.getDummyAction(getKey());
@@ -63,11 +59,7 @@ public class RibbonMenuPrimaryContributorFactory implements IRibbonContributorFa
 						entry = createMenuEntry(action, CommandButtonKind.ACTION_AND_POPUP_MAIN_ACTION);
 					}
 					
-					Enumeration<?> children = n.children();
-					while(children.hasMoreElements()) {
-						IndexedTree.Node node = (IndexedTree.Node) children.nextElement();
-						((ARibbonContributor)node.getUserObject()).contribute(context, this);
-					}
+					context.processChildren(context.getCurrentPath(), this);
 				}
 				else {
 					AFreeplaneAction action = RibbonActionContributorFactory.getDummyAction(getKey());

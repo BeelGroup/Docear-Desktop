@@ -1,8 +1,5 @@
 package org.freeplane.core.ui.ribbon;
 
-import java.util.Enumeration;
-
-import org.freeplane.core.ui.IndexedTree;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.RibbonApplicationMenu;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
@@ -21,12 +18,7 @@ public class RootContributor extends ARibbonContributor {
 	public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
 		ribbon.removeAllTaskbarComponents();
 		ribbon.removeAllTasks();
-		Enumeration<?> children = context.getStructureRoot().children();
-		while(children.hasMoreElements()) {
-			IndexedTree.Node node = (IndexedTree.Node) children.nextElement();
-			((ARibbonContributor)node.getUserObject()).contribute(context, this);
-		}
-
+		context.processChildren(context.getCurrentPath(), this);
 	}
 
 	public void addChild(Object child, Object properties) {

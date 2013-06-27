@@ -19,6 +19,7 @@ import javax.swing.SwingUtilities;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.IndexedTree;
 import org.freeplane.core.ui.components.UITools;
+import org.freeplane.core.ui.ribbon.StructureTree.StructurePath;
 import org.freeplane.core.ui.ribbon.special.EdgeStyleContributorFactory;
 import org.freeplane.core.ui.ribbon.special.FontStyleContributorFactory;
 import org.freeplane.core.ui.ribbon.special.ViewSettingsContributorFactory;
@@ -37,7 +38,7 @@ public class RibbonBuilder {
 	
 	private final HashMap<String, IRibbonContributorFactory> contributorFactories = new HashMap<String, IRibbonContributorFactory>();
 	
-	final IndexedTree structure;
+	final StructureTree structure;
 	private final RootContributor rootContributor;
 	private final RibbonStructureReader reader;
 	private final JRibbon ribbon;
@@ -50,8 +51,7 @@ public class RibbonBuilder {
 	private RibbonMapChangeAdapter changeAdapter;;
 	
 	public RibbonBuilder(ModeController mode, JRibbon ribbon) {
-		final RibbonApplicationMenu applicationMenu = new RibbonApplicationMenu();
-		structure = new IndexedTree(applicationMenu);
+		structure = new StructureTree();
 		this.rootContributor = new RootContributor(ribbon);
 		this.ribbon = ribbon;
 		this.mode = mode;
@@ -91,19 +91,12 @@ public class RibbonBuilder {
 		}
 	}
 	
-	public void add(ARibbonContributor contributor, RibbonPath path, int position) {
+	public void add(ARibbonContributor contributor, StructurePath path, int position) {
 		if(contributor == null || path == null) {
 			throw new IllegalArgumentException("NULL");
 		}
 		synchronized (structure) {
-			RibbonPath elementPath = new RibbonPath(path);
-			elementPath.setName(contributor.getKey());
-			if("/ribbon".equals(path.getKey())) {				
-				structure.addElement(structure, contributor, elementPath.getKey(), position);
-			}
-			else {
-				structure.addElement(path.getKey(), contributor, elementPath.getKey(), position);
-			}
+			structure.insert(path, contributor, position);
 		}
 	}
 	
@@ -171,9 +164,9 @@ public class RibbonBuilder {
 		}
 	}
 
-	public boolean containsKey(String key) {
+	public boolean containsPath(StructurePath path) {
 		synchronized (structure) {
-			return structure.contains(key);
+			return structure.contains(path);
 		}		
 	}
 	
@@ -190,39 +183,6 @@ public class RibbonBuilder {
 			changeAdapter = new RibbonMapChangeAdapter();
 		}
 		return changeAdapter;
-	}
-	
-	
-
-	public static class RibbonPath {
-		public static RibbonPath emptyPath() {
-			final RibbonPath menuPath = new RibbonPath(null);
-			return menuPath;
-		}
-
-		private final RibbonPath parent;
-		private String key = "";
-		
-		public RibbonPath(final RibbonPath parent) {
-			this.parent = parent;
-		}
-
-		public void setName(final String name) {
-			key = name;
-		}
-		
-		public RibbonPath getParent() {
-			return parent;
-		}
-		
-		public String getKey() {
-			return ((parent != null) ? parent.getKey() + "/" : "") + key;
-		}
-
-		@Override
-		public String toString() {
-			return getKey();
-		}
 	}
 
 }

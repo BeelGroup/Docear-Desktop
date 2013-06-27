@@ -1,13 +1,11 @@
 package org.freeplane.core.ui.ribbon;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
 import javax.swing.JComponent;
 
-import org.freeplane.core.ui.IndexedTree;
 import org.freeplane.core.util.TextUtils;
 import org.pushingpixels.flamingo.api.ribbon.JFlowRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies;
@@ -33,11 +31,8 @@ public class FlowRibbonBandContributorFactory implements IRibbonContributorFacto
 				RibbonBandResizePolicy policy = band.getCurrentResizePolicy();
 				band.setCurrentResizePolicy(policy);
 				// read policies and sub-contributions
-				Enumeration<?> children = context.getStructureNode(this).children();
-				while (children.hasMoreElements()) {
-					IndexedTree.Node node = (IndexedTree.Node) children.nextElement();
-					((ARibbonContributor) node.getUserObject()).contribute(context, this);
-				}
+				context.processChildren(context.getCurrentPath(), this);
+				
 				parent.addChild(band, null);
 				
 				List<RibbonBandResizePolicy> policies = new ArrayList<RibbonBandResizePolicy>();				

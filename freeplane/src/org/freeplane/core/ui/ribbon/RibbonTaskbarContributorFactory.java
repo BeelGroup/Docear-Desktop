@@ -1,12 +1,10 @@
 package org.freeplane.core.ui.ribbon;
 
 import java.awt.Component;
-import java.util.Enumeration;
 import java.util.Properties;
 
 import javax.swing.JSeparator;
 
-import org.freeplane.core.ui.IndexedTree;
 import org.freeplane.core.ui.ribbon.RibbonSeparatorContributorFactory.RibbonSeparator;
 
 public class RibbonTaskbarContributorFactory implements IRibbonContributorFactory {
@@ -32,11 +30,7 @@ public class RibbonTaskbarContributorFactory implements IRibbonContributorFactor
 			
 			public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
 				delegator = parent;
-				Enumeration<?> children = context.getStructureNode(this).children();
-				while(children.hasMoreElements()) {
-					IndexedTree.Node node = (IndexedTree.Node) children.nextElement();
-					((ARibbonContributor)node.getUserObject()).contribute(context, this);
-				}
+				context.processChildren(context.getCurrentPath(), this);
 			}
 			
 			public void addChild(Object child, Object properties) {
