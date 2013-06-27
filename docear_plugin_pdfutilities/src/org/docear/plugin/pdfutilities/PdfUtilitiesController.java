@@ -1628,6 +1628,7 @@ public class PdfUtilitiesController extends ALanguageController {
 							delFolderButton.setEnabled(deleteMonitoringFolderAction.isEnabled());
 							
 							autoMonitoringButton.setEnabled(MonitoringUtils.isMonitoringNode(node));
+							subfoldersButton.setEnabled(MonitoringUtils.isMonitoringNode(node));
 						}
 					});
 				}
