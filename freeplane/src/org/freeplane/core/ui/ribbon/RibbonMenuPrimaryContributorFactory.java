@@ -45,8 +45,7 @@ public class RibbonMenuPrimaryContributorFactory implements IRibbonContributorFa
 			
 			public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
 				entry = null;
-				if(context.hasChildren(context.getCurrentPath())) {
-					
+				if(context.hasChildren(context.getCurrentPath())) {					
 					if(attributes.get("action") == null) {
 						AFreeplaneAction action = RibbonActionContributorFactory.getDummyAction(getKey());
 						entry = createMenuEntry(action, CommandButtonKind.POPUP_ONLY);
@@ -62,7 +61,14 @@ public class RibbonMenuPrimaryContributorFactory implements IRibbonContributorFa
 					context.processChildren(context.getCurrentPath(), this);
 				}
 				else {
-					AFreeplaneAction action = RibbonActionContributorFactory.getDummyAction(getKey());
+					if(attributes.get("action") == null) {
+						return;
+					}
+					AFreeplaneAction action = context.getBuilder().getMode().getAction(getKey());
+					if(action == null) {
+						return;
+					}
+					
 					entry = createMenuEntry(action, CommandButtonKind.ACTION_ONLY);
 				}
 				parent.addChild(entry, new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", ""))));
