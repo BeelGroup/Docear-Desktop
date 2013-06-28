@@ -249,20 +249,22 @@ public class NodeStyleController implements IExtension {
 		Boolean italic = null;
 		String fontFamilyName = null;
 		Integer fontSize = null;
-		for (IStyle styleKey : collection) {
-			final NodeModel styleNode = model.getStyleNode(styleKey);
-			if (styleNode == null) {
-				continue;
+		if(collection != null) {
+			for (IStyle styleKey : collection) {
+				final NodeModel styleNode = model.getStyleNode(styleKey);
+				if (styleNode == null) {
+					continue;
+				}
+				final NodeStyleModel styleModel = NodeStyleModel.getModel(styleNode);
+				if (styleModel == null) {
+					continue;
+				}
+				if (bold == null) bold = styleModel.isBold();
+				if (italic == null) italic = styleModel.isItalic();
+				if (fontFamilyName == null) fontFamilyName = styleModel.getFontFamilyName();
+				if (fontSize == null) fontSize = styleModel.getFontSize();
+				if (bold != null && italic != null && fontFamilyName != null && fontSize != null) break;
 			}
-			final NodeStyleModel styleModel = NodeStyleModel.getModel(styleNode);
-			if (styleModel == null) {
-				continue;
-			}
-			if (bold == null) bold = styleModel.isBold();
-			if (italic == null) italic = styleModel.isItalic();
-			if (fontFamilyName == null) fontFamilyName = styleModel.getFontFamilyName();
-			if (fontSize == null) fontSize = styleModel.getFontSize();
-			if (bold != null && italic != null && fontFamilyName != null && fontSize != null) break;
 		}
 		return createFont(baseFont, fontFamilyName, fontSize, bold, italic);
 	}
