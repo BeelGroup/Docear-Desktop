@@ -20,7 +20,6 @@ import org.docear.plugin.core.features.DocearProgressObserver;
 import org.docear.plugin.core.io.IOTools;
 import org.docear.plugin.core.logger.DocearEventLogger;
 import org.freeplane.core.resources.ResourceController;
-import org.freeplane.core.ui.ribbon.RibbonBuilder.RibbonPath;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.mode.Controller;
@@ -324,14 +323,6 @@ public class DocearController implements IDocearEventListener {
 			LogUtils.warn(e);
 			return "Terms of Use";
 		}
-	}
-	
-	public RibbonPath getRibbonPath() {
-		RibbonPath path = new RibbonPath(RibbonPath.emptyPath());
-		path.setName("ribbon");
-		path = new RibbonPath(path);
-		path.setName("docear");
-		return path;
 	}
 	
 	public static ResourceController getPropertiesController() {

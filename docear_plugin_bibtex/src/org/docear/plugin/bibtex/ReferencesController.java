@@ -87,6 +87,7 @@ import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
 import org.freeplane.view.swing.map.NodeView;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
+import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 
 public class ReferencesController extends ALanguageController implements IDocearEventListener {
 	
@@ -640,11 +641,13 @@ public class ReferencesController extends ALanguageController implements IDocear
 					RibbonActionContributorFactory.updateRichTooltip(button, updateReferencesAllMaps, context.getBuilder().getAcceleratorManager().getAccelerator(updateReferencesAllMaps.getKey()));
 					updateReferencesAllMaps.setEnabled();
 					button.setEnabled(updateReferencesAllMaps.isEnabled());
-					parent.addChild(button, RibbonActionContributorFactory.getPriority(attributes.getProperty("priority", "")));
+					ChildProperties childProps = new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", "")));
+					childProps.set(RibbonElementPriority.class, RibbonActionContributorFactory.getPriority(attributes.getProperty("priority", "")));
+					parent.addChild(button, childProps);
 				}
 				
 				@Override
-				public void addChild(Object child, Object properties) {
+				public void addChild(Object child, ChildProperties properties) {
 				}
 			};
 		}

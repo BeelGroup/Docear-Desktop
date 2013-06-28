@@ -15,7 +15,7 @@ public class RibbonSeparatorContributorFactory implements IRibbonContributorFact
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
 	 **********************************************************************************/
-	public ARibbonContributor getContributor(Properties attributes) {
+	public ARibbonContributor getContributor(final Properties attributes) {
 		return new ARibbonContributor() {
 			
 			public String getKey() {
@@ -23,10 +23,10 @@ public class RibbonSeparatorContributorFactory implements IRibbonContributorFact
 			}
 			
 			public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
-				parent.addChild(new RibbonSeparator(), null);
+				parent.addChild(new RibbonSeparator(), new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", ""))));
 			}
 			
-			public void addChild(Object child, Object properties) {
+			public void addChild(Object child, ChildProperties properties) {
 			}
 		};
 	}

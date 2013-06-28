@@ -7,8 +7,7 @@ import java.net.URL;
 import org.freeplane.core.io.IElementHandler;
 import org.freeplane.core.io.ReadManager;
 import org.freeplane.core.io.xml.TreeXmlReader;
-import org.freeplane.core.ui.IndexedTree;
-import org.freeplane.core.ui.ribbon.RibbonBuilder.RibbonPath;
+import org.freeplane.core.ui.ribbon.StructureTree.StructurePath;
 import org.freeplane.core.util.FileUtils;
 import org.freeplane.n3.nanoxml.XMLElement;
 
@@ -61,7 +60,7 @@ public class RibbonStructureReader {
 			if (attributes == null) {
 				return null;
 			}
-			return RibbonPath.emptyPath();
+			return StructureTree.ROOT_PATH;
 		}
 	}
 	
@@ -70,11 +69,9 @@ public class RibbonStructureReader {
 			if (attributes == null) {
 				return null;
 			}
-			RibbonPath path = new RibbonPath((RibbonPath) parent);
 			String name = attributes.getAttribute("name", null);
 			if("ribbon".equals(name)) {
-				path.setName(name);
-				return path;
+				return StructureTree.ROOT_PATH;
 			}
 			return null;
 		}
@@ -86,15 +83,20 @@ public class RibbonStructureReader {
 				return null;
 			}
 			
-			final RibbonPath menuPath = new RibbonPath((RibbonPath) parent);
 			IRibbonContributorFactory factory = builder.getContributorFactory(tag);
 			if(factory != null) {
+				
 				ARibbonContributor contributor = factory.getContributor(attributes.getAttributes());
-				menuPath.setName(contributor.getKey());
-				if(!builder.containsKey(menuPath.getKey())) {
-					builder.add(contributor, menuPath.getParent(), IndexedTree.AS_CHILD);
+				try {
+					final StructurePath menuPath = new StructurePath((StructurePath) parent, contributor.getKey());
+					if(!builder.containsPath(menuPath)) {
+						builder.add(contributor, menuPath, ARibbonContributor.parseOrderSettings(attributes.getAttribute("orderPriority", "")));
+					}
+					return menuPath;
 				}
-				return menuPath;
+				catch (Exception e) {
+					throw new RuntimeException("wrong xml syntax found at '"+tag+"' ("+parent+")",e);
+				}
 			}
 			return null;
 		}
@@ -106,15 +108,15 @@ public class RibbonStructureReader {
 				return null;
 			}
 			
-			final RibbonPath menuPath = new RibbonPath((RibbonPath) parent);
+			
 			String name = attributes.getAttribute("name", null);
 			if(name != null) {
 				IRibbonContributorFactory factory = builder.getContributorFactory(name);
 				if(factory != null) {
 					ARibbonContributor contributor = factory.getContributor(attributes.getAttributes());
-					menuPath.setName(contributor.getKey());
-					if(!builder.containsKey(menuPath.getKey())) {
-						builder.add(contributor, menuPath.getParent(), IndexedTree.AS_CHILD);
+					final StructurePath menuPath = new StructurePath((StructurePath) parent, contributor.getKey());
+					if(!builder.containsPath(menuPath)) {
+						builder.add(contributor, menuPath, ARibbonContributor.parseOrderSettings(attributes.getAttribute("orderPriority", "")));
 					}
 					return menuPath;
 				}

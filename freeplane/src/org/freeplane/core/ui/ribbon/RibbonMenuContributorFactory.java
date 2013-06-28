@@ -1,9 +1,7 @@
 package org.freeplane.core.ui.ribbon;
 
-import java.util.Enumeration;
 import java.util.Properties;
 
-import org.freeplane.core.ui.IndexedTree;
 import org.pushingpixels.flamingo.api.ribbon.RibbonApplicationMenu;
 import org.pushingpixels.flamingo.api.ribbon.RibbonApplicationMenuEntryFooter;
 import org.pushingpixels.flamingo.api.ribbon.RibbonApplicationMenuEntryPrimary;
@@ -20,15 +18,11 @@ public class RibbonMenuContributorFactory implements IRibbonContributorFactory {
 			
 			public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
 				menu = new RibbonApplicationMenu();
-				Enumeration<?> children = context.getStructureNode(this).children();
-				while(children.hasMoreElements()) {
-					IndexedTree.Node node = (IndexedTree.Node) children.nextElement();
-					((ARibbonContributor)node.getUserObject()).contribute(context, this);
-				}				
+				context.processChildren(context.getCurrentPath(), this);
 				parent.addChild(menu, null);
 			}
 
-			public void addChild(Object child, Object properties) {
+			public void addChild(Object child, ChildProperties properties) {
 				if(child instanceof RibbonApplicationMenuEntryFooter) {
 					menu.addFooterEntry((RibbonApplicationMenuEntryFooter) child);
 				}

@@ -150,11 +150,11 @@ public class EdgeStyleContributorFactory implements IRibbonContributorFactory {
 				policies.add(new CoreRibbonResizePolicies.Mirror(band.getControlPanel()));
 				policies.add(new CoreRibbonResizePolicies.High2Mid(band.getControlPanel()));
 				band.setResizePolicies(policies);
-				parent.addChild(band, null);
+				parent.addChild(band, new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", ""))));
 
 			}
 
-			public void addChild(Object child, Object properties) {
+			public void addChild(Object child, ChildProperties properties) {
 			}
 		};
 	}

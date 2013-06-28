@@ -6,7 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,9 +21,8 @@ import javax.swing.KeyStroke;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.IAcceleratorChangeListener;
-import org.freeplane.core.ui.IndexedTree;
-import org.freeplane.core.ui.IndexedTree.Node;
 import org.freeplane.core.ui.ribbon.RibbonSeparatorContributorFactory.RibbonSeparator;
+import org.freeplane.core.ui.ribbon.StructureTree.StructurePath;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.Controller;
@@ -219,11 +217,18 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 			private List<Component> childButtons = new ArrayList<Component>();
 
 			public String getKey() {
-				return attributes.getProperty("action");
+				String key = attributes.getProperty("action");
+				if(key == null) {
+					key = attributes.getProperty("name");
+				}
+				return key;
 			}
 			
 			public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
 				final String actionKey = attributes.getProperty("action");
+				ChildProperties childProps = new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", "")));
+				childProps.set(RibbonElementPriority.class, getPriority(attributes.getProperty("priority", "medium")));
+				
 				if(actionKey != null) {
 					AFreeplaneAction action = context.getBuilder().getMode().getAction(actionKey);
 					if(action != null) {
@@ -236,13 +241,12 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 						}
 						getAccelChangeListener().addAction(actionKey, button);
 						context.getBuilder().getAcceleratorManager().addAcceleratorChangeListener(getAccelChangeListener());
-						IndexedTree.Node n = context.getStructureNode(this);
-						if(n.getChildCount() > 0) {
+						if(context.hasChildren(context.getCurrentPath())) {
+							StructurePath path = context.getCurrentPath();
 							button.setCommandButtonKind(CommandButtonKind.ACTION_AND_POPUP_MAIN_ACTION);
-							button.setPopupCallback(getPopupPanelCallBack(n, context));
+							button.setPopupCallback(getPopupPanelCallBack(path, context));
 						}
-						
-						parent.addChild(button, getPriority(attributes.getProperty("priority", "medium")));
+						parent.addChild(button, childProps);
 					}
 				}
 				else {
@@ -252,23 +256,19 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 						final JCommandButton button = new JCommandButton(getActionTitle(action), getActionIcon(action));
 						button.putClientProperty(ACTION_NAME_PROPERTY, action);
 						updateRichTooltip(button, action, null);
-						IndexedTree.Node n = context.getStructureNode(this);
-						if(n.getChildCount() > 0) {
+						if(context.hasChildren(context.getCurrentPath())) {
+							StructurePath path = context.getCurrentPath();
 							button.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
-							button.setPopupCallback(getPopupPanelCallBack(n, context));
+							button.setPopupCallback(getPopupPanelCallBack(path, context));
 						}
-						parent.addChild(button, getPriority(attributes.getProperty("priority", "medium")));
+						parent.addChild(button, childProps);
 					}
 				}
 			}
 			
-			private PopupPanelCallback getPopupPanelCallBack(Node n, final RibbonBuildContext context) {
+			private PopupPanelCallback getPopupPanelCallBack(StructurePath path, final RibbonBuildContext context) {
 				childButtons.clear();
-				Enumeration<?> children = n.children();
-				while(children.hasMoreElements()) {
-					IndexedTree.Node node = (IndexedTree.Node) children.nextElement();
-					((ARibbonContributor)node.getUserObject()).contribute(context, this);
-				}
+				context.processChildren(path, this);
 				return new PopupPanelCallback() {
 					
 					public JPopupPanel getPopupPanel(JCommandButton commandButton) {
@@ -321,7 +321,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 				};
 			}
 
-			public void addChild(Object child, Object properties) {
+			public void addChild(Object child, ChildProperties properties) {
 				if(child instanceof AbstractCommandButton) {
 					childButtons.add((AbstractCommandButton) child);
 				}

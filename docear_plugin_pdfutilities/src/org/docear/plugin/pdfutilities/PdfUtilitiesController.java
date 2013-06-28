@@ -1547,17 +1547,27 @@ public class PdfUtilitiesController extends ALanguageController {
 				public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
 					
 					final JCommandButton updateButton = RibbonActionContributorFactory.createCommandButton(updateMonitoringFolderAction);
-					parent.addChild(updateButton, RibbonElementPriority.TOP);
+					ChildProperties childProps = new ChildProperties();
+					childProps.set(RibbonElementPriority.class, RibbonElementPriority.TOP);
+					parent.addChild(updateButton, childProps);
 					
 					final JCommandButton addFolderButton = RibbonActionContributorFactory.createCommandButton(addMonitoringFolderAction);
-					parent.addChild(addFolderButton, RibbonElementPriority.MEDIUM);
+					childProps = new ChildProperties();
+					childProps.set(RibbonElementPriority.class, RibbonElementPriority.MEDIUM);
+					parent.addChild(addFolderButton, childProps);
 					final JCommandButton editButton = RibbonActionContributorFactory.createCommandButton(editMonitoringFolderAction);
-					parent.addChild(editButton, RibbonElementPriority.MEDIUM);
+					childProps = new ChildProperties();
+					childProps.set(RibbonElementPriority.class, RibbonElementPriority.MEDIUM);
+					parent.addChild(editButton, childProps);
 					final JCommandButton delFolderButton = RibbonActionContributorFactory.createCommandButton(deleteMonitoringFolderAction);
-					parent.addChild(delFolderButton, RibbonElementPriority.MEDIUM);
+					childProps = new ChildProperties();
+					childProps.set(RibbonElementPriority.class, RibbonElementPriority.MEDIUM);
+					parent.addChild(delFolderButton, childProps);
 					
 					final JCommandToggleButton flattenButton = RibbonActionContributorFactory.createCommandToggleButton(monitoringFlattenSubfoldersAction);
-					parent.addChild(flattenButton, RibbonElementPriority.MEDIUM);
+					childProps = new ChildProperties();
+					childProps.set(RibbonElementPriority.class, RibbonElementPriority.MEDIUM);
+					parent.addChild(flattenButton, childProps);
 					
 					final JCommandButton autoMonitoringButton = RibbonActionContributorFactory.createCommandButton(RibbonActionContributorFactory.getDummyAction("auto_monitoring")); 
 					autoMonitoringButton.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
@@ -1578,8 +1588,9 @@ public class PdfUtilitiesController extends ALanguageController {
 							return popupmenu;
 						}
 					});
-					parent.addChild(autoMonitoringButton, RibbonElementPriority.MEDIUM);
-					
+					childProps = new ChildProperties();
+					childProps.set(RibbonElementPriority.class, RibbonElementPriority.MEDIUM);
+					parent.addChild(autoMonitoringButton, childProps);
 					final JCommandButton subfoldersButton = RibbonActionContributorFactory.createCommandButton(RibbonActionContributorFactory.getDummyAction("subfolders")); 
 					subfoldersButton.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
 					subfoldersButton.setPopupCallback(new PopupPanelCallback() {
@@ -1599,7 +1610,9 @@ public class PdfUtilitiesController extends ALanguageController {
 							return popupmenu;
 						}
 					});
-					parent.addChild(subfoldersButton, RibbonElementPriority.MEDIUM);
+					childProps = new ChildProperties();
+					childProps.set(RibbonElementPriority.class, RibbonElementPriority.MEDIUM);
+					parent.addChild(subfoldersButton, childProps);
 					
 					context.getBuilder().getMapChangeAdapter().addListener(new IChangeObserver() {
 						public void updateState(NodeModel node) {
@@ -1628,12 +1641,13 @@ public class PdfUtilitiesController extends ALanguageController {
 							delFolderButton.setEnabled(deleteMonitoringFolderAction.isEnabled());
 							
 							autoMonitoringButton.setEnabled(MonitoringUtils.isMonitoringNode(node));
+							subfoldersButton.setEnabled(MonitoringUtils.isMonitoringNode(node));
 						}
 					});
 				}
 				
 				@Override
-				public void addChild(Object child, Object properties) {
+				public void addChild(Object child, ChildProperties properties) {
 				}
 			};
 		}
@@ -1689,7 +1703,9 @@ public class PdfUtilitiesController extends ALanguageController {
 							importAnnotationsAction.actionPerformed(e);
 						}
 					});
-					parent.addChild(importAnnotationEnabledButton, RibbonActionContributorFactory.getPriority(attributes.getProperty("priority", "")));
+					ChildProperties childProps = new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", "")));
+					childProps.set(RibbonElementPriority.class, RibbonActionContributorFactory.getPriority(attributes.getProperty("priority", "")));
+					parent.addChild(importAnnotationEnabledButton, childProps);
 					
 					importAllAnnotationsAction.setEnabled();
 					importAllChildAnnotationsAction.setEnabled();
@@ -1711,13 +1727,18 @@ public class PdfUtilitiesController extends ALanguageController {
 							return popupmenu;
 						}
 					});
-					parent.addChild(annoButton, RibbonActionContributorFactory.getPriority(attributes.getProperty("priority", "")));
+					childProps = new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", "")));
+					childProps.set(RibbonElementPriority.class, RibbonActionContributorFactory.getPriority(attributes.getProperty("priority", "")));
+					parent.addChild(annoButton, childProps);
 					
 
 					final JCommandButton delButton = RibbonActionContributorFactory.createCommandButton(deleteFileAction); 
 					deleteFileAction.setEnabled();
 					delButton.setEnabled(deleteFileAction.isEnabled());
-					parent.addChild(delButton, RibbonActionContributorFactory.getPriority(attributes.getProperty("priority", "")));
+					
+					childProps = new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", "")));
+					childProps.set(RibbonElementPriority.class, RibbonActionContributorFactory.getPriority(attributes.getProperty("priority", "")));
+					parent.addChild(delButton, childProps);
 					
 					
 					
@@ -1734,7 +1755,7 @@ public class PdfUtilitiesController extends ALanguageController {
 				}
 				
 				@Override
-				public void addChild(Object child, Object properties) {
+				public void addChild(Object child, ChildProperties properties) {
 				}
 			};
 		}
