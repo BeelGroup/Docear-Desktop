@@ -1,35 +1,8 @@
-<!-- menu_category name="menu_bar">
-		<menu_submenu name="file" name_ref="file">
-			<menu_action action="OpenAction" accelerator="control O" />
-			<menu_action action="OpenURLMapAction" />
-			<menu_submenu name="last" name_ref="most_recent_files" menu_key="main_menu_most_recent_files"/>				
-			<menu_separator />			
-			<menu_action action="ExportAction"/>
-			<menu_action action="ExportBranchAction" accelerator="alt shift A" />
-			<menu_submenu name="import" name_ref="menu_file_import">
-				<menu_action action="ImportBranchAction" />
-				<menu_action action="ImportLinkedBranchAction"/>
-				<menu_action action="ImportLinkedBranchWithoutRootAction"/>
-				<menu_separator />
-				<menu_action action="ImportExplorerFavoritesAction"/>
-				<menu_action action="ImportFolderStructureAction"/>
-				<menu_action action="ImportMindmanagerFiles"/>
-			</menu_submenu>
-			<menu_separator />
-			
-			<menu_separator />
-			<menu_action action="FilePropertiesAction" />
-			<menu_separator />
-			
-			<menu_separator />
-			<menu_action action="QuitAction" accelerator="control Q" menu_key="MB_QuitAction"/>
-		</menu_submenu-->
-
 <menu_structure>
 	<menu_category name="ribbon">
 		<ribbon_taskbar>
 			<ribbon_action action="NewMapAction" accelerator="control N" />
-			<ribbon_action action="EncryptedMap" />
+			<ribbon_action action="EncryptedMap" />			
 			<separator />
 			<ribbon_action action="SaveAction" accelerator="control S" />
 			<ribbon_action action="SaveAsAction" accelerator="control shift S" />
@@ -40,7 +13,8 @@
 				<entry_group name="new">
 					<ribbon_action action="NewMapAction" accelerator="control N" />
 					<ribbon_action action="new_map_from_user_templates" />
-					<ribbon_action action="EncryptedMap" />
+					<ribbon_action action="EncryptedMap" />					
+					<ribbon_action action="RevertAction" />	
 				</entry_group>
 			</primary_entry>
 			<primary_entry name="save">
@@ -48,7 +22,6 @@
 					<ribbon_action action="SaveAction" accelerator="control S" />
 					<ribbon_action action="SaveAsAction" accelerator="control shift S" />
 					<ribbon_action action="SaveAll" />
-					<ribbon_action action="RevertAction" />	
 				</entry_group>				
 			</primary_entry>
 			<primary_entry name="print">
@@ -60,26 +33,47 @@
 			</primary_entry>
 			<primary_entry action="OpenUserDirAction" />
 			<primary_entry action="PropertyAction" />
+			<primary_entry action="AboutAction"/> 
+			<primary_entry action="UpdateCheckAction" /> 
+			<primary_entry name="help">
+			    <entry_group name="help">					
+					<ribbon_action action="GettingStartedAction" accelerator="F1" />
+					<ribbon_action action="DocumentationAction" />	
+					<ribbon_action action="OnlineReference" />	
+					<ribbon_action action="HotKeyInfoAction"/>  
+				</entry_group>
+			</primary_entry>
+			<primary_entry name="web_resources">
+				<entry_group name="web_resources">				    
+					<ribbon_action action="OpenFreeplaneSiteAction" />
+					<ribbon_action action="AskForHelp" />
+					<ribbon_action action="ReportBugAction" />
+					<ribbon_action action="RequestFeatureAction" />
+				</entry_group>			    
+			</primary_entry>					
 			<footer_entry action="CloseAction" accelerator="control W" />
-			<footer_entry action="QuitAction" />
-		</ribbon_menu>
-		
-		
-		
+			<footer_entry action="QuitAction" />			
+		</ribbon_menu>		
 		
 		<ribbon_task name="home" orderPriority="First">
 			<ribbon_band name="mind_map" resize_policies="Mirror, High2Mid">
 				<ribbon_action action="NewChildAction" accelerator="INSERT"	priority="top">
 					<ribbon_action action="NewSiblingAction" accelerator="ENTER" />
-					<ribbon_action action="NewSummaryAction" />
-					<separator />
-					<ribbon_action action="NewFreeNodeAction" />
-					<ribbon_action action="NewPreviousSiblingAction"
-						accelerator="shift ENTER" />
+					<ribbon_action action="NewSummaryAction" />					
+					<ribbon_action action="NewFreeNodeAction" />					
+					<ribbon_action action="NewPreviousSiblingAction" accelerator="shift ENTER" />
 					<ribbon_action action="NewParentNode" accelerator="shift INSERT" />
 				</ribbon_action>
-				<ribbon_action action="DeleteAction" accelerator="DELETE" priority="medium" />
-				<ribbon_action action="JoinNodesAction" accelerator="control J"	priority="medium">
+				<ribbon_action name="menu_moveNode">
+					<ribbon_action action="NodeUpAction" accelerator="control UP" />
+					<ribbon_action action="NodeDownAction" accelerator="control DOWN" />
+					<ribbon_action action="SortNodes" />
+					<ribbon_action action="ChangeNodeLevelLeftsAction" accelerator="control LEFT" />
+					<ribbon_action action="ChangeNodeLevelRightsAction" accelerator="control RIGHT" />
+					<ribbon_action action="ResetNodeLocationAction" />
+				</ribbon_action>			
+				<ribbon_action action="DeleteAction" accelerator="DELETE" priority="medium">
+					<ribbon_action action="JoinNodesAction" accelerator="control J"	priority="medium" />
 					<ribbon_action action="SplitNode" />
 				</ribbon_action>
 				<ribbon_action action="ShowHideNoteAction" accelerator="control GREATER" priority="medium" >
@@ -108,7 +102,9 @@
 			</ribbon_band>
 
 			<ribbon_band name="navigate" resize_policies="Mirror, High2Mid">
-				<ribbon_action action="UnfoldAllAction" accelerator="alt END" priority="top" />
+				<ribbon_action action="UnfoldAllAction" accelerator="alt END" priority="top" >
+				    <ribbon_action action="AlwaysUnfoldedNodeAction"/>
+				</ribbon_action>
 				<ribbon_action action="FoldAllAction" accelerator="alt HOME" priority="top" />
 				<ribbon_action action="MoveToRootAction" accelerator="ESCAPE" priority="medium">
 				    <ribbon_action action="FollowLinkAction" accelerator="control ENTER" />
@@ -144,31 +140,44 @@
 				</ribbon_action>
 				<ribbon_action action="PasteAction" accelerator="control V"	priority="medium">
 					<ribbon_action action="SelectedPasteAction"/>
-				</ribbon_action>				
+				</ribbon_action>
 			</ribbon_band>
-
+			
 			<ribbon_band name="attachments" resize_policies="Mirror, High2Low">
-				<ribbon_action action="AddLocalLinkAction" accelerator="alt shift L" type="dropdown" priority="nedium">
+			    <ribbon_action action="AddConnectorAction"/>
+			    <ribbon_action action="HierarchicalIconsAction" >
+					<ribbon_action action="HierarchicalIcons2Action" />				
+					<ribbon_action action="RemoveIcon_0_Action" />
+					<ribbon_action action="RemoveIconAction" />
+					<ribbon_action action="RemoveAllIconsAction" />
+				</ribbon_action>
+			    <ribbon_action name="menu_progress">
+			        <ribbon_action action="IconProgressIconUpAction" accelerator="alt LESS" />
+					<ribbon_action action="IconProgressIconDownAction" accelerator="alt shift LESS" />					
+					<ribbon_action action="IconProgressExtended10Action" />
+					<ribbon_action action="IconProgressExtended25Action" />					
+					<ribbon_action action="IconProgressRemoveAction" />
+			    </ribbon_action>
+				<ribbon_action action="AddLocalLinkAction" accelerator="alt shift L" type="dropdown">				    
 					<ribbon_action action="SetLinkByFileChooserAction" />
 					<ribbon_action action="SetLinkByTextFieldAction" />
 					<ribbon_action action="ExtractLinkFromTextAction" />
 					<ribbon_action action="AddMenuItemLinkAction" />
 					<ribbon_action action="SetLinkAnchorAction" />
-					<!-- ribbon_contributor name="attachmentsContributor" /-->
 					<ribbon_action action="MakeLinkFromAnchorAction" />
 					<ribbon_action action="MakeLinkToAnchorAction" />
 					<ribbon_action action="ClearLinkAnchorAction" />										
 				</ribbon_action>
-				<ribbon_action name="add_node_attachement" priority="medium">
-					<ribbon_action action="ExternalImageAddAction" />
-					<ribbon_action action="SetImageByFileChooserAction"
-						accelerator="alt shift K" />
+				<ribbon_action action="ExternalImageAddAction" >
+					<ribbon_action action="SetImageByFileChooserAction"	accelerator="alt shift K" />
 					<ribbon_action action="ExternalImageChangeAction" />
 					<ribbon_action action="ExternalImageRemoveAction" />
-					<ribbon_action action="LatexInsertLatexAction" plugin="org.freeplane.plugin.latex" priority="medium" />
+				</ribbon_action>
+				<ribbon_action action="LatexInsertLatexAction" plugin="org.freeplane.plugin.latex" >
 					<ribbon_action action="LatexEditLatexAction" plugin="org.freeplane.plugin.latex" />
 					<ribbon_action action="LatexDeleteLatexAction" plugin="org.freeplane.plugin.latex" />
-					<ribbon_action action="OpenMapsAddLocation" plugin="org.freeplane.plugin.openmaps" priority="low" />
+				</ribbon_action>
+				<ribbon_action action="OpenMapsAddLocation" plugin="org.freeplane.plugin.openmaps" >
 					<ribbon_action action="OpenMapsRemoveLocation" plugin="org.freeplane.plugin.openmaps" />
 					<ribbon_action action="OpenMapsViewLocation" plugin="org.freeplane.plugin.openmaps" />
 				</ribbon_action>
@@ -201,7 +210,7 @@
 				</ribbon_action>
 			</ribbon_band>
 
-			<ribbon_band name="grouping" resize_policies="Mirror, High2Mid">
+			<ribbon_band name="grouping" resize_policies="Mirror, High2Mid">			    
 				<ribbon_action action="CloudAction">
 					<ribbon_action action="CloudShapeAction.ARC" />
 					<ribbon_action action="CloudShapeAction.STAR" />
@@ -209,6 +218,9 @@
 					<ribbon_action action="CloudShapeAction.ROUND_RECT" />
 				</ribbon_action>
 				<ribbon_action action="CloudColorAction" />
+				<ribbon_action action="FirstGroupNodeAction" accelerator="alt shift B" priority="medium">				
+					<ribbon_action action="SummaryNodeAction" accelerator="alt shift S" />
+				</ribbon_action>
 			</ribbon_band>
 
 			<ribbon_contributor name="edgeStyleContributor" />
