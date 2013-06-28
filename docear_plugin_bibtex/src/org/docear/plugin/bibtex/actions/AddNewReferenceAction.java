@@ -18,6 +18,7 @@ import org.docear.plugin.bibtex.ReferencesController;
 import org.docear.plugin.bibtex.jabref.JabRefCommons;
 import org.docear.plugin.bibtex.jabref.JabrefWrapper;
 import org.freeplane.core.ui.AFreeplaneAction;
+import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
@@ -26,7 +27,9 @@ import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.url.UrlManager;
+import org.freeplane.plugin.workspace.WorkspaceController;
 
+@EnabledAction(checkOnNodeChange=true)
 public class AddNewReferenceAction extends AFreeplaneAction {
 	public static final String KEY = "AddNewReferenceAction";
 	/**
@@ -36,6 +39,11 @@ public class AddNewReferenceAction extends AFreeplaneAction {
 
 	public AddNewReferenceAction() {
 		super(KEY);
+	}
+	
+	@Override
+	public void setEnabled() {
+		setEnabled(WorkspaceController.getCurrentProject() != null);
 	}
 
 	public void actionPerformed(ActionEvent e) {		

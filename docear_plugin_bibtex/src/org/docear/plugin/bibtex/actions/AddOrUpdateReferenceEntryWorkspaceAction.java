@@ -8,13 +8,16 @@ import javax.swing.tree.TreePath;
 import org.docear.plugin.bibtex.ReferencesController;
 import org.docear.plugin.bibtex.jabref.JabRefCommons;
 import org.docear.plugin.bibtex.jabref.JabrefWrapper;
+import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.plugin.workspace.URIUtils;
+import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.actions.AWorkspaceAction;
 import org.freeplane.plugin.workspace.components.menu.CheckEnableOnPopup;
 import org.freeplane.plugin.workspace.io.IFileSystemRepresentation;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
 
+@EnabledAction(checkOnNodeChange=true)
 @CheckEnableOnPopup
 public class AddOrUpdateReferenceEntryWorkspaceAction extends AWorkspaceAction {
 	public static final String KEY = "workspace.action.addOrUpdateReferenceEntry";
@@ -41,6 +44,11 @@ public class AddOrUpdateReferenceEntryWorkspaceAction extends AWorkspaceAction {
 		}
 		
 		super.setEnabledFor(node, selectedPaths);
+	}
+	
+	@Override
+	public void setEnabled() {
+		setEnabled(WorkspaceController.getCurrentProject() != null);
 	}
 	
 	public void actionPerformed(ActionEvent e) {
