@@ -187,7 +187,7 @@
 		<ribbon_task name="formatting">
 			<ribbon_contributor name="fontStyleContributor" />
 
-			<ribbon_band name="manage styles" resize_policies="Mirror, High2Mid">
+			<ribbon_band name="manage_styles" resize_policies="Mirror, High2Mid">
 
 				<ribbon_action action="NewUserStyleAction" priority="medium">
 					<ribbon_action action="RedefineStyleAction" />
@@ -223,7 +223,30 @@
 				</ribbon_action>
 			</ribbon_band>
 
-			<ribbon_contributor name="edgeStyleContributor" />
+			<ribbon_band name="EdgeProperties" resize_policies="Mirror, High2Mid">			    
+				<ribbon_action name="format_menu_edge_styles">
+					<ribbon_action action="EdgeStyleAsParentAction" />
+					<ribbon_action action="EdgeStyleAction.linear" />
+					<ribbon_action action="EdgeStyleAction.bezier" />
+					<ribbon_action action="EdgeStyleAction.sharp_linear" />
+					<ribbon_action action="EdgeStyleAction.sharp_bezier" />
+					<ribbon_action action="EdgeStyleAction.horizontal" />
+					<ribbon_action action="EdgeStyleAction.hide_edge" />
+				</ribbon_action>
+				<ribbon_action name="format_menu_edge_widths">
+					<ribbon_action action="EdgeWidthAction_width_parent" />
+					<ribbon_action action="EdgeWidthAction_width_thin" />
+					<ribbon_action action="EdgeWidthAction_1" />
+					<ribbon_action action="EdgeWidthAction_2" />
+					<ribbon_action action="EdgeWidthAction_4" />
+					<ribbon_action action="EdgeWidthAction_8" />
+				</ribbon_action>
+				<ribbon_action action="EdgeColorAction" accelerator="alt shift E" >
+					<ribbon_action action="AutomaticEdgeColorHookAction" />
+				</ribbon_action>
+				<ribbon_action action="NodeWidthAction" />
+			</ribbon_band>
+			<!-- ribbon_contributor name="edgeStyleContributor" /-->
 		</ribbon_task>
 
 		<ribbon_task name="view">
@@ -253,7 +276,7 @@
 		</ribbon_task>
 
 		<ribbon_task name="extras">
-		    <ribbon_band name="menu_extras" resize_policies="Mirror, High2Mid">
+		    <ribbon_band name="extras" resize_policies="Mirror, High2Mid">
 		        <ribbon_action action="OpenUserDirAction" priority="top"/>							
 				<ribbon_action action="PropertyAction" accelerator="control COMMA" priority="top"/>
 				<ribbon_action name="menu_time" priority="medium">

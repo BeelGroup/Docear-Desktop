@@ -91,7 +91,7 @@ public class WorkspaceProjectBandContributorFactory implements IRibbonContributo
 				childProperties.set(RibbonElementPriority.class, RibbonElementPriority.MEDIUM);
 				parent.addChild(openButton, childProperties);
 				
-				newButton = RibbonActionContributorFactory.createCommandButton(RibbonActionContributorFactory.getDummyAction("workspace.action.new"));
+				newButton = RibbonActionContributorFactory.createCommandButton(RibbonActionContributorFactory.getDummyAction("workspace.action.new.label"));
 				newButton.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
 				newButton.setPopupCallback(new PopupPanelCallback() {
 					
