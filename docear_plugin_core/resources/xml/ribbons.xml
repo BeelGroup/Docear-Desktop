@@ -11,12 +11,12 @@
             </entry_group>
             </primary_entry>
 	    </ribbon_menu>
-	    <ribbon_task name="docear" orderPriority="1">
+	    <ribbon_task name="docear" orderPriority="1000">
 	       <ribbon_band name="debug" resize_policies="Mirror">
 	           <ribbon_contributor name="node_privacy" />
 	       </ribbon_band>
 	    </ribbon_task>
-	    <ribbon_task name="project" orderPriority="2">
+	    <ribbon_task name="project">
 	       <ribbon_band name="repository" resize_policies="Mirror, High2Mid">
 		       <ribbon_action action="workspace.action.node.add.repository" priority="TOP" />
 		       <ribbon_action action="workspace.action.node.remove.repository"  priority="TOP" />

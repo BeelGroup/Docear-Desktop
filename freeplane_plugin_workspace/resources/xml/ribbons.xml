@@ -3,7 +3,7 @@
     <menu_category name="ribbon">
         <ribbon_taskbar></ribbon_taskbar>
         <ribbon_menu></ribbon_menu>
-        <ribbon_task name="project" orderPriority="2">
+        <ribbon_task name="project" orderPriority="-1000">
             <ribbon_band name="main" resize_policies="Mirror, High2Mid">
                 <ribbon_action action="workspace.action.project.new" priority="TOP" />
                 <ribbon_action action="workspace.action.project.import"  priority="TOP" />

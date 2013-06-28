@@ -40,11 +40,11 @@ public class AddNewReferenceAction extends AFreeplaneAction {
 
 	public void actionPerformed(ActionEvent e) {		
 		Collection<NodeModel> nodes = Controller.getCurrentModeController().getMapController().getSelectedNodes();
-		if (e.getActionCommand().equals(DocearSaveDatabaseAction.JABREF_DATABASE_SAVE_SUCCESS)) {
+		if (DocearSaveDatabaseAction.JABREF_DATABASE_SAVE_SUCCESS.equals(e.getActionCommand())) {
 			addCreatedReference(e);
 			return;
 		}
-		else if (e.getActionCommand().equals(DocearSaveDatabaseAction.JABREF_DATABASE_SAVE_FAILED)) {
+		else if (DocearSaveDatabaseAction.JABREF_DATABASE_SAVE_FAILED.equals(e.getActionCommand())) {
 			return;
 		}
 		else {		
