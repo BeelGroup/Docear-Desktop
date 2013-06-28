@@ -54,7 +54,7 @@ public class RibbonBuildContext {
 	public boolean hasChildren(StructurePath path) {
 		WeightedMutableTreeNode<StructureTreeHull> node = ribbonBuilder.structure.get(path);
 		if(node != null) {
-			return node.isLeaf();
+			return !node.isLeaf();
 		}
 		return false;
 	}

@@ -118,7 +118,14 @@ public class RibbonBuilder {
 		}
 		getMapChangeAdapter().clear();
 		synchronized (structure) {
-			rootContributor.contribute(new RibbonBuildContext(this), null);
+			final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+			Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+			try {
+				rootContributor.contribute(new RibbonBuildContext(this), null);
+			}
+			finally {
+				Thread.currentThread().setContextClassLoader(contextClassLoader);
+			}
 		}
 		
 		Dimension rv = f.getSize();

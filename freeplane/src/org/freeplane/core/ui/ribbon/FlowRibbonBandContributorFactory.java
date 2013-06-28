@@ -33,7 +33,7 @@ public class FlowRibbonBandContributorFactory implements IRibbonContributorFacto
 				// read policies and sub-contributions
 				context.processChildren(context.getCurrentPath(), this);
 				
-				parent.addChild(band, null);
+				parent.addChild(band, new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", ""))));
 				
 				List<RibbonBandResizePolicy> policies = new ArrayList<RibbonBandResizePolicy>();				
 				policies.add(new CoreRibbonResizePolicies.FlowThreeRows(band.getControlPanel()));
@@ -41,7 +41,7 @@ public class FlowRibbonBandContributorFactory implements IRibbonContributorFacto
 				band.setResizePolicies(policies);
 			}
 
-			public void addChild(Object child, Object properties) {
+			public void addChild(Object child, ChildProperties properties) {
 				if (child instanceof JComponent) {					
 					band.addFlowComponent((JComponent) child);
 				}

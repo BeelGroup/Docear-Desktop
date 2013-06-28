@@ -22,7 +22,7 @@ public class RibbonMenuContributorFactory implements IRibbonContributorFactory {
 				parent.addChild(menu, null);
 			}
 
-			public void addChild(Object child, Object properties) {
+			public void addChild(Object child, ChildProperties properties) {
 				if(child instanceof RibbonApplicationMenuEntryFooter) {
 					menu.addFooterEntry((RibbonApplicationMenuEntryFooter) child);
 				}

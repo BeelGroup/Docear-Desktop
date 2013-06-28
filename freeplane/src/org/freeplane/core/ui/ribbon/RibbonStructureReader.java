@@ -90,7 +90,7 @@ public class RibbonStructureReader {
 				try {
 					final StructurePath menuPath = new StructurePath((StructurePath) parent, contributor.getKey());
 					if(!builder.containsPath(menuPath)) {
-						builder.add(contributor, menuPath, parseOrderSettings(attributes.getAttribute("orderPriority", "")));
+						builder.add(contributor, menuPath, ARibbonContributor.parseOrderSettings(attributes.getAttribute("orderPriority", "")));
 					}
 					return menuPath;
 				}
@@ -116,30 +116,12 @@ public class RibbonStructureReader {
 					ARibbonContributor contributor = factory.getContributor(attributes.getAttributes());
 					final StructurePath menuPath = new StructurePath((StructurePath) parent, contributor.getKey());
 					if(!builder.containsPath(menuPath)) {
-						builder.add(contributor, menuPath, parseOrderSettings(attributes.getAttribute("orderPriority", "")));
+						builder.add(contributor, menuPath, ARibbonContributor.parseOrderSettings(attributes.getAttribute("orderPriority", "")));
 					}
 					return menuPath;
 				}
 			}
 			return null;
 		}
-	}
-
-	public static int parseOrderSettings(String orderValue) {
-		if("prepend".equals(orderValue.trim().toLowerCase())) {
-			return StructureTree.PREPEND;
-		}
-		if("first".equals(orderValue.trim().toLowerCase())) {
-			return StructureTree.FIRST;
-		}
-		if("last".equals(orderValue.trim().toLowerCase())) {
-			return StructureTree.LAST;
-		}
-		try {
-			return Integer.parseInt(orderValue.trim().toLowerCase());
-		}
-		catch (Exception e) {
-		}
-		return StructureTree.APPEND;
 	}
 }

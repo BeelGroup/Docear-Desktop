@@ -65,10 +65,10 @@ public class RibbonMenuPrimaryContributorFactory implements IRibbonContributorFa
 					AFreeplaneAction action = RibbonActionContributorFactory.getDummyAction(getKey());
 					entry = createMenuEntry(action, CommandButtonKind.ACTION_ONLY);
 				}
-				parent.addChild(entry, null);
+				parent.addChild(entry, new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", ""))));
 			}
 
-			public void addChild(Object child, Object properties) {
+			public void addChild(Object child, ChildProperties properties) {
 				if(child instanceof SecondaryEntryGroup) {
 					SecondaryEntryGroup group = (SecondaryEntryGroup) child;
 					entry.addSecondaryMenuGroup(group.getTitle(), group.getEntries().toArray(new RibbonApplicationMenuEntrySecondary[0]));

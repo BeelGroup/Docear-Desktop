@@ -1,6 +1,7 @@
 package org.freeplane.core.ui.ribbon;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -12,26 +13,33 @@ public class RibbonTaskContributorFactory implements IRibbonContributorFactory {
 
 	public ARibbonContributor getContributor(final Properties attributes) {
 		return new ARibbonContributor() {
-			private List<AbstractRibbonBand<?>> bands = new ArrayList<AbstractRibbonBand<?>>();
+			private List<ComparableContributorHull<AbstractRibbonBand<?>>> hulls = new ArrayList<ARibbonContributor.ComparableContributorHull<AbstractRibbonBand<?>>>();
 			
 			public String getKey() {
 				return attributes.getProperty("name");				
 			}
 			
 			public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
-				bands.clear();
+				hulls.clear();
 				context.processChildren(context.getCurrentPath(), this);
-				if(!bands.isEmpty()) {
-					RibbonTask task = new RibbonTask(TextUtils.getText("ribbon."+getKey()), bands.toArray(new AbstractRibbonBand<?>[0]));
+				if(!hulls.isEmpty()) {
+					Collections.sort(hulls, comparator);
+					AbstractRibbonBand<?>[] bands = new AbstractRibbonBand<?>[hulls.size()];
+					int count = 0;
+					for (ComparableContributorHull<AbstractRibbonBand<?>> hull : hulls) {
+						bands[count++] = hull.getObject();
+					}
+					
+					RibbonTask task = new RibbonTask(TextUtils.getText("ribbon."+getKey()), bands);
 					if(parent != null) {
-						parent.addChild(task, null);
+						parent.addChild(task, new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", ""))));
 					}
 				}
 			}
 
-			public void addChild(Object child, Object properties) {
+			public void addChild(Object child, ChildProperties properties) {
 				if(child instanceof AbstractRibbonBand) {
-					bands.add((AbstractRibbonBand<?>) child);
+					hulls.add(new ComparableContributorHull<AbstractRibbonBand<?>>((AbstractRibbonBand<?>) child, properties.getOrderPriority()));
 				}
 				
 			}

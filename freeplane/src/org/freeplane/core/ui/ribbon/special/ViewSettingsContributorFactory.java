@@ -56,7 +56,7 @@ public class ViewSettingsContributorFactory implements IRibbonContributorFactory
 				policies.add(new CoreRibbonResizePolicies.High2Low(band.getControlPanel()));
 				band.setResizePolicies(policies);			
 				
-				parent.addChild(band, null);		    	
+				parent.addChild(band, new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", ""))));		    	
 			}
 
 			private void createToolbarsMenu(final RibbonBuildContext context, JRibbonBand band) {
@@ -252,7 +252,7 @@ public class ViewSettingsContributorFactory implements IRibbonContributorFactory
 				band.addCommandButton(button, RibbonElementPriority.MEDIUM);
 			}
 
-			public void addChild(Object child, Object properties) {
+			public void addChild(Object child, ChildProperties properties) {
 			}
 		};
 	}

@@ -36,12 +36,12 @@ public class RibbonMenuFooterContributorFactory implements IRibbonContributorFac
 						ResizableIcon icon = RibbonActionContributorFactory.getActionIcon(action);
 						ActionListener listener = new RibbonActionContributorFactory.RibbonActionListener(action);
 						final RibbonApplicationMenuEntryFooter entry = new RibbonApplicationMenuEntryFooter(icon, title, listener);
-						parent.addChild(entry, null);
+						parent.addChild(entry, new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", ""))));
 					}
 				}
 			}
 
-			public void addChild(Object child, Object properties) {
+			public void addChild(Object child, ChildProperties properties) {
 			}
 		};
 	}

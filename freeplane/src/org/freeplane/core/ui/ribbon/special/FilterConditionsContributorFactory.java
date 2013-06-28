@@ -8,13 +8,13 @@ import org.freeplane.core.ui.ribbon.IRibbonContributorFactory;
 import org.freeplane.core.ui.ribbon.RibbonActionContributorFactory;
 import org.freeplane.core.ui.ribbon.RibbonBuildContext;
 import org.freeplane.core.util.TextUtils;
-import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandButton.CommandButtonKind;
 import org.pushingpixels.flamingo.api.common.JCommandToggleMenuButton;
 import org.pushingpixels.flamingo.api.common.popup.JCommandPopupMenu;
 import org.pushingpixels.flamingo.api.common.popup.JPopupPanel;
 import org.pushingpixels.flamingo.api.common.popup.PopupPanelCallback;
+import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 
 public class FilterConditionsContributorFactory implements IRibbonContributorFactory {	
 
@@ -33,7 +33,6 @@ public class FilterConditionsContributorFactory implements IRibbonContributorFac
 				
 				JCommandButton button = new JCommandButton(TextUtils.getText("FilterCondition"));
 				button.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
-				button.setDisplayState(CommandButtonDisplayState.MEDIUM);
 				button.setPopupCallback(new PopupPanelCallback() {
 					public JPopupPanel getPopupPanel(JCommandButton commandButton) {
 						JCommandPopupMenu popupmenu = new JCommandPopupMenu();
@@ -58,12 +57,13 @@ public class FilterConditionsContributorFactory implements IRibbonContributorFac
     					
 						return popupmenu;
 					}
-				});			
-				
-				parent.addChild(button, null);		    	
+				});
+				ChildProperties props = new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", "")));
+				props.set(RibbonElementPriority.class, RibbonElementPriority.MEDIUM);
+				parent.addChild(button, props);
 			}
 					
-			public void addChild(Object child, Object properties) {
+			public void addChild(Object child, ChildProperties properties) {
 			}
 		};
 	}

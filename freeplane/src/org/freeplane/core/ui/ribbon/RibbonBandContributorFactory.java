@@ -26,28 +26,21 @@ public class RibbonBandContributorFactory implements IRibbonContributorFactory {
 				if(parent == null) {
 					return;
 				}
-				final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-				Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-				try {
-    				band = new JRibbonBand(TextUtils.getText("ribbon.band."+attributes.getProperty("name")), null);
-    				//read policies and sub-contributions
-    				context.processChildren(context.getCurrentPath(), this);
-    				setResizePolicies(attributes.getProperty("resize_policies"));
-    				if(valid) {
-    					parent.addChild(band, null);
-    				}
-				}
-				finally {
-					Thread.currentThread().setContextClassLoader(contextClassLoader);
-				}
+				band = new JRibbonBand(TextUtils.getText("ribbon.band."+attributes.getProperty("name")), null);
+    			//read policies and sub-contributions
+    			context.processChildren(context.getCurrentPath(), this);
+    			setResizePolicies(attributes.getProperty("resize_policies"));
+    			if(valid) {
+    				parent.addChild(band, new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", ""))));
+    			}
 				
 			}
 			
-			public void addChild(Object child, Object properties) {
+			public void addChild(Object child, ChildProperties properties) {
 				if(child instanceof AbstractCommandButton) {
-					RibbonElementPriority priority = RibbonElementPriority.TOP;
-					if(properties instanceof RibbonElementPriority) {
-						priority = (RibbonElementPriority) properties;
+					RibbonElementPriority priority = properties.get(RibbonElementPriority.class);
+					if(priority == null) {
+						priority = RibbonElementPriority.TOP;
 					}
 					band.addCommandButton((AbstractCommandButton) child, priority);
 					valid = true;

@@ -35,10 +35,10 @@ public class RibbonMenuSecondaryGroupContributorFactory implements IRibbonContri
 			public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
 				group = new SecondaryEntryGroup(TextUtils.getRawText("ribbon.menu.group."+getKey()));
 				context.processChildren(context.getCurrentPath(), this);
-				parent.addChild(group, null);
+				parent.addChild(group, new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", ""))));
 			}
 			
-			public void addChild(Object child, Object properties) {
+			public void addChild(Object child, ChildProperties properties) {
 				if(child instanceof RibbonApplicationMenuEntrySecondary) {
 					group.addEntry((RibbonApplicationMenuEntrySecondary) child);
 				}

@@ -226,6 +226,9 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 			
 			public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
 				final String actionKey = attributes.getProperty("action");
+				ChildProperties childProps = new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", "")));
+				childProps.set(RibbonElementPriority.class, getPriority(attributes.getProperty("priority", "medium")));
+				
 				if(actionKey != null) {
 					AFreeplaneAction action = context.getBuilder().getMode().getAction(actionKey);
 					if(action != null) {
@@ -243,8 +246,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 							button.setCommandButtonKind(CommandButtonKind.ACTION_AND_POPUP_MAIN_ACTION);
 							button.setPopupCallback(getPopupPanelCallBack(path, context));
 						}
-						
-						parent.addChild(button, getPriority(attributes.getProperty("priority", "medium")));
+						parent.addChild(button, childProps);
 					}
 				}
 				else {
@@ -259,7 +261,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 							button.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
 							button.setPopupCallback(getPopupPanelCallBack(path, context));
 						}
-						parent.addChild(button, getPriority(attributes.getProperty("priority", "medium")));
+						parent.addChild(button, childProps);
 					}
 				}
 			}
@@ -319,7 +321,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 				};
 			}
 
-			public void addChild(Object child, Object properties) {
+			public void addChild(Object child, ChildProperties properties) {
 				if(child instanceof AbstractCommandButton) {
 					childButtons.add((AbstractCommandButton) child);
 				}

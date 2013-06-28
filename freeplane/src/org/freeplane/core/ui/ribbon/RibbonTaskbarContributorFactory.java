@@ -33,15 +33,15 @@ public class RibbonTaskbarContributorFactory implements IRibbonContributorFactor
 				context.processChildren(context.getCurrentPath(), this);
 			}
 			
-			public void addChild(Object child, Object properties) {
+			public void addChild(Object child, ChildProperties properties) {
 				if(child instanceof RibbonSeparator) {
 					if(delegator != null) {
-						delegator.addChild(new RibbonTaskBarComponent(new JSeparator(JSeparator.VERTICAL)), null);
+						delegator.addChild(new RibbonTaskBarComponent(new JSeparator(JSeparator.VERTICAL)), properties);
 					}
 				}
 				if(child instanceof Component) {
 					if(delegator != null) {
-						delegator.addChild(new RibbonTaskBarComponent((Component) child), null);
+						delegator.addChild(new RibbonTaskBarComponent((Component) child), properties);
 					}
 				}
 				

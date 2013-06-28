@@ -13,15 +13,21 @@ public class WeightedMutableTreeNode<T> implements Cloneable, TreeNode, Serializ
 
 	private static final long serialVersionUID = -9105945271097923126L;
 
-	public static final int FIRST = Integer.MIN_VALUE;
-	public static final int PREPEND = Integer.MIN_VALUE+1000;
-	public static final int APPEND = Integer.MAX_VALUE-1000;
-	public static final int LAST = Integer.MAX_VALUE;
+	public static final int FIRST = Integer.MIN_VALUE+100;
+	public static final int PREPEND = Integer.MIN_VALUE+100000;
+	public static final int APPEND = Integer.MAX_VALUE-100000;
+	public static final int LAST = Integer.MAX_VALUE-100;
 	
 
 	private transient Comparator<WeightedMutableTreeNode<T>> comparator = new Comparator<WeightedMutableTreeNode<T>>() {
 		public int compare(WeightedMutableTreeNode<T> n1, WeightedMutableTreeNode<T> n2) {
-			return n2.getWeight() - n1.getWeight();
+			if(n1.getWeight() > n2.getWeight()) {
+				return 1;
+			}
+			else if(n1.getWeight() < n2.getWeight()) {
+				return -1;
+			} 
+			return 0;
 		}
 	};
 

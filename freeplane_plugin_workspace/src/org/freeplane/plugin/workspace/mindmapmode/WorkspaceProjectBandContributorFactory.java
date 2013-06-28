@@ -71,7 +71,10 @@ public class WorkspaceProjectBandContributorFactory implements IRibbonContributo
 				boolean enabled = (WorkspaceController.getCurrentProject() != null);
 				removeButton = RibbonActionContributorFactory.createCommandButton(WorkspaceController.getAction("workspace.action.project.remove"));
 				removeButton.setEnabled(enabled);
-				parent.addChild(removeButton, RibbonElementPriority.TOP);
+				
+				ChildProperties childProperties = new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", "")));
+				childProperties.set(RibbonElementPriority.class, RibbonElementPriority.MEDIUM);
+				parent.addChild(removeButton, childProperties);
 				
 				final WorkspaceProjectOpenLocationAction openLocAction = new WorkspaceProjectOpenLocationAction();
 				openButton = new JCommandButton(RibbonActionContributorFactory.getActionTitle(openLocAction), RibbonActionContributorFactory.getActionIcon(openLocAction));
@@ -84,7 +87,9 @@ public class WorkspaceProjectBandContributorFactory implements IRibbonContributo
 					}
 				});
 				openButton.setEnabled(enabled);
-				parent.addChild(openButton, RibbonElementPriority.MEDIUM);
+				childProperties = new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", "")));
+				childProperties.set(RibbonElementPriority.class, RibbonElementPriority.MEDIUM);
+				parent.addChild(openButton, childProperties);
 				
 				newButton = RibbonActionContributorFactory.createCommandButton(RibbonActionContributorFactory.getDummyAction("workspace.action.new"));
 				newButton.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
@@ -112,11 +117,14 @@ public class WorkspaceProjectBandContributorFactory implements IRibbonContributo
 					}
 				});
 				newButton.setEnabled(enabled);
-				parent.addChild(newButton, RibbonElementPriority.MEDIUM);
+				
+				childProperties = new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", "")));
+				childProperties.set(RibbonElementPriority.class, RibbonElementPriority.MEDIUM);
+				parent.addChild(newButton, childProperties);
 			}
 			
 			@Override
-			public void addChild(Object child, Object properties) {
+			public void addChild(Object child, ChildProperties properties) {
 			}
 		};
 	}

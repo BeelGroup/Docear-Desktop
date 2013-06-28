@@ -41,13 +41,15 @@ public class DocearNodePrivacyContributorFactory implements IRibbonContributorFa
 					if(action != null) {
 						JCommandButton button = RibbonActionContributorFactory.createCommandButton(action);
 						RibbonActionContributorFactory.updateRichTooltip(button, action, context.getBuilder().getAcceleratorManager().getAccelerator(action.getKey()));
-						parent.addChild(button, RibbonElementPriority.MEDIUM);
+						ChildProperties childProps = new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", "")));
+						childProps.set(RibbonElementPriority.class, RibbonElementPriority.MEDIUM);
+						parent.addChild(button, childProps);
 					}
 				}
 			}
 			
 			@Override
-			public void addChild(Object child, Object properties) {
+			public void addChild(Object child, ChildProperties properties) {
 			}
 		};
 	}
