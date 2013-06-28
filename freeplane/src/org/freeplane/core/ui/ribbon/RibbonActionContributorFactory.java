@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import javax.swing.Action;
@@ -25,6 +26,7 @@ import org.freeplane.core.ui.ribbon.RibbonSeparatorContributorFactory.RibbonSepa
 import org.freeplane.core.ui.ribbon.StructureTree.StructurePath;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.TextUtils;
+import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
@@ -45,6 +47,8 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 	public static final String ACTION_KEY_PROPERTY = "ACTION_KEY";
 	public static final String ACTION_NAME_PROPERTY = "ACTION_NAME";
 	private final RibbonBuilder builder;
+	private ActionAcceleratorChangeListener changeListener;
+	private ActionChangeObserver observer;
 
 	
 	/***********************************************************************************
@@ -53,9 +57,18 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 
 	public RibbonActionContributorFactory(RibbonBuilder builder) {
 		this.builder = builder;
+		builder.getAcceleratorManager().addAcceleratorChangeListener(getAccelChangeListener());
 	}
 
 	
+	private ActionChangeObserver getChangeObserver() {
+		if(observer == null) {
+			observer = new ActionChangeObserver();
+		}
+		return observer;
+	}
+
+
 	/***********************************************************************************
 	 * METHODS
 	 **********************************************************************************/
@@ -195,7 +208,25 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 		};
 	}
 
-	private ActionAcceleratorChangeListener changeListener;
+	
+	
+	protected ActionAcceleratorChangeListener getAccelChangeListener() {
+		if(changeListener == null) {
+			changeListener = new ActionAcceleratorChangeListener();
+		}
+		return changeListener;
+	}
+	
+	public static void updateActionState(AFreeplaneAction action, AbstractCommandButton button) {
+		if(AFreeplaneAction.checkEnabledOnChange(action)) {
+			action.setEnabled();
+			button.setEnabled(action.isEnabled());
+		}
+		if(AFreeplaneAction.checkSelectionOnChange(action) || AFreeplaneAction.checkSelectionOnPopup(action) || AFreeplaneAction.checkSelectionOnPropertyChange(action)) {
+			action.setSelected();
+			button.getActionModel().setSelected(action.isSelected());
+		}
+	}
 	
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
@@ -225,6 +256,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 			}
 			
 			public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
+				builder.getMapChangeAdapter().addListener(getChangeObserver());
 				final String actionKey = attributes.getProperty("action");
 				ChildProperties childProps = new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", "")));
 				childProps.set(RibbonElementPriority.class, getPriority(attributes.getProperty("priority", "medium")));
@@ -240,12 +272,12 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 							updateRichTooltip(button, action, ks);
 						}
 						getAccelChangeListener().addAction(actionKey, button);
-						context.getBuilder().getAcceleratorManager().addAcceleratorChangeListener(getAccelChangeListener());
 						if(context.hasChildren(context.getCurrentPath())) {
 							StructurePath path = context.getCurrentPath();
 							button.setCommandButtonKind(CommandButtonKind.ACTION_AND_POPUP_MAIN_ACTION);
 							button.setPopupCallback(getPopupPanelCallBack(path, context));
 						}
+						getChangeObserver().addAction(action, button);
 						parent.addChild(button, childProps);
 					}
 				}
@@ -291,14 +323,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 								if(action != null) {
 									menuButton.putClientProperty(ACTION_KEY_PROPERTY, action);
 									updateRichTooltip(menuButton, action, context.getBuilder().getAcceleratorManager().getAccelerator(actionKey));
-									if(AFreeplaneAction.checkEnabledOnChange(action)) {
-										action.setEnabled();
-										menuButton.setEnabled(action.isEnabled());
-									}
-									if(AFreeplaneAction.checkSelectionOnChange(action)||AFreeplaneAction.checkSelectionOnPopup(action)|| AFreeplaneAction.checkSelectionOnPropertyChange(action)) {
-										action.setSelected();
-										menuButton.getActionModel().setSelected(action.isSelected());
-									}
+									updateActionState(action, menuButton);
 								}
 								else {
 									action = (AFreeplaneAction)button.getClientProperty(ACTION_NAME_PROPERTY);
@@ -331,13 +356,6 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 				
 			}		
 		};
-	}
-	
-	protected ActionAcceleratorChangeListener getAccelChangeListener() {
-		if(changeListener == null) {
-			changeListener = new ActionAcceleratorChangeListener();
-		}
-		return changeListener;
 	}
 
 	/***********************************************************************************
@@ -403,4 +421,31 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 
 		}
 	}
+	
+	public static class ActionChangeObserver implements IChangeObserver {
+		
+		private final Map<AFreeplaneAction, AbstractCommandButton> actionMap = new HashMap<AFreeplaneAction, AbstractCommandButton>();
+		
+		/***********************************************************************************
+		 * CONSTRUCTORS
+		 **********************************************************************************/
+
+		/***********************************************************************************
+		 * METHODS
+		 **********************************************************************************/
+		
+		public void addAction(AFreeplaneAction action, AbstractCommandButton button) {
+			actionMap.put(action, button);
+		}
+		
+		public void clear() {
+			actionMap.clear();
+		}
+		
+		public void updateState(NodeModel node) {
+			for (Entry<AFreeplaneAction, AbstractCommandButton> entry : actionMap.entrySet()) {
+				updateActionState(entry.getKey(), entry.getValue());
+			}
+		}
+	};
 }
