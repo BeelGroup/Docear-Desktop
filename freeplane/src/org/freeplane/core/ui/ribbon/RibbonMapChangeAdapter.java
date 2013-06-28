@@ -19,7 +19,9 @@ public class RibbonMapChangeAdapter implements INodeSelectionListener, INodeChan
 	
 	public void addListener(IChangeObserver listener) {
 		synchronized (listeners) {
-			listeners.add(listener);
+			if(!listeners.contains(listener)) {
+				listeners.add(listener);
+			}
 		}
 	}
 	
