@@ -137,7 +137,7 @@ public class StructureTree {
 					return true;
 				}
 				else if(getParent() != null){
-					return getParent().equals(ancestor);
+					return getParent().isAncestor(ancestor);
 				}
 			}
 			return false;
@@ -167,9 +167,6 @@ public class StructureTree {
 		}
 
 		public boolean isAncestor(StructurePath ancestor) {
-			if (ancestor != null) {
-				return true;
-			}
 			return false;
 		}
 

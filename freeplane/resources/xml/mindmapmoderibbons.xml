@@ -197,7 +197,33 @@
 			</ribbon_band>
 		</ribbon_task>
 
-		<ribbon_task name="miscellaneous">
+		<ribbon_task name="extras">
+		    <ribbon_band name="menu_extras" resize_policies="Mirror, High2Mid">
+				<ribbon_action name="menu_time" priority="medium">
+					<ribbon_action action="TimeManagementAction" accelerator="control T" />
+					<ribbon_action action="TimeListAction" />
+					<ribbon_action action="ReminderHookAction" />
+				</ribbon_action>
+				<ribbon_action name="menu_encryption" priority="medium">
+					<ribbon_action action="EnterPassword" />
+					<ribbon_action action="RemoveEncryption" />
+				</ribbon_action>
+				<ribbon_action action="SetAcceleratorOnNextClickAction" />
+				<ribbon_action name="acceleratorPresets">
+					<ribbon_action name="load_accelerator_presets" menu_key="main_menu_new_load_accelerator_presets"/>
+					<ribbon_action action="SaveAcceleratorPresetsAction"/>
+				</ribbon_action>				
+				<ribbon_action name="scripting" plugin="org.freeplane.plugin.script">				    
+					<ribbon_action action="ExecuteScriptForSelectionAction" plugin="org.freeplane.plugin.script"/>
+					<ribbon_action action="ExecuteScriptForAllNodes" plugin="org.freeplane.plugin.script"/>					
+					<ribbon_action action="ScriptEditor" plugin="org.freeplane.plugin.script"/>					
+				</ribbon_action>
+				<ribbon_action name="formula.menuname" plugin="org.freeplane.plugin.formula">
+					<ribbon_action action="formula.EvaluateAllAction" plugin="org.freeplane.plugin.formula"/>
+				</ribbon_action>
+				<ribbon_action action="OpenUserDirAction" />							
+				<ribbon_action action="PropertyAction" accelerator="control COMMA"/>
+			</ribbon_band>	
 		    <ribbon_band name="miscellaneous" resize_policies="High2Mid">
 				<ribbon_action action="RevisionPluginAction" priority="top" />
 				<ribbon_action action="CopyStyleExtensionsAction" priority="top" />
