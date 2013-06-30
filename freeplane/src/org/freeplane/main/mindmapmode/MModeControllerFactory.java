@@ -21,6 +21,9 @@ package org.freeplane.main.mindmapmode;
 
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import javax.swing.Box;
 import javax.swing.JComponent;
@@ -43,6 +46,8 @@ import org.freeplane.core.ui.components.OneTouchCollapseResizer.ComponentCollaps
 import org.freeplane.core.ui.components.ResizeEvent;
 import org.freeplane.core.ui.components.ResizerListener;
 import org.freeplane.core.ui.components.UITools;
+import org.freeplane.core.util.Compat;
+import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.attribute.AttributeController;
 import org.freeplane.features.attribute.mindmapmode.AddAttributeAction;
@@ -121,6 +126,7 @@ import org.freeplane.view.swing.ui.mindmapmode.MMapMouseListener;
 import org.freeplane.view.swing.ui.mindmapmode.MNodeDragListener;
 import org.freeplane.view.swing.ui.mindmapmode.MNodeDropListener;
 import org.freeplane.view.swing.ui.mindmapmode.MNodeMotionListener;
+
 
 /**
  * @author Dimitry Polivaev 24.11.2008
@@ -319,6 +325,18 @@ public class MModeControllerFactory {
 		final MToolbarContributor menuContributor = new MToolbarContributor(uiFactory);
 		modeController.addExtension(MUIFactory.class, uiFactory);
 		modeController.addMenuContributor(menuContributor);
-		userInputListenerFactory.getRibbonBuilder().updateRibbon(ResourceController.getResourceController().getResource("/xml/mindmapmoderibbon.xml"));
+		File file = new File(Compat.getApplicationUserDirectory(), "mindmapmoderibbon.xml");
+		System.out.println("using file: "+file.getAbsolutePath());
+		if (file.exists()) {
+			try {				
+				userInputListenerFactory.getRibbonBuilder().updateRibbon(file.toURI().toURL());
+			}
+			catch (MalformedURLException e) {				
+				LogUtils.severe("MModeControllerFactory.createStandardControllers(): "+e.getMessage());
+			}
+		}
+		else {
+			userInputListenerFactory.getRibbonBuilder().updateRibbon(ResourceController.getResourceController().getResource("/xml/mindmapmoderibbon.xml"));
+		}
 	}
 }
