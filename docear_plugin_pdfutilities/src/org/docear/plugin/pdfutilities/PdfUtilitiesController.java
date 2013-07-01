@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -868,7 +869,19 @@ public class PdfUtilitiesController extends ALanguageController {
 		});
 		modeController.getUserInputListenerFactory().getRibbonBuilder().registerContributorFactory("pdf_annotations", new DocearImportAnnotationsActionContributorFactory());
 		modeController.getUserInputListenerFactory().getRibbonBuilder().registerContributorFactory("pdf_monitoring", new DocearPdfMonitoringContributorFactory());
-		modeController.getUserInputListenerFactory().getRibbonBuilder().updateRibbon(PdfUtilitiesController.class.getResource("/xml/ribbons.xml"));
+		File file = new File(Compat.getApplicationUserDirectory(), "docear_pdfutilities_ribbon.xml");
+		if (file.exists()) {
+			LogUtils.info("using alternative ribbon configuration file: "+file.getAbsolutePath());
+			try {				
+				modeController.getUserInputListenerFactory().getRibbonBuilder().updateRibbon(file.toURI().toURL());
+			}
+			catch (MalformedURLException e) {				
+				LogUtils.severe("MModeControllerFactory.createStandardControllers(): "+e.getMessage());
+			}
+		}
+		else {
+			modeController.getUserInputListenerFactory().getRibbonBuilder().updateRibbon(PdfUtilitiesController.class.getResource("/xml/ribbons.xml"));
+		}
 	}
 
 	public static String getParentCategory(MenuBuilder builder, String parentMenu) {

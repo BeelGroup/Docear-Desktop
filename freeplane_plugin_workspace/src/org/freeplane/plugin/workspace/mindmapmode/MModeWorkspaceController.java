@@ -6,6 +6,7 @@ import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -191,7 +192,19 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 		});
 		//RIBBONS - workspace
 		modeController.getUserInputListenerFactory().getRibbonBuilder().registerContributorFactory("project_band_main", new WorkspaceProjectBandContributorFactory(this));
-		modeController.getUserInputListenerFactory().getRibbonBuilder().updateRibbon(MModeWorkspaceController.class.getResource("/xml/ribbons.xml"));
+		File file = new File(Compat.getApplicationUserDirectory(), "workspace_ribbon.xml");
+		if (file.exists()) {
+			LogUtils.info("using alternative ribbon configuration file: "+file.getAbsolutePath());
+			try {				
+				modeController.getUserInputListenerFactory().getRibbonBuilder().updateRibbon(file.toURI().toURL());
+			}
+			catch (MalformedURLException e) {				
+				LogUtils.severe("MModeControllerFactory.createStandardControllers(): "+e.getMessage());
+			}
+		}
+		else {
+			modeController.getUserInputListenerFactory().getRibbonBuilder().updateRibbon(MModeWorkspaceController.class.getResource("/xml/ribbons.xml"));
+		}
 	}
 
 //	private void setupSettings(ModeController modeController) {

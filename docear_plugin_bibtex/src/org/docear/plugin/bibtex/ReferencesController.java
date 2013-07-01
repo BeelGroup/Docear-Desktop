@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.dnd.DropTarget;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 
@@ -66,6 +67,7 @@ import org.freeplane.core.ui.ribbon.ARibbonContributor;
 import org.freeplane.core.ui.ribbon.IRibbonContributorFactory;
 import org.freeplane.core.ui.ribbon.RibbonActionContributorFactory;
 import org.freeplane.core.ui.ribbon.RibbonBuildContext;
+import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.map.MapModel;
@@ -514,7 +516,20 @@ public class ReferencesController extends ALanguageController implements IDocear
 			}
 		});
 		modeController.getUserInputListenerFactory().getRibbonBuilder().registerContributorFactory("UpdateReferencesAllMapsAction", new UpdateReferencesAllMapsActionContributorFactory(WorkspaceController.getModeExtension(modeController)));
-		modeController.getUserInputListenerFactory().getRibbonBuilder().updateRibbon(ReferencesController.class.getResource("/xml/ribbons.xml"));
+		
+		File file = new File(Compat.getApplicationUserDirectory(), "mindmapmoderibbon.xml");		
+		if (file.exists()) {
+			LogUtils.info("using alternative ribbon configuration file: "+file.getAbsolutePath());
+			try {				
+				modeController.getUserInputListenerFactory().getRibbonBuilder().updateRibbon(file.toURI().toURL());
+			}
+			catch (MalformedURLException e) {				
+				LogUtils.severe("MModeControllerFactory.createStandardControllers(): "+e.getMessage());
+			}
+		}
+		else {
+			modeController.getUserInputListenerFactory().getRibbonBuilder().updateRibbon(ReferencesController.class.getResource("/xml/ribbons.xml"));
+		}
 	}
 	
 	

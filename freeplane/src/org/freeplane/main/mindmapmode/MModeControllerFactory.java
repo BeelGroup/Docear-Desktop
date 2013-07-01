@@ -325,9 +325,9 @@ public class MModeControllerFactory {
 		final MToolbarContributor menuContributor = new MToolbarContributor(uiFactory);
 		modeController.addExtension(MUIFactory.class, uiFactory);
 		modeController.addMenuContributor(menuContributor);
-		File file = new File(Compat.getApplicationUserDirectory(), "mindmapmoderibbon.xml");
-		System.out.println("using file: "+file.getAbsolutePath());
+		File file = new File(Compat.getApplicationUserDirectory(), "mindmapmoderibbon.xml");		
 		if (file.exists()) {
+			LogUtils.info("using alternative ribbon configuration file: "+file.getAbsolutePath());
 			try {				
 				userInputListenerFactory.getRibbonBuilder().updateRibbon(file.toURI().toURL());
 			}

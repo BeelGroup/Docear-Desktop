@@ -429,8 +429,19 @@ public class CoreConfiguration extends ALanguageController {
 				}
 			}
 		});
-		modeController.getUserInputListenerFactory().getRibbonBuilder().registerContributorFactory("node_privacy", new DocearNodePrivacyContributorFactory());
-		modeController.getUserInputListenerFactory().getRibbonBuilder().updateRibbon(DocearController.class.getResource("/xml/ribbons.xml"));
+		File file = new File(Compat.getApplicationUserDirectory(), "docear_core_ribbon.xml");		
+		if (file.exists()) {
+			LogUtils.info("using alternative ribbon configuration file: "+file.getAbsolutePath());
+			try {				
+				modeController.getUserInputListenerFactory().getRibbonBuilder().updateRibbon(file.toURI().toURL());
+			}
+			catch (MalformedURLException e) {				
+				LogUtils.severe("MModeControllerFactory.createStandardControllers(): "+e.getMessage());
+			}
+		}
+		else {
+			modeController.getUserInputListenerFactory().getRibbonBuilder().updateRibbon(DocearController.class.getResource("/xml/ribbons.xml"));
+		}
 		
 	}
 
