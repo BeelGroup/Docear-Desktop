@@ -10,6 +10,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -21,6 +22,7 @@ import org.docear.plugin.core.ui.components.DocearLicensePanel;
 import org.docear.plugin.core.ui.wizard.AWizardPage;
 import org.docear.plugin.core.ui.wizard.WizardContext;
 import org.docear.plugin.services.features.user.DocearLocalUser;
+import org.docear.plugin.services.features.user.DocearUser;
 import org.freeplane.core.util.TextUtils;
 
 import com.jgoodies.forms.factories.FormFactory;
@@ -41,11 +43,21 @@ public class SecondPagePanel extends AWizardPage {
 	private JRadioButton rdbtnImportFromHarddisk;
 	private JRadioButton rdbtnStartWithEmpty;
 	private JRadioButton rdbtnCreateNewProject;
+	
+	private JPanel servicePanel;
+	private JPanel panel_2;
+	private JPanel panel_3;
+	private JCheckBox chckbxCollaboration;
+	private JCheckBox chckbxOnlineBackup;
+	private JCheckBox chckbxSynchronization;
+	private JCheckBox chckbxRecommendations;
+	
 	private boolean localUser;
 	private JLabel lblWhatNext;
 	private JLabel lblTermsChapter;
 	private MultiLineActionLabel lblProcessingTerms;
 	private MultiLineActionLabel lblToS;
+	private JLabel lblServicesoptional;
 
 	/***********************************************************************************
 	 * CONSTRUCTORS
@@ -77,7 +89,7 @@ public class SecondPagePanel extends AWizardPage {
 				FormFactory.DEFAULT_ROWSPEC,}));
 		
 		lblWhatNext = new JLabel(" ");
-		lblWhatNext.setFont(new Font("Tahoma", Font.BOLD, 14));
+		lblWhatNext.setFont(lblWhatNext.getFont().deriveFont(Font.BOLD, 14));
 		add(lblWhatNext, "2, 2, 4, 1");
 		
 		rdbtnDataFromDocear = new JRadioButton(TextUtils.getText("docear.setup.wizard.second.fromcloud.label"));
@@ -124,10 +136,12 @@ public class SecondPagePanel extends AWizardPage {
 		group.add(rdbtnImportFromHarddisk);
 		group.add(rdbtnDataFromDocear);
 		
+		add(getServicePanel(), "3, 9, 3, 1, fill, fill");
+		
 		
 		lblTermsChapter = new JLabel(TextUtils.getText("docear.setup.wizard.docear.terms.title"));
-		lblTermsChapter.setFont(new Font("Tahoma", Font.BOLD, 11));
-		add(lblTermsChapter, "4, 11, 2, 1");
+		lblTermsChapter.setFont(lblTermsChapter.getFont().deriveFont(Font.BOLD, 11));
+		add(lblTermsChapter, "3, 11, 3, 1");
 		
 		chckbxAcceptUsageTerms = new JCheckBox();
 		chckbxAcceptUsageTerms.setBackground(Color.WHITE);
@@ -188,6 +202,123 @@ public class SecondPagePanel extends AWizardPage {
 			}
 		});
 		add(lblToS, "5, 14, fill, top");
+	}
+	public JPanel getServicePanel() {
+		if(servicePanel == null) {
+			servicePanel = new JPanel();
+			servicePanel.setBackground(Color.WHITE);
+			servicePanel.setLayout(new FormLayout(new ColumnSpec[] {
+					FormFactory.RELATED_GAP_COLSPEC,
+					FormFactory.DEFAULT_COLSPEC,
+					FormFactory.RELATED_GAP_COLSPEC,
+					FormFactory.DEFAULT_COLSPEC,
+					ColumnSpec.decode("20dlu"),
+					ColumnSpec.decode("default:grow"),},
+				new RowSpec[] {
+					FormFactory.DEFAULT_ROWSPEC,
+					FormFactory.RELATED_GAP_ROWSPEC,
+					FormFactory.DEFAULT_ROWSPEC,
+					FormFactory.DEFAULT_ROWSPEC,}));
+			
+			lblServicesoptional = new JLabel(TextUtils.getText("docear.setup.wizard.second.services"));
+			servicePanel.add(lblServicesoptional, "1, 1, 6, 1");
+			lblServicesoptional.setFont(lblServicesoptional.getFont().deriveFont(Font.BOLD, 11));
+			
+			chckbxRecommendations = new JCheckBox();
+			servicePanel.add(chckbxRecommendations, "2, 3, default, top");
+			chckbxRecommendations.setSelected(true);
+			chckbxRecommendations.setBackground(Color.WHITE);
+			chckbxRecommendations.addChangeListener(new ChangeListener() {
+				public void stateChanged(ChangeEvent e) {
+					if (cachedContext != null) {
+						DocearUser settings = cachedContext.get(DocearUser.class);
+						if (settings == null) {
+							settings = new DocearUser();
+							cachedContext.set(DocearUser.class, settings);
+						}
+						settings.setRecommendationsEnabled(chckbxRecommendations.isSelected());
+					}
+				}
+			});
+			
+			panel_2 = new JPanel();
+			panel_2.setBackground(Color.WHITE);
+			servicePanel.add(panel_2, "4, 3, fill, fill");
+			panel_2.setLayout(new FormLayout(new ColumnSpec[] {
+					FormFactory.DEFAULT_COLSPEC,
+					FormFactory.RELATED_GAP_COLSPEC,
+					FormFactory.DEFAULT_COLSPEC,},
+				new RowSpec[] {
+					RowSpec.decode("default:grow"),}));
+			
+			JLabel lblReclabel = new JLabel(TextUtils.getText("docear.setup.wizard.register.feature.recommendations"));
+			panel_2.add(lblReclabel, "1, 1");
+			
+			chckbxSynchronization = new JCheckBox(TextUtils.getText("docear.setup.wizard.register.feature.synchronization"));
+			servicePanel.add(chckbxSynchronization, "6, 3, default, top");
+			chckbxSynchronization.setBackground(Color.WHITE);
+			chckbxSynchronization.setSelected(true);
+			chckbxSynchronization.addChangeListener(new ChangeListener() {
+				public void stateChanged(ChangeEvent e) {
+					if (cachedContext != null) {
+						DocearUser settings = cachedContext.get(DocearUser.class);
+						if (settings == null) {
+							settings = new DocearUser();
+							cachedContext.set(DocearUser.class, settings);
+						}
+						settings.setSynchronizationEnabled(chckbxSynchronization.isSelected());
+					}
+				}
+			});
+			
+			chckbxOnlineBackup = new JCheckBox();
+			servicePanel.add(chckbxOnlineBackup, "2, 4, default, top");
+			chckbxOnlineBackup.setSelected(true);
+			chckbxOnlineBackup.setBackground(Color.WHITE);
+			chckbxOnlineBackup.addChangeListener(new ChangeListener() {
+				public void stateChanged(ChangeEvent e) {
+					if (cachedContext != null) {
+						DocearUser settings = cachedContext.get(DocearUser.class);
+						if (settings == null) {
+							settings = new DocearUser();
+							cachedContext.set(DocearUser.class, settings);
+						}
+						settings.setBackupEnabled(chckbxOnlineBackup.isSelected());
+					}
+				}
+			});
+			
+			panel_3 = new JPanel();
+			panel_3.setBackground(Color.WHITE);
+			servicePanel.add(panel_3, "4, 4, fill, fill");
+			panel_3.setLayout(new FormLayout(new ColumnSpec[] {
+					FormFactory.DEFAULT_COLSPEC,
+					FormFactory.RELATED_GAP_COLSPEC,
+					FormFactory.DEFAULT_COLSPEC,},
+				new RowSpec[] {
+					RowSpec.decode("default:grow"),}));
+			
+			JLabel lblBackup = new JLabel(TextUtils.getText("docear.setup.wizard.register.feature.backup"));
+			panel_3.add(lblBackup, "1, 1");
+			
+			chckbxCollaboration = new JCheckBox(TextUtils.getText("docear.setup.wizard.register.feature.collaboration"));
+			servicePanel.add(chckbxCollaboration, "6, 4, default, top");
+			chckbxCollaboration.setBackground(Color.WHITE);
+			chckbxCollaboration.setSelected(true);
+			chckbxCollaboration.addChangeListener(new ChangeListener() {
+				public void stateChanged(ChangeEvent e) {
+					if (cachedContext != null) {
+						DocearUser settings = cachedContext.get(DocearUser.class);
+						if (settings == null) {
+							settings = new DocearUser();
+							cachedContext.set(DocearUser.class, settings);
+						}
+						settings.setCollaborationEnabled(chckbxCollaboration.isSelected());
+					}
+				}
+			});
+		}
+		return servicePanel;
 	}
 	/***********************************************************************************
 	 * METHODS
@@ -261,12 +392,29 @@ public class SecondPagePanel extends AWizardPage {
 		return null;
 	}
 	
+	public boolean isOnlineBackupEnabled() {
+		return chckbxOnlineBackup != null && chckbxOnlineBackup.isSelected();
+	}
+	
+	public boolean isRecommendationsEnabled() {
+		return chckbxRecommendations != null && chckbxRecommendations.isSelected();
+	}
+	
+	public boolean isCollaborationEnabled() {
+		return chckbxCollaboration != null && chckbxCollaboration.isSelected();
+	}
+	
+	public boolean isSynchronizationEnabled() {
+		return chckbxSynchronization != null && chckbxSynchronization.isSelected();
+	}
+	
 	public boolean isTermsAccepted() {
 		return (localUser && chckbxAcceptUsageTerms.isSelected()) || (chckbxAcceptTOS.isSelected() && chckbxAcceptUsageTerms.isSelected());
 	}
 	
 	private void prepareForOnlineUser() {
 		this.localUser = false;
+		getServicePanel().setVisible(true);
 		chckbxAcceptTOS.setVisible(true);
 		chckbxAcceptUsageTerms.setVisible(true);
 		lblTermsChapter.setVisible(true);
@@ -277,6 +425,7 @@ public class SecondPagePanel extends AWizardPage {
 	}
 	private void prepareForLocalUser() {
 		this.localUser = true;
+		getServicePanel().setVisible(false);
 		chckbxAcceptTOS.setVisible(false);
 		chckbxAcceptUsageTerms.setVisible(true);
 		lblTermsChapter.setVisible(false);

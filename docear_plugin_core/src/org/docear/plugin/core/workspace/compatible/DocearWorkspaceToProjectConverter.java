@@ -3,6 +3,7 @@ package org.docear.plugin.core.workspace.compatible;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -248,7 +249,17 @@ public class DocearWorkspaceToProjectConverter {
 
 	private void load(final URI xmlFile) throws MalformedURLException, XMLException, IOException {
 		final TreeXmlReader reader = new TreeXmlReader(readManager);
-		reader.load(new InputStreamReader(new BufferedInputStream(xmlFile.toURL().openStream())));
+		InputStream stream = xmlFile.toURL().openStream();
+		try {
+			reader.load(new InputStreamReader(new BufferedInputStream(stream)));
+		}
+		finally {
+			try {
+				stream.close();
+			}
+			catch (IOException e) {
+			}
+		}
 	}
 	
 	private IResultProcessor getDefaultResultProcessor() {
@@ -270,6 +281,12 @@ public class DocearWorkspaceToProjectConverter {
 					DocearConversionURLHandler.setTargetProject(project);
 					converter.getDefaultResultProcessor().setProject(project);
 					converter.load(workspaceSettings.toURI());
+				}
+				//delete old workspace settings, if selected
+				if(descriptor.deleteOldSettings()) {
+					if(!workspaceSettings.delete()) {
+						LogUtils.info("could not delete: "+workspaceSettings);
+					}
 				}
 			}
 			catch (Exception e) {

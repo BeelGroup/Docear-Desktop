@@ -101,7 +101,7 @@ public class RegistrationPagePanel extends AWizardPage {
 		URL url = NewProjectDialogPanel.class.getResource("/images/16x16/dialog-warning-4.png");
 		
 		JLabel lblRequiredInformation = new JLabel(TextUtils.getText("docear.setup.wizard.register.required"));
-		lblRequiredInformation.setFont(new Font("Tahoma", Font.BOLD, 11));
+		lblRequiredInformation.setFont(lblRequiredInformation.getFont().deriveFont(Font.BOLD, 11));
 		add(lblRequiredInformation, "2, 2, 4, 1");
 		
 		JPanel panel = new JPanel();
@@ -230,7 +230,7 @@ public class RegistrationPagePanel extends AWizardPage {
 		lblRetypeWarning.setToolTipText(TextUtils.getText("docear.setup.wizard.register.input.warn.passwd"));
 		
 		JLabel lblServicesoptional = new JLabel(TextUtils.getText("docear.setup.wizard.register.services"));
-		lblServicesoptional.setFont(new Font("Tahoma", Font.BOLD, 11));
+		lblServicesoptional.setFont(lblServicesoptional.getFont().deriveFont(Font.BOLD, 11));
 		add(lblServicesoptional, "2, 6, 4, 1");
 		
 		panel_1 = new JPanel();
@@ -352,7 +352,7 @@ public class RegistrationPagePanel extends AWizardPage {
 		});
 		
 		JLabel lblAndTheFine = new JLabel(TextUtils.getText("docear.setup.wizard.docear.terms.title"));
-		lblAndTheFine.setFont(new Font("Tahoma", Font.BOLD, 11));
+		lblAndTheFine.setFont(lblAndTheFine.getFont().deriveFont(Font.BOLD, 11));
 		add(lblAndTheFine, "2, 11, 4, 1");
 		
 		chckbxAcceptUsageTerms = new JCheckBox();

@@ -54,6 +54,7 @@ import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
+import javax.swing.JCheckBox;
 
 public class ImportProjectPagePanel extends AWizardPage {
 
@@ -68,6 +69,8 @@ public class ImportProjectPagePanel extends AWizardPage {
 	private WizardContext cachedContext;
 
 	private JLabel lblWarning;
+
+	private JCheckBox chckbxDeleteOldSettings;
 
 	/***********************************************************************************
 	 * CONSTRUCTORS
@@ -85,6 +88,8 @@ public class ImportProjectPagePanel extends AWizardPage {
 			new RowSpec[] {
 				FormFactory.RELATED_GAP_ROWSPEC,
 				RowSpec.decode("fill:default"),
+				FormFactory.RELATED_GAP_ROWSPEC,
+				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
@@ -159,12 +164,18 @@ public class ImportProjectPagePanel extends AWizardPage {
 		scrollPane.setViewportView(lstVersions);
 		
 		lblWarning = new JLabel();
+		lblWarning.setVisible(false);
 		URL url = WorkspaceController.class.getResource("/images/16x16/dialog-warning-4.png");
 		if(url != null) {
 			lblWarning.setIcon(new ImageIcon(url));
 		}
-		lblWarning.setVisible(false);
-		add(lblWarning, "2, 12");
+		
+		
+		chckbxDeleteOldSettings = new JCheckBox(TextUtils.getText("docear.setup.wizard.import.delete.old"));
+		chckbxDeleteOldSettings.setBackground(Color.WHITE);
+		chckbxDeleteOldSettings.setEnabled(false);
+		add(chckbxDeleteOldSettings, "2, 12, 5, 1");
+		add(lblWarning, "2, 14");
 		
 	}
 	
@@ -184,6 +195,7 @@ public class ImportProjectPagePanel extends AWizardPage {
 	}
 
 	private void enableControls(WizardContext context) {
+		chckbxDeleteOldSettings.setEnabled(false);
 		if(context != null) {
 			boolean enabled = getModel().getSize() > 0;
 			lblWarning.setText(TextUtils.getText("docear.setup.wizard.import.warn1"));
@@ -201,12 +213,13 @@ public class ImportProjectPagePanel extends AWizardPage {
 				if(WorkspaceController.getCurrentModel().getProject(((VersionItem) lstVersions.getSelectedValue()).getProject().getProjectID()) != null) {
 					lblWarning.setText(TextUtils.getText("docear.setup.wizard.import.warn3"));
 					lblWarning.setVisible(true);
-					context.getNextButton().setEnabled(false);					
+					context.getNextButton().setEnabled(false);
 				}
 				else if(getProject().getExtensions(DocearConversionDescriptor.class) != null) {
 					lblWarning.setText(TextUtils.getText("docear.setup.wizard.import.warn4"));
 					lblWarning.setVisible(true);
-					context.getNextButton().setEnabled(true);					
+					chckbxDeleteOldSettings.setEnabled(true);
+					context.getNextButton().setEnabled(true);
 				}
 				else{
 					context.getNextButton().setEnabled(true);
@@ -293,10 +306,18 @@ public class ImportProjectPagePanel extends AWizardPage {
 		return getProject().getExtensions(DocearConversionDescriptor.class) != null;
 	}
 	
+	public boolean deleteOldSettings() {
+		return chckbxDeleteOldSettings.isEnabled() && chckbxDeleteOldSettings.isSelected();
+	}
+	
 	public AWorkspaceProject getProject() {
 		VersionItem item = (VersionItem) lstVersions.getSelectedValue();
 		if(item == null) {
 			return null;
+		}
+		DocearConversionDescriptor desc = item.getProject().getExtensions(DocearConversionDescriptor.class);
+		if(desc != null) {
+			desc.setDeleteOldSettings(deleteOldSettings());
 		}
 		return item.getProject();
 	}
