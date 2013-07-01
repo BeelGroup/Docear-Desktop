@@ -1,12 +1,7 @@
-/**
- * author: Marcel Genzmehr
- * 19.08.2011
- */
 package org.docear.plugin.core;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -16,29 +11,23 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.docear.plugin.core.event.DocearEvent;
 import org.docear.plugin.core.event.DocearEventType;
 import org.docear.plugin.core.event.IDocearEventListener;
+import org.docear.plugin.core.features.DocearMapModelExtension;
 import org.docear.plugin.core.features.DocearProgressObserver;
 import org.docear.plugin.core.io.IOTools;
 import org.docear.plugin.core.logger.DocearEventLogger;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.LogUtils;
+import org.freeplane.features.map.MapModel;
 import org.freeplane.features.mode.Controller;
-import org.freeplane.plugin.workspace.WorkspaceController;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
 
 /**
  * 
  */
 public class DocearController implements IDocearEventListener {
-
-	private final static String PLACEHOLDER_PROFILENAME = "@@PROFILENAME@@";
-	private static final String DEFAULT_LIBRARY_PATH = "workspace:/"+PLACEHOLDER_PROFILENAME+"/library";
-	private final static Pattern PATTERN = Pattern.compile(PLACEHOLDER_PROFILENAME);
 	static final String DOCEAR_FIRST_RUN_PROPERTY = "docear.already_initialized";
 	
 	private final static String DOCEAR_VERSION_NUMBER = "docear.version.number";
@@ -57,8 +46,6 @@ public class DocearController implements IDocearEventListener {
 	private final Vector<IDocearEventListener> docearListeners = new Vector<IDocearEventListener>();		
 	private final static DocearController docearController = new DocearController();
 	
-	private IDocearLibrary currentLibrary = null;
-	
 	private final Set<String> workingThreads = new HashSet<String>();
 	private final boolean firstRun;
 	private boolean applicationShutdownAborted = false;
@@ -76,7 +63,7 @@ public class DocearController implements IDocearEventListener {
 	 **********************************************************************************/
 	
 	protected DocearController() {
-		firstRun = !ResourceController.getResourceController().getBooleanProperty(DOCEAR_FIRST_RUN_PROPERTY);
+		firstRun = !DocearController.getPropertiesController().getBooleanProperty(DOCEAR_FIRST_RUN_PROPERTY);
 		setApplicationIdentifiers();
 		addDocearEventListener(this);
 	}
@@ -89,9 +76,9 @@ public class DocearController implements IDocearEventListener {
 	}
 	
 	public boolean isLicenseDialogNecessary() {		
-		int storedBuildNumber = Integer.parseInt(ResourceController.getResourceController().getProperty(DOCEAR_VERSION_NUMBER, "0"));
+		int storedBuildNumber = Integer.parseInt(DocearController.getPropertiesController().getProperty(DOCEAR_VERSION_NUMBER, "0"));
 		if (storedBuildNumber == 0) {
-			ResourceController.getResourceController().setProperty(DOCEAR_VERSION_NUMBER, ""+this.applicationBuildNumber);
+			DocearController.getPropertiesController().setProperty(DOCEAR_VERSION_NUMBER, ""+this.applicationBuildNumber);
 			return true;
 		}
 		else {
@@ -194,27 +181,10 @@ public class DocearController implements IDocearEventListener {
 			listener.handleEvent(event);
 		}
 	}
-	
-	public IDocearLibrary getLibrary() {
-		return currentLibrary;
-	}
-	
-	public URI getLibraryPath() {		
-		Matcher mainMatcher = PATTERN.matcher(DEFAULT_LIBRARY_PATH);
-		String ret = mainMatcher.replaceAll(WorkspaceController.getController().getPreferences().getWorkspaceProfileHome());
-		return WorkspaceUtils.absoluteURI(URI.create(ret));
-	}
-	
+		
 	public DocearEventLogger getDocearEventLogger() {
 		return this.docearEventLogger;
 	}
-	
-//	public String getApplicationVersion() {
-//		String version	= ResourceController.getResourceController().getProperty("docear_version");
-//		String status	= ResourceController.getResourceController().getProperty("docear_status");
-//		
-//		return version+" "+status;
-//	}
 	
 	public String getApplicationName() {
 		return this.applicationName;
@@ -263,15 +233,16 @@ public class DocearController implements IDocearEventListener {
 	}
 	
 	public boolean shutdown() {	
-		dispatchDocearEvent(new DocearEvent(this, DocearEventType.APPLICATION_CLOSING));
+		dispatchDocearEvent(new DocearEvent(this, null, DocearEventType.APPLICATION_CLOSING));
 		
 		Controller.getCurrentController().getViewController().saveProperties();
+		DocearController.getPropertiesController().saveProperties();
 		ResourceController.getResourceController().saveProperties();		
 		if(!waitThreadsReady()){
 			return false;
 		}
 		if(Controller.getCurrentController().getViewController().quit()) {
-			dispatchDocearEvent(new DocearEvent(this, DocearEventType.FINISH_THREADS));
+			dispatchDocearEvent(new DocearEvent(this, null, DocearEventType.FINISH_THREADS));
 			if(!waitThreadsReady()){
 				return false;
 			}
@@ -314,6 +285,16 @@ public class DocearController implements IDocearEventListener {
 	}
 	
 	
+	public String getGPLv2Terms() {
+		try {
+			return IOTools.getStringFromStream(DocearController.class.getResourceAsStream("/gplv2.html"),"UTF-8");
+		}
+		catch (IOException e) {
+			LogUtils.warn(e);
+			return "GPLv2";
+		}
+	}
+	
 	public String getDataProcessingTerms() {
 		try {
 			return IOTools.getStringFromStream(DocearController.class.getResourceAsStream("/Docear_data_processing.txt"),"UTF-8");
@@ -334,7 +315,7 @@ public class DocearController implements IDocearEventListener {
 		}
 	}
 	
-	public String getTermsOfUse() {
+	public String getTermsOfService() {
 		try {
 			return IOTools.getStringFromStream(DocearController.class.getResourceAsStream("/Docear_terms_of_use.txt"),"UTF-8");
 		}
@@ -344,30 +325,41 @@ public class DocearController implements IDocearEventListener {
 		}
 	}
 	
+	public static ResourceController getPropertiesController() {
+		return ResourceController.getResourceController();
+	}
+	
 	
 	
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
 	 **********************************************************************************/
 
-	public void handleEvent(DocearEvent event) {
-		if(event.getType() == DocearEventType.APPLICATION_CLOSING) {
-			WorkspaceUtils.saveCurrentConfiguration();
-		}
-		else if(event.getType() == DocearEventType.APPLICATION_CLOSING_ABORTED){
+	public void handleEvent(DocearEvent event) {		
+		if(event.getType() == DocearEventType.APPLICATION_CLOSING_ABORTED){
 			this.applicationShutdownAborted = true;
-		}
-		else if(event.getType() == DocearEventType.NEW_LIBRARY && event.getSource() instanceof IDocearLibrary) {
-			this.currentLibrary = (IDocearLibrary) event.getSource();
-			LogUtils.info("DOCEAR: new DocearLibrary set");
-		} 
-			
+		}			
 	}
+	
 	public SemaphoreController getSemaphoreController() {
 		return semaphoreController;
 	}
-	
-	
-
-	
+	public boolean isLibraryMap(MapModel map) {
+		DocearMapModelExtension dmme = map.getExtension(DocearMapModelExtension.class);
+		if (dmme == null) {
+			return false;
+		}
+		//WORKSPACE - DOCEAR todo: implement 
+//		for (URI uri : DocearController.getController().getLibrary().getMindmaps()) { 
+//			if (uri != null && map != null) {
+//				String path = map.getFile().getAbsolutePath(); 
+//				File f = URIUtils.getAbsoluteFile(uri);
+//				
+//				if (f != null && f.getAbsolutePath().equals(path)) {
+//					return true;
+//				}
+//			}
+//		}
+		return false;
+	}
 }

@@ -15,7 +15,7 @@ import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 
-@EnabledAction(checkOnPopup = true)
+@EnabledAction(checkOnNodeChange=true)
 public class CopyCiteKeyToClipboard extends AFreeplaneAction{
 
 	public final static String KEY = "CopyCiteKeyToClipboardAction";

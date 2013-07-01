@@ -4,10 +4,9 @@
  */
 package org.docear.plugin.core.workspace.creator;
 
-import java.net.URI;
-
 import org.docear.plugin.core.workspace.node.LinkTypeIncomingNode;
 import org.freeplane.n3.nanoxml.XMLElement;
+import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.model.AWorkspaceNodeCreator;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 
@@ -15,7 +14,7 @@ import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
  * 
  */
 public class LinkTypeIncomingCreator extends AWorkspaceNodeCreator {
-	public static final String LINK_TYPE_INCOMING = "incoming";
+	public static final String LINK_TYPE_INCOMING = LinkTypeIncomingNode.TYPE;
 		
 	/***********************************************************************************
 	 * CONSTRUCTORS
@@ -38,7 +37,7 @@ public class LinkTypeIncomingCreator extends AWorkspaceNodeCreator {
 		if (path == null || name == null) {
 			return null;
 		}	
-		node.setLinkPath(URI.create(path));		
+		node.setLinkPath(URIUtils.createURI(path));		
 		node.setName(name);
 		return node;
 	}

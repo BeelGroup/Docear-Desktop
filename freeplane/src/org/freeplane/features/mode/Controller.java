@@ -29,21 +29,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.io.IOExceptionWithCause;
 import org.freeplane.core.extension.ExtensionContainer;
 import org.freeplane.core.extension.IExtension;
 import org.freeplane.core.resources.OptionPanelController;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.resources.components.IValidator;
-import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.IMapSelection;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.ui.IMapViewManager;
 import org.freeplane.features.ui.ViewController;
-
-import com.sun.jna.platform.win32.Kernel32;
-import com.sun.jna.platform.win32.WinBase;
-import com.sun.jna.platform.win32.WinDef;
 
 /**
  * Provides the methods to edit/change a Node. Forwards all messages to
@@ -61,7 +57,8 @@ public class Controller extends AController {
 	private ViewController viewController;
 	private final ResourceController resourceController;
 	private final List<IValidator> optionValidators = new ArrayList<IValidator>();
-	final private OptionPanelController optionPanelController;
+	private final OptionPanelController optionPanelController;
+	private IMapViewManager mapViewManager;
 
 	public Controller(ResourceController resourceController) {
 		super();
@@ -93,7 +90,7 @@ public class Controller extends AController {
 		getMapViewManager().close(withoutSave);
 	}
 
-	public IExtension getExtension(final Class<? extends IExtension> clazz) {
+	public <T extends IExtension> T getExtension(final Class<T> clazz){
 		return extensionContainer.getExtension(clazz);
 	}
 
@@ -101,11 +98,15 @@ public class Controller extends AController {
 	 * @return
 	 */
 	public MapModel getMap() {
-		return getViewController().getMap();
+		return getMapViewManager().getModel();
 	}
 
 	public IMapViewManager getMapViewManager() {
-		return getViewController().getMapViewManager();
+		return mapViewManager;
+	}
+
+	public void setMapViewManager(IMapViewManager mapViewManager) {
+    	this.mapViewManager = mapViewManager;
 	}
 
 	/** @return the current modeController. */
@@ -122,7 +123,7 @@ public class Controller extends AController {
 	}
 
 	public IMapSelection getSelection() {
-		return getViewController().getSelection();
+		return getMapViewManager().getMapSelection();
 	}
 
 	/**
@@ -185,20 +186,18 @@ public class Controller extends AController {
 		extensionContainer.getExtensions().clear();
 		return true;
 	}
-
-	public static void exec(final String command) throws IOException {
-		exec(command, false);
-	}
 	
-	public static void exec(final String command, boolean waitFor) throws IOException {
-		if (Compat.isWindowsOS()) {
-			LogUtils.info("using jna to execute " + command);
-			windowsNativeExec(command, waitFor);
+	public static void exec(final String string) throws IOException {
+		exec(string, false);
+	}
+
+	public static void exec(final String string, boolean waitFor) throws IOException {
+		IControllerExecuteExtension ext = Controller.getCurrentController().getExtension(IControllerExecuteExtension.class);
+		if(ext == null) {
+			ext = Controller.getCurrentController().getDefaultExecuter();
 		}
-		else {
-			LogUtils.info("execute " + command);
-			Runtime.getRuntime().exec(command);
-		}
+		
+		ext.exec(string, waitFor);
 	}
 	
 	public static void exec(final String[] command) throws IOException {
@@ -206,54 +205,40 @@ public class Controller extends AController {
 	}
 	
 	public static void exec(final String[] command, boolean waitFor) throws IOException {
-		if (Compat.isWindowsOS()) {
-			String commandString = command[0];
-			for (int i=1; i<command.length; i++) {
-				commandString += " " + command[i];
-			}
-			LogUtils.info("using jna to execute: " + commandString);
-			try {
-				windowsNativeExec(commandString, waitFor);
-			} catch (Exception e) {
-				throw new IOException(e.getMessage()+" for command: "+commandString);
-			}
+		IControllerExecuteExtension ext = Controller.getCurrentController().getExtension(IControllerExecuteExtension.class);
+		if(ext == null) {
+			ext = Controller.getCurrentController().getDefaultExecuter();
 		}
-		else {
-			LogUtils.info("execute: " + Arrays.toString(command));
-			Runtime.getRuntime().exec(command);
-		}
+		
+		ext.exec(command, waitFor);
 	}
 	
-	private static void windowsNativeExec(String command, boolean waitFor) throws IllegalStateException {
-		WinBase.PROCESS_INFORMATION.ByReference processInfo = new WinBase.PROCESS_INFORMATION.ByReference();
-		WinBase.STARTUPINFO startupInfo = new WinBase.STARTUPINFO();
+	private IControllerExecuteExtension getDefaultExecuter() {
+		return new IControllerExecuteExtension() {
+			
+			public void exec(String[] command, boolean waitFor) throws IOException {
+				LogUtils.info("execute " + Arrays.toString(command));
+				Process proc = Runtime.getRuntime().exec(command);
+				waiting(waitFor, proc);
+			}
+			
+			public void exec(String string, boolean waitFor) throws IOException {
+				LogUtils.info("execute " + string);
+				Process proc = Runtime.getRuntime().exec(string);
+				waiting(waitFor, proc);
+			}
 
-		try {
-    		if (!Kernel32.INSTANCE.CreateProcess(
-    		    null,           // Application name, not needed if supplied in command line
-    		    command,        // Command line
-    		    null,           // Process security attributes
-    		    null,           // Thread security attributes
-    		    true,           // Inherit handles
-    		    new WinDef.DWORD(0) ,              // Creation flags
-    		    null,           // Environment
-    		    null,           // Directory
-    		    startupInfo,
-    		    processInfo)) {
-    		    throw new IllegalStateException("Error creating process. Last error: " +
-    		        Kernel32.INSTANCE.GetLastError());
-    		}
-    
-    		if (waitFor) {
-    			Kernel32.INSTANCE.WaitForSingleObject(processInfo.hProcess, Kernel32.INFINITE);
-    		}
-		}
-		finally {
-    		// The CreateProcess documentation indicates that it is very important to 
-    		// close the returned handles
-    		Kernel32.INSTANCE.CloseHandle(processInfo.hThread);
-    		Kernel32.INSTANCE.CloseHandle(processInfo.hProcess);
-		}
+			private void waiting(boolean waitFor, Process proc)
+					throws IOExceptionWithCause {
+				if(waitFor) {
+					try {
+						proc.waitFor();
+					} catch (InterruptedException e) {
+						throw new IOExceptionWithCause(e);
+					}
+				}
+			}
+		};
 	}
 
 	private static ThreadLocal<Controller> threadController = new ThreadLocal<Controller>();
@@ -289,6 +274,6 @@ public class Controller extends AController {
 	}
 	
 	public OptionPanelController getOptionPanelController() {
-	    return optionPanelController;
-    }
+		return optionPanelController;
+	}
 }

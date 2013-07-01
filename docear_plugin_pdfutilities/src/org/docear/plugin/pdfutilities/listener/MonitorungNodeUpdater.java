@@ -15,11 +15,10 @@ import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.attribute.Attribute;
 import org.freeplane.features.attribute.AttributeController;
 import org.freeplane.features.attribute.NodeAttributeTableModel;
-import org.freeplane.features.link.mindmapmode.MLinkController;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.mindmapmode.MModeController;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.plugin.workspace.URIUtils;
 
 public class MonitorungNodeUpdater extends AMindmapUpdater implements ISplmmMapsConvertListener {
 	public static final String MON_AUTO = "mon_auto";
@@ -77,7 +76,7 @@ public class MonitorungNodeUpdater extends AMindmapUpdater implements ISplmmMaps
 					if (uri.getScheme().length() == 1) {
 						throw new Exception("absolut windows paths do not work in linux!"); //$NON-NLS-1$
 					}
-					uri = MLinkController.toLinkTypeDependantURI(node.getMap().getFile(), WorkspaceUtils.resolveURI(uri));
+					uri = URIUtils.getRelativeURI(node.getMap().getFile(), URIUtils.getAbsoluteFile(uri));
 					AttributeController.getController(MModeController.getMModeController()).performSetValueAt(attributeTable, uri, i, 1);
 				}
 				catch(Exception e) {					

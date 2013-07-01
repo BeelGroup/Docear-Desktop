@@ -23,7 +23,6 @@ import org.freeplane.core.util.FreeplaneVersion;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.help.AboutAction;
-import org.freeplane.features.mode.Controller;
 
 
 public class DocearAboutAction extends AboutAction {
@@ -85,8 +84,7 @@ public class DocearAboutAction extends AboutAction {
 		addUri(box, resourceController.getProperty("license_url"), TextUtils.getText("license"));
 		addMessage(box, TextUtils.removeTranslateComment(TextUtils.getText("license_text")));
 		
-		JOptionPane.showMessageDialog(Controller.getCurrentController().getViewController().getViewport(), box, TextUtils
-		    .getText("AboutAction.text"), JOptionPane.INFORMATION_MESSAGE);
+		JOptionPane.showMessageDialog(UITools.getFrame(), box, TextUtils.getText("AboutAction.text"), JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	private void addFormattedMessage(Box box, String format, String parameter) {

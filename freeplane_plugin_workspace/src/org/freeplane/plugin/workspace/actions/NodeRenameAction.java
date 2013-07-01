@@ -3,34 +3,32 @@ package org.freeplane.plugin.workspace.actions;
 import java.awt.event.ActionEvent;
 
 import javax.swing.JOptionPane;
+import javax.swing.tree.TreePath;
 
-import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.TextUtils;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
 import org.freeplane.plugin.workspace.components.dialog.NodeRenameDialogPanel;
+import org.freeplane.plugin.workspace.components.menu.CheckEnableOnPopup;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.IMutableLinkNode;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 
-@EnabledAction(checkOnPopup = true)
+@CheckEnableOnPopup
 public class NodeRenameAction extends AWorkspaceAction {
 
-	/**
-	 * 
-	 */
+	public static final String KEY = "workspace.action.node.rename";
 	private static final long serialVersionUID = 1L;
 
 	public NodeRenameAction() {
-		super("workspace.action.node.rename");
+		super(KEY);
 	}
 	
 	/***********************************************************************************
 	 * METHODS
 	 **********************************************************************************/
 	
-	public void setEnabledFor(AWorkspaceTreeNode node) {
-		if(node.isSystem()) {
+	public void setEnabledFor(AWorkspaceTreeNode node, TreePath[] selectedPaths) {
+		if(node.isSystem() || selectedPaths.length > 1) {
 			setEnabled(false);
 		}
 		else{
@@ -62,7 +60,6 @@ public class NodeRenameAction extends AWorkspaceAction {
 		if (newName != null) {
 			if (targetNode instanceof IMutableLinkNode) {
 				if (((IMutableLinkNode) targetNode).changeName(newName, panel.applyChangesForLink())) {
-					WorkspaceUtils.saveCurrentConfiguration();
 					targetNode.refresh();
 				} 
 				else {
@@ -73,8 +70,7 @@ public class NodeRenameAction extends AWorkspaceAction {
 			}
 			else {
 				try {
-					WorkspaceUtils.getModel().changeNodeName(targetNode, newName);
-					WorkspaceUtils.saveCurrentConfiguration();
+					targetNode.getModel().changeNodeName(targetNode, newName);
 					targetNode.refresh();
 				}
 				catch(Exception ex) {

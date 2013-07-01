@@ -11,9 +11,8 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
-import org.docear.lang.Destructable;
+import org.freeplane.lang.Destructable;
 import org.freeplane.n3.nanoxml.XMLElement;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.io.annotation.ExportAsAttribute;
 
@@ -37,6 +36,8 @@ public abstract class AWorkspaceTreeNode implements Cloneable, TreeNode, Destruc
 	private final String type;
 	private boolean system = false;
 	private boolean isTranferable = true;
+
+	private WorkspaceTreeModel treeModel;
 	
 	/***********************************************************************************
 	 * CONSTRUCTORS
@@ -82,7 +83,7 @@ public abstract class AWorkspaceTreeNode implements Cloneable, TreeNode, Destruc
 	
 	public void insertChildNode(AWorkspaceTreeNode node, int atPos) {
 		node.setParent(this);
-		children.add(atPos, node);				
+		children.add(atPos, node);
 	}
 	
 	@ExportAsAttribute(name="system")
@@ -172,8 +173,8 @@ public abstract class AWorkspaceTreeNode implements Cloneable, TreeNode, Destruc
 	}
 	
 	public void refresh() {
-		//override in child class, if needed
-		WorkspaceUtils.getModel().reload(this);
+		//override in child class, if necessary
+		getModel().reload(this);
 	}
 	
 	protected AWorkspaceTreeNode clone(AWorkspaceTreeNode node) {		
@@ -183,7 +184,6 @@ public abstract class AWorkspaceTreeNode implements Cloneable, TreeNode, Destruc
 		node.setParent(getParent());
 		node.setName(getName());
 		for(AWorkspaceTreeNode child : this.children) {
-			//FIXME: the model should handle this 
 			node.addChildNode(child.clone());
 		}		
 		return node;
@@ -202,6 +202,20 @@ public abstract class AWorkspaceTreeNode implements Cloneable, TreeNode, Destruc
 		if (popupMenu != null) {
 			popupMenu.show(component, x, y);
 		}
+	}
+	
+	public AWorkspaceTreeNode getChildById(String id) {
+		if(id == null) {
+			return null;
+		}
+		synchronized (children) {
+			for (AWorkspaceTreeNode child : children) {
+				if(id.equals(child.getId())) {
+					return child;
+				}
+			}
+		}
+		return null;
 	}
 	
 	/***********************************************************************************
@@ -224,12 +238,19 @@ public abstract class AWorkspaceTreeNode implements Cloneable, TreeNode, Destruc
 		return children.indexOf(node);
 	}
 
-	public boolean getAllowsChildren() {
-		return allowsChildren;
-	}
-
 	public boolean isLeaf() {
 		return !allowsChildren  || (children.size() == 0);
+	}
+	
+	public WorkspaceTreeModel getModel() {
+		if(this.treeModel == null && getParent() != null) {
+			return getParent().getModel();
+		}
+		return this.treeModel;
+	}
+	
+	public void setModel(WorkspaceTreeModel model) {
+		this.treeModel = model;
 	}
 	
 	public Enumeration<AWorkspaceTreeNode> children() {
@@ -252,11 +273,7 @@ public abstract class AWorkspaceTreeNode implements Cloneable, TreeNode, Destruc
 	}
 
 	public void disassociateReferences() {
-		WorkspaceUtils.getModel().removeAllElements(this);
+		getModel().removeAllElements(this);
 		this.parent = null;
-	}
-
-	
-
-		
+	}	
 }

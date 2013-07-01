@@ -16,23 +16,21 @@ import java.util.Map;
 
 import javax.swing.JOptionPane;
 
-import org.apache.commons.lang.StringUtils;
+import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.features.AnnotationID;
 import org.docear.plugin.core.util.HtmlUtils;
-import org.docear.plugin.core.util.Tools;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
 import org.docear.plugin.pdfutilities.features.IAnnotation;
 import org.docear.plugin.pdfutilities.features.IAnnotation.AnnotationType;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
 import org.docear.plugin.pdfutilities.map.IAnnotationImporter;
-import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
-import org.freeplane.features.filter.NextPresentationItemAction;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
+import org.freeplane.plugin.workspace.URIUtils;
 
 import com.google.common.base.CharMatcher;
 
@@ -134,8 +132,9 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		} catch(COSLoadException e){
 			LogUtils.info("COSLoadException during update file: "+ uri); //$NON-NLS-1$
 		}
-		AnnotationModel root = new AnnotationModel(new AnnotationID(Tools.getAbsoluteUri(uri), 0), AnnotationType.PDF_FILE);
-		root.setTitle(Tools.getFilefromUri(Tools.getAbsoluteUri(uri)).getName());
+		URI absoluteUri = URIUtils.getAbsoluteURI(uri);
+		AnnotationModel root = new AnnotationModel(new AnnotationID(absoluteUri, 0), AnnotationType.PDF_FILE);
+		root.setTitle(URIUtils.getFile(absoluteUri).getName());
 		root.getChildren().addAll(importedAnnotations);	
 		return root;
 	}
@@ -200,10 +199,12 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 
 	public PDDocument getPDDocument(URI uri) throws IOException,	COSLoadException, COSRuntimeException {
 		MapModel map = Controller.getCurrentController().getMap();
-		if(uri == null || Tools.getFilefromUri(Tools.getAbsoluteUri(uri, map)) == null || !Tools.exists(uri, map) || !new PdfFileFilter().accept(uri)){
+		URI absoluteUri = URIUtils.resolveURI(URIUtils.getAbsoluteURI(map), uri);
+		File file = URIUtils.getFile(absoluteUri);
+		if(uri == null || file == null || !file.exists() || !new PdfFileFilter().accept(uri)){
 			return null;
 		}
-		File file = Tools.getFilefromUri(Tools.getAbsoluteUri(uri, map));
+		
 		
 		FileLocator locator = new FileLocator(file);		
 		PDDocument document = PDDocument.createFromLocator(locator);
@@ -213,8 +214,8 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 	
 	private List<AnnotationModel> importBookmarks(PDOutlineNode parent) throws IOException, COSLoadException, COSRuntimeException{
 		List<AnnotationModel> annotations = new ArrayList<AnnotationModel>();
-		//boolean removeLinebreaksBookmarks = ResourceController.getResourceController().getBooleanProperty(PdfUtilitiesController.REMOVE_LINEBREAKS_BOOKMARKS_KEY);
-		if(!this.importAll && !ResourceController.getResourceController().getBooleanProperty(PdfUtilitiesController.IMPORT_BOOKMARKS_KEY)){
+		//boolean removeLinebreaksBookmarks = ResourceController.getResourceController().getBooleanProperty(PdfUtilitiesController.REMOVE_LINEBREAKS_BOOKMARKS_KEY);		
+		if(!this.importAll && !DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.IMPORT_BOOKMARKS_KEY)){
 			return annotations;
 		}	
 		if(parent == null) return annotations;
@@ -297,8 +298,8 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 			importHighlightedTexts = true;
 		}
 		else{
-			importComments = ResourceController.getResourceController().getBooleanProperty(PdfUtilitiesController.IMPORT_COMMENTS_KEY);
-			importHighlightedTexts = ResourceController.getResourceController().getBooleanProperty(PdfUtilitiesController.IMPORT_HIGHLIGHTED_TEXTS_KEY);
+			importComments = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.IMPORT_COMMENTS_KEY);
+			importHighlightedTexts = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.IMPORT_HIGHLIGHTED_TEXTS_KEY);
 		}
 		
 		String lastString = ""; //$NON-NLS-1$
@@ -430,7 +431,7 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 				Object[] options = { TextUtils.getText("DocearRenameAnnotationListener.1"), TextUtils.getText("DocearRenameAnnotationListener.8"),TextUtils.getText("DocearRenameAnnotationListener.3") }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				int result = this.removeLinebreaksDialogResult;
 				if(result == JOptionPane.OK_OPTION){
-					result = JOptionPane.showOptionDialog(Controller.getCurrentController().getViewController().getSelectedComponent(), TextUtils.getText("DocearRenameAnnotationListener.6")+document.getName()+TextUtils.getText("DocearRenameAnnotationListener.7"), TextUtils.getText("DocearRenameAnnotationListener.5"), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]); //$NON-NLS-1$ //$NON-NLS-2$
+					result = JOptionPane.showOptionDialog(Controller.getCurrentController().getMapViewManager().getSelectedComponent(), TextUtils.getText("DocearRenameAnnotationListener.6")+document.getName()+TextUtils.getText("DocearRenameAnnotationListener.7"), TextUtils.getText("DocearRenameAnnotationListener.5"), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]); //$NON-NLS-1$ //$NON-NLS-2$
 				}				
 				if( result == JOptionPane.OK_OPTION){
 					if(annotationObject != null && annotationObject instanceof PDOutlineItem){
@@ -475,9 +476,9 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 	}
 	
 	public String removeLinebreaks(String text) {
-		boolean keepDoubleLinebreaks = ResourceController.getResourceController().getBooleanProperty(PdfUtilitiesController.KEEP_DOUBLE_LINEBREAKS_KEY);
-		boolean addSpaces = ResourceController.getResourceController().getBooleanProperty(PdfUtilitiesController.ADD_SPACES_KEY);
-		boolean removeDashes = ResourceController.getResourceController().getBooleanProperty(PdfUtilitiesController.REMOVE_DASHES_KEY);
+		boolean keepDoubleLinebreaks = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.KEEP_DOUBLE_LINEBREAKS_KEY);
+		boolean addSpaces = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.ADD_SPACES_KEY);
+		boolean removeDashes = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.REMOVE_DASHES_KEY);
 		
 		String lines[] = text.split("\\r?\\n");
 		if(lines.length < 2) return text;

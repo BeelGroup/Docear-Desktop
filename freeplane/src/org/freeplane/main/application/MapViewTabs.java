@@ -23,6 +23,8 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Insets;
 import java.awt.dnd.DropTarget;
+import java.awt.event.ContainerEvent;
+import java.awt.event.ContainerListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseListener;
@@ -35,6 +37,7 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -45,6 +48,7 @@ import org.freeplane.features.mode.Controller;
 import org.freeplane.features.ui.IMapViewChangeListener;
 import org.freeplane.features.ui.ViewController;
 import org.freeplane.features.url.mindmapmode.FileOpener;
+import org.freeplane.view.swing.map.MapView;
 import org.freeplane.view.swing.ui.DefaultMapMouseListener;
 
 class MapViewTabs implements IMapViewChangeListener {
@@ -58,27 +62,64 @@ class MapViewTabs implements IMapViewChangeListener {
 	public MapViewTabs( final ViewController fm, final JComponent contentComponent) {
 //		this.controller = controller;
 		mContentComponent = contentComponent;
-		InputMap map;
-		map = (InputMap) UIManager.get("TabbedPane.ancestorInputMap");
-		final KeyStroke keyStrokeCtrlUp = KeyStroke.getKeyStroke(KeyEvent.VK_UP, InputEvent.CTRL_DOWN_MASK);
-		map.remove(keyStrokeCtrlUp);
 		mTabbedPane = new JTabbedPane();
+		removeTabbedPaneAccelerators();
+
 		mTabbedPane.setFocusable(false);
 		mTabbedPane.setTabPlacement(JTabbedPane.BOTTOM);
 		mTabbedPaneMapViews = new Vector<Component>();
 		mTabbedPane.addChangeListener(new ChangeListener() {
 			public synchronized void stateChanged(final ChangeEvent pE) {
-				tabSelectionChanged();
+				if("true".equals(mTabbedPane.getClientProperty("ChangedEventConsumed"))) {
+					mTabbedPane.putClientProperty("ChangedEventConsumed", null);
+				}
+				else {
+					tabSelectionChanged();
+				}
 			}
 		});
 		final FileOpener fileOpener = new FileOpener();
 		new DropTarget(mTabbedPane, fileOpener);
 		mTabbedPane.addMouseListener(new DefaultMapMouseListener());
 
+		//DOCEAR - MapViewTabs: keep track on not MapView tab additions
+		mTabbedPane.addContainerListener(new ContainerListener() {
+			public void componentRemoved(ContainerEvent event) {
+				if(!(event.getChild() instanceof MapView)) {
+					mTabbedPaneMapViews.remove(event.getChild());
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							setTabsVisible();
+						}
+					});
+				}
+			}
+			
+			public void componentAdded(final ContainerEvent event) {
+				for (int i = 0; i < mTabbedPaneMapViews.size(); ++i) {
+					if (mTabbedPaneMapViews.get(i) == event.getChild()) {
+						return;
+					}
+				}
+				if(!(event.getChild() instanceof MapView)) {
+					mTabbedPaneMapViews.add(event.getChild());
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							setTabsVisible();
+						}
+					});
+				}
+			}
+		});
 		final Controller controller = Controller.getCurrentController();
 		controller.getMapViewManager().addMapViewChangeListener(this);
 		fm.getContentPane().add(mTabbedPane, BorderLayout.CENTER);
 	}
+
+	void removeTabbedPaneAccelerators() {
+	    final InputMap map = new InputMap();
+		mTabbedPane.setInputMap(JTabbedPane.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, map);
+    }
 
 	public void afterViewChange(final Component pOldMap, final Component pNewMap) {
 		final int selectedIndex = mTabbedPane.getSelectedIndex();
@@ -160,7 +201,8 @@ class MapViewTabs implements IMapViewChangeListener {
 		}
 		final Component mapView = mTabbedPaneMapViews.get(selectedIndex);
 		Controller controller = Controller.getCurrentController();
-		if (mapView != controller.getViewController().getMapView()) {
+
+		if (mapView != controller.getMapViewManager().getMapViewComponent()) {
 			controller.getMapViewManager().changeToMapView(mapView.getName());
 		}
 		if (mContentComponent != null) {
@@ -199,6 +241,7 @@ class MapViewTabs implements IMapViewChangeListener {
 				}
 			});
 		}
+		removeTabbedPaneAccelerators();
 		mTabbedPane.revalidate();
 	}
 

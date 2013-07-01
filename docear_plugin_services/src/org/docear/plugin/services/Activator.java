@@ -7,38 +7,33 @@ import java.util.Collection;
 import java.util.List;
 
 import org.docear.plugin.core.DocearService;
-import org.docear.plugin.services.communications.CommunicationsController;
-import org.docear.plugin.services.communications.DocearAuthenticator;
-import org.docear.plugin.services.communications.components.dialog.ProxyAuthenticationDialog;
-import org.docear.plugin.services.recommendations.mode.DocearRecommendationsModeController;
+import org.docear.plugin.core.IDocearControllerExtension;
+import org.docear.plugin.services.features.io.DocearProxyAuthenticator;
 import org.freeplane.core.resources.IFreeplanePropertyListener;
 import org.freeplane.core.resources.OptionPanelController;
-import org.freeplane.core.resources.ResourceBundles;
 import org.freeplane.core.resources.OptionPanelController.PropertyLoadListener;
+import org.freeplane.core.resources.ResourceBundles;
 import org.freeplane.core.resources.components.IPropertyControl;
+import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
-import org.freeplane.main.osgi.IControllerExtensionProvider;
 import org.osgi.framework.BundleContext;
 
 public class Activator extends DocearService {
 	private static final String DEFAULT_LANGUAGE = "en";
 	
 	public void stop(BundleContext context) throws Exception {
-		System.out.println("Goodbye World!!");
 	}
 
 	public void startService(BundleContext context, ModeController modeController) {
-		CommunicationsController.initialize(modeController);
 		ServiceController.initialize(modeController);
 	}
 
-	protected Collection<IControllerExtensionProvider> getControllerExtensions() {
-		List<IControllerExtensionProvider> controllerExtensions = new ArrayList<IControllerExtensionProvider>();
-		controllerExtensions.add(new IControllerExtensionProvider() {
+	protected Collection<IDocearControllerExtension> getControllerExtensions() {
+		List<IDocearControllerExtension> controllerExtensions = new ArrayList<IDocearControllerExtension>();
+		controllerExtensions.add(new IDocearControllerExtension() {
 			
-			public void installExtension(Controller controller) {
-				DocearRecommendationsModeController.createController(controller);
+			public void installExtension(BundleContext context, Controller controller) {
 				setLanguage();
 				
 				final OptionPanelController optionController = controller.getOptionPanelController();
@@ -59,11 +54,11 @@ public class Activator extends DocearService {
 				});
 				
 				//proxy server handling
-				Authenticator.setDefault(new DocearAuthenticator());
-				if(Boolean.parseBoolean(controller.getResourceController().getProperty(CommunicationsController.DOCEAR_USE_PROXY, "false"))) {
-					ProxyAuthenticationDialog dialog =  new ProxyAuthenticationDialog();
-					dialog.showDialog();
+				Authenticator.setDefault(new DocearProxyAuthenticator());
+				if(DocearProxyAuthenticator.useProxyServer()) {
+					DocearProxyAuthenticator.requestAuthenticationData();
 				}
+				LogUtils.info("Docear Services controller extension initiated.");
 			}
 		});
 		return controllerExtensions;

@@ -2,13 +2,10 @@ package org.docear.plugin.core.listeners;
 
 import java.io.File;
 
-import javax.swing.JTree;
-import javax.swing.tree.TreePath;
-
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.logger.DocearLogEvent;
+import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
 import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.io.IFileSystemRepresentation;
@@ -25,7 +22,7 @@ public class WorkspaceOpenDocumentListener implements IWorkspaceNodeActionListen
 				f = ((IFileSystemRepresentation) targetNode).getFile();
 			} 
 			else if(targetNode instanceof ALinkNode) {				
-				f = WorkspaceUtils.resolveURI(((ALinkNode) targetNode).getLinkPath());
+				f = URIUtils.getAbsoluteFile(((ALinkNode) targetNode).getLinkURI());
 			}
 			if (f != null && !f.getName().toLowerCase().endsWith(".mm")) {
 				DocearController.getController().getDocearEventLogger().appendToLog(this, DocearLogEvent.FILE_OPENED, f);
@@ -37,12 +34,7 @@ public class WorkspaceOpenDocumentListener implements IWorkspaceNodeActionListen
 	protected AWorkspaceTreeNode getNodeFromActionEvent(WorkspaceActionEvent e) {
 		int x = e.getX();
 		int y = e.getY();
-		JTree tree = WorkspaceController.getController().getWorkspaceViewTree();
-		TreePath path = tree.getPathForLocation(x, y);
-		if(path == null) {
-			return null;
-		}
-		return (AWorkspaceTreeNode) path.getLastPathComponent();
+		return WorkspaceController.getCurrentModeExtension().getView().getNodeForLocation(x, y);		
 	}
 
 }

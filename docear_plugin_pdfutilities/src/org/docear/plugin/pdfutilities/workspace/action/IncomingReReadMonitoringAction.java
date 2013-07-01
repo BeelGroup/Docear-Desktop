@@ -16,7 +16,7 @@ import org.freeplane.features.map.MapModel;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.mode.mindmapmode.MModeController;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.actions.AWorkspaceAction;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
@@ -48,8 +48,8 @@ public class IncomingReReadMonitoringAction extends AWorkspaceAction {
     			return;
     		}
     		
-    		URI uri = ((LinkTypeIncomingNode) node).getLinkPath();
-    		File f = WorkspaceUtils.resolveURI(uri);
+    		URI uri = ((LinkTypeIncomingNode) node).getLinkURI();
+    		File f = URIUtils.getAbsoluteFile(uri);
     		if (f == null) {
     			return;
     		}

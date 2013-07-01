@@ -405,7 +405,7 @@ public class OptionPanelBuilder {
 		@Override
 		public IPropertyControlCreator getCreator(final String name,
 				final XMLElement data) {
-			return createStringOptionCreator(name);
+			return createStringOptionCreator(name, data);
 		}
 	}
 
@@ -513,8 +513,11 @@ public class OptionPanelBuilder {
 
 	public void addStringProperty(final String path, final String name,
 			final int position) {
-		tree.addElement(path, createStringOptionCreator(name), path + "/"
-				+ name, position);
+		addStringProperty(path, name, position, true);
+	}
+	
+	public void addStringProperty(final String path, final String name, final int position, final boolean enabled) {
+		tree.addElement(path, createStringOptionCreator(name, enabled), path + "/"+ name, position);
 	}
 
 	public void addTab(final String name) {
@@ -635,10 +638,23 @@ public class OptionPanelBuilder {
 		};
 	}
 
-	private IPropertyControlCreator createStringOptionCreator(final String name) {
+	private IPropertyControlCreator createStringOptionCreator(final String name, XMLElement data) {
+		boolean enabled = true;
+		try {
+			enabled = Boolean.parseBoolean(data.getAttribute("enabled", "true"));
+		}
+		catch (Exception e) {
+		}
+		return createStringOptionCreator(name, enabled);
+	}
+	
+	private IPropertyControlCreator createStringOptionCreator(final String name, final boolean enabled) {
+		
 		return new IPropertyControlCreator() {
 			public IPropertyControl createControl() {
-				return new StringProperty(name);
+				StringProperty prop = new StringProperty(name);
+				prop.setEnabled(enabled);
+				return prop;
 			}
 		};
 	}

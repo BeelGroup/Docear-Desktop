@@ -24,7 +24,7 @@ import org.freeplane.features.map.MapChangeEvent;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeChangeEvent;
 import org.freeplane.features.map.NodeModel;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.features.url.UrlManager;
 
 public class MapChangeListenerAdapter extends AMapChangeListenerAdapter {
 
@@ -73,7 +73,7 @@ public class MapChangeListenerAdapter extends AMapChangeListenerAdapter {
 				Set<String> ignores = null;
 				String nodeFileName = null;
 				if (session != null) {
-					File nodeFile = WorkspaceUtils.resolveURI(newUri, event.getNode().getMap());
+					File nodeFile = UrlManager.getController().getAbsoluteFile(event.getNode().getMap(), newUri);
 					if (nodeFile != null) {
 						nodeFileName = nodeFile.getName();
 						ignores = (Set<String>) session.getSessionObject(MapModificationSession.FILE_IGNORE_LIST);

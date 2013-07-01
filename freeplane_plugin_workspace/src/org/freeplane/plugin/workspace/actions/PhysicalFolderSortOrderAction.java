@@ -6,8 +6,10 @@ package org.freeplane.plugin.workspace.actions;
 
 import java.awt.event.ActionEvent;
 
-import org.freeplane.core.ui.EnabledAction;
+import javax.swing.tree.TreePath;
+
 import org.freeplane.core.ui.SelectableAction;
+import org.freeplane.plugin.workspace.components.menu.CheckEnableOnPopup;
 import org.freeplane.plugin.workspace.io.IFileSystemRepresentation;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 
@@ -15,23 +17,24 @@ import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 /**
  * PhysicalFolderSortOrderAction
  */
-@EnabledAction(checkOnPopup = true)
+
+@CheckEnableOnPopup
 @SelectableAction(checkOnPopup = true)
 public class PhysicalFolderSortOrderAction extends AWorkspaceAction {	
-	
+	public static final String KEY = "workspace.action.node.physical.sort";
 	private static final long serialVersionUID = 1L;
 	
 	/***********************************************************************************
 	 * CONSTRUCTORS
 	 **********************************************************************************/
 	public PhysicalFolderSortOrderAction() {
-		super("workspace.action.node.physical.sort");
+		super(KEY);
 	}
 	/***********************************************************************************
 	 * METHODS
 	 **********************************************************************************/
 
-	public void setSelectedFor(AWorkspaceTreeNode node) {
+	public void setSelectedFor(AWorkspaceTreeNode node, TreePath[] selectedPaths) {
 		if(node instanceof IFileSystemRepresentation) {
 			if(((IFileSystemRepresentation) node).orderDescending()) {
 				setSelected(true);
@@ -41,7 +44,7 @@ public class PhysicalFolderSortOrderAction extends AWorkspaceAction {
 		setSelected(false);
 	}
 	
-	public void setEnabledFor(AWorkspaceTreeNode node) {
+	public void setEnabledFor(AWorkspaceTreeNode node, TreePath[] selectedPaths) {
 		if(!(node instanceof IFileSystemRepresentation)) {
 			setEnabled(false);
 		}

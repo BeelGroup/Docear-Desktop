@@ -18,18 +18,19 @@ import javax.swing.SwingUtilities;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.docear.plugin.core.CoreConfiguration;
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.event.DocearEvent;
 import org.docear.plugin.core.event.DocearEventType;
 import org.docear.plugin.core.event.IDocearEventListener;
 import org.docear.plugin.core.util.FileUtilities;
-import org.docear.plugin.services.communications.CommunicationsController;
+import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
+import org.docear.plugin.services.ServiceController;
+import org.docear.plugin.services.features.recommendations.RecommendationsController;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.plugin.workspace.URIUtils;
 
 public class AddRecommendedDocumentAction extends AFreeplaneAction implements IDocearEventListener {
 
@@ -68,7 +69,7 @@ public class AddRecommendedDocumentAction extends AFreeplaneAction implements ID
 				if (fileName == null || fileName.isEmpty()) {
 					fileName = (String) event.getEventObject();
 				}
-				File file = getDestinationFile(url.toURI(), fileName.trim() + "." + ext);
+				File file = getDestinationFile(event.getProject(), url.toURI(), fileName.trim() + "." + ext);
 				if (file == null || !file.exists()) {
 					return;
 				}
@@ -84,8 +85,9 @@ public class AddRecommendedDocumentAction extends AFreeplaneAction implements ID
 
 	}
 
-	public File getDestinationFile(final URI uri, String defaultFileName) throws URISyntaxException, MalformedURLException {
-		File defaultFile = new File(WorkspaceUtils.resolveURI(CoreConfiguration.repositoryPathObserver.getUri()), defaultFileName);
+	public File getDestinationFile(DocearWorkspaceProject project, final URI uri, String defaultFileName) throws URISyntaxException, MalformedURLException {
+		//WORKSPACE - DOCEAR todo: find one repository directory or handle multiple repository directories
+		File defaultFile = new File(URIUtils.getFile(ServiceController.getFeature(RecommendationsController.class).getDownloadsFolder()), defaultFileName);
 
 		final JFileChooser fc = new JFileChooser();
 		fc.approveSelection();
@@ -115,8 +117,7 @@ public class AddRecommendedDocumentAction extends AFreeplaneAction implements ID
 
 			public void run() {
 				try {
-					CommunicationsController commController = CommunicationsController.getController();
-					InputStream inStream = commController.getDownloadStream(uri);					
+					InputStream inStream = ServiceController.getConnectionController().getDownloadStream(uri);					
 					FileUtils.copyInputStreamToFile(inStream, partFile);
 										
 					if (destinationFile.exists()) {
@@ -133,7 +134,7 @@ public class AddRecommendedDocumentAction extends AFreeplaneAction implements ID
 						@Override
 						public void run() {
 							addFileToLibrary(destinationFile);
-							CoreConfiguration.repositoryPathObserver.setUri(CoreConfiguration.repositoryPathObserver.getUri());
+							ServiceController.getFeature(RecommendationsController.class).refreshDownloadsFolder();
 						}
 					});
 				}

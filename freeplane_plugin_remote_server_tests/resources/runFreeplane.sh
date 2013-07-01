@@ -1,0 +1,1 @@
+../../freeplane_framework/build/freeplane.sh &

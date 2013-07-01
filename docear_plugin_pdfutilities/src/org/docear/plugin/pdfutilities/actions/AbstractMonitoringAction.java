@@ -1,6 +1,7 @@
 package org.docear.plugin.pdfutilities.actions;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
@@ -25,16 +26,17 @@ import org.docear.plugin.core.features.AnnotationID;
 import org.docear.plugin.core.features.DocearMapModelController;
 import org.docear.plugin.core.logger.DocearLogEvent;
 import org.docear.plugin.core.ui.SwingWorkerDialog;
+import org.docear.plugin.core.util.DirectoryFileFilter;
 import org.docear.plugin.core.util.HtmlUtils;
 import org.docear.plugin.core.util.NodeUtilities;
-import org.docear.plugin.core.util.Tools;
+import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
 import org.docear.plugin.pdfutilities.features.AnnotationNodeModel;
 import org.docear.plugin.pdfutilities.features.DocearNodeMonitoringExtension;
+import org.docear.plugin.pdfutilities.features.DocearNodeMonitoringExtension.DocearExtensionKey;
 import org.docear.plugin.pdfutilities.features.DocearNodeMonitoringExtensionController;
 import org.docear.plugin.pdfutilities.features.IAnnotation;
-import org.docear.plugin.pdfutilities.features.DocearNodeMonitoringExtension.DocearExtensionKey;
 import org.docear.plugin.pdfutilities.features.IAnnotation.AnnotationType;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
 import org.docear.plugin.pdfutilities.map.MapConverter;
@@ -50,14 +52,15 @@ import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
-import org.freeplane.features.link.NodeLinks;
+import org.freeplane.features.link.LinkController;
 import org.freeplane.features.map.INodeView;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.map.mindmapmode.MMapController;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.url.mindmapmode.SaveAll;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.plugin.workspace.URIUtils;
+import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.view.swing.map.MapView;
 import org.freeplane.view.swing.map.NodeView;
 import org.jdesktop.swingworker.SwingWorker;
@@ -158,10 +161,15 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 				// Controller.getCurrentController().getViewController().getMapView().setVisible(false);
 				for (final NodeModel target : targets) {
 					currentTarget = target;
-					URI uri = MonitoringUtils.getPdfDirFromMonitoringNode(target);
+					File file = MonitoringUtils.getPdfDirFromMonitoringNode(target);
+					if(file == null) {
+						fireStatusUpdate(SwingWorkerDialog.DETAILS_LOG_TEXT, null, "corresponding project is not loaded");
+						continue;
+					}
+					URI uri = file.toURI();
 					if (uri != null) {
 						DocearController.getController().getDocearEventLogger()
-								.appendToLog(this, DocearLogEvent.MONITORING_FOLDER_READ, WorkspaceUtils.resolveURI(uri));
+								.appendToLog(this, DocearLogEvent.MONITORING_FOLDER_READ, URIUtils.getAbsoluteURI(uri));
 					}
 
 					if (canceled()) return conflicts;
@@ -207,7 +215,7 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 						continue;
 					}
 
-					DocearEvent event = new DocearEvent(this, DocearEventType.MINDMAP_ADD_PDF_TO_NODE, true);
+					DocearEvent event = new DocearEvent(this, (DocearWorkspaceProject) WorkspaceController.getProject(target.getMap()), DocearEventType.MINDMAP_ADD_PDF_TO_NODE, true);
 					DocearController.getController().dispatchDocearEvent(event);
 					if (newAnnotations.size() > 100) {
 						fireStatusUpdate(SwingWorkerDialog.SET_PROGRESS_BAR_INDETERMINATE, null, null);
@@ -240,15 +248,15 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 						if (annotation.getAnnotationType().equals(AnnotationType.FILE)) continue;
 						if (orphanedNodes.contains(node)) continue;
 						try {
-							File file = WorkspaceUtils.resolveURI(NodeLinks.getValidLink(node), node.getMap());
+							File file = URIUtils.getAbsoluteFile(URIUtils.getAbsoluteURI(node));
 							if (file != null && !file.exists()) {
 								orphanedNodes.add(node);
 								continue;
 							}
 							else if (file != null) {
-								File monitoringDirectory = WorkspaceUtils.resolveURI(MonitoringUtils.getPdfDirFromMonitoringNode(target), target.getMap());
+								File monitoringDirectory = MonitoringUtils.getPdfDirFromMonitoringNode(target);
 								if (file.getPath().startsWith(monitoringDirectory.getPath())) {
-									AnnotationModel annoation = new PdfAnnotationImporter().searchAnnotation(Tools.getAbsoluteUri(node), node);
+									AnnotationModel annoation = new PdfAnnotationImporter().searchAnnotation(URIUtils.getAbsoluteURI(node), node);
 									if (annoation == null) {
 										orphanedNodes.add(node);
 									}
@@ -257,7 +265,7 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 
 						}
 						catch (Exception e) {
-							LogUtils.info("Exception during import file: " + Tools.getAbsoluteUri(node)); //$NON-NLS-1$
+							LogUtils.info("Exception during import file: " + URIUtils.getAbsoluteURI(node)); //$NON-NLS-1$
 						}
 					}
 				}
@@ -296,7 +304,7 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 					}
 					else {
 						if (currentTarget != null) {
-							DocearController.getController().dispatchDocearEvent(new DocearEvent(this, DocearEventType.UPDATE_MAP, currentTarget.getMap()));
+							DocearController.getController().dispatchDocearEvent(new DocearEvent(this, (DocearWorkspaceProject) WorkspaceController.getProject(currentTarget.getMap()), DocearEventType.UPDATE_MAP, currentTarget.getMap()));
 						}
 						this.firePropertyChange(SwingWorkerDialog.IS_DONE, null, TextUtils.getText("AbstractMonitoringAction.16")); //$NON-NLS-1$					
 					}
@@ -439,14 +447,30 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 			 * equalChild; } return null; }
 			 */
 
+			private URI getAbsoluteURIFromNode(NodeModel node, MapModel map) {
+				try {
+					return URIUtils.resolveURI(map.getURL().toURI(), NodeUtilities.getLink(node));
+				} catch (Exception e) {
+					LogUtils.info("Exception in "+AbstractMonitoringAction.class +".getAbsoluteURIFromNode(NodeModel,MapModel): "+e.getMessage());
+				}
+				return null;
+			}
+			
 			private boolean isEqualNode(NodeModel node1, NodeModel node2) {
 				if (!node1.getText().equals(node2.getText())) {
 					return false;
 				}
-				if (Tools.getAbsoluteUri(node1, node1.getMap()) != null && Tools.getAbsoluteUri(node2, node2.getMap()) == null) {
+				URI uri1 = getAbsoluteURIFromNode(node1, node1.getMap());
+				URI uri2 = getAbsoluteURIFromNode(node2, node2.getMap());
+				if (uri1 != null && uri2 != null) {
+					if (!uri1.equals(uri2)) {
+						return false;
+					}
+				}
+				if (uri1 != null && uri2 == null) {
 					return false;
 				}
-				if (Tools.getAbsoluteUri(node1, node1.getMap()) == null && Tools.getAbsoluteUri(node2, node2.getMap()) != null) {
+				if (uri1 == null && uri2 != null) {
 					return false;
 				}
 				if (node1.containsExtension(DocearNodeMonitoringExtension.class) && !node2.containsExtension(DocearNodeMonitoringExtension.class)) {
@@ -490,11 +514,6 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 						return false;
 					}
 				}
-				if (Tools.getAbsoluteUri(node1, node1.getMap()) != null && Tools.getAbsoluteUri(node2, node2.getMap()) != null) {
-					if (!Tools.getAbsoluteUri(node1, node1.getMap()).equals(Tools.getAbsoluteUri(node2, node2.getMap()))) {
-						return false;
-					}
-				}
 				return true;
 			}
 
@@ -516,16 +535,16 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 					tempAnnotation = tempAnnotation.getParent();
 				} while (tempAnnotation != null);
 				if (!isFlattenSubfolders(target)) {
-					File pdfDirFile = WorkspaceUtils.resolveURI(MonitoringUtils.getPdfDirFromMonitoringNode(target));
-					File annoFile = WorkspaceUtils.resolveURI(annotation.getUri());
+					File pdfDirFile = MonitoringUtils.getPdfDirFromMonitoringNode(target);
+					File annoFile = URIUtils.getAbsoluteFile(annotation.getUri());
 					if (annoFile != null) {
 						File parent = annoFile.getParentFile();
-						while (parent != null && !parent.equals(pdfDirFile)) {
+						while (parent != null && !MonitoringUtils.isParent(pdfDirFile, parent)/*parent.equals(pdfDirFile)*/) {
 							if (canceled()) return result;
 							NodeModel node = ((MMapController) Controller.getCurrentModeController().getMapController()).newNode(parent.getName(),
 									target.getMap());
 							DocearNodeMonitoringExtensionController.setEntry(node, DocearExtensionKey.MONITOR_PATH, null);
-							NodeUtilities.setLinkFrom(WorkspaceUtils.getURI(parent), node);
+							NodeUtilities.setLinkFrom(LinkController.normalizeURI(parent.toURI()), node);
 							result.push(node);
 							parent = parent.getParentFile();
 						}
@@ -588,7 +607,8 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 					if (canceled()) return false;
 					try {
 						fireProgressUpdate(100 * monitorFiles.indexOf(uri) / monitorFiles.size());
-						fireStatusUpdate(SwingWorkerDialog.NEW_FILE, null, Tools.getFilefromUri(uri).getName());
+						File file = URIUtils.getAbsoluteFile(uri);
+						fireStatusUpdate(SwingWorkerDialog.NEW_FILE, null, file.getName());
 						if (new PdfFileFilter().accept(uri)) {
 							AnnotationModel pdf = new PdfAnnotationImporter().importPdf(uri);
 							addAnnotationsToImportedFiles(pdf, target);
@@ -596,7 +616,7 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 						else {
 							AnnotationID id = new AnnotationID(uri, 0);
 							AnnotationModel annotation = new AnnotationModel(id, AnnotationType.FILE);
-							annotation.setTitle(Tools.getFilefromUri(uri).getName());
+							annotation.setTitle(file.getName());
 							annotation.setUri(uri);
 							if (!importedFiles.containsKey(id)) {
 								importedFiles.put(id, annotation);
@@ -673,24 +693,25 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 
 				fireStatusUpdate(SwingWorkerDialog.PROGRESS_BAR_TEXT, null, TextUtils.getText("AbstractMonitoringAction.28")); //$NON-NLS-1$
 				if (canceled()) return false;
-				URI monitoringDirectory = Tools.getAbsoluteUri(MonitoringUtils.getPdfDirFromMonitoringNode(target), target.getMap());
-				if (monitoringDirectory == null || Tools.getFilefromUri(monitoringDirectory) == null || !Tools.getFilefromUri(monitoringDirectory).exists()) {
+				File monitoringDirectory = MonitoringUtils.getPdfDirFromMonitoringNode(target);
+				if (monitoringDirectory == null) {
 					UITools.informationMessage(TextUtils.getText("AbstractMonitoringAction.29")); //$NON-NLS-1$
 					return false;
 				}
-				CustomFileListFilter monitorFileFilter = new CustomFileListFilter(ResourceController.getResourceController().getProperty(
+				CustomFileListFilter monitorFileFilter = new CustomFileListFilter(DocearController.getPropertiesController().getProperty(
 						TextUtils.getText("AbstractMonitoringAction.30"))); //$NON-NLS-1$
-				monitorFiles = Tools.getFilteredFileList(monitoringDirectory, monitorFileFilter, isMonitorSubDirectories(target));
+				monitorFiles = getFilteredFileList(monitoringDirectory, monitorFileFilter, isMonitorSubDirectories(target));
 
 				fireStatusUpdate(SwingWorkerDialog.PROGRESS_BAR_TEXT, null, TextUtils.getText("AbstractMonitoringAction.31")); //$NON-NLS-1$
 				if (canceled()) return false;
 				List<URI> mindmapDirectories = MonitoringUtils.getMindmapDirFromMonitoringNode(target);
 				Collection<URI> mindmapFiles = new ArrayList<URI>();
 				for (URI uri : mindmapDirectories) {
-					uri = Tools.getAbsoluteUri(uri, target.getMap());
-					if (Tools.getFilefromUri(uri) == null || !Tools.getFilefromUri(uri).exists()) continue;
-					if (Tools.getFilefromUri(uri).isDirectory()) {
-						mindmapFiles.addAll(Tools.getFilteredFileList(uri, new CustomFileFilter(".*[.][mM][mM]"), isMonitorSubDirectories(target))); //$NON-NLS-1$
+					uri = URIUtils.resolveURI(URIUtils.getAbsoluteURI(target.getMap()), uri);
+					File dirFile = URIUtils.getFile(uri);
+					if (dirFile == null || !dirFile.exists()) continue;
+					if (dirFile.isDirectory()) {
+						mindmapFiles.addAll(getFilteredFileList(dirFile, new CustomFileFilter(".*[.][mM][mM]"), isMonitorSubDirectories(target))); //$NON-NLS-1$
 					}
 					else {
 						mindmapFiles.add(uri);
@@ -756,7 +777,7 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 				case 1:
 					return true;
 				case 2:
-					return ResourceController.getResourceController().getBooleanProperty("docear_subdir_monitoring"); //$NON-NLS-1$
+					return DocearController.getPropertiesController().getBooleanProperty("docear_subdir_monitoring"); //$NON-NLS-1$
 				}
 			}
 
@@ -806,7 +827,32 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 				});
 			}
 
+			private List<URI> getFilteredFileList(File monitoringDir, FileFilter fileFilter, boolean readSubDirectories) {
+				List<URI> result = new ArrayList<URI>();
+				Collection<File> tempResult = new ArrayList<File>();
+				if(monitoringDir == null || !monitoringDir.isDirectory()) return result;
+				
+				File[] monitorFiles = monitoringDir.listFiles(fileFilter);
+				if(monitorFiles != null && monitorFiles.length > 0){
+					tempResult.addAll(Arrays.asList(monitorFiles));
+				}	
+				for(File file : tempResult){
+					result.add(file.toURI());
+				}
+				if(readSubDirectories){
+					File[] subDirs = monitoringDir.listFiles(new DirectoryFileFilter());
+					if(subDirs != null && subDirs.length > 0){
+						for(File subDir : subDirs){
+							result.addAll(getFilteredFileList(subDir, fileFilter, readSubDirectories));
+						}
+					}			
+				}		
+				return result;
+			}
+
 		};
 
 	}
+	
+	
 }

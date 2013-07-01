@@ -15,13 +15,16 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.event.DocearEvent;
 import org.docear.plugin.core.event.DocearEventType;
+import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.mapio.MapIO;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.mindmapmode.MModeController;
-import org.freeplane.plugin.workspace.WorkspaceUtils;
+import org.freeplane.plugin.workspace.URIUtils;
+import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.actions.WorkspaceNewMapAction;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
 import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
@@ -38,6 +41,8 @@ public class LinkTypeIncomingNode extends ALinkNode implements IWorkspaceNodeAct
 	private static final Icon DEFAULT_ICON = new ImageIcon(ResourceController.class.getResource("/images/docear16.png"));
 
 	private static final long serialVersionUID = 1L;
+
+	public static final String TYPE = "incoming";
 	
 	private URI linkPath;
 	private WorkspacePopupMenu popupMenu = null;
@@ -47,6 +52,10 @@ public class LinkTypeIncomingNode extends ALinkNode implements IWorkspaceNodeAct
 	 * CONSTRUCTORS
 	 **********************************************************************************/
 
+	public LinkTypeIncomingNode() {
+		this(TYPE);
+	}
+	
 	public LinkTypeIncomingNode(String type) {
 		super(type);
 	}
@@ -57,16 +66,12 @@ public class LinkTypeIncomingNode extends ALinkNode implements IWorkspaceNodeAct
 	 **********************************************************************************/
 	
 	@ExportAsAttribute(name="path")
-	public URI getLinkPath() {
+	public URI getLinkURI() {
 		return linkPath;
 	}
 	
 	public void setLinkPath(URI linkPath) {
 		this.linkPath = linkPath;
-		if(this.linkPath != null) {
-			DocearEvent event = new DocearEvent(this, DocearEventType.LIBRARY_NEW_MINDMAP_INDEXING_REQUEST, getLinkPath());
-			DocearController.getController().dispatchDocearEvent(event);
-		}
 	}
 	
 	public boolean setIcons(DefaultTreeCellRenderer renderer) {
@@ -96,7 +101,7 @@ public class LinkTypeIncomingNode extends ALinkNode implements IWorkspaceNodeAct
 	}
 	
 	protected AWorkspaceTreeNode clone(LinkTypeIncomingNode node) {
-		node.setLinkPath(getLinkPath());
+		node.setLinkPath(getLinkURI());
 		return super.clone(node);
 	}
 	
@@ -107,13 +112,20 @@ public class LinkTypeIncomingNode extends ALinkNode implements IWorkspaceNodeAct
 	public void handleAction(WorkspaceActionEvent event) {
 		if (event.getType() == WorkspaceActionEvent.MOUSE_LEFT_DBLCLICK) {
 			try {				
-				File f = WorkspaceUtils.resolveURI(getLinkPath());
+				File f = URIUtils.getAbsoluteFile(getLinkURI());
 				if(f == null) {
 					return;
 				}
 				if (!f.exists()) {
-					if(!WorkspaceUtils.createNewMindmap(f, getName())) {
-						LogUtils.warn("could not create " + getLinkPath());
+					MapModel map = WorkspaceNewMapAction.createNewMap(f.toURI(), getName(), true);
+					if(map == null) {
+						LogUtils.warn("could not create " + getLinkURI());
+					}
+					else {
+						DocearEvent evnt = new DocearEvent(this, (DocearWorkspaceProject) WorkspaceController.getCurrentModel().getProject(getModel()), DocearEventType.NEW_INCOMING, map);
+						DocearController.getController().dispatchDocearEvent(evnt);
+						//DOCEAR - todo: remove when updating a node attribute is working correctly
+						Controller.getCurrentController().close(true);
 					}
 				}
 				
@@ -123,7 +135,7 @@ public class LinkTypeIncomingNode extends ALinkNode implements IWorkspaceNodeAct
 				try {
 					if(mapIO.newMap(f.toURI().toURL())) {
 						MapModel map = Controller.getCurrentController().getMap();						
-						DocearEvent evnt = new DocearEvent(this, DocearEventType.NEW_INCOMING, map);
+						DocearEvent evnt = new DocearEvent(this, (DocearWorkspaceProject) WorkspaceController.getCurrentModel().getProject(getModel()), DocearEventType.NEW_INCOMING, map);
 						DocearController.getController().dispatchDocearEvent(evnt);
 					}
 				}
@@ -132,7 +144,7 @@ public class LinkTypeIncomingNode extends ALinkNode implements IWorkspaceNodeAct
 				}
 			}
 			catch (Exception e) {
-				LogUtils.warn("could not open document (" + getLinkPath() + ")", e);
+				LogUtils.warn("could not open document (" + getLinkURI() + ")", e);
 			}
 		}
 		else if (event.getType() == WorkspaceActionEvent.MOUSE_RIGHT_CLICK) {			
@@ -159,7 +171,7 @@ public class LinkTypeIncomingNode extends ALinkNode implements IWorkspaceNodeAct
 		// simple set the node name
 		//this.setName(newName);
 		try {
-			WorkspaceUtils.getModel().changeNodeName(this, newName);
+			getModel().changeNodeName(this, newName);
 			return true;
 		}
 		catch(Exception ex) {

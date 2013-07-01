@@ -1,6 +1,8 @@
 package org.freeplane.plugin.workspace.components;
 
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.datatransfer.ClipboardOwner;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -10,6 +12,8 @@ import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
+import org.freeplane.plugin.workspace.dnd.DnDController;
+import org.freeplane.plugin.workspace.dnd.IWorspaceClipboardOwner;
 import org.freeplane.plugin.workspace.io.IFileSystemRepresentation;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.nodes.AFolderNode;
@@ -26,6 +30,7 @@ public class WorkspaceNodeRenderer extends DefaultTreeCellRenderer {
 	private static final Icon DEFAULT_FOLDER_OPEN_ICON = new ImageIcon(WorkspaceNodeRenderer.class.getResource("/images/16x16/folder-blue_open.png"));
 	
 	public WorkspaceNodeRenderer() {
+		
 	}
 
 	public Component getTreeCellRendererComponent(JTree tree, Object treeNode, boolean sel, boolean expanded, boolean leaf, int row,
@@ -44,10 +49,25 @@ public class WorkspaceNodeRenderer extends DefaultTreeCellRenderer {
 					label.setBorder(BorderFactory.createLineBorder(label.getForeground(), 1));
 				}
 			}
-			label.setText(node.getName());			
+			label.setText(node.getName());
+			if(isCut(node)) {
+				//WORKSPACE - ToDo: make the item transparent (including the icon?)
+				int alpha = new Double(255 * 0.5).intValue();
+				label.setForeground(new Color(label.getForeground().getRed(), label.getForeground().getGreen(), label.getForeground().getBlue(), alpha));
+			}
 			return label;
 		}
 		return super.getTreeCellRendererComponent(tree, treeNode, sel, expanded, leaf, row, hasFocus);
+	}
+	
+	private boolean isCut(AWorkspaceTreeNode node) {
+		ClipboardOwner owner = DnDController.getSystemClipboardController().getClipboardOwner();
+		if(owner != null && owner instanceof IWorspaceClipboardOwner) {
+			if(!((IWorspaceClipboardOwner) owner).getTransferable().isCopy() && ((IWorspaceClipboardOwner) owner).getTransferable().contains(node)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void setToolTip(DefaultTreeCellRenderer renderer, AWorkspaceTreeNode node) {

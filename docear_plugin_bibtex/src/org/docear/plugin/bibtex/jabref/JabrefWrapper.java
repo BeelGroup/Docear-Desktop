@@ -1,6 +1,7 @@
 package org.docear.plugin.bibtex.jabref;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.io.File;
 import java.io.FileReader;
@@ -8,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Scanner;
 
 import javax.swing.JFrame;
@@ -15,14 +17,17 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.border.LineBorder;
 
 import net.sf.jabref.BasePanel;
 import net.sf.jabref.BibtexDatabase;
+import net.sf.jabref.BibtexEntry;
 import net.sf.jabref.BibtexFields;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRef;
 import net.sf.jabref.JabRefFrame;
 import net.sf.jabref.Util;
+import net.sf.jabref.export.SaveDatabaseAction;
 import net.sf.jabref.export.SaveSession;
 import net.sf.jabref.external.FileLinksUpgradeWarning;
 import net.sf.jabref.imports.CheckForNewEntryTypesAction;
@@ -37,9 +42,9 @@ import org.docear.plugin.bibtex.actions.FilePathValidatorAction;
 import org.docear.plugin.bibtex.actions.HandleDuplicateKeys;
 import org.docear.plugin.bibtex.listeners.MapViewListener;
 import org.docear.plugin.core.DocearController;
+import org.docear.plugin.core.event.DocearEvent;
+import org.docear.plugin.core.event.DocearEventType;
 import org.docear.plugin.core.logger.DocearLogEvent;
-import org.docear.plugin.core.logging.DocearLogger;
-import org.docear.plugin.core.util.WinRegistry;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.Compat;
@@ -70,7 +75,7 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 		// Add the action for warning about and handling duplicate BibTeX keys:
 		//postOpenActions.add(new HandleDuplicateWarnings());
 		//DOCEAR: don't warn, just resolve --> #464
-		if (ResourceController.getResourceController().getBooleanProperty("docear.reference_manager.resolve_duplicate_keys")) {
+		if (DocearController.getPropertiesController().getBooleanProperty("docear.reference_manager.resolve_duplicate_keys")) {
 		    postOpenActions.add(new HandleDuplicateKeys());
 		}
 		else {
@@ -80,45 +85,24 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 	}
 
 	private static final MapViewListener mapViewListener = new MapViewListener();
-	private ParserResult parserResult = null;
-	private String encoding = null;
-	private File file;
-	private HashMap<String, String> meta = null;
+	
+	private Map<File, JabRefBaseHandle> baseHandles = new HashMap<File, JabRefBaseHandle>();
 
 	public JabrefWrapper(JFrame frame) {
-		this(frame, null);
-
-	}
-
-	/**
-	 * @param jFrame
-	 * @param file
-	 */
-	public JabrefWrapper(JFrame frame, File file) {
-		// super(frame, new String[]{"true", "-i", "\""+file.toString()+"\""});
 		super(frame);		
 		registerListeners();
-		try {
-			if(file != null ) {
-				openIt(file, true);
-			}
-		}
-		catch (Exception e) {
-			LogUtils.warn("Exception in org.docear.plugin.bibtex.jabref.JabrefWrapper.constructor(): "+ e.getMessage());
-		}
 		
 		this.jrf.getPreferences().put("generateKeysBeforeSaving", "true");
 		this.jrf.getPreferences().put("avoidOverwritingKey", "true");
 		this.jrf.addJabRefEventListener(new JabrefChangeEventListener());
+		this.jrf.setBorder(new LineBorder(Color.LIGHT_GRAY, 1));
 	}
 
 	public JabRefFrame getJabrefFrame() {
-
 		return this.jrf;
 	}
 	
 	public JPanel getJabrefFramePanel() {
-
 		return this.jrf;
 	}
 	
@@ -153,20 +137,18 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 		return getBasePanel().getDatabase();
 	}
 
-	public BasePanel addNewDatabase(ParserResult pr, File file, boolean raisePanel) {
-		this.file = file;
+	public BasePanel addNewDatabase(ParserResult pr, File base, boolean raisePanel) {
+		File file = base.getAbsoluteFile();
 		String fileName = file.getPath();
 		BibtexDatabase database = pr.getDatabase();
 		database.addDatabaseChangeListener(ReferencesController.getJabRefChangeListener());
-		this.setMeta(pr.getMetaData());
-		this.setEncoding(pr.getEncoding());
-
-		BasePanel bp = new BasePanel(getJabrefFrame(), database, file, meta, pr.getEncoding());
+		
+		BasePanel bp = new BasePanel(getJabrefFrame(), database, file, pr.getMetaData(), pr.getEncoding());
 
 		// file is set to null inside the EventDispatcherThread
 		// SwingUtilities.invokeLater(new OpenItSwingHelper(bp, file,
 		// raisePanel));
-
+		
 		getJabrefFrame().addTab(bp, file, raisePanel);
 
 		LogUtils.info(Globals.lang("Opened database") + " '" + fileName + "' " + Globals.lang("with") + " "
@@ -175,33 +157,111 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 		return bp;
 	}
 
-	public void replaceDatabase(File file, boolean raisePanel) {
-		// getJabrefFrame().getTabbedPane().removeAll();
-		// if(getBasePanel() != null) {
-		// getBasePanel().runCommand("save");
-		// }
-		while (getJabrefFrame().getTabbedPane().getTabCount() > 0) {
-			getJabrefFrame().closeCurrentTab();
+	public JabRefBaseHandle openDatabase(File baseFile, boolean raisePanel) {
+		JabRefBaseHandle handle = null;
+		if(baseFile == null) {
+			throw new IllegalArgumentException("NULL");
 		}
-		openIt(file, raisePanel);
-		updateWindowsRegistry(file);
+		File file = baseFile.getAbsoluteFile();
+		//closeDatabase(file, true);
+		if(isOpened(file)) {
+			handle = getBaseHandle(file);
+			if(handle != null && raisePanel) {
+				getJabrefFrame().showBasePanel(handle.getBasePanel());
+			}
+		}
+		else {
+			handle = openIt(file, raisePanel);
+			//updateWindowsRegistry(file);
+			if(handle != null) {
+				synchronized (baseHandles ) {
+					baseHandles.put(file, handle);
+				}
+			}
+		}
+		//DOCEAR - todo: how do we deal with multiple files?
 		DocearController.getController().getDocearEventLogger().appendToLog(this, DocearLogEvent.RM_BIBTEX_FILE_CHANGE, new Object[] {file, this.getDatabase().getEntries().size()});
+		return handle;
 	}
-
-	private void updateWindowsRegistry(File file) {
-		if(Compat.isWindowsOS()) {
-			try {
-				WinRegistry.createKey(WinRegistry.HKEY_CURRENT_USER, "SOFTWARE\\Docear4Word");
-				WinRegistry.writeStringValue(WinRegistry.HKEY_CURRENT_USER, "SOFTWARE\\Docear4Word", "BibTexDatabase", file.getAbsolutePath());
-				WinRegistry.writeStringValue(WinRegistry.HKEY_CURRENT_USER, "ENVIRONMENT", "docear_bibtex_current", file.getAbsolutePath());
-			} 
-			catch (Exception e) {
-				DocearLogger.warn("org.docear.plugin.bibtex.jabref.JabrefWrapper.updateWindowsRegistry(): "+e.getMessage());
+	
+	public JabRefBaseHandle getBaseHandle(File baseFile) {
+		if(baseFile == null) {
+			throw new IllegalArgumentException("NULL");
+		}
+		File file = baseFile.getAbsoluteFile();
+		synchronized (baseHandles) {
+			if(baseHandles.containsKey(file)) {
+				return baseHandles.get(file); 
+			}
+		}
+		return null;
+	}
+	
+	public void closeDatabase(File baseFile) {
+		File file = baseFile.getAbsoluteFile();
+		closeDatabase(file, false);
+	}
+	
+	public void closeDatabase(JabRefBaseHandle baseHandle) {
+		if(baseHandle == null) {
+			return;
+		}
+		if(!baseHandle.hasMoreConnections()) {
+			synchronized (baseHandles) {	
+				baseHandles.remove(baseHandle.getFile().getAbsoluteFile());
+			}
+			closeDatabase(baseHandle.getFile());
+		}		
+	}
+	
+	private void closeDatabase(File file, boolean silentClose) {
+		for(int i=0; i < getJabrefFrame().baseCount(); i++) {
+			BasePanel panel = getJabrefFrame().baseAt(i);
+			if(panel.getFile().equals(file)) {
+				getJabrefFrame().showBaseAt(i);
+				getJabrefFrame().closeCurrentTab();
+				if(!silentClose) {
+					//firePanelRemoved(panel, i);
+				}
 			}
 		}
 	}
+	
+	private void closeAll() {
+		for(; 0 < getJabrefFrame().baseCount();) {
+			getJabrefFrame().closeCurrentTab();
+		}
+	}
+	
+	public boolean isOpened(File baseFile) {
+		if(baseFile == null) {
+			throw new IllegalArgumentException("NULL");
+		}
+		File file = baseFile.getAbsoluteFile();
+		for(int i=0; i < getJabrefFrame().baseCount(); i++) {
+			BasePanel panel = getJabrefFrame().baseAt(i);
+			if(panel.getFile().equals(file)) {
+				return true;			
+			}
+		}
+		return false;
+	}
 
-	public void openIt(File file, boolean raisePanel) {
+	private void updateWindowsRegistry(File file) {
+//		if(Compat.isWindowsOS()) {
+//			try {
+//				WinRegistry.createKey(WinRegistry.HKEY_CURRENT_USER, "SOFTWARE\\Docear4Word");
+//				WinRegistry.writeStringValue(WinRegistry.HKEY_CURRENT_USER, "SOFTWARE\\Docear4Word", "BibTexDatabase", file.getAbsolutePath());
+//				WinRegistry.writeStringValue(WinRegistry.HKEY_CURRENT_USER, "ENVIRONMENT", "docear_bibtex_current", file.getAbsolutePath());
+//			} 
+//			catch (Exception e) {
+//				DocearLogger.warn("org.docear.plugin.bibtex.jabref.JabrefWrapper.updateWindowsRegistry(): "+e.getMessage());
+//			}
+//		}
+	}
+
+	private JabRefBaseHandle openIt(File file, boolean raisePanel) {
+		JabRefBaseHandle handle = null;
 		if ((file != null) && (file.exists())) {
 			if (!isCompatibleToJabref(file)) {
 				JHyperlink hyperlink = new JHyperlink("http://www.docear.org/support/user-manual/#docear_and_mendeley ",
@@ -215,7 +275,7 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 
 				TextUtils.getText("jabref_mendeley_incompatible_title"), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 				if (option == JOptionPane.YES_OPTION) {
-					return;
+					return handle;
 				}
 			}
 			File fileToLoad = file;
@@ -228,7 +288,7 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 				Globals.prefs.put("workingDirectory", file.getPath());
 				// Should this be done _after_ we know it was successfully
 				// opened?
-				ResourceController resourceController = ResourceController.getResourceController();
+				ResourceController resourceController = DocearController.getPropertiesController();
 				String encoding = resourceController.getProperty("docear_bibtex_encoding", Globals.prefs.get("defaultEncoding"));
 
 				if (Util.hasLockFile(file)) {
@@ -246,13 +306,13 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 							Util.deleteLockFile(file);
 						}
 						else
-							return;
+							return handle;
 					}
 					else if (!Util.waitForFileLock(file, 10)) {
 						JOptionPane.showMessageDialog(null, Globals.lang("Error opening file") + " '" + fileName + "'. "
 								+ Globals.lang("File is locked by another JabRef instance."), Globals.lang("Error"),
 								JOptionPane.ERROR_MESSAGE);
-						return;
+						return handle;
 					}
 
 				}
@@ -273,11 +333,13 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 				else {
 					done = true;
 					final BasePanel panel = addNewDatabase(pr, file, raisePanel);
-
+					
 					panel.markNonUndoableBaseChanged();
 
+					handle = new JabRefBaseHandle(panel, pr);
+					
 					// After adding the database, go through our list and see if
-					// any post open actions need to be done. For instance,
+					// any post open actions needs to be done. For instance,
 					// checking
 					// if we found new entry types that can be imported, or
 					// checking
@@ -295,8 +357,8 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 
 		}
 		
-		DocearController.getController().getDocearEventLogger().appendToLog(this, DocearLogEvent.RM_BIBTEX_FILE_OPEN, new Object[] {file, this.getDatabase().getEntries().size()});
-		
+		DocearController.getController().getDocearEventLogger().appendToLog(this, DocearLogEvent.RM_BIBTEX_FILE_OPEN, new Object[] {file});
+		return handle;
 	}
 
 	// JabRef does not use character escaping of "{" and "}"
@@ -391,38 +453,6 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 		}
 	}
 
-	public File getFile() {
-		return file;
-	}
-
-	public void setFile(File file) {
-		this.file = file;
-	}
-
-	public ParserResult getParserResult() {
-		return parserResult;
-	}
-
-	public void setParserResult(ParserResult parserResult) {
-		this.parserResult = parserResult;
-	}
-
-	public HashMap<String, String> getMeta() {
-		return meta;
-	}
-
-	public void setMeta(HashMap<String, String> meta) {
-		this.meta = meta;
-	}
-
-	public String getEncoding() {
-		return encoding;
-	}
-
-	public void setEncoding(String encoding) {
-		this.encoding = encoding;
-	}
-
 	public void afterViewChange(Component oldView, Component newView) {
 	}
 
@@ -436,4 +466,67 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 
 	public void beforeViewChange(Component oldView, Component newView) {
 	}
+
+	public void shutdown() {
+		for (JabRefBaseHandle handle : baseHandles.values()) {
+			try {
+				BibtexDatabase database = handle.getBasePanel().getDatabase();
+				if(database == null) {
+					return;
+				}
+				for (BibtexEntry entry : database.getEntries()) {
+					if (entry.getField("docear_add_to_node") != null) {
+						entry.setField("docear_add_to_node", null);
+					}
+				}
+				if(ReferencesController.getController().getJabrefWrapper().getBasePanel().isUpdatedExternally()){
+					DocearController.getController().addWorkingThreadHandle("ReferenceQuitAction");
+					SaveDatabaseAction saveAction = new SaveDatabaseAction(handle.getBasePanel());
+					saveAction.runCommand();
+					if (saveAction.isCancelled() || !saveAction.isSuccess()) {						
+						DocearController.getController().dispatchDocearEvent(new DocearEvent(this, null, DocearEventType.APPLICATION_CLOSING_ABORTED));
+					}
+					DocearController.getController().removeWorkingThreadHandle("ReferenceQuitAction");
+				}
+				else{
+					handle.getBasePanel().runCommand("save");
+				}
+			}
+			catch (Throwable t) {
+				LogUtils.warn(t);
+			}
+		}		
+	}
+
+//	public void addBaseHandleForFile(File baseFile, IJabrefChangeListener listener) {
+//		if(listener == null || baseFile == null) {
+//			return;
+//		}
+//		File file = baseFile.getAbsoluteFile();
+//		synchronized (baseHandles ) {
+//			List<IJabrefChangeListener> list = baseHandles.get(file);
+//			if(list == null) {
+//				list = new ArrayList<IJabrefChangeListener>();
+//				baseHandles.put(file, list);
+//			}
+//			if(list.contains(listener)) {
+//				return;
+//			}
+//			list.add(listener);
+//		}		
+//	}
+	
+//	public void removeBaseHandleForFile(File baseFile, IJabrefChangeListener listener) {
+//		if(listener == null || baseFile == null) {
+//			return;
+//		}
+//		File file = baseFile.getAbsoluteFile();
+//		synchronized (baseHandles ) {
+//			List<IJabrefChangeListener> list = baseHandles.get(file);
+//			if(list == null) {
+//				return;
+//			}
+//			list.remove(listener);
+//		}	
+//	}
 }

@@ -16,7 +16,6 @@ import org.docear.plugin.core.logger.DocearLogEvent;
 import org.docear.plugin.core.util.NodeUtilities;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
 import org.docear.plugin.pdfutilities.util.MonitoringUtils;
-import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.TextUtils;
@@ -24,7 +23,7 @@ import org.freeplane.features.link.mindmapmode.MLinkController;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 
-@EnabledAction( checkOnPopup = true )
+@EnabledAction(checkOnNodeChange=true)
 public class AddMonitoringFolderAction extends AbstractMonitoringAction {
 
 	/**
@@ -70,7 +69,7 @@ public class AddMonitoringFolderAction extends AbstractMonitoringAction {
         		NodeUtilities.setAttributeValue(selected, PdfUtilitiesController.MON_MINDMAP_FOLDER, CoreConfiguration.LIBRARY_PATH);
         		NodeUtilities.setAttributeValue(selected, PdfUtilitiesController.MON_AUTO, 2);
         		NodeUtilities.setAttributeValue(selected, PdfUtilitiesController.MON_SUBDIRS, 2);
-        		if(ResourceController.getResourceController().getBooleanProperty("docear_flatten_subdir")){
+        		if(DocearController.getPropertiesController().getBooleanProperty("docear_flatten_subdir")){
         			NodeUtilities.setAttributeValue(selected, PdfUtilitiesController.MON_FLATTEN_DIRS, 1);
         		}
         		else{

@@ -13,8 +13,8 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.docear.plugin.core.DocearController;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
-import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.TextUtils;
 
@@ -75,7 +75,7 @@ public class PdfReaderDefinitionDialog extends JPanel {
 		pnlDialogInfo.add(lblHelp2, "2, 6");		
 		
 		txtPath = new JTextField();		
-		txtPath.setText(ResourceController.getResourceController().getProperty(PdfUtilitiesController.OPEN_ON_PAGE_READER_COMMAND_KEY));
+		txtPath.setText(DocearController.getPropertiesController().getProperty(PdfUtilitiesController.OPEN_ON_PAGE_READER_COMMAND_KEY));
 		add(txtPath, "2, 4, fill, default");
 		txtPath.setColumns(10);
 		
