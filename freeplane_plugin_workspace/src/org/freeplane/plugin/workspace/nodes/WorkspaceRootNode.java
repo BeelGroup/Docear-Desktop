@@ -128,18 +128,19 @@ public class WorkspaceRootNode extends AFolderNode implements IWorkspaceNodeActi
 
 	public Enumeration<AWorkspaceTreeNode> children() {
 		return new Enumeration<AWorkspaceTreeNode>() {
-		    int count = 0;
-		    
-		    public boolean hasMoreElements() {
-		    	return count < getChildCount();
-		    }
+			int count = 0;
 
-		    public AWorkspaceTreeNode nextElement() {
+			public boolean hasMoreElements() {
+				int max = (getChildCount()-WorkspaceController.getCurrentModel().getProjects().size());
+		    	return count < max;
+			}
+
+			public AWorkspaceTreeNode nextElement() {
 				if (count < getChildCount()) {
-				  	return getChildAt(count++);
-				}				
+					return getChildAt(count++);
+				}
 				throw new NoSuchElementException("WorkspaceRoot Enumeration");
-		    }
+			}
 		};
-	}	
+	}
 }
