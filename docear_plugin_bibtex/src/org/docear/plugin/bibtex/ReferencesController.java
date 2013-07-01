@@ -26,6 +26,7 @@ import org.docear.plugin.bibtex.actions.AddExistingReferenceAction;
 import org.docear.plugin.bibtex.actions.AddNewReferenceAction;
 import org.docear.plugin.bibtex.actions.AddOrUpdateReferenceEntryWorkspaceAction;
 import org.docear.plugin.bibtex.actions.AddRecommendedDocumentAction;
+import org.docear.plugin.bibtex.actions.ChangeBibtexDatabaseAction;
 import org.docear.plugin.bibtex.actions.CopyBibtexToClipboard;
 import org.docear.plugin.bibtex.actions.CopyCiteKeyToClipboard;
 import org.docear.plugin.bibtex.actions.ReferenceQuitAction;
@@ -82,7 +83,6 @@ import org.freeplane.plugin.workspace.features.AWorkspaceModeExtension;
 import org.freeplane.plugin.workspace.features.ProjectURLHandler;
 import org.freeplane.plugin.workspace.model.WorkspaceModelEvent;
 import org.freeplane.plugin.workspace.model.WorkspaceModelListener;
-import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.model.project.IProjectSelectionListener;
 import org.freeplane.plugin.workspace.model.project.ProjectSelectionEvent;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
@@ -130,6 +130,7 @@ public class ReferencesController extends ALanguageController implements IDocear
 	private AFreeplaneAction updateReferencesAllMaps = new UpdateReferencesAllMapsAction();
 //	private AFreeplaneAction ConvertSplmmReferences = new ConvertSplmmReferencesAction(CONVERT_SPLMM_REFERENCES_LANG_KEY);
 	private AFreeplaneAction addExistingReference = new AddExistingReferenceAction();
+	private AFreeplaneAction changeBibtexDatabase = new ChangeBibtexDatabaseAction();
 	private AFreeplaneAction removeReference = new RemoveReferenceAction();
 	private AFreeplaneAction addNewReference = new AddNewReferenceAction();
 	private AFreeplaneAction copyBibtex = new CopyBibtexToClipboard();
@@ -274,12 +275,6 @@ public class ReferencesController extends ALanguageController implements IDocear
 				}
 			}
 		});
-		for(AWorkspaceProject project : WorkspaceController.getModeExtension(modeController).getModel().getProjects()) {
-			if(project instanceof DocearWorkspaceProject) {
-				((DocearWorkspaceProject) project).addProjectListener(getProjectListener());
-				loadDatabase((DocearWorkspaceProject)project);
-			}
-		}
 		
 		//insert some extra actions to file nodes
 		SwingUtilities.invokeLater(new Runnable() {
@@ -344,6 +339,7 @@ public class ReferencesController extends ALanguageController implements IDocear
 				@Override
 				public void changed(DocearProjectChangedEvent event) {					
 					if(DocearEventType.LIBRARY_CHANGED.equals(event.getDescriptor()) && event.getObject() instanceof IBibtexDatabase) {
+						addOrUpdateProjectExtension((DocearWorkspaceProject) event.getSource(), null);
 						loadDatabase(event.getSource());
 					}
 				}
@@ -405,6 +401,7 @@ public class ReferencesController extends ALanguageController implements IDocear
 	}
 	
 	private void addMenuEntries() {
+		WorkspaceController.addAction(changeBibtexDatabase);
 		WorkspaceController.addAction(addExistingReference);
 		WorkspaceController.addAction(removeReference);
 		WorkspaceController.addAction(copyBibtex);
@@ -516,7 +513,7 @@ public class ReferencesController extends ALanguageController implements IDocear
 			}
 		});
 		modeController.getUserInputListenerFactory().getRibbonBuilder().registerContributorFactory("UpdateReferencesAllMapsAction", new UpdateReferencesAllMapsActionContributorFactory(WorkspaceController.getModeExtension(modeController)));
-		
+		modeController.getUserInputListenerFactory().getRibbonBuilder().registerContributorFactory("ChangeBibtexDatabaseAction", new ChangeBibtexDatabaseActionContributorFactory(WorkspaceController.getModeExtension(modeController)));
 		File file = new File(Compat.getApplicationUserDirectory(), "docear_references_ribbon.xml");		
 		if (file.exists()) {
 			LogUtils.info("using alternative ribbon configuration file: "+file.getAbsolutePath());
@@ -656,6 +653,59 @@ public class ReferencesController extends ALanguageController implements IDocear
 					RibbonActionContributorFactory.updateRichTooltip(button, updateReferencesAllMaps, context.getBuilder().getAcceleratorManager().getAccelerator(updateReferencesAllMaps.getKey()));
 					updateReferencesAllMaps.setEnabled();
 					button.setEnabled(updateReferencesAllMaps.isEnabled());
+					ChildProperties childProps = new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", "")));
+					childProps.set(RibbonElementPriority.class, RibbonActionContributorFactory.getPriority(attributes.getProperty("priority", "")));
+					parent.addChild(button, childProps);
+				}
+				
+				@Override
+				public void addChild(Object child, ChildProperties properties) {
+				}
+			};
+		}
+	}
+	
+	private class ChangeBibtexDatabaseActionContributorFactory implements IRibbonContributorFactory {
+		private JCommandButton button;
+
+		/***********************************************************************************
+		 * CONSTRUCTORS
+		 **********************************************************************************/
+
+		public ChangeBibtexDatabaseActionContributorFactory(AWorkspaceModeExtension workspaceModeExtension) {
+			workspaceModeExtension.getView().addProjectSelectionListener(new IProjectSelectionListener() {
+				public void selectionChanged(ProjectSelectionEvent event) {
+					boolean enabled = (event.getSelectedProject() != null);
+					if(button != null) {
+						button.setEnabled(enabled);
+					}
+				}
+			});
+		}
+		
+		/***********************************************************************************
+		 * METHODS
+		 **********************************************************************************/
+
+		
+
+		/***********************************************************************************
+		 * REQUIRED METHODS FOR INTERFACES
+		 **********************************************************************************/
+		
+		@Override
+		public ARibbonContributor getContributor(final Properties attributes) {
+			return new ARibbonContributor() {
+				public String getKey() {
+					return attributes.getProperty("name");
+				}
+				
+				@Override
+				public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
+					button = RibbonActionContributorFactory.createCommandButton(changeBibtexDatabase);
+					RibbonActionContributorFactory.updateRichTooltip(button, changeBibtexDatabase, context.getBuilder().getAcceleratorManager().getAccelerator(updateReferencesAllMaps.getKey()));
+					changeBibtexDatabase.setEnabled();
+					button.setEnabled(changeBibtexDatabase.isEnabled());
 					ChildProperties childProps = new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", "")));
 					childProps.set(RibbonElementPriority.class, RibbonActionContributorFactory.getPriority(attributes.getProperty("priority", "")));
 					parent.addChild(button, childProps);

@@ -18,5 +18,10 @@
                 <ribbon_contributor name="UpdateReferencesAllMapsAction" priority="Medium" />
             </ribbon_band>
         </ribbon_task>
-    </menu_category>
+        <ribbon_task name="project">
+            <ribbon_band name="main">
+                <ribbon_contributor name="ChangeBibtexDatabaseAction" />
+            </ribbon_band>
+        </ribbon_task>
+    </menu_category>    
 </menu_structure>
