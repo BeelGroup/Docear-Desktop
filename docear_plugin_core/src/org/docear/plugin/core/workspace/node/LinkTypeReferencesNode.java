@@ -184,4 +184,10 @@ public class LinkTypeReferencesNode extends LinkTypeFileNode implements IBibtexD
 	public URI getUri() {
 		return this.getLinkURI();
 	}
+
+	@Override
+ 	public void setUri(URI path) {
+ 		setLinkURI(path);       
+	}
+
 }

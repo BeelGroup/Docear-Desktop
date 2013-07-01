@@ -24,6 +24,7 @@ import org.docear.plugin.bibtex.actions.AddExistingReferenceAction;
 import org.docear.plugin.bibtex.actions.AddNewReferenceAction;
 import org.docear.plugin.bibtex.actions.AddOrUpdateReferenceEntryWorkspaceAction;
 import org.docear.plugin.bibtex.actions.AddRecommendedDocumentAction;
+import org.docear.plugin.bibtex.actions.ChangeBibtexDatabaseAction;
 import org.docear.plugin.bibtex.actions.CopyBibtexToClipboard;
 import org.docear.plugin.bibtex.actions.CopyCiteKeyToClipboard;
 import org.docear.plugin.bibtex.actions.ReferenceQuitAction;
@@ -73,7 +74,6 @@ import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
 import org.freeplane.plugin.workspace.features.ProjectURLHandler;
 import org.freeplane.plugin.workspace.model.WorkspaceModelEvent;
 import org.freeplane.plugin.workspace.model.WorkspaceModelListener;
-import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.model.project.IProjectSelectionListener;
 import org.freeplane.plugin.workspace.model.project.ProjectSelectionEvent;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
@@ -121,14 +121,15 @@ public class ReferencesController extends ALanguageController implements IDocear
 			UPDATE_REFERENCES_CURRENT_MAP_LANG_KEY);
 	private AFreeplaneAction UpdateReferencesAllOpenMaps = new UpdateReferencesAllOpenMapsAction(
 			UPDATE_REFERENCES_ALL_OPEN_MAPS_LANG_KEY);
-	private AFreeplaneAction UpdateReferencesInLibrary = new UpdateReferencesInLibrary();
-	private AFreeplaneAction UpdateReferencesAllMaps = new UpdateReferencesAllMapsAction();
+	private AFreeplaneAction updateReferencesInLibrary = new UpdateReferencesInLibrary();
+	private AFreeplaneAction updateReferencesAllMaps = new UpdateReferencesAllMapsAction();
 //	private AFreeplaneAction ConvertSplmmReferences = new ConvertSplmmReferencesAction(CONVERT_SPLMM_REFERENCES_LANG_KEY);
-	private AFreeplaneAction AddExistingReference = new AddExistingReferenceAction(ADD_EXISTING_REFERENCES_LANG_KEY);
-	private AFreeplaneAction RemoveReference = new RemoveReferenceAction(REMOVE_REFERENCE_LANG_KEY);
-	private AFreeplaneAction AddNewReference = new AddNewReferenceAction(ADD_NEW_REFERENCE_LANG_KEY);
-	private AFreeplaneAction CopyBibtex = new CopyBibtexToClipboard();
-	private AFreeplaneAction CopyCiteKey = new CopyCiteKeyToClipboard();
+	private AFreeplaneAction addExistingReference = new AddExistingReferenceAction(ADD_EXISTING_REFERENCES_LANG_KEY);
+	private AFreeplaneAction changeBibtexDatabase = new ChangeBibtexDatabaseAction();
+	private AFreeplaneAction removeReference = new RemoveReferenceAction(REMOVE_REFERENCE_LANG_KEY);
+	private AFreeplaneAction addNewReference = new AddNewReferenceAction(ADD_NEW_REFERENCE_LANG_KEY);
+	private AFreeplaneAction copyBibtex = new CopyBibtexToClipboard();
+	private AFreeplaneAction copyCiteKey = new CopyCiteKeyToClipboard();
 	
 	//private AFreeplaneAction ShowJabrefPreferences = new ShowJabrefPreferencesAction("show_jabref_preferences");
 	private IDocearProjectListener projectListener;
@@ -269,12 +270,6 @@ public class ReferencesController extends ALanguageController implements IDocear
 				}
 			}
 		});
-		for(AWorkspaceProject project : WorkspaceController.getModeExtension(modeController).getModel().getProjects()) {
-			if(project instanceof DocearWorkspaceProject) {
-				((DocearWorkspaceProject) project).addProjectListener(getProjectListener());
-				loadDatabase((DocearWorkspaceProject)project);
-			}
-		}
 		
 		//insert some extra actions to file nodes
 		SwingUtilities.invokeLater(new Runnable() {
@@ -339,6 +334,7 @@ public class ReferencesController extends ALanguageController implements IDocear
 				@Override
 				public void changed(DocearProjectChangedEvent event) {					
 					if(DocearEventType.LIBRARY_CHANGED.equals(event.getDescriptor()) && event.getObject() instanceof IBibtexDatabase) {
+						addOrUpdateProjectExtension((DocearWorkspaceProject) event.getSource(), null);
 						loadDatabase(event.getSource());
 					}
 				}
@@ -401,7 +397,10 @@ public class ReferencesController extends ALanguageController implements IDocear
 	
 	private void addMenuEntries() {
 		Controller.getCurrentController().addAction(new AddOrUpdateReferenceEntryWorkspaceAction());
-
+		WorkspaceController.addAction(changeBibtexDatabase);
+        WorkspaceController.addAction(addExistingReference);
+        WorkspaceController.addAction(removeReference);
+        WorkspaceController.addAction(copyBibtex);
 		this.modeController.addMenuContributor(new IMenuContributor() {
 
 			public void updateMenus(ModeController modeController, MenuBuilder builder) {
@@ -412,20 +411,20 @@ public class ReferencesController extends ALanguageController implements IDocear
 						MENU_BAR + REFERENCE_MANAGEMENT_MENU, MenuBuilder.BEFORE);
 
 				builder.addAction(MENU_BAR + REFERENCE_MANAGEMENT_MENU, new ShowInReferenceManagerAction(),	MenuBuilder.AS_CHILD);
-				builder.addAction(MENU_BAR + REFERENCE_MANAGEMENT_MENU, CopyBibtex,	MenuBuilder.AS_CHILD);
-				builder.addAction(MENU_BAR + REFERENCE_MANAGEMENT_MENU, CopyCiteKey,	MenuBuilder.AS_CHILD);
-				builder.addAction(MENU_BAR + REFERENCE_MANAGEMENT_MENU, AddNewReference, MenuBuilder.AS_CHILD);
+				builder.addAction(MENU_BAR + REFERENCE_MANAGEMENT_MENU, copyBibtex,	MenuBuilder.AS_CHILD);
+				builder.addAction(MENU_BAR + REFERENCE_MANAGEMENT_MENU, copyCiteKey,	MenuBuilder.AS_CHILD);
+				builder.addAction(MENU_BAR + REFERENCE_MANAGEMENT_MENU, addNewReference, MenuBuilder.AS_CHILD);
 //				builder.addAction(MENU_BAR + REFERENCE_MANAGEMENT_MENU, new ImportMetadateForNodeLink(), MenuBuilder.AS_CHILD);
-				builder.addAction(MENU_BAR + REFERENCE_MANAGEMENT_MENU, AddExistingReference, MenuBuilder.AS_CHILD);
-				builder.addAction(MENU_BAR + REFERENCE_MANAGEMENT_MENU, RemoveReference, MenuBuilder.AS_CHILD);
+				builder.addAction(MENU_BAR + REFERENCE_MANAGEMENT_MENU, addExistingReference, MenuBuilder.AS_CHILD);
+				builder.addAction(MENU_BAR + REFERENCE_MANAGEMENT_MENU, removeReference, MenuBuilder.AS_CHILD);
 
 				JMenu updRefMenuBar = new JMenu(TextUtils.getText(UPDATE_REFERENCES_MENU_LANG_KEY));
 				updRefMenuBar.getPopupMenu().addPopupMenuListener(new PopupMenuListener() {
 					
 					@Override
 					public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-						UpdateReferencesInLibrary.setEnabled();
-						UpdateReferencesAllMaps.setEnabled();
+						updateReferencesInLibrary.setEnabled();
+						updateReferencesAllMaps.setEnabled();
 					}
 					
 					@Override
@@ -442,9 +441,9 @@ public class ReferencesController extends ALanguageController implements IDocear
 						MenuBuilder.AS_CHILD);
 				builder.addAction(MENU_BAR + REFERENCE_MANAGEMENT_MENU + UPDATE_REFERENCES_MENU, UpdateReferencesAllOpenMaps,
 						MenuBuilder.AS_CHILD);
-				builder.addAction(MENU_BAR + REFERENCE_MANAGEMENT_MENU + UPDATE_REFERENCES_MENU, UpdateReferencesInLibrary,
+				builder.addAction(MENU_BAR + REFERENCE_MANAGEMENT_MENU + UPDATE_REFERENCES_MENU, updateReferencesInLibrary,
 						MenuBuilder.AS_CHILD);
-				builder.addAction(MENU_BAR + REFERENCE_MANAGEMENT_MENU + UPDATE_REFERENCES_MENU, UpdateReferencesAllMaps,
+				builder.addAction(MENU_BAR + REFERENCE_MANAGEMENT_MENU + UPDATE_REFERENCES_MENU, updateReferencesAllMaps,
 						MenuBuilder.AS_CHILD);
 //				builder.addAction(MENU_BAR + REFERENCE_MANAGEMENT_MENU + UPDATE_REFERENCES_MENU, ConvertSplmmReferences,
 //						MenuBuilder.AS_CHILD);
@@ -455,12 +454,12 @@ public class ReferencesController extends ALanguageController implements IDocear
 								+ REFERENCE_MANAGEMENT_MENU, MenuBuilder.AS_CHILD);
 				builder.addSeparator(referencesCategory + REFERENCE_MANAGEMENT_MENU, MenuBuilder.AFTER);
 				builder.addAction(referencesCategory + REFERENCE_MANAGEMENT_MENU, new ShowInReferenceManagerAction(), MenuBuilder.AS_CHILD);
-				builder.addAction(referencesCategory + REFERENCE_MANAGEMENT_MENU, CopyBibtex, MenuBuilder.AS_CHILD);
-				builder.addAction(referencesCategory + REFERENCE_MANAGEMENT_MENU, CopyCiteKey, MenuBuilder.AS_CHILD);
-				builder.addAction(referencesCategory + REFERENCE_MANAGEMENT_MENU, AddNewReference, MenuBuilder.AS_CHILD);
+				builder.addAction(referencesCategory + REFERENCE_MANAGEMENT_MENU, copyBibtex, MenuBuilder.AS_CHILD);
+				builder.addAction(referencesCategory + REFERENCE_MANAGEMENT_MENU, copyCiteKey, MenuBuilder.AS_CHILD);
+				builder.addAction(referencesCategory + REFERENCE_MANAGEMENT_MENU, addNewReference, MenuBuilder.AS_CHILD);
 //				builder.addAction(referencesCategory + REFERENCE_MANAGEMENT_MENU, new ImportMetadateForNodeLink(), MenuBuilder.AS_CHILD);
-				builder.addAction(referencesCategory + REFERENCE_MANAGEMENT_MENU, AddExistingReference, MenuBuilder.AS_CHILD);
-				builder.addAction(referencesCategory + REFERENCE_MANAGEMENT_MENU, RemoveReference, MenuBuilder.AS_CHILD);
+				builder.addAction(referencesCategory + REFERENCE_MANAGEMENT_MENU, addExistingReference, MenuBuilder.AS_CHILD);
+				builder.addAction(referencesCategory + REFERENCE_MANAGEMENT_MENU, removeReference, MenuBuilder.AS_CHILD);
 				
 				
 				JMenu updRefMenu = new JMenu(TextUtils.getText(UPDATE_REFERENCES_MENU_LANG_KEY));
@@ -468,8 +467,8 @@ public class ReferencesController extends ALanguageController implements IDocear
 					
 					@Override
 					public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-						UpdateReferencesInLibrary.setEnabled();
-						UpdateReferencesAllMaps.setEnabled();
+						updateReferencesInLibrary.setEnabled();
+						updateReferencesAllMaps.setEnabled();
 					}
 					
 					@Override
@@ -486,9 +485,9 @@ public class ReferencesController extends ALanguageController implements IDocear
 				builder.addAction(referencesCategory + REFERENCE_MANAGEMENT_MENU + UPDATE_REFERENCES_MENU,
 						UpdateReferencesAllOpenMaps, MenuBuilder.AS_CHILD);
 				builder.addAction(referencesCategory + REFERENCE_MANAGEMENT_MENU + UPDATE_REFERENCES_MENU,
-						UpdateReferencesInLibrary, MenuBuilder.AS_CHILD);
+						updateReferencesInLibrary, MenuBuilder.AS_CHILD);
 				builder.addAction(referencesCategory + REFERENCE_MANAGEMENT_MENU + UPDATE_REFERENCES_MENU,
-						UpdateReferencesAllMaps, MenuBuilder.AS_CHILD);
+						updateReferencesAllMaps, MenuBuilder.AS_CHILD);
 //				builder.addAction(parentMenu + REFERENCE_MANAGEMENT_MENU + UPDATE_REFERENCES_MENU, 
 //						ConvertSplmmReferences,	MenuBuilder.AS_CHILD);
 				

@@ -11,4 +11,5 @@ import java.net.URI;
  */
 public interface IBibtexDatabase {
 	public URI getUri();
+    public void setUri(URI path);
 }
