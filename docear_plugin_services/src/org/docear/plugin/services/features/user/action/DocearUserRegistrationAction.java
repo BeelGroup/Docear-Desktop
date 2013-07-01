@@ -90,11 +90,10 @@ public class DocearUserRegistrationAction extends AWorkspaceAction {
 		
 		desc = new WizardPageDescriptor("page.registration.keep_workspace", new KeepWorkspaceSettingsPagePanel()) {
 			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
+					WorkspaceController.save();
 					if(((KeepWorkspaceSettingsPagePanel) getPage()).isKeepSettingsEnabled()) {
 						try {
-							WorkspaceController.save();
 							moveUserSettings(DocearUserController.getActiveUser(), context.get(DocearUser.class));
-							WorkspaceController.clear();
 						}
 						catch (Exception e) {
 							LogUtils.warn("org.docear.plugin.services.features.user.action.DocearUserRegistrationAction.initWizard(wizard): "+ e.getMessage());

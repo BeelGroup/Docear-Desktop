@@ -204,6 +204,7 @@ public class DocearUserController extends ADocearServiceFeature {
 				if(event.getUser() instanceof DocearUser) {
 					((DocearUser)event.getUser()).setOnline(false);
 					WorkspaceController.save();
+					WorkspaceController.clear();
 				}
 				event.getUser().removePropertyChangeListener(getUserPropertyChangeListener());
 			}

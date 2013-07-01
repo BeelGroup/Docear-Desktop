@@ -36,7 +36,6 @@ import org.freeplane.plugin.workspace.creator.FolderTypePhysicalCreator;
 import org.freeplane.plugin.workspace.creator.FolderTypeVirtualCreator;
 import org.freeplane.plugin.workspace.creator.LinkCreator;
 import org.freeplane.plugin.workspace.creator.LinkTypeFileCreator;
-import org.freeplane.plugin.workspace.creator.ProjectRootCreator;
 import org.freeplane.plugin.workspace.model.AWorkspaceNodeCreator;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.IResultProcessor;
@@ -58,7 +57,7 @@ public class DocearWorkspaceToProjectConverter {
 	private FolderCreator folderCreator = null;
 	private LinkCreator linkCreator = null;
 	private ActionCreator actionCreator = null;
-	private ProjectRootCreator projectRootCreator = null;
+	private AWorkspaceNodeCreator projectRootCreator = null;
 	
 	private FolderTypeLibraryCreator folderTypeLibraryCreator;
 	private AWorkspaceNodeCreator folderTypeLiteratureRepositoryCreator;
@@ -104,9 +103,20 @@ public class DocearWorkspaceToProjectConverter {
 	
 	}
 
-	private ProjectRootCreator getProjectRootCreator() {
+	private AWorkspaceNodeCreator getProjectRootCreator() {
 		if (this.projectRootCreator == null) {
-			this.projectRootCreator = new ProjectRootCreator();
+			this.projectRootCreator = new AWorkspaceNodeCreator() {
+				public AWorkspaceTreeNode getNode(XMLElement data) {
+					ProjectRootNode node = new ProjectRootNode();
+					String name = data.getAttribute("name", "project");
+					String id = data.getAttribute("id", null);
+					String version = DocearWorkspaceProject.CURRENT_PROJECT_VERSION.getVersionString();
+					node.setName(name.replace("(Workspace)", "").trim());
+					node.setProjectID(id);
+					node.setVersion(version);
+					return node;
+				}
+			};
 			this.projectRootCreator.setResultProcessor(getDefaultResultProcessor());
 		}
 		return this.projectRootCreator;
