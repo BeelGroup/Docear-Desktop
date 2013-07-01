@@ -517,7 +517,7 @@ public class ReferencesController extends ALanguageController implements IDocear
 		});
 		modeController.getUserInputListenerFactory().getRibbonBuilder().registerContributorFactory("UpdateReferencesAllMapsAction", new UpdateReferencesAllMapsActionContributorFactory(WorkspaceController.getModeExtension(modeController)));
 		
-		File file = new File(Compat.getApplicationUserDirectory(), "mindmapmoderibbon.xml");		
+		File file = new File(Compat.getApplicationUserDirectory(), "docear_references_ribbon.xml");		
 		if (file.exists()) {
 			LogUtils.info("using alternative ribbon configuration file: "+file.getAbsolutePath());
 			try {				
