@@ -82,7 +82,7 @@ public class DocearNewProjectAction extends AWorkspaceAction {
 		
 		//WORKSPACE - todo: ask for permission to create the directory or check for always_create setting
 		if(!path.exists() ) {
-			path.mkdir();
+			path.mkdirs();
 		}
 		
 		String projectName = null;		

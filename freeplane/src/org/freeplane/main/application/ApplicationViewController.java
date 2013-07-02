@@ -502,6 +502,22 @@ class ApplicationViewController extends FrameController {
 			 */
 		});
 		
+		frame.setFocusTraversalKeysEnabled(false);
+		final int win_width = ResourceController.getResourceController().getIntProperty("appwindow_width", -1);
+		final int win_height = ResourceController.getResourceController().getIntProperty("appwindow_height", -1);
+		final int win_x = ResourceController.getResourceController().getIntProperty("appwindow_x", -1);
+		final int win_y = ResourceController.getResourceController().getIntProperty("appwindow_y", -1);
+		UITools.setBounds(frame, win_x, win_y, win_width, win_height);
+		setFrameSize(frame.getBounds());
+		applyFrameSize(frame, win_x, win_y);
+		
+		int win_state = Integer
+		    .parseInt(ResourceController.getResourceController().getProperty("appwindow_state", "0"));
+		win_state = ((win_state & Frame.ICONIFIED) != 0) ? Frame.NORMAL : win_state;
+		frame.setExtendedState(win_state);
+	}
+
+	private void applyFrameSize(final JFrame frame, int win_x, int win_y) {
 		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		Rectangle r = env.getMaximumWindowBounds();
 		for(GraphicsDevice device : env.getScreenDevices()) {
@@ -510,23 +526,10 @@ class ApplicationViewController extends FrameController {
 				r.add(bounds);
 			}
 		}
-		
-		frame.setFocusTraversalKeysEnabled(false);
-		final int win_width = ResourceController.getResourceController().getIntProperty("appwindow_width", -1);
-		final int win_height = ResourceController.getResourceController().getIntProperty("appwindow_height", -1);
-		final int win_x = ResourceController.getResourceController().getIntProperty("appwindow_x", -1);
-		final int win_y = ResourceController.getResourceController().getIntProperty("appwindow_y", -1);
-		UITools.setBounds(frame, win_x, win_y, win_width, win_height);
-		setFrameSize(frame.getBounds());
-		
 		frame.applyComponentOrientation(ComponentOrientation.getOrientation(Locale.getDefault()));
-		frame.setPreferredSize(new Dimension(Math.min(r.width, win_width), Math.min(r.height, win_height)));
+		frame.setPreferredSize(new Dimension(Math.min(r.width, frame.getBounds().width), Math.min(r.height, frame.getBounds().height)));
+//		frame.setLocation(Math.max(r.x, frame.getBounds().x), Math.max(r.y, frame.getBounds().y));
 		frame.setLocation(Math.max(r.x, win_x), Math.max(r.y, win_y));
-		
-		int win_state = Integer
-		    .parseInt(ResourceController.getResourceController().getProperty("appwindow_state", "0"));
-		win_state = ((win_state & Frame.ICONIFIED) != 0) ? Frame.NORMAL : win_state;
-		frame.setExtendedState(win_state);
 	}
 
 }
