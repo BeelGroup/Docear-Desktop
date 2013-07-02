@@ -24,6 +24,21 @@
 					<ribbon_action action="SaveAll" />
 				</entry_group>				
 			</primary_entry>
+			<primary_entry name="import_export">
+			    <entry_group name="export">
+					<ribbon_action action="ExportAction"/>
+					<ribbon_action action="ExportBranchAction" accelerator="alt shift A" />
+				</entry_group>
+			    <entry_group name="import">
+					<ribbon_action action="ImportBranchAction" />
+					<ribbon_action action="ImportLinkedBranchAction"/>
+					<ribbon_action action="ImportLinkedBranchWithoutRootAction"/>
+					
+					<ribbon_action action="ImportExplorerFavoritesAction"/>
+					<ribbon_action action="ImportFolderStructureAction"/>
+					<ribbon_action action="ImportMindmanagerFiles"/>
+				</entry_group>				
+			</primary_entry>
 			<primary_entry name="print">
 			   	<entry_group name="print">
 			    	<ribbon_action action="PageAction" />				
