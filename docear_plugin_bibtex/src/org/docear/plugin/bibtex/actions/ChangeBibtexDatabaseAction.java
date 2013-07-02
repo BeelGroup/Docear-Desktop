@@ -19,7 +19,6 @@ import org.freeplane.plugin.workspace.components.menu.CheckEnableOnPopup;
 @CheckEnableOnPopup
 @EnabledAction(checkOnNodeChange=true)
 public class ChangeBibtexDatabaseAction extends AWorkspaceAction {
-	
 	public static final String KEY = "ChangeBibtexDatabaseAction";
 	/**
 	 * 

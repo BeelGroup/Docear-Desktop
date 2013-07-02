@@ -133,6 +133,7 @@ public class ReferencesController extends ALanguageController implements IDocear
 	private AFreeplaneAction changeBibtexDatabase = new ChangeBibtexDatabaseAction();
 	private AFreeplaneAction removeReference = new RemoveReferenceAction();
 	private AFreeplaneAction addNewReference = new AddNewReferenceAction();
+
 	private AFreeplaneAction copyBibtex = new CopyBibtexToClipboard();
 	private AFreeplaneAction copyCiteKey = new CopyCiteKeyToClipboard();
 	
@@ -415,7 +416,10 @@ public class ReferencesController extends ALanguageController implements IDocear
 //		WorkspaceController.addAction(updateReferencesInLibrary);
 		
 		Controller.getCurrentController().addAction(new AddOrUpdateReferenceEntryWorkspaceAction());
-
+		WorkspaceController.addAction(changeBibtexDatabase);
+        WorkspaceController.addAction(addExistingReference);
+        WorkspaceController.addAction(removeReference);
+        WorkspaceController.addAction(copyBibtex);
 		this.modeController.addMenuContributor(new IMenuContributor() {
 
 			public void updateMenus(ModeController modeController, MenuBuilder builder) {
@@ -460,6 +464,7 @@ public class ReferencesController extends ALanguageController implements IDocear
 						MenuBuilder.AS_CHILD);
 //				builder.addAction(MENU_BAR + REFERENCE_MANAGEMENT_MENU + UPDATE_REFERENCES_MENU, updateReferencesInLibrary,
 //						MenuBuilder.AS_CHILD);
+
 				builder.addAction(MENU_BAR + REFERENCE_MANAGEMENT_MENU + UPDATE_REFERENCES_MENU, updateReferencesAllMaps,
 						MenuBuilder.AS_CHILD);
 //				builder.addAction(MENU_BAR + REFERENCE_MANAGEMENT_MENU + UPDATE_REFERENCES_MENU, ConvertSplmmReferences,
@@ -503,6 +508,7 @@ public class ReferencesController extends ALanguageController implements IDocear
 						updateReferencesAllOpenMaps, MenuBuilder.AS_CHILD);
 //				builder.addAction(referencesCategory + REFERENCE_MANAGEMENT_MENU + UPDATE_REFERENCES_MENU,
 //						updateReferencesInLibrary, MenuBuilder.AS_CHILD);
+
 				builder.addAction(referencesCategory + REFERENCE_MANAGEMENT_MENU + UPDATE_REFERENCES_MENU,
 						updateReferencesAllMaps, MenuBuilder.AS_CHILD);
 //				builder.addAction(parentMenu + REFERENCE_MANAGEMENT_MENU + UPDATE_REFERENCES_MENU, 

@@ -3,6 +3,7 @@ package org.docear.plugin.core.workspace.compatible;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -36,7 +37,6 @@ import org.freeplane.plugin.workspace.creator.FolderTypePhysicalCreator;
 import org.freeplane.plugin.workspace.creator.FolderTypeVirtualCreator;
 import org.freeplane.plugin.workspace.creator.LinkCreator;
 import org.freeplane.plugin.workspace.creator.LinkTypeFileCreator;
-import org.freeplane.plugin.workspace.creator.ProjectRootCreator;
 import org.freeplane.plugin.workspace.model.AWorkspaceNodeCreator;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.IResultProcessor;
@@ -58,7 +58,7 @@ public class DocearWorkspaceToProjectConverter {
 	private FolderCreator folderCreator = null;
 	private LinkCreator linkCreator = null;
 	private ActionCreator actionCreator = null;
-	private ProjectRootCreator projectRootCreator = null;
+	private AWorkspaceNodeCreator projectRootCreator = null;
 	
 	private FolderTypeLibraryCreator folderTypeLibraryCreator;
 	private AWorkspaceNodeCreator folderTypeLiteratureRepositoryCreator;
@@ -104,9 +104,20 @@ public class DocearWorkspaceToProjectConverter {
 	
 	}
 
-	private ProjectRootCreator getProjectRootCreator() {
+	private AWorkspaceNodeCreator getProjectRootCreator() {
 		if (this.projectRootCreator == null) {
-			this.projectRootCreator = new ProjectRootCreator();
+			this.projectRootCreator = new AWorkspaceNodeCreator() {
+				public AWorkspaceTreeNode getNode(XMLElement data) {
+					ProjectRootNode node = new ProjectRootNode();
+					String name = data.getAttribute("name", "project");
+					String id = data.getAttribute("id", null);
+					String version = DocearWorkspaceProject.CURRENT_PROJECT_VERSION.getVersionString();
+					node.setName(name.replace("(Workspace)", "").trim());
+					node.setProjectID(id);
+					node.setVersion(version);
+					return node;
+				}
+			};
 			this.projectRootCreator.setResultProcessor(getDefaultResultProcessor());
 		}
 		return this.projectRootCreator;
@@ -238,7 +249,17 @@ public class DocearWorkspaceToProjectConverter {
 
 	private void load(final URI xmlFile) throws MalformedURLException, XMLException, IOException {
 		final TreeXmlReader reader = new TreeXmlReader(readManager);
-		reader.load(new InputStreamReader(new BufferedInputStream(xmlFile.toURL().openStream())));
+		InputStream stream = xmlFile.toURL().openStream();
+		try {
+			reader.load(new InputStreamReader(new BufferedInputStream(stream)));
+		}
+		finally {
+			try {
+				stream.close();
+			}
+			catch (IOException e) {
+			}
+		}
 	}
 	
 	private IResultProcessor getDefaultResultProcessor() {
@@ -260,6 +281,12 @@ public class DocearWorkspaceToProjectConverter {
 					DocearConversionURLHandler.setTargetProject(project);
 					converter.getDefaultResultProcessor().setProject(project);
 					converter.load(workspaceSettings.toURI());
+				}
+				//delete old workspace settings, if selected
+				if(descriptor.deleteOldSettings()) {
+					if(!workspaceSettings.delete()) {
+						LogUtils.info("could not delete: "+workspaceSettings);
+					}
 				}
 			}
 			catch (Exception e) {

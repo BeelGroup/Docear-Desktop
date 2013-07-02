@@ -11,6 +11,7 @@ public class DocearConversionDescriptor implements IWorkspaceProjectExtension {
 	public static final String OLD_WORKSPACE_URL_HANDLE = "workspace";
 	private final DocearWorkspaceProject target;
 	private final String profileName;
+	private boolean deleteOldSettings = false;
 
 	/***********************************************************************************
 	 * CONSTRUCTORS
@@ -46,9 +47,20 @@ public class DocearConversionDescriptor implements IWorkspaceProjectExtension {
 		File profilesHome = new File(projectHome, "_data/profiles/");
 		return profilesHome;
 	}
+	
+	public void setDeleteOldSettings(boolean selected) {
+		deleteOldSettings = selected;
+	}
+	
+	public boolean deleteOldSettings() {
+		return deleteOldSettings;
+	}
+	
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
 	 **********************************************************************************/
+
+	
 
 	
 }

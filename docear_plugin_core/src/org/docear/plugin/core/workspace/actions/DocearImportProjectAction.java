@@ -49,7 +49,8 @@ public class DocearImportProjectAction extends AWorkspaceAction {
 		//new project page
 		WizardPageDescriptor desc = new WizardPageDescriptor("page.project.import", new ImportProjectPagePanel()) {
 			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
-				context.set(DocearWorkspaceProject.class, ((ImportProjectPagePanel)getPage()).getProject());
+				AWorkspaceProject project = ((ImportProjectPagePanel)getPage()).getProject();
+				context.set(DocearWorkspaceProject.class, project);
 				return Wizard.FINISH_PAGE;
 			}
 

@@ -113,27 +113,27 @@ public class DocearWorkspaceProject extends AWorkspaceProject {
 		}
 		return null;
 	}
-	
-	public void changeBibtexURI(URI path) {
-		if(path == null) {
-			return;
-		}
-		IBibtexDatabase ref = null;
-		synchronized (referencesIndex) {
-			if(referencesIndex.size() > 0) {
-				URI oldUri = referencesIndex.get(0).getUri();
-				if(!path.equals(oldUri)) {
-					ref = referencesIndex.get(0);
-					ref.setUri(path);
-				}
-			}
-		}
-		if(ref != null) {
-     		DocearProjectChangedEvent event = new DocearProjectChangedEvent(this, ref, DocearEventType.LIBRARY_CHANGED); 
-    		//new DocearEvent(this, (DocearWorkspaceProject) WorkspaceController.getCurrentModel().getProject(getModel()), DocearEventType.LIBRARY_CHANGED, ref);
-    		fireProjectChanged(event);
-		}
-	}
+
+    public void changeBibtexURI(URI path) {
+        if(path == null) {
+            return;
+        }
+        IBibtexDatabase ref = null;
+        synchronized (referencesIndex) {
+            if(referencesIndex.size() > 0) {
+                URI oldUri = referencesIndex.get(0).getUri();
+                if(!path.equals(oldUri)) {
+                    ref = referencesIndex.get(0);
+                    ref.setUri(path);
+                }
+            }
+        }
+        if(ref != null) {
+            DocearProjectChangedEvent event = new DocearProjectChangedEvent(this, ref, DocearEventType.LIBRARY_CHANGED); 
+            //new DocearEvent(this, (DocearWorkspaceProject) WorkspaceController.getCurrentModel().getProject(getModel()), DocearEventType.LIBRARY_CHANGED, ref);
+            fireProjectChanged(event);
+        }
+    }	
 	
 	public URI getRelativeLibraryPath() {
 		return getRelativeURI(getProjectLibraryPath());
@@ -262,8 +262,5 @@ public class DocearWorkspaceProject extends AWorkspaceProject {
 	public int hashCode() {
 		return getProjectID().hashCode();
 	}
-	
-	
-	
 	
 }
