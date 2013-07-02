@@ -293,7 +293,7 @@ public class DocearProjectLoader extends ProjectLoader {
 			createAndCopy(bibPath, "/demo/docear_example.bib", true, replaceMapping);
 		}
 		
-		createAndCopy(new File(URIUtils.getFile(project.getProjectHome()), "My New Paper.mm"), "/demo/docear_example_project/My New Paper.mm", replaceMapping);
+		createAndCopy(new File(defaultFilesPath, "My New Paper.mm"), "/demo/docear_example_project/My New Paper.mm", replaceMapping);
 		
 		createAndCopy(new File(repoPath, "Academic Search Engine Optimization (ASEO) -- Optimizing Scholarly Literature for Google Scholar and Co.pdf"), "/demo/docear_example_pdfs/Academic Search Engine Optimization (ASEO) -- Optimizing Scholarly Literature for Google Scholar and Co.pdf");
 		createAndCopy(new File(repoPath, "Academic search engine spam and Google Scholars resilience against it.pdf"), "/demo/docear_example_pdfs/Academic search engine spam and Google Scholars resilience against it.pdf");
