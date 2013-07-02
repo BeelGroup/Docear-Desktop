@@ -21,10 +21,15 @@ package org.freeplane.main.application;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.ComponentOrientation;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Frame;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.LayoutManager;
+import java.awt.Rectangle;
 import java.awt.dnd.DropTarget;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -35,6 +40,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.MessageFormat;
+import java.util.Locale;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -495,6 +501,16 @@ class ApplicationViewController extends FrameController {
 			 * example the note window was active.
 			 */
 		});
+		
+		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		Rectangle r = env.getMaximumWindowBounds();
+		for(GraphicsDevice device : env.getScreenDevices()) {
+			if(!device.equals(env.getDefaultScreenDevice())) {
+				Rectangle bounds = device.getDefaultConfiguration().getBounds();
+				r.add(bounds);
+			}
+		}
+		
 		frame.setFocusTraversalKeysEnabled(false);
 		final int win_width = ResourceController.getResourceController().getIntProperty("appwindow_width", -1);
 		final int win_height = ResourceController.getResourceController().getIntProperty("appwindow_height", -1);
@@ -502,6 +518,11 @@ class ApplicationViewController extends FrameController {
 		final int win_y = ResourceController.getResourceController().getIntProperty("appwindow_y", -1);
 		UITools.setBounds(frame, win_x, win_y, win_width, win_height);
 		setFrameSize(frame.getBounds());
+		
+		frame.applyComponentOrientation(ComponentOrientation.getOrientation(Locale.getDefault()));
+		frame.setPreferredSize(new Dimension(Math.min(r.width, win_width), Math.min(r.height, win_height)));
+		frame.setLocation(Math.max(r.x, win_x), Math.max(r.y, win_y));
+		
 		int win_state = Integer
 		    .parseInt(ResourceController.getResourceController().getProperty("appwindow_state", "0"));
 		win_state = ((win_state & Frame.ICONIFIED) != 0) ? Frame.NORMAL : win_state;
