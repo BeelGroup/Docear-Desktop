@@ -58,7 +58,7 @@ public class RibbonMenuSecondaryGroupContributorFactory implements IRibbonContri
 					}
 				}
 				for (ActionListener l : button.getListeners(ActionListener.class)) {
-					if(listener instanceof RibbonActionListener) {
+					if(l instanceof RibbonActionListener) {
 						listener = l;
 						break;
 					}
