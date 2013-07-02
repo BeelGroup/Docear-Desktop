@@ -25,9 +25,19 @@ public class RibbonMapChangeAdapter implements INodeSelectionListener, INodeChan
 		}
 	}
 	
+	public void selectionChanged(Object selection) {
+		CurrentState state = new CurrentState();
+		if(selection != null) {
+			state.set(selection.getClass(), selection);
+		}
+		fireStateChanged(state);
+	}
+	
 
 	public void mapChanged(MapChangeEvent event) {
-		fireSelectionChanged(event.getMap().getRootNode());		
+		CurrentState state = new CurrentState();
+		state.set(NodeModel.class, event.getMap().getRootNode());
+		fireStateChanged(state);		
 	}
 
 	public void onNodeDeleted(NodeModel parent, NodeModel child, int index) {
@@ -56,7 +66,9 @@ public class RibbonMapChangeAdapter implements INodeSelectionListener, INodeChan
 	}
 
 	public void nodeChanged(NodeChangeEvent event) {
-		fireSelectionChanged(event.getNode());
+		CurrentState state = new CurrentState();
+		state.set(NodeModel.class, event.getNode());
+		fireStateChanged(state);
 	}
 
 	public void onDeselect(NodeModel node) {
@@ -65,13 +77,15 @@ public class RibbonMapChangeAdapter implements INodeSelectionListener, INodeChan
 	}
 
 	public void onSelect(NodeModel node) {
-		fireSelectionChanged(node);
+		CurrentState state = new CurrentState();
+		state.set(NodeModel.class, node);
+		fireStateChanged(state);
 		
 	}
-	protected void fireSelectionChanged(NodeModel node) {
+	protected void fireStateChanged(CurrentState state) {
 		synchronized (listeners) {
 			for (IChangeObserver observer : listeners) {
-				observer.updateState(node);
+				observer.updateState(state);
 			}
 		}
 	}

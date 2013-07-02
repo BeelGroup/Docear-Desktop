@@ -8,6 +8,7 @@ import javax.swing.JFileChooser;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.docear.plugin.core.workspace.node.FolderTypeLiteratureRepositoryNode;
 import org.docear.plugin.core.workspace.node.LiteratureRepositoryPathNode;
+import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.features.url.UrlManager;
 import org.freeplane.plugin.workspace.URIUtils;
@@ -18,6 +19,7 @@ import org.freeplane.plugin.workspace.components.menu.CheckEnableOnPopup;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
 @CheckEnableOnPopup
+@EnabledAction(checkOnNodeChange=true)
 public class DocearAddRepositoryPathAction extends AWorkspaceAction {
 	private static final long serialVersionUID = 1L;
 	

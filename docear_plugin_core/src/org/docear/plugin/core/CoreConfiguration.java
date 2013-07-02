@@ -40,7 +40,6 @@ import org.docear.plugin.core.listeners.PropertyListener;
 import org.docear.plugin.core.listeners.PropertyLoadListener;
 import org.docear.plugin.core.listeners.WorkspaceOpenDocumentListener;
 import org.docear.plugin.core.logger.DocearLogEvent;
-import org.docear.plugin.core.ui.ribbons.DocearNodePrivacyContributorFactory;
 import org.docear.plugin.core.workspace.actions.DocearAddRepositoryPathAction;
 import org.docear.plugin.core.workspace.actions.DocearImportProjectAction;
 import org.docear.plugin.core.workspace.actions.DocearLibraryNewMindmap;
@@ -59,6 +58,7 @@ import org.freeplane.core.resources.components.IPropertyControl;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.IMenuContributor;
 import org.freeplane.core.ui.MenuBuilder;
+import org.freeplane.core.ui.ribbon.RibbonMapChangeAdapter;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.ConfigurationUtils;
 import org.freeplane.core.util.LogUtils;
@@ -79,10 +79,13 @@ import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.actions.AWorkspaceAction;
 import org.freeplane.plugin.workspace.components.IWorkspaceView;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
+import org.freeplane.plugin.workspace.features.AWorkspaceModeExtension;
 import org.freeplane.plugin.workspace.mindmapmode.FileFolderDropHandler;
 import org.freeplane.plugin.workspace.mindmapmode.VirtualFolderDropHandler;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
+import org.freeplane.plugin.workspace.model.project.IProjectSelectionListener;
+import org.freeplane.plugin.workspace.model.project.ProjectSelectionEvent;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 
 import com.sun.jna.platform.win32.Kernel32;
@@ -112,7 +115,8 @@ public class CoreConfiguration extends ALanguageController {
 
 	public static final String DOCUMENT_REPOSITORY_PATH = "@@literature_repository@@";
 	public static final String LIBRARY_PATH = "@@library_mindmaps@@"; 
-	private IControllerExecuteExtension docearExecutor; 
+	private IControllerExecuteExtension docearExecutor;
+	private IProjectSelectionListener selectionListener; 
 		
 	public CoreConfiguration() {			
 		LogUtils.info("org.docear.plugin.core.CoreConfiguration() initializing...");
@@ -273,11 +277,12 @@ public class CoreConfiguration extends ALanguageController {
 		
 		DocearProjectLoader docearProjectLoader = new DocearProjectLoader();
 		WorkspaceController.getModeExtension(modeController).setProjectLoader(docearProjectLoader);
-		
-		IWorkspaceView view = WorkspaceController.getModeExtension(modeController).getView();
+		AWorkspaceModeExtension modeExt = WorkspaceController.getModeExtension(modeController);
+		IWorkspaceView view = modeExt.getView();
 		if(view != null) {
 			view.getTransferHandler().registerNodeDropHandler(FolderTypeLibraryNode.class, new VirtualFolderDropHandler());
 			view.getTransferHandler().registerNodeDropHandler(LiteratureRepositoryPathNode.class, new FileFolderDropHandler());
+			view.addProjectSelectionListener(getWSSelectionListener(modeController.getUserInputListenerFactory().getRibbonBuilder().getMapChangeAdapter()));
 		}
 		
 		DocearController.getController().getDocearEventLogger().appendToLog(this, DocearLogEvent.APPLICATION_STARTED);
@@ -317,6 +322,20 @@ public class CoreConfiguration extends ALanguageController {
 		UrlManager.getController().setLastCurrentDir(URIUtils.getAbsoluteFile(WorkspaceController.getModeExtension(modeController).getDefaultProjectHome()));	
 	}
 	
+	private IProjectSelectionListener getWSSelectionListener(final RibbonMapChangeAdapter mapChangeAdapter) {
+		if(selectionListener == null) {
+			selectionListener = new IProjectSelectionListener() {				
+				@Override
+				public void selectionChanged(ProjectSelectionEvent evt) {
+					if(mapChangeAdapter != null) {
+						mapChangeAdapter.selectionChanged(evt.getSelectedProject());
+					}
+				}
+			};
+		}
+		return selectionListener;
+	}
+
 	private void loadAndStoreVersion(Controller controller) {
 		//DOCEAR: has to be called before the splash is showing
 		final Properties versionProperties = new Properties();

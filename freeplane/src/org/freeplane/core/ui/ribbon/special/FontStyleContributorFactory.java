@@ -9,12 +9,12 @@ import javax.swing.JComponent;
 
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.ribbon.ARibbonContributor;
+import org.freeplane.core.ui.ribbon.CurrentState;
 import org.freeplane.core.ui.ribbon.IChangeObserver;
 import org.freeplane.core.ui.ribbon.IRibbonContributorFactory;
 import org.freeplane.core.ui.ribbon.RibbonActionContributorFactory;
 import org.freeplane.core.ui.ribbon.RibbonBuildContext;
 import org.freeplane.core.util.TextUtils;
-import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.styles.mindmapmode.MUIFactory;
 import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
@@ -114,7 +114,7 @@ public class FontStyleContributorFactory implements IRibbonContributorFactory {
 
 	private void addDefaultToggleHandler(final RibbonBuildContext context, final AFreeplaneAction action, final JCommandToggleButton button) {
 		context.getBuilder().getMapChangeAdapter().addListener(new IChangeObserver() {
-			public void updateState(NodeModel node) {
+			public void updateState(CurrentState state) {
 				if (AFreeplaneAction.checkSelectionOnChange(action)) {
 					action.setSelected();
 					button.getActionModel().setSelected(action.isSelected());

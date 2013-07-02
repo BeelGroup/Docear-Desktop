@@ -26,7 +26,6 @@ import org.freeplane.core.ui.ribbon.RibbonSeparatorContributorFactory.RibbonSepa
 import org.freeplane.core.ui.ribbon.StructureTree.StructurePath;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.TextUtils;
-import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
@@ -473,7 +472,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 			actionMap.clear();
 		}
 		
-		public void updateState(NodeModel node) {
+		public void updateState(CurrentState state) {
 			for (Entry<AFreeplaneAction, AbstractCommandButton> entry : actionMap.entrySet()) {
 				updateActionState(entry.getKey(), entry.getValue());
 			}

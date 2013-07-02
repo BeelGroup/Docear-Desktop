@@ -8,12 +8,12 @@ import javax.swing.ButtonGroup;
 
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.ribbon.ARibbonContributor;
+import org.freeplane.core.ui.ribbon.CurrentState;
 import org.freeplane.core.ui.ribbon.IChangeObserver;
 import org.freeplane.core.ui.ribbon.IRibbonContributorFactory;
 import org.freeplane.core.ui.ribbon.RibbonActionContributorFactory;
 import org.freeplane.core.ui.ribbon.RibbonBuildContext;
 import org.freeplane.core.util.TextUtils;
-import org.freeplane.features.map.NodeModel;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandButton.CommandButtonKind;
 import org.pushingpixels.flamingo.api.common.JCommandToggleButton;
@@ -161,7 +161,7 @@ public class EdgeStyleContributorFactory implements IRibbonContributorFactory {
 
 	private void addDefaultToggleHandler(final RibbonBuildContext context, final AFreeplaneAction action, final JCommandToggleButton button) {
 		context.getBuilder().getMapChangeAdapter().addListener(new IChangeObserver() {
-			public void updateState(NodeModel node) {
+			public void updateState(CurrentState state) {
 				if (AFreeplaneAction.checkSelectionOnChange(action)) {
 					action.setSelected();
 					button.getActionModel().setSelected(action.isSelected());

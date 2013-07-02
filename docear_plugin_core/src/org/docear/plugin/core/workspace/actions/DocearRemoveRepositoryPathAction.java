@@ -8,6 +8,7 @@ import javax.swing.tree.TreePath;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.docear.plugin.core.workspace.node.FolderTypeLiteratureRepositoryNode;
 import org.docear.plugin.core.workspace.node.LiteratureRepositoryPathNode;
+import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
@@ -18,6 +19,7 @@ import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
 @CheckEnableOnPopup
+@EnabledAction(checkOnNodeChange=true)
 public class DocearRemoveRepositoryPathAction extends AWorkspaceAction {
 	private static final long serialVersionUID = 1L;
 	

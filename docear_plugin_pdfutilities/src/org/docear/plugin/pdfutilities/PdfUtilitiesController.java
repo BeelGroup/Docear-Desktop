@@ -105,6 +105,7 @@ import org.freeplane.core.ui.IMouseListener;
 import org.freeplane.core.ui.MenuBuilder;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.ui.ribbon.ARibbonContributor;
+import org.freeplane.core.ui.ribbon.CurrentState;
 import org.freeplane.core.ui.ribbon.IChangeObserver;
 import org.freeplane.core.ui.ribbon.IRibbonContributorFactory;
 import org.freeplane.core.ui.ribbon.RibbonActionContributorFactory;
@@ -1628,33 +1629,36 @@ public class PdfUtilitiesController extends ALanguageController {
 					parent.addChild(subfoldersButton, childProps);
 					
 					context.getBuilder().getMapChangeAdapter().addListener(new IChangeObserver() {
-						public void updateState(NodeModel node) {
+						public void updateState(CurrentState state) {
 							boolean selected = true;
-							int value = NodeUtilities.getAttributeIntValue(node, PdfUtilitiesController.MON_FLATTEN_DIRS);
-							if(value == 0){
-								selected = false;
+							NodeModel node = state.get(NodeModel.class);
+							if(node != null) {
+    							int value = NodeUtilities.getAttributeIntValue(node, PdfUtilitiesController.MON_FLATTEN_DIRS);
+    							if(value == 0){
+    								selected = false;
+    							}
+    							
+    							updateMonitoringFolderAction.setEnabled();
+    							updateButton.setEnabled(updateMonitoringFolderAction.isEnabled());
+    							
+    							flattenButton.getActionModel().setSelected(selected);
+    							flattenButton.setEnabled(updateMonitoringFolderAction.isEnabled());
+    							
+    							updateMonitoringFolderAction.setEnabled();
+    							updateButton.setEnabled(updateMonitoringFolderAction.isEnabled());
+    							
+    							addMonitoringFolderAction.setEnabled();
+    							addFolderButton.setEnabled(addMonitoringFolderAction.isEnabled());
+    							
+    							editMonitoringFolderAction.setEnabled();
+    							editButton.setEnabled(editMonitoringFolderAction.isEnabled());
+    							
+    							deleteMonitoringFolderAction.setEnabled();
+    							delFolderButton.setEnabled(deleteMonitoringFolderAction.isEnabled());
+    							
+    							autoMonitoringButton.setEnabled(MonitoringUtils.isMonitoringNode(node));
+    							subfoldersButton.setEnabled(MonitoringUtils.isMonitoringNode(node));
 							}
-							
-							updateMonitoringFolderAction.setEnabled();
-							updateButton.setEnabled(updateMonitoringFolderAction.isEnabled());
-							
-							flattenButton.getActionModel().setSelected(selected);
-							flattenButton.setEnabled(updateMonitoringFolderAction.isEnabled());
-							
-							updateMonitoringFolderAction.setEnabled();
-							updateButton.setEnabled(updateMonitoringFolderAction.isEnabled());
-							
-							addMonitoringFolderAction.setEnabled();
-							addFolderButton.setEnabled(addMonitoringFolderAction.isEnabled());
-							
-							editMonitoringFolderAction.setEnabled();
-							editButton.setEnabled(editMonitoringFolderAction.isEnabled());
-							
-							deleteMonitoringFolderAction.setEnabled();
-							delFolderButton.setEnabled(deleteMonitoringFolderAction.isEnabled());
-							
-							autoMonitoringButton.setEnabled(MonitoringUtils.isMonitoringNode(node));
-							subfoldersButton.setEnabled(MonitoringUtils.isMonitoringNode(node));
 						}
 					});
 				}
@@ -1756,7 +1760,7 @@ public class PdfUtilitiesController extends ALanguageController {
 					
 					
 					context.getBuilder().getMapChangeAdapter().addListener(new IChangeObserver() {
-						public void updateState(NodeModel node) {
+						public void updateState(CurrentState state) {
 							importAllAnnotationsAction.setEnabled();
 							importAllChildAnnotationsAction.setEnabled();
 							annoButton.setEnabled(importAllAnnotationsAction.isEnabled() || importAllChildAnnotationsAction.isEnabled());

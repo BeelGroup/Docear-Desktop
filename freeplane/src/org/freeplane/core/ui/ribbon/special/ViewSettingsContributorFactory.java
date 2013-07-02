@@ -7,13 +7,13 @@ import java.util.Properties;
 import org.freeplane.core.resources.SetBooleanPropertyAction;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.ribbon.ARibbonContributor;
+import org.freeplane.core.ui.ribbon.CurrentState;
 import org.freeplane.core.ui.ribbon.IChangeObserver;
 import org.freeplane.core.ui.ribbon.IRibbonContributorFactory;
 import org.freeplane.core.ui.ribbon.RibbonActionContributorFactory;
 import org.freeplane.core.ui.ribbon.RibbonBuildContext;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.attribute.AttributeViewTypeAction;
-import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.note.mindmapmode.SetNoteWindowPosition;
 import org.freeplane.features.styles.mindmapmode.SetBooleanMapPropertyAction;
 import org.freeplane.view.swing.map.ShowNotesInMapAction;
@@ -231,7 +231,7 @@ public class ViewSettingsContributorFactory implements IRibbonContributorFactory
     					popupmenu.addMenuButton(toggleButton);
 						
 						context.getBuilder().getMapChangeAdapter().addListener(new IChangeObserver() {							
-							public void updateState(NodeModel node) {
+							public void updateState(CurrentState state) {
 								showSelectedAttributesAction.setSelected();
 								showSelectedAttributesButton.getActionModel().setSelected(showSelectedAttributesAction.isSelected());
 								showAllAttributesAction.setSelected();
