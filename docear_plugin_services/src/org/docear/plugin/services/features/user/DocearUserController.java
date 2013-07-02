@@ -93,12 +93,15 @@ public class DocearUserController extends ADocearServiceFeature {
 				user.setEnabled(true);
 				user.setAccessToken(token);
 				user.setOnline(true);
+				if (!user.isTransmissionEnabled()) {
+					user.toggleTransmissionEnabled();
+				}
 				return true;
 			}
 			else {
 				throw new DocearServiceException(DocearConnectionProvider.getErrorMessageString(response));
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			throw new DocearServiceException(e.getMessage());
 		} 
 		finally {

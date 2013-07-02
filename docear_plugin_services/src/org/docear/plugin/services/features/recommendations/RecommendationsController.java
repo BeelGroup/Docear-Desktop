@@ -170,6 +170,7 @@ public class RecommendationsController extends ADocearServiceFeature {
 			LogUtils.info("requesting recommendations");
 		}
 		try {
+			DocearUser user = ServiceController.getCurrentUser();
 			String name = ServiceController.getCurrentUser().getUsername();
 			if (!CoreUtils.isEmpty(name)) {
 				MultivaluedMap<String,String> params = new StringKeyStringValueIgnoreCaseMultivaluedMap();

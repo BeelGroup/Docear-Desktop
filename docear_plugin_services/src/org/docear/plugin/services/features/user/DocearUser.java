@@ -42,7 +42,7 @@ public class DocearUser implements IUserAccount, Cloneable {
 	private boolean recommendationsEnabled = false;
 	private boolean synchronizationEnabled = false;
 	private boolean backupEnabled = false;
-	private boolean transmissionEnabled = false;
+	private boolean transmissionEnabled = true;
 	private boolean isNewsletterEnabled = false;
 	
 	private boolean valid = false;
@@ -115,6 +115,7 @@ public class DocearUser implements IUserAccount, Cloneable {
 		}
 		else {
 			this.accessToken = token;
+			setOnline(true);
 			setValid(true);
 		}
 	}
@@ -273,9 +274,10 @@ public class DocearUser implements IUserAccount, Cloneable {
 	
 	public boolean equals(Object obj) {
 		if(obj instanceof DocearUser) {
-			if(getUsername() != null) {
-				return getUsername().equals(((DocearUser) obj).getUsername());
+			if(getUsername() != null) {				
+				return getUsername().equals(((DocearUser) obj).getUsername())  && (getAccessToken() == ((DocearUser) obj).getAccessToken());
 			}
+			
 		}
 		
 		return super.equals(obj);
