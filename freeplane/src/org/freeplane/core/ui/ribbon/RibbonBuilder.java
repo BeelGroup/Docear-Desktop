@@ -2,16 +2,12 @@ package org.freeplane.core.ui.ribbon;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.ComponentOrientation;
 import java.awt.Dimension;
-import java.awt.GraphicsEnvironment;
-import java.awt.Rectangle;
 import java.awt.Window;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.Locale;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -126,14 +122,9 @@ public class RibbonBuilder {
 				Thread.currentThread().setContextClassLoader(contextClassLoader);
 			}
 		}
-		
-		Dimension rv = f.getSize();
-		f.applyComponentOrientation(ComponentOrientation.getOrientation(Locale.getDefault()));
-		Rectangle r = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-		f.setPreferredSize(new Dimension(r.width, r.height / 2));
 		f.setMinimumSize(new Dimension(640,240));
 		f.pack();
-		f.getSize(rv);
+		
 	}
 	
 	public boolean isEnabled() {
