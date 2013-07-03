@@ -569,6 +569,15 @@ public class RegistrationPagePanel extends AWizardPage {
 	public boolean isTermsAccepted() {
 		return chckbxAcceptTOS.isSelected() && chckbxAcceptUsageTerms.isSelected();
 	}
+	
+	public DocearUser getUser() {
+		DocearUser user = cachedContext.get(DocearUser.class);
+		user.setBackupEnabled(isOnlineBackupEnabled());
+		user.setCollaborationEnabled(isCollaborationEnabled());
+		user.setRecommendationsEnabled(isRecommendationsEnabled());
+		user.setSynchronizationEnabled(isSynchronizationEnabled());
+		return user;
+	}
 
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
