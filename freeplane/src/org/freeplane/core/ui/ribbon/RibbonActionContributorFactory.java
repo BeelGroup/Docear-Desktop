@@ -153,6 +153,9 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 		if(tip != null) {
 			button.setActionRichTooltip(tip);
 		}
+		else {
+			button.setActionRichTooltip(null);
+		}
 	}
 
 	public static String formatShortcut(KeyStroke ks) {
