@@ -362,7 +362,13 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 										((JCommandMenuButton)menuButton).setPopupCallback(((JCommandButton) button).getPopupCallback());
 									}
 								}
-								
+								//clear all RibbonActionListeners from the menuButton
+								for (ActionListener listener : menuButton.getListeners(ActionListener.class)) {
+									if(listener instanceof RibbonActionListener) {
+										menuButton.removeActionListener(listener);
+									}
+								}
+								//add 
 								for (ActionListener listener : button.getListeners(ActionListener.class)) {
 									if(listener instanceof RibbonActionListener) {
 										menuButton.addActionListener(listener);
