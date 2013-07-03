@@ -311,6 +311,7 @@ public class MModeControllerFactory {
 		modeController.addAction(new SetAcceleratorOnNextClickAction());
 		modeController.addAction(new ShowNotesInMapAction());
 		userInputListenerFactory.getMenuBuilder().setAcceleratorChangeListener(fButtonToolBar);
+		userInputListenerFactory.getRibbonBuilder().getAcceleratorManager().setAcceleratorChangeListener(fButtonToolBar);
 		userInputListenerFactory.addToolBar("/icon_toolbar", ViewController.LEFT, ((MIconController) IconController
 		    .getController()).getIconToolBarScrollPane());
 		modeController.addAction(new ToggleToolbarAction("ToggleLeftToolbarAction", "/icon_toolbar"));

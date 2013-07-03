@@ -55,9 +55,9 @@ public class RibbonBuilder {
 		registerContributorFactory("separator", new RibbonSeparatorContributorFactory());
 		registerContributorFactory("ribbon_menu", new RibbonMenuContributorFactory());
 		registerContributorFactory("ribbon_taskbar", new RibbonTaskbarContributorFactory());
-		registerContributorFactory("primary_entry", new RibbonMenuPrimaryContributorFactory());
+		registerContributorFactory("primary_entry", new RibbonMenuPrimaryContributorFactory(this));
 		registerContributorFactory("entry_group", new RibbonMenuSecondaryGroupContributorFactory());
-		registerContributorFactory("footer_entry", new RibbonMenuFooterContributorFactory());
+		registerContributorFactory("footer_entry", new RibbonMenuFooterContributorFactory(this));
 		registerContributorFactory("ribbon_task", new RibbonTaskContributorFactory());
 		registerContributorFactory("ribbon_band", new RibbonBandContributorFactory());
 		registerContributorFactory("ribbon_action", new RibbonActionContributorFactory(this));
@@ -65,7 +65,7 @@ public class RibbonBuilder {
 		registerContributorFactory("edgeStyleContributor", new EdgeStyleContributorFactory());		
 		registerContributorFactory("ribbon_flowband", new FlowRibbonBandContributorFactory());
 		
-		registerContributorFactory("zoomContributor", new ZoomContributorFactory());		
+		registerContributorFactory("zoomContributor", new ZoomContributorFactory(this));		
 		registerContributorFactory("viewSettingsContributor", new ViewSettingsContributorFactory());
 		registerContributorFactory("filterConditionsContributor", new FilterConditionsContributorFactory());
 		
