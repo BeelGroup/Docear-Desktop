@@ -80,7 +80,7 @@ public class BibtexNodeDropListener extends DocearNodeDropListener {
 							@Override
 							public void run() {								
 								MindmapUpdateController mindmapUpdateController = new MindmapUpdateController(false);
-								mindmapUpdateController.addMindmapUpdater(new ReferenceUpdater(TextUtils.getText("update_references_open_mindmaps")));
+								mindmapUpdateController.addMindmapUpdater(new ReferenceUpdater(TextUtils.getText("update_references_ribbon.menu.group.ribbon.menu.group.open_mindmaps")));
 								mindmapUpdateController.updateCurrentMindmap(true);
 							}
 						});
