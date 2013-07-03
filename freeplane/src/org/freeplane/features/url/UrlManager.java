@@ -502,7 +502,7 @@ public class UrlManager implements IExtension {
 	}
 	
 	public URL getAbsoluteUrl(final URI base, final URI uri) throws MalformedURLException {
-		final String path = uri.isOpaque() ? uri.getSchemeSpecificPart() : uri.getPath();
+		final String path = uri.isOpaque() ? uri.getSchemeSpecificPart() : uri.getRawPath();
 		final StringBuilder sb = new StringBuilder(path);
 		final String query = uri.getQuery();
 		if (query != null) {
