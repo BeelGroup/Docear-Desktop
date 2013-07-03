@@ -46,7 +46,6 @@ import org.docear.plugin.pdfutilities.ui.conflict.ImportConflictDialog;
 import org.docear.plugin.pdfutilities.util.CustomFileFilter;
 import org.docear.plugin.pdfutilities.util.CustomFileListFilter;
 import org.docear.plugin.pdfutilities.util.MonitoringUtils;
-import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.ui.components.UITools;
@@ -704,7 +703,7 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 
 				fireStatusUpdate(SwingWorkerDialog.PROGRESS_BAR_TEXT, null, TextUtils.getText("AbstractMonitoringAction.31")); //$NON-NLS-1$
 				if (canceled()) return false;
-				List<URI> mindmapDirectories = MonitoringUtils.getMindmapDirFromMonitoringNode(target);
+				Collection<URI> mindmapDirectories = MonitoringUtils.getMindmapDirFromMonitoringNode(target);
 				Collection<URI> mindmapFiles = new ArrayList<URI>();
 				for (URI uri : mindmapDirectories) {
 					uri = URIUtils.resolveURI(URIUtils.getAbsoluteURI(target.getMap()), uri);
