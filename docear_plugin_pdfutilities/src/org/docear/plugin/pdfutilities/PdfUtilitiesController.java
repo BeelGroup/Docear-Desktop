@@ -1569,10 +1569,11 @@ public class PdfUtilitiesController extends ALanguageController {
 					childProps = new ChildProperties();
 					childProps.set(RibbonElementPriority.class, RibbonElementPriority.MEDIUM);
 					parent.addChild(addFolderButton, childProps);
-					final JCommandButton editButton = RibbonActionContributorFactory.createCommandButton(editMonitoringFolderAction);
-					childProps = new ChildProperties();
-					childProps.set(RibbonElementPriority.class, RibbonElementPriority.MEDIUM);
-					parent.addChild(editButton, childProps);
+					//TODO: needs some work. e.g. literature_repository cannot be resolved to a URI
+//					final JCommandButton editButton = RibbonActionContributorFactory.createCommandButton(editMonitoringFolderAction);
+//					childProps = new ChildProperties();
+//					childProps.set(RibbonElementPriority.class, RibbonElementPriority.MEDIUM);
+//					parent.addChild(editButton, childProps);
 					final JCommandButton delFolderButton = RibbonActionContributorFactory.createCommandButton(deleteMonitoringFolderAction);
 					childProps = new ChildProperties();
 					childProps.set(RibbonElementPriority.class, RibbonElementPriority.MEDIUM);
@@ -1650,8 +1651,8 @@ public class PdfUtilitiesController extends ALanguageController {
     							addMonitoringFolderAction.setEnabled();
     							addFolderButton.setEnabled(addMonitoringFolderAction.isEnabled());
     							
-    							editMonitoringFolderAction.setEnabled();
-    							editButton.setEnabled(editMonitoringFolderAction.isEnabled());
+//    							editMonitoringFolderAction.setEnabled();
+//    							editButton.setEnabled(editMonitoringFolderAction.isEnabled());
     							
     							deleteMonitoringFolderAction.setEnabled();
     							delFolderButton.setEnabled(deleteMonitoringFolderAction.isEnabled());

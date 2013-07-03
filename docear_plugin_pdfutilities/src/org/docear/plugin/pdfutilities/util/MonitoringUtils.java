@@ -80,7 +80,7 @@ public abstract class MonitoringUtils {
 		}
 	}
 	
-	public static List<URI> getMindmapDirFromMonitoringNode(NodeModel node) {
+	public static Collection<URI> getMindmapDirFromMonitoringNode(NodeModel node) {
 		List<URI> result = new ArrayList<URI>();
 		if(!isMonitoringNode(node)) return result;
 		NodeAttributeTableModel attributeModel = (NodeAttributeTableModel) node.getExtension(NodeAttributeTableModel.class);

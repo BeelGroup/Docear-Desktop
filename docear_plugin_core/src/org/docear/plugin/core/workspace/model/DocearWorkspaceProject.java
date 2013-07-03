@@ -3,6 +3,7 @@ package org.docear.plugin.core.workspace.model;
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
@@ -84,9 +85,9 @@ public class DocearWorkspaceProject extends AWorkspaceProject {
 		return home.toURI();
 	}
 	
-	public List<URI> getLibraryMaps() {
+	public Collection<URI> getLibraryMaps() {
 		if(library == null) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 		return library.getMaps();
 	}

@@ -7,8 +7,9 @@ package org.docear.plugin.core.workspace.node;
 import java.awt.Component;
 import java.io.File;
 import java.net.URI;
-import java.util.List;
-import java.util.Vector;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -41,7 +42,7 @@ public class FolderTypeLibraryNode extends AFolderNode implements ILibraryReposi
 	private static final long serialVersionUID = 1L;
 	public static final String TYPE = "library";	
 	
-	private final Vector<URI> mindmapIndex = new Vector<URI>();
+	private final Set<URI> mindmapIndex = new HashSet<URI>();
 	private static WorkspacePopupMenu popupMenu = null;
 	
 	/***********************************************************************************
@@ -128,7 +129,7 @@ public class FolderTypeLibraryNode extends AFolderNode implements ILibraryReposi
 			}			
 		}
 		else if(event.getType() == DocearEventType.LIBRARY_EMPTY_MINDMAP_INDEX_REQUEST) {
-			mindmapIndex.removeAllElements();			
+			mindmapIndex.clear();			
 		}
 	}
 	
@@ -233,13 +234,8 @@ public class FolderTypeLibraryNode extends AFolderNode implements ILibraryReposi
 	}
 
 	@Override
-	public List<URI> getMaps() {
+	public Collection<URI> getMaps() {
 		return mindmapIndex;
-	}
-
-	
-
-	
-	
+	}	
 	
 }

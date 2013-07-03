@@ -5,11 +5,11 @@
 package org.docear.plugin.core;
 
 import java.net.URI;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * 
  */
 public interface ILibraryRepository {
-	public List<URI> getMaps();	
+	public Collection<URI> getMaps();	
 }
