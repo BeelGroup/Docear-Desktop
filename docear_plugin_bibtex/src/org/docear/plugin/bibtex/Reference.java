@@ -1,6 +1,7 @@
 package org.docear.plugin.bibtex;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -9,13 +10,17 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import net.sf.jabref.BasePanel;
+import net.sf.jabref.BibtexDatabase;
 import net.sf.jabref.BibtexEntry;
 import net.sf.jabref.GUIGlobals;
 import net.sf.jabref.gui.FileListTableModel;
 
 import org.docear.plugin.bibtex.jabref.JabRefAttributes;
+import org.docear.plugin.bibtex.jabref.JabrefWrapper;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.plugin.workspace.URIUtils;
+import org.freeplane.plugin.workspace.WorkspaceController;
 
 public class Reference {
 	public class Item {
@@ -41,7 +46,7 @@ public class Reference {
 	private Set<URI> uris = new HashSet<URI>();
 	private URL url = null;
 	
-	public Reference(BibtexEntry entry) {		
+	public Reference(BasePanel basePanel, BibtexEntry entry) {
 		JabRefAttributes jabRefAttributes = ReferencesController.getController().getJabRefAttributes();		
 		
 		attributes = new ArrayList<Reference.Item>();
@@ -61,7 +66,16 @@ public class Reference {
 			model.setContent(fileField);
 			
 			for (int i=0; i<model.getRowCount(); i++) {
-				uris.add(new File(model.getEntry(i).getLink()).toURI());
+				String link = model.getEntry(i).getLink();
+				File f = new File(basePanel.getFile().getParentFile(), link);
+				try {
+					f = f.getCanonicalFile();
+				}
+				catch (IOException e) {
+					e.printStackTrace();
+				}				
+				
+				uris.add(f.toURI());
 			}
 		}
 		

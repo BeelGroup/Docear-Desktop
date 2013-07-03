@@ -535,7 +535,7 @@ public abstract class JabRefCommons {
 		BibtexEntry oldEntry = null;
 		if(file != null) {
 			for(BibtexEntry entry : wrapper.getDatabase().getEntries()) {
-				Reference ref = new Reference(entry);
+				Reference ref = new Reference(wrapper.getBasePanel(), entry);
 				if(ref.containsFile(file)) {
 					oldEntry = entry;
 					break;
