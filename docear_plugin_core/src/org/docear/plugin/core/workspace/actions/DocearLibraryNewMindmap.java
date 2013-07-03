@@ -29,74 +29,67 @@ import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
 
 public class DocearLibraryNewMindmap extends AWorkspaceAction {
 
-private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
 	/***********************************************************************************
 	 * CONSTRUCTORS
 	 **********************************************************************************/
-	
+
 	public DocearLibraryNewMindmap() {
 		super("workspace.action.library.new.mindmap", TextUtils.getRawText("workspace.action.library.new.mindmap.label"), DefaultFileNode.getApplicationIcon());
 	}
-	
 
 	/***********************************************************************************
 	 * METHODS
 	 **********************************************************************************/
-	
+
 	public void actionPerformed(final ActionEvent e) {
 		Controller.getCurrentController().selectMode(MModeController.MODENAME);
 		AWorkspaceTreeNode targetNode = this.getNodeFromActionEvent(e);
-		if(targetNode instanceof FolderTypeLibraryNode) {
+		if (targetNode instanceof FolderTypeLibraryNode) {
 			String fileName = JOptionPane.showInputDialog(Controller.getCurrentController().getViewController().getContentPane(),
-				TextUtils.getText("add_new_mindmap"), TextUtils.getText("add_new_mindmap_title"),
-				JOptionPane.OK_CANCEL_OPTION);
-		
-			if (fileName != null && fileName.length()>0) {
+					TextUtils.getText("add_new_mindmap"), TextUtils.getText("add_new_mindmap_title"), JOptionPane.OK_CANCEL_OPTION);
+
+			if (fileName != null && fileName.length() > 0) {
 				if (!fileName.endsWith(".mm")) {
 					fileName += ".mm";
 				}
-				try{
+				try {
 					DocearWorkspaceProject project = (DocearWorkspaceProject) WorkspaceController.getProject(targetNode);
 					File parentFolder = URIUtils.getFile(project.getProjectLibraryPath());
 					File file = new File(parentFolder, fileName);
 					try {
-						WorkspaceController.getController();
-						file = WorkspaceController.getFileSystemMgr().createFile(fileName, parentFolder);
-						
-					if (file.exists()) {
-						//WORKSPACE - todo: prepare for headless
-						JOptionPane.showMessageDialog(Controller.getCurrentController().getViewController().getContentPane(),
-	                            TextUtils.getText("error_file_exists"), TextUtils.getText("error_file_exists_title"),
-	                            JOptionPane.ERROR_MESSAGE);
-					} 
-					else if (createNewMindmap(file.toURI()) != null) {
-							LinkTypeFileNode newNode = new LinkTypeFileNode();							
+
+						if (file.exists()) {
+							// WORKSPACE - todo: prepare for headless
+							JOptionPane.showMessageDialog(Controller.getCurrentController().getViewController().getContentPane(),
+									TextUtils.getText("error_file_exists"), TextUtils.getText("error_file_exists_title"), JOptionPane.ERROR_MESSAGE);
+						}
+						else if (createNewMindmap(file.toURI()) != null) {
+							LinkTypeFileNode newNode = new LinkTypeFileNode();
 							newNode.setLinkURI(project.getRelativeURI(file.toURI()));
 							newNode.setName(FilenameUtils.getBaseName(file.getName()));
 							targetNode.getModel().addNodeTo(newNode, targetNode);
 							targetNode.refresh();
 						}
 					}
-					catch(Exception ex) {
-						//WORKSPACE - todo: prepare for headless
+					catch (Exception ex) {
+						// WORKSPACE - todo: prepare for headless
 						JOptionPane.showMessageDialog(UITools.getFrame(), ex.getMessage(), "Error ... ", JOptionPane.ERROR_MESSAGE);
 					}
-				} 
+				}
 				catch (Exception ex) {
 					LogUtils.severe("could not find library paht", ex);
 				}
-			
+
 			}
 		}
-    }
-	
-	
+	}
+
 	private MapModel createNewMindmap(final URI uri) {
 		String name = FilenameUtils.getBaseName(URIUtils.getAbsoluteFile(uri).getName());
 		return WorkspaceNewMapAction.createNewMap(uri, name, true);
 	}
-	
 
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
