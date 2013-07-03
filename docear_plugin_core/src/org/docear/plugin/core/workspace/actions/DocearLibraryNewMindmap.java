@@ -59,13 +59,11 @@ public class DocearLibraryNewMindmap extends AWorkspaceAction {
 					File parentFolder = URIUtils.getFile(project.getProjectLibraryPath());
 					File file = new File(parentFolder, fileName);
 					try {
-
 						if (file.exists()) {
-							// WORKSPACE - todo: prepare for headless
-							JOptionPane.showMessageDialog(Controller.getCurrentController().getViewController().getContentPane(),
-									TextUtils.getText("error_file_exists"), TextUtils.getText("error_file_exists_title"), JOptionPane.ERROR_MESSAGE);
+							file = WorkspaceController.getFileSystemMgr().createFile(fileName, parentFolder);
 						}
-						else if (createNewMindmap(file.toURI()) != null) {
+						
+						if (createNewMindmap(file.toURI()) != null) {
 							LinkTypeFileNode newNode = new LinkTypeFileNode();
 							newNode.setLinkURI(project.getRelativeURI(file.toURI()));
 							newNode.setName(FilenameUtils.getBaseName(file.getName()));
