@@ -5,6 +5,8 @@ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -128,27 +130,21 @@ public class UploadController extends ADocearServiceFeature {
 	
 	public Iterator<File> getUploadJobs() {
 		return new Iterator<File>() {
-			private File cachedFile = null;
+			int i = 0;
+			File[] files = uploadFiles.toArray(new File[0]); 
 			public boolean hasNext() {
-				cachedFile = null;
-				synchronized (uploadFiles) {
-					if(uploadFiles.iterator().hasNext()) {
-						cachedFile = uploadFiles.iterator().next();
-					}
-					return cachedFile != null;
-				}
+				return i < files.length;
 			}
 
 			public File next() {
-				return cachedFile;
+				return files[i++];
 			}
 
 			public void remove() {
-				if(cachedFile != null) {
-					synchronized (uploadFiles) {
-						uploadFiles.remove(cachedFile);
-					}
+				synchronized (uploadFiles) {
+					uploadFiles.remove(files[i]);
 				}
+				
 			}
 		};
 	}
@@ -373,6 +369,7 @@ public class UploadController extends ADocearServiceFeature {
 			
 			public void activated(UserAccountChangeEvent event) {
 				refreshUploadBuffer();
+				uploadThread.startUpload();
 			}
 			
 			public void aboutToDeactivate(UserAccountChangeEvent event) {
@@ -380,6 +377,7 @@ public class UploadController extends ADocearServiceFeature {
 		});
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
+				refreshUploadBuffer();
 				uploadThread.start();
 				packerThread.start();
 			}
