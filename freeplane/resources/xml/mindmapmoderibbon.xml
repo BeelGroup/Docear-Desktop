@@ -2,7 +2,10 @@
 	<menu_category name="ribbon">
 		<ribbon_taskbar>
 			<ribbon_action action="NewMapAction" accelerator="control N" />
-			<ribbon_action action="EncryptedMap" />			
+			<ribbon_action action="EncryptedMap" />	
+			<separator />
+			<ribbon_action action="OpenAction" accelerator="control O" />
+			<ribbon_action action="OpenURLMapAction" />		
 			<separator />
 			<ribbon_action action="SaveAction" accelerator="control S" />
 			<ribbon_action action="SaveAsAction" accelerator="control shift S" />
@@ -16,6 +19,12 @@
 					<ribbon_action action="EncryptedMap" />					
 					<ribbon_action action="RevertAction" />	
 				</entry_group>
+			</primary_entry>
+			<primary_entry name="open">
+			    <entry_group name="open">
+			        <ribbon_action action="OpenAction" accelerator="control O" />
+					<ribbon_action action="OpenURLMapAction" />			        
+			    </entry_group>
 			</primary_entry>
 			<primary_entry name="save">
 				<entry_group name="save">
@@ -265,8 +274,41 @@
 		</ribbon_task>
 
 		<ribbon_task name="view">
-		    <ribbon_contributor	name="zoomContributor" />
-			<ribbon_contributor	name="viewSettingsContributor" />
+		    <ribbon_contributor	name="zoomContributor" />			
+			<ribbon_band name="viewsettings" resize_policies="Mirror, High2Low">
+				<ribbon_action name="menu_displayAttributes">
+					<ribbon_action action="ShowSelectedAttributesAction" />
+					<ribbon_action action="ShowAllAttributesAction" />
+					<ribbon_action action="HideAllAttributesAction" />
+					<ribbon_action action="SetBooleanMapPropertyAction.show_icon_for_attributes" />
+					<ribbon_action action="ShowAttributeDialogAction" />					
+				</ribbon_action>
+				<ribbon_action name="menu_noteView">
+					<ribbon_action action="ShowNotesInMapAction"/>
+					<ribbon_action action="ShowHideNoteAction" accelerator="control GREATER" />
+					<ribbon_action name="note_window_location" name_ref="note_window_location">
+						<ribbon_action action="SetNoteWindowPosition.top" />
+						<ribbon_action action="SetNoteWindowPosition.left" />
+						<ribbon_action action="SetNoteWindowPosition.right" />
+						<ribbon_action action="SetNoteWindowPosition.bottom" />
+					</ribbon_action>
+					<ribbon_action action="SetBooleanMapPropertyAction.show_note_icons" />
+				</ribbon_action>
+				<ribbon_action name="menu_hoverView">
+					<ribbon_action action="SetBooleanPropertyAction.show_node_tooltips" />	
+					<ribbon_action action="SetBooleanPropertyAction.show_styles_in_tooltip" />
+					<ribbon_action action="CreationModificationPluginAction" />
+				</ribbon_action>
+				<ribbon_action name="menu_toolbars">
+				    <ribbon_action action="ToggleFBarAction" />
+				    <ribbon_action action="ToggleLeftToolbarAction" />
+				    <ribbon_action action="ToggleStatusAction" />
+				    <ribbon_action action="ToggleScrollbarsAction"/>
+				</ribbon_action>
+				<ribbon_action action="SetShortenerStateAction" />
+				<ribbon_action action="ToggleDetailsAction" accelerator="alt F2" />
+			</ribbon_band>
+			
 			<ribbon_band name="filter" resize_policies="Mirror, High2Low">
 			    <ribbon_action action="EditFilterAction" priority="top"/>	
 				<ribbon_action action="FindAction" accelerator="control G" priority="top">
@@ -280,7 +322,7 @@
 				    <ribbon_action action="RedoFilterAction"/>
 				</ribbon_action>
 				<ribbon_action action="ReapplyFilterAction" priority="medium"/>				
-				<!--uses quick filter bar -> not applicable for ribbons
+				<!--uses quick filter bar -> not applicable for ribbonsi 
 				<menu_action action="QuickFilterAction" /-->
 				<ribbon_action action="ApplySelectedViewConditionAction" priority="medium"/>
 				<ribbon_action action="QuickFindAllAction" priority="medium"/>

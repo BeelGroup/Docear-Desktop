@@ -63,26 +63,34 @@ public class RibbonAcceleratorManager implements IKeyStrokeProcessor, IAccelerat
 	 **********************************************************************************/
 
  	public void setAccelerator(final AFreeplaneAction action, final KeyStroke keyStroke) {
- 		if(action == null || keyStroke == null) {
+ 		if(action == null) {
  			return;
  		}
-		final AFreeplaneAction oldAction = accelerators.put(keyStroke, action);
-		if(action == oldAction) {
-			return;
-		}
-		if (keyStroke != null && oldAction != null) {
-			UITools.errorMessage(TextUtils.format("action_keystroke_in_use_error", keyStroke, getActionTitle(action.getKey()), getActionTitle(oldAction.getKey())));
-			accelerators.put(keyStroke, oldAction);
-			final String shortcutKey = getPropertyKey(action.getKey());
-			
-			keysetProps.setProperty(shortcutKey, "");
-			return;
-		}
+ 		if(keyStroke != null) { 		
+    		final AFreeplaneAction oldAction = accelerators.put(keyStroke, action);
+    		if(action == oldAction) {
+    			return;
+    		}
+    		if (keyStroke != null && oldAction != null) {
+    			UITools.errorMessage(TextUtils.format("action_keystroke_in_use_error", keyStroke, getActionTitle(action.getKey()), getActionTitle(oldAction.getKey())));
+    			accelerators.put(keyStroke, oldAction);
+    			final String shortcutKey = getPropertyKey(action.getKey());
+    			
+    			keysetProps.setProperty(shortcutKey, "");
+    			return;
+    		}
+ 		}
 		final KeyStroke removedAccelerator = removeAccelerator(action);
-		actionMap.put(action.getKey(), keyStroke);
+		if(keyStroke != null) {
+			actionMap.put(action.getKey(), keyStroke);
+		}
+		else {
+			actionMap.remove(action.getKey());
+		}
 		if (acceleratorChangeListener != null && (removedAccelerator != null || keyStroke != null)) {
 			acceleratorChangeListener.acceleratorChanged(action, removedAccelerator, keyStroke);
 		}
+		fireAcceleratorChanged(action, removedAccelerator, keyStroke);
 	}
  	
  	private String getActionTitle(String key) {
@@ -134,6 +142,14 @@ public class RibbonAcceleratorManager implements IKeyStrokeProcessor, IAccelerat
 		synchronized (changeListeners) {
 			if(!changeListeners.contains(changeListener)) {
 				changeListeners.add(changeListener);
+			}
+		}
+	}
+ 	
+ 	protected void fireAcceleratorChanged(AFreeplaneAction action, KeyStroke oldStroke, KeyStroke newStroke) {
+ 		synchronized (changeListeners) {
+			for (IAcceleratorChangeListener listener : changeListeners) {
+				listener.acceleratorChanged(action, oldStroke, newStroke);
 			}
 		}
 	}

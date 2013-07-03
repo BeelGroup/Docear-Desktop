@@ -6,15 +6,21 @@ import java.util.List;
 import java.util.Properties;
 
 import org.freeplane.core.ui.AFreeplaneAction;
+import org.freeplane.core.util.Compat;
 import org.pushingpixels.flamingo.api.common.JCommandButton.CommandButtonKind;
 import org.pushingpixels.flamingo.api.common.icon.ResizableIcon;
 import org.pushingpixels.flamingo.api.ribbon.RibbonApplicationMenuEntryPrimary;
 import org.pushingpixels.flamingo.api.ribbon.RibbonApplicationMenuEntrySecondary;
 
 public class RibbonMenuPrimaryContributorFactory implements IRibbonContributorFactory {
+	final private RibbonBuilder builder;
+
 	/***********************************************************************************
 	 * CONSTRUCTORS
 	 **********************************************************************************/
+	public RibbonMenuPrimaryContributorFactory(RibbonBuilder builder) {
+		this.builder = builder;
+	}
 
 	/***********************************************************************************
 	 * METHODS
@@ -33,8 +39,21 @@ public class RibbonMenuPrimaryContributorFactory implements IRibbonContributorFa
 	 **********************************************************************************/
 	
 	public ARibbonContributor getContributor(final Properties attributes) {
+		String accel = attributes.getProperty("accelerator", null);
+		final String actionKey = attributes.getProperty("action");		
+		
+		if (actionKey != null) {
+    		if (accel != null) {
+    			if (Compat.isMacOsX()) {
+    				accel = accel.replaceFirst("CONTROL", "META").replaceFirst("control", "meta");
+    			}			
+    			builder.getAcceleratorManager().setDefaultAccelerator(actionKey, accel);
+    		}
+		}
+		
 		return new ARibbonContributor() {
-			RibbonApplicationMenuEntryPrimary entry;
+			RibbonApplicationMenuEntryPrimary entry;			
+			
 			public String getKey() {
 				String key = attributes.getProperty("action", null);
 				if(key == null) {
