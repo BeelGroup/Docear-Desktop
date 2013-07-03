@@ -348,7 +348,7 @@ public class LinkController extends SelectionController implements IExtension {
 		return model.getWidth();
 	}
 
-	void loadLink(final NodeModel node, String link) {
+	public void loadLink(final NodeModel node, String link) {
 		NodeLinks links = NodeLinks.getLinkExtension(node);
 		if (links == null) {
 			links = NodeLinks.createLinkExtension(node);

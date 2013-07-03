@@ -11,6 +11,7 @@ import org.freeplane.core.io.ITreeWriter;
 import org.freeplane.core.io.ReadManager;
 import org.freeplane.core.io.WriteManager;
 import org.freeplane.core.util.LogUtils;
+import org.freeplane.features.link.LinkController;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.n3.nanoxml.XMLElement;
@@ -121,6 +122,18 @@ public class DocearMapModelExtensionXmlBuilder implements IElementDOMHandler, IE
 			}
 			
 		});
+		try {
+		reader.addAttributeHandler("node", "LINK", new IAttributeHandler() {
+			
+			public void setAttribute(Object userObject, String value) {
+				final NodeModel node = (NodeModel) userObject;
+				LinkController.getController().loadLink(node, value);
+			}
+			
+		});
+		}
+		catch (Exception e) {
+		}
 	}
 
 	public Object createElement(Object parent, String tag, XMLElement attributes) {

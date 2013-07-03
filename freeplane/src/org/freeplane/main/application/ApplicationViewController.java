@@ -501,7 +501,7 @@ class ApplicationViewController extends FrameController {
 			 * example the note window was active.
 			 */
 		});
-		
+
 		frame.setFocusTraversalKeysEnabled(false);
 		final int win_width = ResourceController.getResourceController().getIntProperty("appwindow_width", -1);
 		final int win_height = ResourceController.getResourceController().getIntProperty("appwindow_height", -1);
@@ -509,6 +509,7 @@ class ApplicationViewController extends FrameController {
 		final int win_y = ResourceController.getResourceController().getIntProperty("appwindow_y", -1);
 		UITools.setBounds(frame, win_x, win_y, win_width, win_height);
 		setFrameSize(frame.getBounds());
+
 		applyFrameSize(frame, win_x, win_y);
 		
 		int win_state = Integer
@@ -531,5 +532,4 @@ class ApplicationViewController extends FrameController {
 //		frame.setLocation(Math.max(r.x, frame.getBounds().x), Math.max(r.y, frame.getBounds().y));
 		frame.setLocation(Math.max(r.x, win_x), Math.max(r.y, win_y));
 	}
-
 }
