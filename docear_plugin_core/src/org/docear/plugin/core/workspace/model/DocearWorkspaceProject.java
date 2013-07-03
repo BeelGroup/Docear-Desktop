@@ -226,7 +226,7 @@ public class DocearWorkspaceProject extends AWorkspaceProject {
 			if(Compat.isWindowsOS() && relativeUri.getRawPath().contains(":")) {
 				return uri;
 			}
-			return LinkController.createURI(WorkspaceController.PROJECT_RESOURCE_URL_PROTOCOL + "://"+ getProjectID() +"/"+relativeUri.getPath());
+			return LinkController.createURI(WorkspaceController.PROJECT_RESOURCE_URL_PROTOCOL + "://"+ getProjectID() +"/"+relativeUri.getRawPath());
 		}
 		catch (Exception e) {
 			LogUtils.warn(e);
