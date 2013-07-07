@@ -95,6 +95,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class Actions {
 
 	private static final ObjectMapper objectMapper = new ObjectMapper();
+	private static final UserIdentifier SERVER_ID = new UserIdentifier("SERVER", "SERVER");
 	private static MapIdentifier currentSelectedMapId = null;
 
 	/**
@@ -160,31 +161,7 @@ public class Actions {
 		final MapIdentifier mapIdentifier = request.getMapIdentifier();
 		logger().debug("Actions.getMapModelXml => mapId:'{}'", mapIdentifier.getMapId());
 
-		logger().debug("Actions.getMapModelXml => selecting map");
-		selectMap(mapIdentifier);
-
-		final ModeController modeController = modeController();
-		final org.freeplane.features.map.MapModel freeplaneMap = modeController.getController().getMap();
-		if (freeplaneMap == null) { // when not mapMode
-			logger().error("Actions.getMapModelXml => current mode not MapMode!");
-			throw new AssertionError("Current mode not MapMode");
-		}
-
-		logger().debug("Actions.getMapModelXml => serialising map to XML");
-
-		Writer writer = null;
-		ByteArrayOutputStream out = null;
-		byte[] bytes = null;
-		try {
-			out = new ByteArrayOutputStream();
-			writer = new OutputStreamWriter(out);
-			modeController.getMapController().getMapWriter().writeMapAsXml(freeplaneMap, writer, MapWriter.Mode.EXPORT, true, true);
-			bytes = out.toByteArray();
-
-		} finally {
-			IOUtils.closeQuietly(writer);
-			IOUtils.closeQuietly(out);
-		}
+		final byte[] bytes = getMapBytes(mapIdentifier);
 
 		final int currentRevision = getOpenMindMapInfo(request.getMapIdentifier()).getCurrentRevision();
 		logger().debug("Actions.getMapModelXml => returning map as XML string");
@@ -196,14 +173,19 @@ public class Actions {
 	 * 
 	 * @param id
 	 * @return
+	 * @throws IOException
 	 */
-	public static void closeMap(final CloseMapRequest request) throws MapNotFoundException {
+	public static void closeMap(final CloseMapRequest request) throws MapNotFoundException, IOException {
 		final MapIdentifier mapIdentifier = request.getMapIdentifier();
 		logger().debug("Actions.closeMap => mapId:'{}'", request.getMapId());
 
 		// select map
 		logger().debug("Actions.closeMap => selecting map");
 		selectMap(mapIdentifier);
+
+		// send current state to creator (play instance)
+		final OpenMindmapInfo info = getOpenMindMapInfo(mapIdentifier);
+		info.getSender().tell(new Messages.MapClosedMessage(mapIdentifier, getMapBytes(mapIdentifier)), null);
 
 		// close and remove map
 		logger().debug("Actions.closeMap => closing map");
@@ -220,10 +202,11 @@ public class Actions {
 		return tempDirPath + "/docear/" + filename + ".mm";
 	}
 
-	public static OpenMindMapResponse openMindmap(final OpenMindMapRequest request, final ActorRef sender) {
+	public static OpenMindMapResponse openMindmap(final OpenMindMapRequest request) {
 		final MapIdentifier mapIdentifier = request.getMapIdentifier();
-		final String mapContent = request.getMindmapFileContent();
-		logger().debug("Actions.openMindmap => mapId: {}; content:'{}...'", mapIdentifier.getMapId(), mapContent.substring(0, Math.min(mapContent.length(), 20)));
+		final byte[] mapContent = request.getMindmapFileContent();
+		final ActorRef closingActor = (ActorRef) request.getActorRefForClosing();
+		logger().debug("Actions.openMindmap => mapId: {}; contentLength:'{}...'", mapIdentifier.getMapId(), mapContent.length);
 
 		// create file
 
@@ -233,11 +216,11 @@ public class Actions {
 		long currentRevision = -1;
 		try {
 			logger().debug("Actions.openMindmap => writing mindmap content to file");
-			FileUtils.writeStringToFile(file, mapContent);
+			FileUtils.writeByteArrayToFile(file, mapContent);
 
 			// put map in openMap Collection
 			final URL pathURL = file.toURI().toURL();
-			final OpenMindmapInfo info = new OpenMindmapInfo(pathURL, sender);
+			final OpenMindmapInfo info = new OpenMindmapInfo(pathURL, closingActor);
 			openMindmapInfoMap().put(request.getMapIdentifier(), info);
 			currentRevision = info.getCurrentRevision();
 			logger().debug("Actions.openMindmap => mindmap was put into openMindmapInfoMap ({} => {})", mapIdentifier.getMapId(), info.getMapUrl());
@@ -283,11 +266,11 @@ public class Actions {
 		info.registerUpdateListener(sender);
 	}
 
-	public static void closeServer(CloseServerRequest request) {
+	public static void closeServer(CloseServerRequest request) throws MapNotFoundException, IOException {
 		logger().debug("Actions.closeServer => no parameters");
 
 		logger().debug("Actions.closeServer => closing open maps");
-		saveAndCloseAllOpenMaps(new CloseAllOpenMapsRequest(request.getUserIdentifier()));
+		closeAllOpenMaps(new CloseAllOpenMapsRequest(request.getUserIdentifier()));
 
 		logger().debug("Actions.closeServer => Starting Thread to shutdown App in 2 seconds");
 		new Thread(new Runnable() {
@@ -588,8 +571,9 @@ public class Actions {
 		}
 	}
 
-	public static CreateMindmapResponse createNewMindMap(CreateMindmapRequest request, final ActorRef sender) throws FileNotFoundException, IOException, URISyntaxException, XMLException {
+	public static CreateMindmapResponse createNewMindMap(CreateMindmapRequest request) throws FileNotFoundException, IOException, URISyntaxException, XMLException {
 		final String filename = getTempFileName();
+		final ActorRef closingActor = (ActorRef) request.getClosingActor();
 
 		final File file = new File(filename);
 		final MMapIO mapIO = (MMapIO) RemoteController.getMapIO();
@@ -598,7 +582,7 @@ public class Actions {
 		final URL mapUrl = file.toURI().toURL();
 		mapIO.newMap(mapUrl);
 
-		final OpenMindmapInfo openMindmapInfo = new OpenMindmapInfo(mapUrl, sender);
+		final OpenMindmapInfo openMindmapInfo = new OpenMindmapInfo(mapUrl, closingActor);
 
 		openMindmapInfoMap().put(request.getMapIdentifier(), openMindmapInfo);
 
@@ -624,17 +608,14 @@ public class Actions {
 		}
 	}
 
-	public static void saveAndCloseAllOpenMaps(CloseAllOpenMapsRequest request) {
+	public static void closeAllOpenMaps(CloseAllOpenMapsRequest request) throws MapNotFoundException, IOException {
 		logger().debug("Actions.closeAllOpenMaps => no parameters");
 
-		Set<MapIdentifier> mapIds = new HashSet<MapIdentifier>(openMindmapInfoMap().keySet());
-		for (MapIdentifier mapId : mapIds) {
-			logger().debug("Actions.closeAllOpenMaps => saving map with id '{}'", mapId);
+		Set<MapIdentifier> mapIdentifiers = new HashSet<MapIdentifier>(openMindmapInfoMap().keySet());
+		for (MapIdentifier mapIdentifier : mapIdentifiers) {
+			logger().debug("Actions.closeAllOpenMaps => saving map with id '{}'", mapIdentifier);
 
-			// only trigger save, play will close maps
-			for (OpenMindmapInfo info : openMindmapInfoMap().values()) {
-				info.getSender().tell(new Messages.ForceSaveAndCloseRequest(mapId), null);
-			}
+			closeMap(new CloseMapRequest(SERVER_ID, mapIdentifier));
 		}
 	}
 
@@ -643,16 +624,17 @@ public class Actions {
 		logger().debug("Actions.closeUnusedMaps => max ms since last access:'{}'", allowedMsSinceLastAccess);
 
 		final long now = System.currentTimeMillis();
-		for (final MapIdentifier mapId : new HashSet<MapIdentifier>(openMindmapInfoMap().keySet())) {
-			final OpenMindmapInfo omi = getOpenMindMapInfo(mapId);
-			final long lastAccessTime = omi.getLastAccessTime();
+		final HashSet<MapIdentifier> mapIdentifiers = new HashSet<MapIdentifier>(openMindmapInfoMap().keySet());
+		for (final MapIdentifier mapIdentifier : mapIdentifiers) {
+			final OpenMindmapInfo info = getOpenMindMapInfo(mapIdentifier);
+			final long lastAccessTime = info.getLastAccessTime();
 			final long sinceLastAccess = now - lastAccessTime;
 			final long sinceLastAccessInMinutes = sinceLastAccess / 60000;
-			logger().debug("Actions.closeUnusedMaps => mapId:'{}'; lastAccess:{}; sinceLastAccess:{}", mapId, lastAccessTime, sinceLastAccess);
+			logger().debug("Actions.closeUnusedMaps => mapId:'{}'; lastAccess:{}; sinceLastAccess:{}", mapIdentifier, lastAccessTime, sinceLastAccess);
 
 			if (sinceLastAccess > allowedMsSinceLastAccess) {
-				openMindmapInfoMap().get(mapId).getSender().tell(new Messages.ForceSaveAndCloseRequest(mapId), null);
 				logger().info("Actions.closeUnusedMaps => map will be closed, because it havent been used for about {} minutes.", sinceLastAccessInMinutes);
+				closeMap(new CloseMapRequest(SERVER_ID, mapIdentifier));
 			}
 		}
 	}
@@ -777,6 +759,35 @@ public class Actions {
 		}
 
 		return result;
+	}
+
+	private static byte[] getMapBytes(final MapIdentifier mapIdentifier) throws MapNotFoundException, IOException {
+		logger().debug("Actions.getMapBytes => selecting map");
+		selectMap(mapIdentifier);
+
+		final ModeController modeController = modeController();
+		final org.freeplane.features.map.MapModel freeplaneMap = modeController.getController().getMap();
+		if (freeplaneMap == null) { // when not mapMode
+			logger().error("Actions.getMapBytes => current mode not MapMode!");
+			throw new AssertionError("Current mode not MapMode");
+		}
+
+		logger().debug("Actions.getMapBytes => serialising map to XML");
+		Writer writer = null;
+		ByteArrayOutputStream out = null;
+		byte[] bytes = null;
+		try {
+			out = new ByteArrayOutputStream();
+			writer = new OutputStreamWriter(out);
+			modeController.getMapController().getMapWriter().writeMapAsXml(freeplaneMap, writer, MapWriter.Mode.EXPORT, true, true);
+			bytes = out.toByteArray();
+
+		} finally {
+			IOUtils.closeQuietly(writer);
+			IOUtils.closeQuietly(out);
+		}
+
+		return bytes;
 	}
 
 	private static Map<MapIdentifier, OpenMindmapInfo> openMindmapInfoMap() {

@@ -1,11 +1,13 @@
 package org.freeplane.plugin.remote.server;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.docear.messages.Messages.CloseAllOpenMapsRequest;
 import org.docear.messages.Messages.CloseUnusedMaps;
+import org.docear.messages.exceptions.MapNotFoundException;
 import org.docear.messages.models.MapIdentifier;
 import org.docear.messages.models.UserIdentifier;
 import org.freeplane.features.mapio.MapIO;
@@ -111,7 +113,13 @@ public class RemoteController {
 	}
 	
 	private void saveAndCloseMaps() {
-		Actions.saveAndCloseAllOpenMaps(new CloseAllOpenMapsRequest(new UserIdentifier("self", "")));
+		try {
+			Actions.closeAllOpenMaps(new CloseAllOpenMapsRequest(new UserIdentifier("self", "")));
+		} catch (MapNotFoundException e) {
+			getLogger().error("Problem closing map!", e);
+		} catch (IOException e) {
+			getLogger().error("Problem closing map!", e);
+		}
 	}
 
 	public static ModeController getModeController() {
