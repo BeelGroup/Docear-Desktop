@@ -20,6 +20,8 @@ import org.freeplane.core.resources.ResourceController;
 import org.freeplane.features.mode.Controller;
 
 public class FileUtils {
+	private static final String[] ILLEGAL_CHARACTERS = { "/", "\n", "\r", "\t", "\0", "\f", "`", "?", "*", "\\", "<", ">", "|", "\"", ":" };
+	
 	public static void copyFromURL(final URL resource, final File destinationDirectory) {
 		final String path = resource.getPath();
 		final int index = path.lastIndexOf('/');
@@ -303,6 +305,16 @@ public class FileUtils {
 	            outChannel.close();
 	        }
 	    }
+	}
+	
+	public static boolean isFilenameValid(String filename) {
+		for (String s : ILLEGAL_CHARACTERS) {
+			if (filename.contains(s)) {
+				return false;
+			}			
+		}
+		return true;
+	    
 	}
 
 }

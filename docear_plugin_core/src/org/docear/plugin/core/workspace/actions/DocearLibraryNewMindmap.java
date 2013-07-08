@@ -14,6 +14,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.docear.plugin.core.workspace.node.FolderTypeLibraryNode;
 import org.freeplane.core.ui.components.UITools;
+import org.freeplane.core.util.FileUtils;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.map.MapModel;
@@ -28,7 +29,7 @@ import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
 
 public class DocearLibraryNewMindmap extends AWorkspaceAction {
-
+	
 	private static final long serialVersionUID = 1L;
 
 	/***********************************************************************************
@@ -49,8 +50,13 @@ public class DocearLibraryNewMindmap extends AWorkspaceAction {
 		if (targetNode instanceof FolderTypeLibraryNode) {
 			String fileName = JOptionPane.showInputDialog(Controller.getCurrentController().getViewController().getContentPane(),
 					TextUtils.getText("add_new_mindmap"), TextUtils.getText("add_new_mindmap_title"), JOptionPane.OK_CANCEL_OPTION);
-
+			
 			if (fileName != null && fileName.length() > 0) {
+				if (!FileUtils.isFilenameValid(fileName)) {
+					JOptionPane.showMessageDialog(UITools.getFrame(), TextUtils.getText("file.invalid_characters"), TextUtils.getText("error"), JOptionPane.ERROR_MESSAGE);
+					actionPerformed(e);
+					return;
+				}
 				if (!fileName.endsWith(".mm")) {
 					fileName += ".mm";
 				}
@@ -73,7 +79,7 @@ public class DocearLibraryNewMindmap extends AWorkspaceAction {
 					}
 					catch (Exception ex) {
 						// WORKSPACE - todo: prepare for headless
-						JOptionPane.showMessageDialog(UITools.getFrame(), ex.getMessage(), "Error ... ", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(UITools.getFrame(), ex.getMessage(), TextUtils.getText("error"), JOptionPane.ERROR_MESSAGE);
 					}
 				}
 				catch (Exception ex) {

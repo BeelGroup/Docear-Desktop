@@ -12,6 +12,7 @@ import javax.swing.JOptionPane;
 
 import org.apache.commons.io.FilenameUtils;
 import org.freeplane.core.ui.components.UITools;
+import org.freeplane.core.util.FileUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.mindmapmode.MModeController;
@@ -44,6 +45,11 @@ public class FileNodeNewMindmapAction extends AWorkspaceAction {
 				JOptionPane.OK_CANCEL_OPTION);
 		
 			if (fileName != null && fileName.length()>0) {
+				if (!FileUtils.isFilenameValid(fileName)) {
+					JOptionPane.showMessageDialog(UITools.getFrame(), TextUtils.getText("file.invalid_characters"), TextUtils.getText("error"), JOptionPane.ERROR_MESSAGE);
+					actionPerformed(e);
+					return;
+				}
 				if (!fileName.endsWith(".mm")) {
 					fileName += ".mm";
 				}
