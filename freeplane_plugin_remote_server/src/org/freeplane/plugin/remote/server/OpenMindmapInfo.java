@@ -98,6 +98,7 @@ public class OpenMindmapInfo implements Serializable {
 	}
 	
 	public void registerUpdateListener(ActorRef actor) {
+		updateAccessTime();
 		listeningActors.add(actor);
 	}
 	
