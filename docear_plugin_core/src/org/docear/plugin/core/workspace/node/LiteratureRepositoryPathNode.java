@@ -89,7 +89,7 @@ public class LiteratureRepositoryPathNode extends FolderLinkNode implements Tree
 
 	private void loadDirectoryFiles(File folder) {
 		if (folder != null && folder.isDirectory()) {
-			WorkspaceController.getFileSystemMgr().scanFileSystem(this, folder, new FileFilter() {
+			WorkspaceController.getFileSystemMgr().scanFileSystem(this, folder, false, new FileFilter() {
 				public boolean accept(File pathname) {
 //					if(pathname.isDirectory() || pathname.getName().toLowerCase().endsWith(".pdf")) {
 						return true;

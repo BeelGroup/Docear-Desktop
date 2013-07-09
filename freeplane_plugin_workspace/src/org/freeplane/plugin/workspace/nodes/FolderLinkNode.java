@@ -9,6 +9,8 @@ import java.util.Vector;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeExpansionListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.freeplane.core.util.LogUtils;
@@ -29,7 +31,8 @@ import org.freeplane.plugin.workspace.model.IMutableLinkNode;
 public class FolderLinkNode extends AFolderNode implements IWorkspaceNodeActionListener
 																, IWorkspaceTransferableCreator
 																, IFileSystemRepresentation
-																, IMutableLinkNode {
+																, IMutableLinkNode
+																, TreeExpansionListener {
 	
 	private static final long serialVersionUID = 1L;
 	private static Icon FOLDER_OPEN_ICON = new ImageIcon(FolderLinkNode.class.getResource("/images/16x16/folder-orange_open.png"));
@@ -40,6 +43,7 @@ public class FolderLinkNode extends AFolderNode implements IWorkspaceNodeActionL
 	private URI folderPath;
 	private boolean doMonitoring = false;
 	private boolean orderDescending = false;
+	private boolean inRefresh;
 	
 	public FolderLinkNode() {
 		this(AFolderNode.FOLDER_TYPE_PHYSICAL);
@@ -150,16 +154,26 @@ public class FolderLinkNode extends AFolderNode implements IWorkspaceNodeActionL
 	public void refresh() {
 		File folder;
 		try {
+			inRefresh = true;
 			folder = URIUtils.getAbsoluteFile(getPath());
 			if (folder.isDirectory()) {
 				getModel().removeAllElements(this);
-				WorkspaceController.getFileSystemMgr().scanFileSystem(this, folder);
+				loadDirectoryFiles(folder);
 				getModel().reload(this);				
 			}
 		}
 		catch (Exception e) {
 			LogUtils.severe(e);
-		}		
+		}
+		finally {
+			inRefresh = false;
+		}
+	}
+	
+	private void loadDirectoryFiles(File folder) {
+		if (folder != null && folder.isDirectory()) {
+			WorkspaceController.getFileSystemMgr().scanFileSystem(this, folder, false);
+		}
 	}
 	
 	protected AWorkspaceTreeNode clone(FolderLinkNode node) {		
@@ -249,5 +263,14 @@ public class FolderLinkNode extends AFolderNode implements IWorkspaceNodeActionL
 			}
 		}
 		return false;
+	}
+	
+	public void treeExpanded(TreeExpansionEvent event) {
+		if(!inRefresh && getChildCount() <= 0) {
+			loadDirectoryFiles(getFile());
+		}
+	}
+
+	public void treeCollapsed(TreeExpansionEvent event) {		
 	}
 }

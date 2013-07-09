@@ -99,7 +99,7 @@ public class FolderTypeMyFilesNode extends AFolderNode implements IWorkspaceNode
 			File file = URIUtils.getAbsoluteFile(getPath());
 			if (file != null) {
 				getModel().removeAllElements(this);
-				WorkspaceController.getFileSystemMgr().scanFileSystem(this, file, new FileFilter() {
+				WorkspaceController.getFileSystemMgr().scanFileSystem(this, file, false, new FileFilter() {
 					
 					public boolean accept(File pathname) {
 						if("_data".equals(pathname.getName())) {

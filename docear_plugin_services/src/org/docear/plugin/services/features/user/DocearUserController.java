@@ -173,7 +173,7 @@ public class DocearUserController extends ADocearServiceFeature {
 					user.addPropertyChangeListener(getUserPropertyChangeListener());
 					try {
 						try {
-							ServiceController.getFeature(DocearWorkspaceSettings.class).load(user);
+							ServiceController.getFeature(DocearWorkspaceSettings.class).loadSettings(user);
 						} catch (IOException e) {
 							LogUtils.severe("Exception in org.docear.plugin.services.features.user.DocearUserController.loadUser(name):"+e.getMessage());
 						}
@@ -191,6 +191,7 @@ public class DocearUserController extends ADocearServiceFeature {
 					}
 					adjustInfoBarConnectionState((DocearUser) event.getUser());
 					ServiceController.getConnectionController().setDefaultHeader("accessToken", ((DocearUser) event.getUser()).getAccessToken());
+					WorkspaceController.load();
 				}
 				else {
 					getActiveUser().activate();
@@ -252,7 +253,7 @@ public class DocearUserController extends ADocearServiceFeature {
 			user.setUsername(name);
 			user.setEnabled(true);
 			try {
-				ServiceController.getFeature(DocearWorkspaceSettings.class).load(user);
+				ServiceController.getFeature(DocearWorkspaceSettings.class).loadSettings(user);
 			} catch (IOException e) {
 				LogUtils.severe("Exception in org.docear.plugin.services.features.user.DocearUserController.loadUser(name):"+e.getMessage());
 			}
