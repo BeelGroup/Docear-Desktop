@@ -158,6 +158,7 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 	}
 
 	public JabRefBaseHandle openDatabase(File baseFile, boolean raisePanel) {
+		long time = System.currentTimeMillis();
 		JabRefBaseHandle handle = null;
 		if(baseFile == null) {
 			throw new IllegalArgumentException("NULL");
@@ -181,6 +182,7 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 		}
 		//DOCEAR - todo: how do we deal with multiple files?
 		DocearController.getController().getDocearEventLogger().appendToLog(this, DocearLogEvent.RM_BIBTEX_FILE_CHANGE, new Object[] {file, this.getDatabase().getEntries().size()});
+		LogUtils.info("database "+baseFile+" loaded in: "+(System.currentTimeMillis()-time));
 		return handle;
 	}
 	

@@ -128,6 +128,7 @@ public class DocearProjectLoader extends ProjectLoader {
 	}
 	
 	public synchronized LOAD_RETURN_TYPE loadProject(AWorkspaceProject project) throws IOException {
+		long time = System.currentTimeMillis();
 		try {
 			File projectSettings = new File(URIUtils.getAbsoluteFile(project.getProjectDataPath()),"settings.xml");
 			if(projectSettings.exists()) {
@@ -143,6 +144,9 @@ public class DocearProjectLoader extends ProjectLoader {
 		}
 		catch (Exception e) {
 			throw new IOExceptionWithCause(e);
+		}
+		finally {
+			LogUtils.info("project "+project.getProjectName()+" loaded in: "+(System.currentTimeMillis()-time));
 		}
 	}
 	

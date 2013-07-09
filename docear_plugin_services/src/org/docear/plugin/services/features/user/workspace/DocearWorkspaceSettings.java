@@ -149,10 +149,10 @@ public class DocearWorkspaceSettings extends ADocearServiceFeature implements IW
 		if(DocearController.getPropertiesController().getProperty(DOCEAR_SAVE_BACKUP) != null) {
 			user.setBackupEnabled(Boolean.parseBoolean(DocearController.getPropertiesController().getProperty(DOCEAR_SAVE_BACKUP)));
 		}
-		WorkspaceController.load();
+//		WorkspaceController.load();
 	}
 	
-	public void load(DocearUser user) throws IOException {
+	public void loadSettings(DocearUser user) throws IOException {
 		if(user == null) {
 			throw new IOException("user is NULL");
 		}
@@ -248,7 +248,7 @@ public class DocearWorkspaceSettings extends ADocearServiceFeature implements IW
 	}
 	
 	public void load() throws IOException {
-		load(DocearUserController.getActiveUser());
+		loadSettings(DocearUserController.getActiveUser());
 	}
 
 	public void store() throws IOException {

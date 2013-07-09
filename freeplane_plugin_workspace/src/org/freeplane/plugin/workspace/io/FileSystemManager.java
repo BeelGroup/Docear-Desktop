@@ -47,19 +47,26 @@ public class FileSystemManager {
 	}
 	
 	public void scanFileSystem(AWorkspaceTreeNode node, File file) {
-		scanFileSystem(node, file, null);
+		scanFileSystem(node, file, true, null);
+	}
+	
+	public void scanFileSystem(AWorkspaceTreeNode node, File file, boolean recursive) {
+		scanFileSystem(node, file, recursive, null);
 	}
 
 	public void scanFileSystem(AWorkspaceTreeNode node, File file, FileFilter filter) {
-
+		scanFileSystem(node, file, true, filter);
+	}
+		
+	public void scanFileSystem(AWorkspaceTreeNode node, File file, boolean recursive, FileFilter filter) {
 		if (file != null && file.exists()) {
 			if (file.isDirectory()) {
-				if(node instanceof IFileSystemRepresentation) {
-					iterateDirectory(node, file, filter, ((IFileSystemRepresentation) node).orderDescending());
-				} 
-				else {
-					iterateDirectory(node, file, filter, false);
-				}
+					if(node instanceof IFileSystemRepresentation) {
+						iterateDirectory(node, file, filter, recursive, ((IFileSystemRepresentation) node).orderDescending());
+					} 
+					else {
+						iterateDirectory(node, file, filter, recursive, false);
+					}
 			}
 			else {
 				createFileNode(node, file);
@@ -423,7 +430,7 @@ public class FileSystemManager {
 		return typeManager.getFileTypeHandlers();
 	}
 
-	private void iterateDirectory(AWorkspaceTreeNode parent, File directory, FileFilter filter, final boolean orderDescending) {
+	private void iterateDirectory(AWorkspaceTreeNode parent, File directory, FileFilter filter, boolean recursive,  final boolean orderDescending) {
 		boolean orderDesc = orderDescending;
 //		if(parent instanceof IFileSystemRepresentation) {
 //			orderDesc = ((IFileSystemRepresentation) parent).orderDescending();
@@ -431,7 +438,9 @@ public class FileSystemManager {
 		
 		for (File file : sortFiles(directory.listFiles(new DirectoryFilter(filter)), orderDesc, true)) {
 			AWorkspaceTreeNode newParent = createFileNode(parent, FileReadManager.DIRECTORY_HANDLE, file);
-			iterateDirectory(newParent, file, filter, orderDesc);
+			if(recursive) {
+				iterateDirectory(newParent, file, filter, recursive, orderDesc);
+			}
 
 		}
 		for (File file : sortFiles(directory.listFiles(new FilesOnlyFilter(filter)), orderDesc, true)) {

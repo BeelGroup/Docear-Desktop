@@ -9,6 +9,8 @@ import java.util.Enumeration;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeExpansionListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.freeplane.core.util.LogUtils;
@@ -22,7 +24,7 @@ import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 /**
  * 
  */
-public class FolderFileNode extends DefaultFileNode {
+public class FolderFileNode extends DefaultFileNode implements TreeExpansionListener {
 	private static final Icon FOLDER_OPEN_ICON = new ImageIcon(DefaultFileNode.class.getResource("/images/16x16/folder-orange_open.png"));
 	private static final Icon FOLDER_CLOSED_ICON = new ImageIcon(DefaultFileNode.class.getResource("/images/16x16/folder-orange.png"));
 	private static final Icon NOT_EXISTING = new ImageIcon(DefaultFileNode.class.getResource("/images/16x16/folder-orange-missing.png"));
@@ -30,6 +32,7 @@ public class FolderFileNode extends DefaultFileNode {
 	private static final long serialVersionUID = 1L;
 	
 	private static WorkspacePopupMenu popupMenu = null;
+	private boolean inRefresh = false;
 	
 	/***********************************************************************************
 	 * CONSTRUCTORS
@@ -80,13 +83,17 @@ public class FolderFileNode extends DefaultFileNode {
 	public void refresh() {
 		try {
 			if (getFile().isDirectory()) {
+				inRefresh = true;
 				getModel().removeAllElements(this);
-				WorkspaceController.getFileSystemMgr().scanFileSystem(this, getFile());
-				getModel().reload(this);				
+				loadDirectoryFiles(getFile());
+				getModel().reload(this);
 			}
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+		}
+		finally {
+			inRefresh = false;
 		}		
 	}
 	
@@ -125,6 +132,12 @@ public class FolderFileNode extends DefaultFileNode {
 		
 	public boolean isLeaf() {
 		return false;
+	}
+	
+	private void loadDirectoryFiles(File folder) {
+		if (folder != null && folder.isDirectory()) {
+			WorkspaceController.getFileSystemMgr().scanFileSystem(this, getFile(), false);
+		}
 	}
 		
 	
@@ -165,5 +178,14 @@ public class FolderFileNode extends DefaultFileNode {
 	
 	public boolean getAllowsChildren() {
 		return true;
+	}
+
+	public void treeExpanded(TreeExpansionEvent event) {
+		if(!inRefresh && getChildCount() <= 0) {
+			loadDirectoryFiles(getFile());
+		}
+	}
+
+	public void treeCollapsed(TreeExpansionEvent event) {		
 	}
 }
