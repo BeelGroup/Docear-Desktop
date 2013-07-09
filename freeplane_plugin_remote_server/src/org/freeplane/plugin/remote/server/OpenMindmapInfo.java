@@ -82,6 +82,7 @@ public class OpenMindmapInfo implements Serializable {
 	}
 	
 	public int getCurrentRevision() {
+		updateAccessTime();
 		return updateList.size();
 	}
 	
@@ -103,10 +104,13 @@ public class OpenMindmapInfo implements Serializable {
 	}
 	
 	public List<String> getUpdateListAsJson(long sinceRevisionNumber) {
+		updateAccessTime();
 		return getShortUpdateListAsJson((int)sinceRevisionNumber);
 	}
 	
 	public List<String> getShortUpdateListAsJson(int sinceRevision) {
+		updateAccessTime();
+		
 		final List<String> shortList = new ArrayList<String>();
 		for(int i = sinceRevision; i < updateList.size(); i++) {
 			final MapUpdate update = updateList.get(i);
