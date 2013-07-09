@@ -2,6 +2,8 @@ package org.docear.plugin.core.features;
 
 import java.net.URI;
 
+import org.docear.plugin.core.DocearController;
+import org.docear.plugin.core.actions.ChooseMapProjectAffiliationAction;
 import org.docear.plugin.core.features.DocearMapModelExtension.DocearMapType;
 import org.docear.plugin.core.workspace.compatible.DocearConversionURLHandler;
 import org.freeplane.core.extension.IExtension;
@@ -17,7 +19,6 @@ import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.n3.nanoxml.XMLElement;
 import org.freeplane.plugin.workspace.URIUtils;
-import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
 public class DocearMapModelExtensionXmlBuilder implements IElementDOMHandler, IExtensionAttributeWriter {
@@ -132,13 +133,25 @@ public class DocearMapModelExtensionXmlBuilder implements IElementDOMHandler, IE
 				try {
 					URI hyperlink = URIUtils.createURI(value);
 					if(hyperlink != null && "workspace".equals(hyperlink.getScheme())) {
-						AWorkspaceProject project = WorkspaceController.getCurrentProject();//WorkspaceController.getMapModelExtension(node.getMap()).getProject();
-						DocearConversionURLHandler.setTargetProject(project);
-						URI uri = project.getRelativeURI(URIUtils.getAbsoluteFile(hyperlink).toURI());
-						if(uri != null) {
-							value = uri.toString();
+						MapModel map = node.getMap();
+						AWorkspaceProject project = DocearController.findProject(map);
+						
+						if(project == null) {
+							//the map needs an affiliation to a project in order to resolve the workspace paths
+							project = ChooseMapProjectAffiliationAction.showChooser(map);
 						}
+						
+						if(project != null) {
+							DocearConversionURLHandler.setTargetProject(project);
+							URI uri = project.getRelativeURI(URIUtils.getAbsoluteFile(hyperlink).toURI());
+							if(uri != null) {
+								value = uri.toString();
+								DocearMapModelController.setWorkspaceLinkConverted(map);
+							}
+						}
+					
 					}
+					
 				} catch (Exception e) {
 					LogUtils.info("Exception in org.docear.plugin.core.features.DocearMapModelExtensionXmlBuilder.registerAttributeHandlers(reader)...IAttributeHandler(node, LINK).setAttribute(Object,String): "+e.getMessage());
 					

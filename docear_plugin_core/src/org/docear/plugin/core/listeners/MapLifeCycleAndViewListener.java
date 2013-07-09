@@ -8,6 +8,7 @@ import javax.swing.JOptionPane;
 
 import org.apache.commons.io.FileUtils;
 import org.docear.plugin.core.DocearController;
+import org.docear.plugin.core.actions.ChooseMapProjectAffiliationAction;
 import org.docear.plugin.core.features.DocearMapModelController;
 import org.docear.plugin.core.features.DocearMapModelExtension;
 import org.docear.plugin.core.logger.DocearLogEvent;
@@ -26,6 +27,7 @@ import org.freeplane.features.ui.IMapViewChangeListener;
 import org.freeplane.features.url.UrlManager;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.features.WorkspaceMapModelExtension;
 
 public class MapLifeCycleAndViewListener implements IMapLifeCycleListener, IMapViewChangeListener {
 
@@ -38,13 +40,23 @@ public class MapLifeCycleAndViewListener implements IMapLifeCycleListener, IMapV
 				DocearController.getController().getDocearEventLogger().appendToLog(this, DocearLogEvent.MAP_OPENED, f);
 				//WORKSPACE - todo: save welcome mind map only once for any project --> one location in workspace
 				File installWelcomeMap = new File(System.getProperty("user.dir"), "doc" + File.separator + "docear-welcome.mm");
-				File userdirWelcomeMap = new File(URIUtils.getFile(WorkspaceController.getApplicationHome()), "docear-welcome.mm");				
+				File userdirWelcomeMap = new File(URIUtils.getFile(WorkspaceController.getApplicationHome()), "docear-welcome.mm");
 				if(f.equals(installWelcomeMap) || f.equals(userdirWelcomeMap)){
 					map.setReadOnly(true);
 				}
 			}
-			else {				
-				DocearController.getController().getDocearEventLogger().appendToLog(this, DocearLogEvent.MAP_NEW);				
+			else {
+				DocearController.getController().getDocearEventLogger().appendToLog(this, DocearLogEvent.MAP_NEW);
+			}
+			
+			if(DocearMapModelController.hasConvertedLinks(map)) {
+				final MMapIO mapIO = (MMapIO) Controller.getCurrentModeController().getExtension(MapIO.class);
+				WorkspaceMapModelExtension mapExt = WorkspaceController.getMapModelExtension(map, false);
+				if(mapExt == null || mapExt.getProject() == null) {
+					ChooseMapProjectAffiliationAction.showChooser(map);
+				}
+				map.setSaved(false);
+				mapIO.save(map);
 			}
 			
 			setMapAttributesIfNeeded(map);

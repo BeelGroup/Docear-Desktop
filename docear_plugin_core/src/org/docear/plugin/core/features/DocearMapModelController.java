@@ -73,4 +73,17 @@ public class DocearMapModelController implements IExtension{
 		return ""+System.currentTimeMillis()+"_"+CoreUtils.createRandomString(16);
 	}
 
+	public static boolean hasConvertedLinks(MapModel map) {
+		if(map != null && map.containsExtension(DocearWorkspaceLinkConverted.class)) {
+			return true;
+		}
+		return false;
+	}
+
+	public static void setWorkspaceLinkConverted(MapModel map) {
+		if(map != null && !map.containsExtension(DocearWorkspaceLinkConverted.class)) {
+			map.addExtension(new DocearWorkspaceLinkConverted());
+		}
+	}
+
 }

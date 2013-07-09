@@ -2,6 +2,7 @@ package org.docear.plugin.core;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -23,6 +24,10 @@ import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.mode.Controller;
+import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.features.WorkspaceMapModelExtension;
+import org.freeplane.plugin.workspace.model.WorkspaceModel;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
 /**
  * 
@@ -329,7 +334,32 @@ public class DocearController implements IDocearEventListener {
 		return ResourceController.getResourceController();
 	}
 	
-	
+	public static AWorkspaceProject findProject(MapModel map) {
+		AWorkspaceProject project = null; 
+		WorkspaceMapModelExtension mapExt = WorkspaceController.getMapModelExtension(map, false);
+		if(mapExt != null) {
+			project = mapExt.getProject();
+		}
+		
+		if(project == null) {
+			WorkspaceModel model = WorkspaceController.getCurrentModel();
+			for (AWorkspaceProject prj : model.getProjects()) {
+				URI relativeUri = prj.getRelativeURI(map.getFile().toURI());
+				//DOCEAR - validate: check whether a path is within the projects home
+				if(relativeUri != null && !relativeUri.getRawPath().startsWith("..") && !"file".equals(relativeUri.getScheme())) {
+					project = prj;
+					WorkspaceMapModelExtension ext = WorkspaceController.getMapModelExtension(map);
+					ext.setProject(project);
+					break;
+				}
+			}
+		}
+		
+		if(project == null) {
+			project = WorkspaceController.getCurrentProject();
+		}
+		return project;
+	}
 	
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
