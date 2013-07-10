@@ -95,7 +95,7 @@ public class LinkTypeReferencesNode extends LinkTypeFileNode implements IBibtexD
 						
 			popupMenu = new WorkspacePopupMenu();
 			WorkspacePopupMenuBuilder.addActions(popupMenu, new String[] {
-					"workspace.action.docear.uri.change",
+					"ChangeBibtexDatabaseAction",
 					WorkspacePopupMenuBuilder.SEPARATOR,
 					"workspace.action.node.cut",
 					"workspace.action.node.copy",
