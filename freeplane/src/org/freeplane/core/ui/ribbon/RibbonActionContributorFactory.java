@@ -347,7 +347,8 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 									}
 									menuButton.setEnabled(button.isEnabled());
 									menuButton.putClientProperty(ACTION_KEY_PROPERTY, action);
-									updateRichTooltip(menuButton, action, context.getBuilder().getAcceleratorManager().getAccelerator(actionKey));
+									KeyStroke ks = context.getBuilder().getAcceleratorManager().getAccelerator(actionKey);
+									updateRichTooltip(menuButton, action, ks);
 									updateActionState(action, menuButton);
 								}
 								else {

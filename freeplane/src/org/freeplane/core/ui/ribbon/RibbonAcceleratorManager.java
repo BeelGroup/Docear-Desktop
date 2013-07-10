@@ -135,7 +135,8 @@ public class RibbonAcceleratorManager implements IKeyStrokeProcessor, IAccelerat
 	}
  	
  	public KeyStroke getAccelerator(String actionKey) {
- 		return actionMap.get(actionKey);
+ 		KeyStroke ks = actionMap.get(actionKey);
+ 		return ks;
  	}
  	
  	public void addAcceleratorChangeListener(IAcceleratorChangeListener changeListener) {

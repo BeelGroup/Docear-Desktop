@@ -2,7 +2,6 @@ package org.docear.plugin.bibtex.actions;
 
 import java.awt.event.ActionEvent;
 
-
 import org.docear.plugin.bibtex.ReferenceUpdater;
 import org.docear.plugin.core.mindmap.MindmapUpdateController;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
@@ -10,7 +9,9 @@ import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.url.mindmapmode.SaveAll;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.components.menu.CheckEnableOnPopup;
 
+@CheckEnableOnPopup
 public class UpdateReferencesAllMapsAction extends AFreeplaneAction {
 
 	/**
