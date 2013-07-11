@@ -337,8 +337,14 @@ public class AnnotationController implements IExtension{
 		String title = null;
 		try {
 			PdfDataExtractor extractor = new PdfDataExtractor(file);
-			title = extractor.extractTitle();
-			hashCode = extractor.getUniqueHashCode();
+			try {
+				title = extractor.extractTitle();
+				hashCode = extractor.getUniqueHashCode();
+			}
+			finally {
+				extractor.close();
+				extractor = null;
+			}
 			if(hashCode == null ) {
 				hashCode = NO_HASH_AVAILABLE;
 			}
