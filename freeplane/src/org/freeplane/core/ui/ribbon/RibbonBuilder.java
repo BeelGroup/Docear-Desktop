@@ -135,6 +135,14 @@ public class RibbonBuilder {
 		enabled = b;
 	}
 	
+	public void setMinimized(boolean b) {
+		ribbon.setMinimized(b);
+	}
+	
+	public boolean isMinimized() {
+		return ribbon.isMinimized();
+	}
+	
 	public void updateRibbon(URL xmlResource) {
 		//final URL xmlSource = ResourceController.getResourceController().getResource(xmlResource);
 		if (xmlResource != null) {
