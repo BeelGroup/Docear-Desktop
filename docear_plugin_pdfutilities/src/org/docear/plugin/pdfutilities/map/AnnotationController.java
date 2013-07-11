@@ -14,8 +14,9 @@ import java.util.concurrent.Executors;
 
 import org.apache.commons.io.FileUtils;
 import org.docear.pdf.PdfDataExtractor;
-import org.docear.plugin.core.features.AnnotationID;
 import org.docear.plugin.core.util.HtmlUtils;
+import org.docear.plugin.pdfutilities.features.AnnotationConverter;
+import org.docear.plugin.pdfutilities.features.AnnotationID;
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
 import org.docear.plugin.pdfutilities.features.AnnotationNodeModel;
 import org.docear.plugin.pdfutilities.features.AnnotationXmlBuilder;
@@ -67,6 +68,7 @@ public class AnnotationController implements IExtension{
 		final WriteManager writeManager = mapController.getWriteManager();
 		AnnotationXmlBuilder builder = new AnnotationXmlBuilder();
 		builder.registerBy(readManager, writeManager);
+		modeController.getMapController().addMapLifeCycleListener(new AnnotationConverter());
 	}
 	
 	public static void markNewAnnotations(AnnotationModel importedAnnotation, Map<AnnotationID, Collection<AnnotationNodeModel>> oldAnnotations){
@@ -154,42 +156,47 @@ public class AnnotationController implements IExtension{
 			setModel(node, null);
 			return null;
 		}
-		if(annotation != null && annotation.getAnnotationType() != null && !annotation.getAnnotationType().equals(AnnotationType.PDF_FILE)){
-			return new AnnotationNodeModel(node, new AnnotationID(uri, annotation.getObjectNumber()), annotation.getAnnotationType());
+		AnnotationNodeModel model;
+		if(annotation != null && annotation.getAnnotationType() != null && !annotation.getAnnotationType().equals(AnnotationType.PDF_FILE)) {	
+			model = new AnnotationNodeModel(node, annotation.getObjectID(), annotation.getAnnotationType());
+			model.setSource(uri);
+			return model;
 		}		
 		if(annotation != null && file != null && annotation.getAnnotationType().equals(AnnotationType.PDF_FILE)){
-			return new AnnotationNodeModel(node, new AnnotationID(uri, 0), AnnotationType.PDF_FILE); 
+			model = new AnnotationNodeModel(node, 0, AnnotationType.PDF_FILE);
+			model.setSource(uri);
+			return model; 
 		}		
 		if(annotation == null && file != null && file.getName().equals(node.getText()) && isPdfFile(file)){
-			return new AnnotationNodeModel(node, new AnnotationID(uri, 0), AnnotationType.PDF_FILE); 
+			model = new AnnotationNodeModel(node, 0, AnnotationType.PDF_FILE);
+			model.setSource(uri);
+			return model; 
 		}
 		if(annotation == null && file != null && file.getName().equals(node.getText()) && !isPdfFile(file)){
-			return new AnnotationNodeModel(node, new AnnotationID(uri, 0), AnnotationType.FILE); 
+			model = new AnnotationNodeModel(node, 0, AnnotationType.FILE);
+			model.setSource(uri);
+			return model; 
 		}
 		return null;
 	}
 
-	public static IAnnotation createModel(final NodeModel node) {
-		final IAnnotation extension = (IAnnotation) node.getExtension(IAnnotation.class);
-		if (extension != null) {
-			return extension;
+	public static IAnnotation setModel(final NodeModel node, final IAnnotation annotationModel) {
+		if(annotationModel == null) {
+			return (IAnnotation) node.removeExtension(AnnotationModel.class);
 		}
-		final IAnnotation annotationModel = new AnnotationModel();
-		node.addExtension(annotationModel);
-		return annotationModel;		
-	}
-
-	public static void setModel(final NodeModel node, final IAnnotation annotationModel) {
-		final IAnnotation oldAnnotationModel = (IAnnotation) node.getExtension(IAnnotation.class);
-		if (annotationModel != null && oldAnnotationModel == null) {
-			node.addExtension(annotationModel);
+		else {
+			return (IAnnotation) node.putExtension(annotationModel);
 		}
-		else if (annotationModel == null && oldAnnotationModel != null) {
-			node.removeExtension(AnnotationModel.class);
-		}
-		else if(annotationModel == null && oldAnnotationModel == null){
-			node.removeExtension(AnnotationModel.class);
-		}
+//		final IAnnotation oldAnnotationModel = (IAnnotation) node.getExtension(AnnotationModel.class);
+//		if (annotationModel != null && oldAnnotationModel == null) {
+//			node.putExtension(annotationModel);
+//		}
+//		else if (annotationModel == null && oldAnnotationModel != null) {
+//			node.removeExtension(AnnotationModel.class);
+//		}
+//		else if(annotationModel == null && oldAnnotationModel == null){
+//			node.removeExtension(AnnotationModel.class);
+//		}
 	}
 	
 	private static void setModel(final NodeModel node){

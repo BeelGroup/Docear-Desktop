@@ -13,11 +13,11 @@ import java.util.Stack;
 
 import org.docear.plugin.core.CoreConfiguration;
 import org.docear.plugin.core.DocearController;
-import org.docear.plugin.core.features.AnnotationID;
 import org.docear.plugin.core.util.NodeUtilities;
 import org.docear.plugin.core.workspace.AVirtualDirectory;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
+import org.docear.plugin.pdfutilities.features.AnnotationID;
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
 import org.docear.plugin.pdfutilities.features.AnnotationNodeModel;
 import org.docear.plugin.pdfutilities.features.DocearNodeMonitoringExtension.DocearExtensionKey;
@@ -190,7 +190,8 @@ public abstract class MonitoringUtils {
 
 	public static List<NodeModel> insertNewChildNodesFrom(URI pdfUri, Collection<AnnotationModel> annotations, boolean isLeft, boolean flattenSubfolder, NodeModel target){
 		File pdfFile = URIUtils.getAbsoluteFile(pdfUri);
-		AnnotationModel root = new AnnotationModel(new AnnotationID(pdfFile.toURI(), 0), AnnotationType.PDF_FILE);
+		AnnotationModel root = new AnnotationModel(0, AnnotationType.PDF_FILE);
+		root.setSource(pdfFile.toURI());
 		root.setTitle(pdfFile.getName());
 		root.getChildren().addAll(annotations);
 		Collection<AnnotationModel> newList = new ArrayList<AnnotationModel>();
@@ -291,7 +292,7 @@ public abstract class MonitoringUtils {
 		List<NodeModel> nodes = new ArrayList<NodeModel>();
 		
 		for(AnnotationModel annotation : annotations){
-			NodeModel node = insertChildNodeFrom(annotation.getUri(), annotation, isLeft, target);
+			NodeModel node = insertChildNodeFrom(annotation.getSource(), annotation, isLeft, target);
 			insertChildNodesFrom(annotation.getChildren(), isLeft, node);
 			nodes.add(node);
 		}
@@ -308,12 +309,18 @@ public abstract class MonitoringUtils {
 		
 		
 		if(type != null){
-			AnnotationModel model = new AnnotationModel();//new AnnotationID(file, -1), type);
-			model.setAnnotationType(type);
-			model.setUri(uri);
+			AnnotationModel model;//new AnnotationID(file, -1), type);
+			
 			if(type == AnnotationType.PDF_FILE){
-				model.setAnnotationID(new AnnotationID(file.toURI(), 0));
+				model = new AnnotationModel(0);
+				model.setSource(file.toURI());
 			}
+			else {
+				model = new AnnotationModel(-1);
+				model.setSource(uri);
+			}
+			model.setAnnotationType(type);
+			
 			AnnotationController.setModel(node, model);
 		}
 		NodeUtilities.setLinkFrom(uri, node);
@@ -339,7 +346,7 @@ public abstract class MonitoringUtils {
 				NodeModel equalChild = targetHasEqualChild(rootTarget, annotation);
 				
 				if(equalChild == null){
-					NodeModel node = insertChildNodeFrom(annotation.getUri(), annotation, isLeft, target);
+					NodeModel node = insertChildNodeFrom(annotation.getSource(), annotation, isLeft, target);
 					insertNewChildNodesFrom(annotation.getChildren(), isLeft, node, rootTarget);
 					nodes.add(node);
 				}
@@ -367,7 +374,7 @@ public abstract class MonitoringUtils {
 				continue;
 			}
 			if(annotation.getAnnotationType().equals(AnnotationType.PDF_FILE)){
-				if(annotation.getUri().equals(URIUtils.getAbsoluteURI(child))){
+				if(annotation.getSource().equals(URIUtils.getAbsoluteURI(child))){
 					return child;
 				}
 			}			

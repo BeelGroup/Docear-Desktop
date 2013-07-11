@@ -6,7 +6,6 @@ import java.net.URI;
 
 import javax.swing.JOptionPane;
 
-import org.docear.plugin.core.features.AnnotationID;
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
 import org.docear.plugin.pdfutilities.features.AnnotationNodeModel;
 import org.docear.plugin.pdfutilities.features.IAnnotation.AnnotationType;
@@ -38,9 +37,9 @@ public class PdfNodeChangeListener implements INodeChangeListener {
 					if(new PdfFileFilter().accept(file)) {
 						AnnotationModel model = AnnotationController.getModel(event.getNode(), false);
 						if(model == null){
-							model = new AnnotationModel();
-							model.setAnnotationID(new AnnotationID(newAbsoluteUri, 0));
-							model.setAnnotationType(AnnotationType.PDF_FILE);							
+							model = new AnnotationModel(0);
+							model.setSource(newAbsoluteUri);
+							model.setAnnotationType(AnnotationType.PDF_FILE);
 							AnnotationController.setModel(event.getNode(), model);
 						}
 					}

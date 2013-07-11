@@ -2,18 +2,17 @@ package org.docear.plugin.pdfutilities.features;
 
 import java.net.URI;
 
-import org.docear.plugin.core.features.AnnotationID;
 import org.freeplane.core.extension.IExtension;
 
 public interface IAnnotation extends IExtension{
 	
-	public enum AnnotationType{
+	public static enum AnnotationType{
 		BOOKMARK, COMMENT, HIGHLIGHTED_TEXT, BOOKMARK_WITHOUT_DESTINATION, BOOKMARK_WITH_URI, PDF_FILE, FILE
 	};
 	
 	public AnnotationID getAnnotationID();
 	
-	public void setAnnotationID(AnnotationID id);
+//	public void setAnnotationID(AnnotationID id);
 
 	public AnnotationType getAnnotationType();
 
@@ -25,13 +24,9 @@ public interface IAnnotation extends IExtension{
 	
 	public void updatePage();
 
-	public Integer getObjectNumber();
+	public long getObjectID();
 
-	public void setObjectNumber(Integer objectNumber);
-
-	public Integer getGenerationNumber();
-
-	public void setGenerationNumber(Integer generationNumber);
+//	public void setObjectID(long objectNumber);
 
 	public String getTitle();	
 
@@ -41,7 +36,7 @@ public interface IAnnotation extends IExtension{
 
 	public void setDestinationUri(URI uri);	
 	
-	public URI getUri();
+	public URI getSource();
 
 	public boolean isNew();	
 

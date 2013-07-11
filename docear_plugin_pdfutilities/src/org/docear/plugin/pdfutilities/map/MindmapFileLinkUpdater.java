@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.docear.plugin.core.mindmap.AMindmapUpdater;
-import org.docear.plugin.pdfutilities.features.IAnnotation;
+import org.docear.plugin.pdfutilities.features.AnnotationModel;
 import org.freeplane.features.link.LinkController;
 import org.freeplane.features.link.mindmapmode.MLinkController;
 import org.freeplane.features.map.MapModel;
@@ -42,9 +42,9 @@ public class MindmapFileLinkUpdater extends AMindmapUpdater {
 				if(event != null && event.getType() == WorkspaceModelEventType.RENAMED && node.getText().equals(link.getName())){
 					node.setText(fileMap.get(link).getName());
 				}
-				IAnnotation annotation = AnnotationController.getModel(node, false);
+				AnnotationModel annotation = AnnotationController.getModel(node, false);
 				if(annotation != null && annotation.getAnnotationID() != null && fileMap.containsKey(URIUtils.getFile(annotation.getAnnotationID().getUri()))){
-					annotation.getAnnotationID().setId(fileMap.get(URIUtils.getFile(annotation.getAnnotationID().getUri())).toURI(), annotation.getAnnotationID().getObjectNumber());
+					annotation.setSource(fileMap.get(URIUtils.getFile(annotation.getAnnotationID().getUri())).toURI());
 				}
 			}
 		}

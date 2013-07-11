@@ -42,21 +42,18 @@ public class DocearNodeSelectionListener implements INodeSelectionListener {
 			if(model.getAnnotationType() != null){
 				builder.append(TextUtils.getText("DocearNodeSelectionListener.7") + model.getAnnotationType()); //$NON-NLS-1$
 			}
+			
 			if(model.getPage() != null){
 				builder.append(TextUtils.getText("DocearNodeSelectionListener.8") + model.getPage()); //$NON-NLS-1$
 			}
 			
-			if(model.getObjectNumber() != null){
-				builder.append(TextUtils.getText("DocearNodeSelectionListener.9") + model.getObjectNumber()); //$NON-NLS-1$
+			if(model.getObjectID() >= 0){
+				builder.append(TextUtils.getText("DocearNodeSelectionListener.9") + model.getObjectID()); //$NON-NLS-1$
 			}
 			
-			if(model.getGenerationNumber() != null){
-				builder.append(TextUtils.getText("DocearNodeSelectionListener.10") + model.getGenerationNumber()); //$NON-NLS-1$
-			}
-			
-			if(model.getAnnotationID() != null){
-				builder.append(TextUtils.getText("DocearNodeSelectionListener.11") + model.getAnnotationID().getId()); //$NON-NLS-1$
-			}
+//			if(model.getAnnotationID() != null){
+//				builder.append(TextUtils.getText("DocearNodeSelectionListener.11") + model.getAnnotationID().getObjectID()); //$NON-NLS-1$
+//			}
 			
 			Controller.getCurrentController().getViewController().addStatusInfo("DocearAnnotationModelInfo", builder.toString()); //$NON-NLS-1$
 		}

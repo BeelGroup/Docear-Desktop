@@ -15,7 +15,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import org.docear.plugin.core.features.AnnotationID;
+import org.docear.plugin.pdfutilities.features.AnnotationID;
 import org.docear.plugin.pdfutilities.features.AnnotationNodeModel;
 import org.docear.plugin.pdfutilities.features.IAnnotation;
 import org.freeplane.core.util.TextUtils;
@@ -73,7 +73,7 @@ public class ImportConflictDialog extends JDialog {
 				this.pdfConflictPanels.put(id.getUri(), pdfConflictPanel);
 			}
 			
-			AnnotationConflictPanel annotationConflictPanel = new AnnotationConflictPanel(id.getObjectNumber());
+			AnnotationConflictPanel annotationConflictPanel = new AnnotationConflictPanel(id.getObjectID());
 			pdfConflictPanel.addAnnotationConflictPanel(annotationConflictPanel);
 			
 			//add pdf annotation first

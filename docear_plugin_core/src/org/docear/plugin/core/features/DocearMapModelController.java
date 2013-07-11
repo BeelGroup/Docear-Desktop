@@ -10,6 +10,8 @@ import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 
 public class DocearMapModelController implements IExtension{
+
+	public final static String CURRENT_MAP_VERSION = "1.1";
 	
 	public static DocearMapModelController getController() {
 		return getController(Controller.getCurrentModeController());
