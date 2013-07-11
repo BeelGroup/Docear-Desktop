@@ -26,7 +26,7 @@ import javax.swing.event.ChangeListener;
 
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.ui.MultiLineActionLabel;
-import org.docear.plugin.core.ui.components.DocearLicensePanel;
+import org.docear.plugin.core.ui.components.DocearLicencePanel;
 import org.docear.plugin.core.ui.components.LabeledPasswordField;
 import org.docear.plugin.core.ui.components.LabeledTextField;
 import org.docear.plugin.core.ui.wizard.AWizardPage;
@@ -366,14 +366,14 @@ public class RegistrationPagePanel extends AWizardPage {
 		});
 		add(chckbxAcceptUsageTerms, "3, 13, default, top");
 		
-		final DocearLicensePanel licenseText = new DocearLicensePanel();
+		final DocearLicencePanel licenseText = new DocearLicencePanel();
 		
 		lblProcessingTerms = new MultiLineActionLabel(TextUtils.getText("docear.setup.wizard.docear.terms.processing"));
 		lblProcessingTerms.setBackground(Color.WHITE);
 		((MultiLineActionLabel) lblProcessingTerms).addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if("top".equals(e.getActionCommand())) {
-					licenseText.setLicenseText(DocearController.getController().getDataProcessingTerms());
+					licenseText.setLicenceText(DocearController.getController().getDataProcessingTerms());
 					JOptionPane.showConfirmDialog(getRootPane(), licenseText, TextUtils.getText("docear.license.data_processing.title"), JOptionPane.PLAIN_MESSAGE, JOptionPane.PLAIN_MESSAGE, null);
 				}
 			}
@@ -398,12 +398,12 @@ public class RegistrationPagePanel extends AWizardPage {
 		((MultiLineActionLabel) lblToS).addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if("tos".equals(e.getActionCommand())) {
-					licenseText.setLicenseText(DocearController.getController().getTermsOfService());
+					licenseText.setLicenceText(DocearController.getController().getTermsOfService());
 					JOptionPane.showConfirmDialog(getRootPane(), licenseText, TextUtils.getText("docear.license.terms_of_use.title"), JOptionPane.PLAIN_MESSAGE, JOptionPane.PLAIN_MESSAGE, null);
 					return;
 				}
 				if("dps".equals(e.getActionCommand())) {
-					licenseText.setLicenseText(DocearController.getController().getDataPrivacyTerms());
+					licenseText.setLicenceText(DocearController.getController().getDataPrivacyTerms());
 					JOptionPane.showConfirmDialog(getRootPane(), licenseText, TextUtils.getText("docear.license.data_privacy.title"), JOptionPane.PLAIN_MESSAGE, JOptionPane.PLAIN_MESSAGE, null);
 					return;
 				}

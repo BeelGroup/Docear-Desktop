@@ -7,12 +7,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-public class DocearLicensePanel extends JPanel {
+public class DocearLicencePanel extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
 	private JTextArea txtrLicense;
 
-	public DocearLicensePanel() {
+	public DocearLicencePanel() {
 		setLayout(new BorderLayout(0, 0));
 		
 		JScrollPane scrollPane = new JScrollPane();
@@ -28,7 +28,7 @@ public class DocearLicensePanel extends JPanel {
 		scrollPane.setViewportView(txtrLicense);
 	}
 
-	public void setLicenseText(final String text) {
+	public void setLicenceText(final String text) {
 		if(text != null) {
 			txtrLicense.setText(text);
 			txtrLicense.setSelectionStart(0);

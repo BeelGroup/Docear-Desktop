@@ -27,6 +27,8 @@ import org.docear.plugin.core.actions.DocearSetNodePrivacyAction;
 import org.docear.plugin.core.actions.DocearShowDataPrivacyStatementAction;
 import org.docear.plugin.core.actions.DocearShowDataProcessingTermsAction;
 import org.docear.plugin.core.actions.DocearShowTermsOfUseAction;
+import org.docear.plugin.core.actions.GPLPanelAction;
+import org.docear.plugin.core.actions.LicencesPanelAction;
 import org.docear.plugin.core.actions.SaveAction;
 import org.docear.plugin.core.actions.SaveAsAction;
 import org.docear.plugin.core.features.DocearMapModelController;
@@ -62,6 +64,7 @@ import org.freeplane.core.ui.ribbon.RibbonMapChangeAdapter;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.ConfigurationUtils;
 import org.freeplane.core.util.LogUtils;
+import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.help.OnlineDocumentationAction;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
@@ -314,6 +317,7 @@ public class CoreConfiguration extends ALanguageController {
 		//prepareWorkspace();
 		
 		replaceFreeplaneStringsAndActions(modeController);
+		
 		DocearMapModelController.install(new DocearMapModelController(modeController));
 		
 		setDocearMapWriter(modeController);
@@ -387,7 +391,9 @@ public class CoreConfiguration extends ALanguageController {
 		resController.setProperty(BUG_TRACKER_LOCATION, coreProperties.getProperty(DOCEAR_BUG_TRACKER_LOCATION));
 		resController.setProperty(HELP_FORUM_LOCATION, coreProperties.getProperty("docear_helpForumLocation"));
 		resController.setProperty(FEATURE_TRACKER_LOCATION, coreProperties.getProperty(DOCEAR_FEATURE_TRACKER_LOCATION));
-		resController.setProperty(WEB_DOCU_LOCATION, coreProperties.getProperty(DOCEAR_WEB_DOCU_LOCATION));
+		resController.setProperty("manualLocation", coreProperties.getProperty("docear_manualLocation"));
+		resController.setProperty("faqLocation", coreProperties.getProperty("docear_faqLocation"));
+		resController.setProperty("contactLocation", coreProperties.getProperty("docear_contactLocation"));
 		resController.setProperty("docu-online", "http://www.docear.org/wp-content/uploads/2012/04/docear-welcome.mm");
 		
 //		if (resController.getProperty("ApplicationName").equals("Docear")) {
@@ -517,15 +523,22 @@ public class CoreConfiguration extends ALanguageController {
 		WorkspaceController.replaceAction(new DocearOpenUrlAction(ASK_FOR_HELP, resourceController.getProperty(HELP_FORUM_LOCATION)));
 		WorkspaceController.replaceAction(new DocearOpenUrlAction(REPORT_BUG_ACTION, resourceController.getProperty(BUG_TRACKER_LOCATION)));
 		WorkspaceController.replaceAction(new DocearOpenUrlAction(OPEN_FREEPLANE_SITE_ACTION, resourceController.getProperty(WEB_FREEPLANE_LOCATION)));
-		WorkspaceController.replaceAction(new DocearOpenUrlAction(DOCUMENTATION_ACTION, resourceController.getProperty(WEB_DOCU_LOCATION)));
+		WorkspaceController.replaceAction(new DocearOpenUrlAction(DOCUMENTATION_ACTION, resourceController.getProperty(WEB_DOCU_LOCATION)));		
 		WorkspaceController.replaceAction(new GettingStartedAction());
-		WorkspaceController.replaceAction(new OnlineDocumentationAction("OnlineReference", "docu-online"));
+		WorkspaceController.replaceAction(new OnlineDocumentationAction("OnlineReference", "docu-online"));		
+		WorkspaceController.replaceAction(new DocearOpenUrlAction("ManualAction",  resourceController.getProperty("manualLocation")));
+		WorkspaceController.replaceAction(new DocearOpenUrlAction("FAQAction",  resourceController.getProperty("faqLocation")));
+		WorkspaceController.replaceAction(new DocearOpenUrlAction("ContactAction",  resourceController.getProperty("contactLocation")));
+		WorkspaceController.replaceAction(new GPLPanelAction());
+		WorkspaceController.replaceAction(new LicencesPanelAction("TOSPanelAction", TextUtils.getText("docear.license.terms_of_use.title"), DocearController.getController().getTermsOfService()));
+		WorkspaceController.replaceAction(new LicencesPanelAction("DataPrivacyPanelAction", TextUtils.getText("docear.license.data_privacy.title"), DocearController.getController().getDataPrivacyTerms()));
+		WorkspaceController.replaceAction(new LicencesPanelAction("DataProcessingPanelAction", TextUtils.getText("docear.license.data_processing.title"), DocearController.getController().getDataProcessingTerms()));		
 		
 		WorkspaceController.replaceAction(new DocearShowTermsOfUseAction());
 		WorkspaceController.replaceAction(new DocearShowDataPrivacyStatementAction());
 		WorkspaceController.replaceAction(new DocearShowDataProcessingTermsAction());
 	}
-
+	
 	private void replaceResourceBundleStrings() {
 		ResourceController resourceController = ResourceController.getResourceController();
 		ResourceBundles bundles = ((ResourceBundles) resourceController.getResources());

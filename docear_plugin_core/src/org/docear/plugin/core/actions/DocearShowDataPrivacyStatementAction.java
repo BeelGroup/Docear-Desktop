@@ -5,7 +5,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.JOptionPane;
 
 import org.docear.plugin.core.DocearController;
-import org.docear.plugin.core.ui.components.DocearLicensePanel;
+import org.docear.plugin.core.ui.components.DocearLicencePanel;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.TextUtils;
@@ -14,11 +14,11 @@ public class DocearShowDataPrivacyStatementAction extends AFreeplaneAction {
 
 	private static final long serialVersionUID = 1L;
 	public static final String key = "DocearShowDataPrivacyStatement";
-	final DocearLicensePanel licenseText = new DocearLicensePanel();
+	final DocearLicencePanel licenseText = new DocearLicencePanel();
 
 	public DocearShowDataPrivacyStatementAction() {
 		super(key);
-		licenseText.setLicenseText(DocearController.getController().getDataPrivacyTerms());
+		licenseText.setLicenceText(DocearController.getController().getDataPrivacyTerms());
 	}
 
 	public void actionPerformed(ActionEvent e) {		

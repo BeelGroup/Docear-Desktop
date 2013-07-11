@@ -18,7 +18,7 @@ import javax.swing.event.ChangeListener;
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.ui.MultiLineActionLabel;
 import org.docear.plugin.core.ui.components.DocearHTMLPanel;
-import org.docear.plugin.core.ui.components.DocearLicensePanel;
+import org.docear.plugin.core.ui.components.DocearLicencePanel;
 import org.docear.plugin.core.ui.wizard.AWizardPage;
 import org.docear.plugin.core.ui.wizard.WizardContext;
 import org.docear.plugin.services.features.user.DocearLocalUser;
@@ -154,21 +154,21 @@ public class SecondPagePanel extends AWizardPage {
 		});
 		add(chckbxAcceptUsageTerms, "4, 13, default, top");
 		
-		final DocearLicensePanel licenseText = new DocearLicensePanel();
+		final DocearLicencePanel licenseText = new DocearLicencePanel();
 		
 		lblProcessingTerms = new MultiLineActionLabel(TextUtils.getText("docear.setup.wizard.docear.terms.processing"));
 		lblProcessingTerms.setBackground(Color.WHITE);
 		lblProcessingTerms.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if("top".equals(e.getActionCommand())) {
-					licenseText.setLicenseText(DocearController.getController().getDataProcessingTerms());
+					licenseText.setLicenceText(DocearController.getController().getDataProcessingTerms());
 					JOptionPane.showConfirmDialog(getRootPane(), licenseText, TextUtils.getText("docear.license.data_processing.title"), JOptionPane.PLAIN_MESSAGE, JOptionPane.PLAIN_MESSAGE, null);
 				}
 				else if("gpl".equals(e.getActionCommand())) {
 					DocearHTMLPanel gplPanel = new DocearHTMLPanel();
 					String text = DocearController.getController().getGPLv2Terms();
 					gplPanel.setText(text);
-					JOptionPane.showConfirmDialog(getRootPane(), gplPanel, TextUtils.getText("docear.license.data_processing.title"), JOptionPane.PLAIN_MESSAGE, JOptionPane.PLAIN_MESSAGE, null);
+					JOptionPane.showConfirmDialog(getRootPane(), gplPanel, TextUtils.getText("docear.license.gpl.title"), JOptionPane.PLAIN_MESSAGE, JOptionPane.PLAIN_MESSAGE, null);
 				}
 			}
 		});
@@ -190,12 +190,12 @@ public class SecondPagePanel extends AWizardPage {
 		lblToS.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if("tos".equals(e.getActionCommand())) {
-					licenseText.setLicenseText(DocearController.getController().getTermsOfService());
+					licenseText.setLicenceText(DocearController.getController().getTermsOfService());
 					JOptionPane.showConfirmDialog(getRootPane(), licenseText, TextUtils.getText("docear.license.terms_of_use.title"), JOptionPane.PLAIN_MESSAGE, JOptionPane.PLAIN_MESSAGE, null);
 					return;
 				}
 				if("dps".equals(e.getActionCommand())) {
-					licenseText.setLicenseText(DocearController.getController().getDataPrivacyTerms());
+					licenseText.setLicenceText(DocearController.getController().getDataPrivacyTerms());
 					JOptionPane.showConfirmDialog(getRootPane(), licenseText, TextUtils.getText("docear.license.data_privacy.title"), JOptionPane.PLAIN_MESSAGE, JOptionPane.PLAIN_MESSAGE, null);
 					return;
 				}
