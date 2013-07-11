@@ -199,6 +199,11 @@ public class Actions {
 		final Random ran = new Random();
 		final String filename = "" + System.currentTimeMillis() + ran.nextInt(100);
 		final String tempDirPath = System.getProperty("java.io.tmpdir");
+		//make sure docear folder is present
+		final File folder = new File(tempDirPath,"docear");
+		if(!folder.exists())
+			folder.mkdir();
+		
 		return tempDirPath + "/docear/" + filename + ".mm";
 	}
 
