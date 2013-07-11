@@ -4,9 +4,9 @@ import java.io.IOException;
 
 import org.docear.plugin.core.features.DocearMapModelController;
 import org.docear.plugin.core.features.DocearMapModelExtension;
+import org.docear.plugin.core.features.DocearRequiredConversionController;
 import org.docear.plugin.pdfutilities.features.IAnnotation.AnnotationType;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
-import org.docear.plugin.services.features.convert.DocearRequiredConversionController;
 import org.freeplane.core.extension.IExtension;
 import org.freeplane.core.io.IAttributeHandler;
 import org.freeplane.core.io.IElementDOMHandler;

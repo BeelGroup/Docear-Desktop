@@ -1,4 +1,4 @@
-package org.docear.plugin.services.features.convert;
+package org.docear.plugin.core.features;
 
 import org.freeplane.features.map.MapModel;
 

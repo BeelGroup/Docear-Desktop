@@ -1,6 +1,6 @@
 package org.docear.plugin.pdfutilities.features;
 
-import org.docear.plugin.services.features.convert.IRequiredConversion;
+import org.docear.plugin.core.features.IRequiredConversion;
 
 public class ConvertAnnotationsExtension implements IRequiredConversion {
 	/***********************************************************************************

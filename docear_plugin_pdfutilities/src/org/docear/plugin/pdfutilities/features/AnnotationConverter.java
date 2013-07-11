@@ -10,11 +10,11 @@ import org.docear.pdf.annotation.AnnotationExtractor;
 import org.docear.pdf.bookmark.Bookmark;
 import org.docear.pdf.bookmark.BookmarkExtractor;
 import org.docear.pdf.feature.APDMetaObject;
+import org.docear.plugin.core.features.DocearFileBackupController;
 import org.docear.plugin.core.features.DocearMapModelController;
+import org.docear.plugin.core.features.DocearRequiredConversionController;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
 import org.docear.plugin.pdfutilities.pdf.PdfFileFilter;
-import org.docear.plugin.services.features.convert.DocearFileBackupController;
-import org.docear.plugin.services.features.convert.DocearRequiredConversionController;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.IMapLifeCycleListener;
 import org.freeplane.features.map.MapModel;
@@ -41,7 +41,7 @@ public class AnnotationConverter implements IMapLifeCycleListener {
 		if(map == null) {
 			throw new IllegalArgumentException("NULL");
 		}
-		DocearFileBackupController.createConversionBackup("convert_annotations", map);
+		DocearFileBackupController.createBackup("convert_annotations", map);
 		new AnnotationConversionProcess(map).convert();
 		LogUtils.info("converted annotations for "+map.getTitle()+" - "+map.getFile());
 	}
@@ -66,8 +66,7 @@ public class AnnotationConverter implements IMapLifeCycleListener {
 				MMapIO mio = (MMapIO) Controller.getCurrentModeController().getExtension(MapIO.class);
 				mio.save(map);
 			} catch (IOException e) {
-				//DOCEAR - ToDo: replace with LogUtils
-				e.printStackTrace();
+				LogUtils.warn(e);
 			}
 		}
 
@@ -147,8 +146,7 @@ public class AnnotationConverter implements IMapLifeCycleListener {
 					}
 				}
 				catch (Exception e) {
-					//DOCEAR - ToDo: replace with LogUtils.info
-					e.printStackTrace();
+					LogUtils.warn(e);
 				}
 			}
 			for(NodeModel child : node.getChildren()) {
@@ -180,13 +178,20 @@ public class AnnotationConverter implements IMapLifeCycleListener {
 						entry.getValue().close();
 						entry.getKey().setLastModified(lastModified);
 					} catch (IOException e) {
-						//DOCEAR - ToDo: replace with LogUtils info
-						e.printStackTrace();
+						LogUtils.warn(e);
 					}
 				}
 				documentCache.clear();
 			}
 		}
+		
+		@Override
+		protected void finalize() throws Throwable {
+			super.finalize();
+			close();
+		}
+		
+		
 		/***********************************************************************************
 		 * REQUIRED METHODS FOR INTERFACES
 		 **********************************************************************************/
@@ -223,8 +228,10 @@ public class AnnotationConverter implements IMapLifeCycleListener {
 		}
 		
 		public void save() throws IOException {
-			if(bookmarkExt.isDocumentModified() || annotationExt.isDocumentModified()) {
-				document.save();
+			if(!document.isReadOnly()) {
+				if(bookmarkExt.isDocumentModified() || annotationExt.isDocumentModified()) {
+					document.save();
+				}
 			}
 		}
 		

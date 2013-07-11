@@ -90,7 +90,7 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 			return annotations;
 		} finally {
 			if(document != null){
-				if(this.modifiedDocument) {
+				if(this.modifiedDocument && !document.isReadOnly()) {
 					document.save();
 				}
 				document.close();

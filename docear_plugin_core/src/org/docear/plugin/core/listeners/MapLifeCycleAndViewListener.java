@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 import org.apache.commons.io.FileUtils;
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.actions.ChooseMapProjectAffiliationAction;
+import org.docear.plugin.core.features.DocearFileBackupController;
 import org.docear.plugin.core.features.DocearMapModelController;
 import org.docear.plugin.core.features.DocearMapModelExtension;
 import org.docear.plugin.core.logger.DocearLogEvent;
@@ -50,6 +51,11 @@ public class MapLifeCycleAndViewListener implements IMapLifeCycleListener, IMapV
 			}
 			
 			if(DocearMapModelController.hasConvertedLinks(map)) {
+				try {
+					DocearFileBackupController.createBackup("convert_links", map);
+				} catch (IOException e) {
+					LogUtils.warn(e);
+				}
 				final MMapIO mapIO = (MMapIO) Controller.getCurrentModeController().getExtension(MapIO.class);
 				WorkspaceMapModelExtension mapExt = WorkspaceController.getMapModelExtension(map, false);
 				if(mapExt == null || mapExt.getProject() == null) {
