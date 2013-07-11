@@ -395,6 +395,10 @@ public class CoreConfiguration extends ALanguageController {
 		resController.setProperty("faqLocation", coreProperties.getProperty("docear_faqLocation"));
 		resController.setProperty("contactLocation", coreProperties.getProperty("docear_contactLocation"));
 		resController.setProperty("docu-online", "http://www.docear.org/wp-content/uploads/2012/04/docear-welcome.mm");
+		resController.setProperty("docear4WordLocation", coreProperties.getProperty("docear4WordLocation"));
+		resController.setProperty("docearPdfInspectorLocation", coreProperties.getProperty("docearPdfInspectorLocation"));
+		resController.setProperty("freeplaneAddOnLocation", coreProperties.getProperty("freeplaneAddOnLocation"));
+		resController.setProperty("jabrefAddOnLocation", coreProperties.getProperty("jabrefAddOnLocation"));
 		
 //		if (resController.getProperty("ApplicationName").equals("Docear")) {
 //			resController.setProperty("first_start_map", "/doc/docear-welcome.mm");
@@ -529,6 +533,11 @@ public class CoreConfiguration extends ALanguageController {
 		WorkspaceController.replaceAction(new DocearOpenUrlAction("ManualAction",  resourceController.getProperty("manualLocation")));
 		WorkspaceController.replaceAction(new DocearOpenUrlAction("FAQAction",  resourceController.getProperty("faqLocation")));
 		WorkspaceController.replaceAction(new DocearOpenUrlAction("ContactAction",  resourceController.getProperty("contactLocation")));
+		WorkspaceController.replaceAction(new DocearOpenUrlAction("docear4WordLocationAction",  resourceController.getProperty("docear4WordLocation")));
+		WorkspaceController.replaceAction(new DocearOpenUrlAction("docearPdfInspectorLocationAction",  resourceController.getProperty("docearPdfInspectorLocation")));
+		WorkspaceController.replaceAction(new DocearOpenUrlAction("freeplaneAddOnLocationAction",  resourceController.getProperty("freeplaneAddOnLocation")));
+		WorkspaceController.replaceAction(new DocearOpenUrlAction("jabrefAddOnLocationAction",  resourceController.getProperty("jabrefAddOnLocation")));
+		
 		WorkspaceController.replaceAction(new GPLPanelAction());
 		WorkspaceController.replaceAction(new LicencesPanelAction("TOSPanelAction", TextUtils.getText("docear.license.terms_of_use.title"), DocearController.getController().getTermsOfService()));
 		WorkspaceController.replaceAction(new LicencesPanelAction("DataPrivacyPanelAction", TextUtils.getText("docear.license.data_privacy.title"), DocearController.getController().getDataPrivacyTerms()));
