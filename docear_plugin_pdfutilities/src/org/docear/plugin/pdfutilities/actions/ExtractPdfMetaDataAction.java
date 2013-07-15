@@ -45,12 +45,24 @@ public class ExtractPdfMetaDataAction extends AFreeplaneAction {
 	
 	public static String getUniqueHashCode(URI uri) throws IOException {
 		PdfDataExtractor extractor = new PdfDataExtractor(uri);
-		return extractor.getUniqueHashCode();
+		try {
+			return extractor.getUniqueHashCode();
+		}
+		finally {
+			extractor.close();
+			extractor = null;
+		}
 	}
 	
 	public static String extractTitle(URI uri) throws IOException {
 		PdfDataExtractor extractor = new PdfDataExtractor(uri);
-		return extractor.extractTitle();
+		try {
+			return extractor.extractTitle();
+		}
+		finally {
+			extractor.close();
+			extractor = null;
+		}
 	}
 
 }

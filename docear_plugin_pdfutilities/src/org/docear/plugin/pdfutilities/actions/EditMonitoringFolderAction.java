@@ -16,6 +16,7 @@ import org.docear.plugin.pdfutilities.util.MonitoringUtils;
 import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.link.mindmapmode.MLinkController;
+import org.freeplane.features.map.IMapSelection;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.plugin.workspace.URIUtils;
@@ -66,13 +67,14 @@ public class EditMonitoringFolderAction extends AbstractMonitoringAction {
 
 	@Override
 	public void setEnabled() {
-		NodeModel selected = Controller.getCurrentController().getSelection().getSelected();
-		if(selected == null){
-			this.setEnabled(false);
+		IMapSelection selection = Controller.getCurrentController().getSelection();
+		if(selection != null) {
+			NodeModel selected = selection.getSelected();
+			if(selected != null){
+				this.setEnabled(MonitoringUtils.isMonitoringNode(selected));
+			}
 		}
-		else{
-			this.setEnabled(MonitoringUtils.isMonitoringNode(selected));
-		}
+		this.setEnabled(false);
 	}
 
 }

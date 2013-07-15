@@ -6,18 +6,24 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.swing.JOptionPane;
 
+import org.docear.pdf.annotation.AnnotationExtractor;
+import org.docear.pdf.annotation.CommentAnnotation;
+import org.docear.pdf.annotation.HighlightAnnotation;
+import org.docear.pdf.bookmark.Bookmark;
+import org.docear.pdf.bookmark.BookmarkExtractor;
+import org.docear.pdf.feature.AObjectType;
+import org.docear.pdf.feature.APDMetaObject;
+import org.docear.pdf.feature.PageDestination;
+import org.docear.pdf.feature.UriDestination;
 import org.docear.plugin.core.DocearController;
-import org.docear.plugin.core.features.AnnotationID;
 import org.docear.plugin.core.util.HtmlUtils;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
@@ -34,32 +40,15 @@ import org.freeplane.plugin.workspace.URIUtils;
 
 import com.google.common.base.CharMatcher;
 
-import de.intarsys.pdf.cds.CDSNameTreeEntry;
-import de.intarsys.pdf.cds.CDSNameTreeNode;
 import de.intarsys.pdf.content.CSDeviceBasedInterpreter;
 import de.intarsys.pdf.cos.COSArray;
-import de.intarsys.pdf.cos.COSCatalog;
-import de.intarsys.pdf.cos.COSDictionary;
-import de.intarsys.pdf.cos.COSName;
-import de.intarsys.pdf.cos.COSNull;
-import de.intarsys.pdf.cos.COSObject;
 import de.intarsys.pdf.cos.COSRuntimeException;
-import de.intarsys.pdf.cos.COSString;
 import de.intarsys.pdf.parser.COSLoadException;
 import de.intarsys.pdf.pd.PDAnnotation;
-import de.intarsys.pdf.pd.PDAnyAnnotation;
 import de.intarsys.pdf.pd.PDDocument;
-import de.intarsys.pdf.pd.PDExplicitDestination;
-import de.intarsys.pdf.pd.PDHighlightAnnotation;
-import de.intarsys.pdf.pd.PDOutline;
 import de.intarsys.pdf.pd.PDOutlineItem;
-import de.intarsys.pdf.pd.PDOutlineNode;
 import de.intarsys.pdf.pd.PDPage;
-import de.intarsys.pdf.pd.PDSquigglyAnnotation;
-import de.intarsys.pdf.pd.PDStrikeOutAnnotation;
-import de.intarsys.pdf.pd.PDTextAnnotation;
 import de.intarsys.pdf.pd.PDTextMarkupAnnotation;
-import de.intarsys.pdf.pd.PDUnderlineAnnotation;
 import de.intarsys.pdf.tools.kernel.PDFGeometryTools;
 import de.intarsys.tools.locator.FileLocator;
 
@@ -69,11 +58,10 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 	private boolean importAll = false;
 	private boolean setPDObject = false;
 	private int removeLinebreaksDialogResult = JOptionPane.OK_OPTION;
+	private boolean modifiedDocument;
 	
 	public PdfAnnotationImporter(){
-		//AnnotationController.addAnnotationImporter(this);
 	}
-	
 	
 	public Map<URI, List<AnnotationModel>> importAnnotations(List<URI> files) throws IOException, COSLoadException, COSRuntimeException{
 		Map<URI, List<AnnotationModel>> annotationMap = new HashMap<URI, List<AnnotationModel>>();
@@ -93,31 +81,22 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		if(document == null){
 			return annotations;
 		}
-		
+		this.modifiedDocument = false;
 		try{
-			annotations.addAll(this.importAnnotations(document));					
-			annotations.addAll(this.importBookmarks(document.getOutline()));
-			
-		} catch(ClassCastException e){
-			try{
-				//LogUtils.warn("first try: "+ e.getMessage()+" -> " +uri);
-				//LogUtils.warn(e);
-				PDOutlineItem outline = (PDOutlineItem)PDOutline.META.createFromCos(document.getCatalog().cosGetOutline());
-				annotations.addAll(this.importBookmarks(outline));
-			} catch(Exception ex){				
-				LogUtils.warn("org.docear.plugin.pdfutilities.pdf.PdfAnnotationImporter.importAnnotations: " + ex.getMessage()+" -> " +uri);
-				return annotations;
-			}
+			this.importAnnotations(document, annotations);
+			this.importBookmarks(document, annotations);
 		} catch(Exception e){
 			LogUtils.warn(e);
 			return annotations;
 		} finally {
-			if(document != null){				
-				document.close();				
-				document = null;				
+			if(document != null){
+				if(this.modifiedDocument && !document.isReadOnly()) {
+					document.save();
+				}
+				document.close();
+				document = null;
 			}
 		}
-        
 		return annotations;
 	}
 	
@@ -133,7 +112,8 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 			LogUtils.info("COSLoadException during update file: "+ uri); //$NON-NLS-1$
 		}
 		URI absoluteUri = URIUtils.getAbsoluteURI(uri);
-		AnnotationModel root = new AnnotationModel(new AnnotationID(absoluteUri, 0), AnnotationType.PDF_FILE);
+		AnnotationModel root = new AnnotationModel(0, AnnotationType.PDF_FILE);
+		root.setSource(absoluteUri);
 		root.setTitle(URIUtils.getFile(absoluteUri).getName());
 		root.getChildren().addAll(importedAnnotations);	
 		return root;
@@ -145,24 +125,18 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		}
 		List<AnnotationModel> annotations = new ArrayList<AnnotationModel>();
 		boolean ret = false;
-		this.currentFile = annotation.getUri();
-		PDDocument document = getPDDocument(annotation.getUri());
+		this.currentFile = annotation.getSource();
+		PDDocument document = getPDDocument(annotation.getSource());
 		if(document == null){
 			ret = false;
 		}
 		try{
 			this.setImportAll(true);
 			this.setPDObject(true);
-			annotations.addAll(this.importAnnotations(document));					
-			annotations.addAll(this.importBookmarks(document.getOutline()));
 			
-		} catch(ClassCastException e){		
-			try{
-				PDOutlineItem outline = (PDOutlineItem)PDOutline.META.createFromCos(document.getCatalog().cosGetOutline());
-				annotations.addAll(this.importBookmarks(outline));
-			} catch(Exception ex){
-				LogUtils.warn(ex);
-			}
+			this.importAnnotations(document, annotations);
+			this.importBookmarks(document, annotations);
+			
 		} catch(Exception e){
 			LogUtils.warn(e);
 		} finally {
@@ -179,12 +153,12 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 					((PDAnnotation)annotationObject).setContents(newTitle);
 					ret = true;
 				}
-				document.save();		
+				document.save();
 			}
-			if(document != null)
-			document.close();			
+			if(document != null) {
+				document.close();
+			}
 		}
-        
 		return ret;
 	}
 
@@ -206,92 +180,15 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		}
 		
 		
-		FileLocator locator = new FileLocator(file);		
+		FileLocator locator = new FileLocator(file);
 		PDDocument document = PDDocument.createFromLocator(locator);
 		locator = null;
 		return document;
 	}
 	
-	private List<AnnotationModel> importBookmarks(PDOutlineNode parent) throws IOException, COSLoadException, COSRuntimeException{
-		List<AnnotationModel> annotations = new ArrayList<AnnotationModel>();
-		//boolean removeLinebreaksBookmarks = ResourceController.getResourceController().getBooleanProperty(PdfUtilitiesController.REMOVE_LINEBREAKS_BOOKMARKS_KEY);		
-		if(!this.importAll && !DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.IMPORT_BOOKMARKS_KEY)){
-			return annotations;
-		}	
-		if(parent == null) return annotations;
-		@SuppressWarnings("unchecked")
-		List<PDOutlineItem> children = parent.getChildren();
-		for(PDOutlineItem child : children){
-			Integer objectNumber = child.cosGetObject().getIndirectObject().getObjectNumber();
-			AnnotationModel annotation = new AnnotationModel(new AnnotationID(this.currentFile, objectNumber));
-			if(this.setPDObject()){
-				annotation.setAnnotationObject(child);
-        	}
-			annotation.setTitle(child.getTitle());			
-			annotation.setAnnotationType(getAnnotationType(child));			
-			annotation.setGenerationNumber(child.cosGetObject().getIndirectObject().getGenerationNumber());
-			annotation.getChildren().addAll(this.importBookmarks(child));
-			
-			
-			if(annotation.getAnnotationType() == AnnotationType.BOOKMARK_WITH_URI){
-				annotation.setDestinationUri(this.getAnnotationDestinationUri(child));
-			}
-			if(annotation.getAnnotationType() == AnnotationType.BOOKMARK){
-				annotation.setPage(this.getAnnotationDestinationPage(child));
-			}			
-			/*if(removeLinebreaksBookmarks){
-        		this.removeLinebreaks(annotation, child, child.getDoc());
-        	}*/
-			annotations.add(annotation);
-		}
-		
-		return annotations;
-	}
-	
-	private URI getAnnotationDestinationUri(PDOutlineItem bookmark) {
-		if(bookmark != null && !(bookmark.cosGetField(PDOutlineItem.DK_A) instanceof COSNull)){
-			COSDictionary cosDictionary = (COSDictionary)bookmark.cosGetField(PDOutlineItem.DK_A);
-			if(!(cosDictionary.get(COSName.create("URI")) instanceof COSNull)){ //$NON-NLS-1$
-				COSObject destination = cosDictionary.get(COSName.create("URI")); //$NON-NLS-1$
-		        if(destination instanceof COSString && destination.getValueString(null) != null && destination.getValueString(null).length() > 0){
-		        	try {
-						return new URI(destination.getValueString(null));						
-					} catch (URISyntaxException e) {
-						LogUtils.warn("Bookmark Destination Uri Syntax incorrect.", e); //$NON-NLS-1$
-					}
-		        }
-			}            
-		}		
-		return null;
-	}
-
-	private AnnotationType getAnnotationType(PDOutlineItem bookmark) {
-		if(bookmark != null && (bookmark.cosGetField(PDOutlineItem.DK_A) instanceof COSNull)){			
-			Integer page = null;
-			try {
-				 page = getAnnotationDestinationPage(bookmark);
-			}
-			catch (Exception e) {				
-			}
-			if (page == null) {			
-				return AnnotationType.BOOKMARK_WITHOUT_DESTINATION;
-			}			
-		}
-		if(bookmark != null && !(bookmark.cosGetField(PDOutlineItem.DK_A) instanceof COSNull)){			
-			COSDictionary cosDictionary = (COSDictionary)bookmark.cosGetField(PDOutlineItem.DK_A);
-			if(!(cosDictionary.get(COSName.create("URI")) instanceof COSNull)){ //$NON-NLS-1$
-				return AnnotationType.BOOKMARK_WITH_URI;
-			}            
-		}
-		return AnnotationType.BOOKMARK;
-	}
-
-	private List<AnnotationModel> importAnnotations(PDDocument document){
-		List<AnnotationModel> annotations = new ArrayList<AnnotationModel>();
+	private void importAnnotations(PDDocument document, List<AnnotationModel> annotations) throws IOException {
 		boolean importComments = false;
 		boolean importHighlightedTexts = false;
-		//boolean removeLinebreaksComments = ResourceController.getResourceController().getBooleanProperty(PdfUtilitiesController.REMOVE_LINEBREAKS_COMMENTS_KEY);
-		//boolean removeLinebreaksHighlighted = ResourceController.getResourceController().getBooleanProperty(PdfUtilitiesController.REMOVE_LINEBREAKS_HIGHLIGHTED_KEY);
 		
 		if(this.importAll){
 			importComments = true;
@@ -301,116 +198,95 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 			importComments = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.IMPORT_COMMENTS_KEY);
 			importHighlightedTexts = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.IMPORT_HIGHLIGHTED_TEXTS_KEY);
 		}
+		AnnotationExtractor extractor = new AnnotationExtractor(document);
+		try {
+			extractor.setIgnoreComments(!importComments);
+			extractor.setIgnoreHighlights(!importHighlightedTexts);
+			
+			List<APDMetaObject> metaObjects = extractor.getMetaObjects();
+			this.modifiedDocument = extractor.isDocumentModified() || this.modifiedDocument;
+			for (APDMetaObject meta : metaObjects) {
+				AnnotationModel annotation = new AnnotationModel(meta.getUID());
+				transferMetaObject(meta, annotation);
+				annotations.add(annotation);
+			}
+		}
+		finally {
+			extractor.resetAll();
+		}
+	}
+	
+	private void importBookmarks(PDDocument document, List<AnnotationModel> annotations) throws IOException {
+		if(document == null || (!this.importAll && !DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.IMPORT_BOOKMARKS_KEY))){
+			return;
+		}
 		
-		String lastString = ""; //$NON-NLS-1$
+		BookmarkExtractor extractor = new BookmarkExtractor(document);
+		try {
+			List<APDMetaObject> metaObjects = extractor.getMetaObjects();
+			this.modifiedDocument = extractor.isDocumentModified() || this.modifiedDocument;
+			for (APDMetaObject meta : metaObjects) {
+				AnnotationModel annotation = new AnnotationModel(meta.getUID());
+				transferMetaObject(meta, annotation);
+				annotations.add(annotation);
+			}
+		}
+		finally {
+			extractor.resetAll();
+		}
 		
-		// Process page at a time pages always have a page number annotations dont have to record the page
-		for (PDPage pdPage = document.getPageTree().getFirstPage(); pdPage != null; pdPage = pdPage.getNextPage() )
-		{
-			//@SuppressWarnings("unchecked")
-			List<PDAnnotation> pdAnnotations = pdPage.getAnnotations();
-			// if there are annotation on this page
-			if (pdAnnotations != null) {
-				for(PDAnnotation annotation : pdAnnotations){
-					// Avoid empty entries
-					// support repligo highlights
-					if (annotation.getClass() == PDHighlightAnnotation.class) {
-						// ignore Highlight if Subject is "Highlight" and Contents is ""
-						if (((PDHighlightAnnotation) annotation).getSubject() != null &&
-								((PDHighlightAnnotation) annotation).getSubject().length() > 0 &&
-								((PDHighlightAnnotation) annotation).getSubject().equals("Highlight") &&
-								annotation.getContents().equals("") )
-							continue;
-					}					
-					else if (   !(annotation.getClass() == PDSquigglyAnnotation.class)
-							 && !(annotation.getClass() == PDUnderlineAnnotation.class)
-							 && !(annotation.getClass() == PDStrikeOutAnnotation.class)
-							 && !(annotation.getClass() == PDTextMarkupAnnotation.class)){
-						// ignore annotations with Contents is ""
-						if (annotation.getContents().equals("")
-						/* && !annotation.isMarkupAnnotation() */
-						)
-							continue;
-						//$NON-NLS-1$
+	}
+	
+	private void transferMetaObject(APDMetaObject meta, AnnotationModel annotation) {
 		
-						// Avoid double entries (Foxit Reader)
-						if (annotation.getContents().equals(lastString)/*
-																		 * &&
-																		 * !annotation.
-																		 * isMarkupAnnotation
-																		 * ()
-																		 */)
-							continue;
-						lastString = annotation.getContents();
-					}					
-		            if((annotation.getClass() == PDAnyAnnotation.class ||annotation.getClass() == PDTextAnnotation.class) &&
-		            		importComments){
-		            	Integer objectNumber = annotation.cosGetObject().getIndirectObject().getObjectNumber();
-		    			AnnotationModel pdfAnnotation = new AnnotationModel(new AnnotationID(this.currentFile, objectNumber));            	
-		            	pdfAnnotation.setTitle(annotation.getContents()); 
-		            	if(this.setPDObject()){
-		            		pdfAnnotation.setAnnotationObject(annotation);
-		            	}
-		            	pdfAnnotation.setAnnotationType(AnnotationType.COMMENT);            	
-		            	pdfAnnotation.setGenerationNumber(annotation.cosGetObject().getIndirectObject().getGenerationNumber());
-		            	pdfAnnotation.setPage(pdPage.getNodeIndex()+1);
-		            	/*if(removeLinebreaksComments){
-		            		this.removeLinebreaks(pdfAnnotation, annotation, document);
-		            	}*/
-		    			annotations.add(pdfAnnotation);
-		            }
-		            if((annotation.getClass() == PDTextMarkupAnnotation.class 
-		            	|| annotation.getClass() == PDHighlightAnnotation.class
-		            	|| annotation.getClass() == PDStrikeOutAnnotation.class
-		            	|| annotation.getClass() == PDUnderlineAnnotation.class
-		            	|| annotation.getClass() == PDSquigglyAnnotation.class) && importHighlightedTexts){
-		            	Integer objectNumber = annotation.cosGetObject().getIndirectObject().getObjectNumber();
-		    			AnnotationModel pdfAnnotation = new AnnotationModel(new AnnotationID(this.currentFile, objectNumber));
-		    			//String text = extractAnnotationText(pdPage, (PDTextMarkupAnnotation)annotation);
-		    				//prefer Title from Contents (So updates work)
-		    			String test = annotation.getContents();
-						if (annotation.getContents() != null &&
-								annotation.getContents().length() > 0) {
-							pdfAnnotation.setTitle(annotation.getContents());
-						} 
-							//then try to extract the text from the bounding rectangle
-						/*else if(!text.isEmpty()){
-							pdfAnnotation.setTitle(text);
-						}*/					
-						else {
-			    			// support repligo highlights
-							// set Title to Subject per repligo
-							if (annotation.getClass() == PDHighlightAnnotation.class) {
-								String subject = ((PDHighlightAnnotation) annotation).getSubject(); 
-								if (subject != null && subject.length() > 0) {
-									
-									if (!subject.equalsIgnoreCase("Highlight") && !subject.equalsIgnoreCase("Hervorheben"))
-										pdfAnnotation.setTitle(((PDHighlightAnnotation) annotation).getSubject());
-									else
-										continue;
-								}
-							}
-						}
-						
-		            	if(this.setPDObject()){
-		            		pdfAnnotation.setAnnotationObject(annotation);
-		            	}
-		            	pdfAnnotation.setAnnotationType(AnnotationType.HIGHLIGHTED_TEXT);             	
-		            	pdfAnnotation.setGenerationNumber(annotation.cosGetObject().getIndirectObject().getGenerationNumber());
-		            	pdfAnnotation.setPage(pdPage.getNodeIndex()+1);
-		            	if(pdfAnnotation.getTitle() == null) continue;
-		            	/*if(removeLinebreaksHighlighted){
-		            		this.removeLinebreaks(pdfAnnotation, annotation, document);
-		            	}*/
-		    			annotations.add(pdfAnnotation);
-		            }
-				}
+		annotation.setOldObjectNumber(meta.getObjectNumber());
+		annotation.setSource(this.currentFile);
+		annotation.setTitle(meta.getText());
+		annotation.setAnnotationType(getAnnotationTypeFromMeta(meta.getType()));
+		
+		if(meta.getDestination() != null) {
+			if(meta.getDestination() instanceof PageDestination) {
+				annotation.setPage(((PageDestination)meta.getDestination()).getPage());
+			}
+			else if(meta.getDestination() instanceof UriDestination) {
+				annotation.setDestinationUri(((UriDestination)meta.getDestination()).getUri());
 			}
 		}
 		
-		return annotations;
+		if(this.setPDObject()){
+			annotation.setAnnotationObject(meta.getObjectReference());
+		}
+		
+		if(meta.hasChildren()) {
+			for (APDMetaObject metaChild : meta.getChildren()) {
+				AnnotationModel childAnnotation = new AnnotationModel(metaChild.getUID());
+				transferMetaObject(metaChild, childAnnotation);
+				annotation.getChildren().add(childAnnotation);
+			}
+		}
+		
 	}
 
+
+	private AnnotationType getAnnotationTypeFromMeta(AObjectType metaType) {
+		if(Bookmark.BOOKMARK.equals(metaType)) {
+			return AnnotationType.BOOKMARK;
+		}
+		if(Bookmark.BOOKMARK_WITH_URI.equals(metaType)) {
+			return AnnotationType.BOOKMARK_WITH_URI;
+		}
+		if(Bookmark.BOOKMARK_WITHOUT_DESTINATION.equals(metaType)) {
+			return AnnotationType.BOOKMARK_WITHOUT_DESTINATION;
+		}
+		if(CommentAnnotation.COMMENT.equals(metaType)) {
+			return AnnotationType.COMMENT;
+		}
+		if(HighlightAnnotation.HIGHTLIGHTED_TEXT.equals(metaType)) {
+			return AnnotationType.HIGHLIGHTED_TEXT;
+		}
+		return null;
+	}
+	
 	public void removeLinebreaks(IAnnotation annotation, Object annotationObject, PDDocument document) {
 		if(this.removeLinebreaksDialogResult == JOptionPane.CANCEL_OPTION) return;
 		String oldText = annotation.getTitle();
@@ -511,7 +387,7 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 	}
 	
 	
-	private String extractAnnotationText(PDPage pdPage, PDTextMarkupAnnotation annotation) {
+	protected String extractAnnotationText(PDPage pdPage, PDTextMarkupAnnotation annotation) {
 		
 		StringBuilder sb = new StringBuilder();		
 		COSArray rect = (COSArray)annotation.cosGetField(PDTextMarkupAnnotation.DK_QuadPoints);	
@@ -547,106 +423,6 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		return null;		
 	}
 
-	public Integer getAnnotationDestinationPage(PDOutlineItem bookmark) throws IOException, COSLoadException {
-		
-		PDDocument document = bookmark.getDoc();
-		if(document == null || bookmark == null){
-			return null;
-		}		
-		
-		if(bookmark != null && bookmark.getDestination() != null){
-            PDExplicitDestination destination = bookmark.getDestination().getResolvedDestination(document);
-            if(destination != null){
-                PDPage page = destination.getPage(document);
-                return page.getNodeIndex()+1;
-            }
-        }
-        if(bookmark != null && !(bookmark.cosGetField(PDOutlineItem.DK_A) instanceof COSNull)){        	
-            
-            COSDictionary cosDictionary = (COSDictionary)bookmark.cosGetField(PDOutlineItem.DK_A);            
-            COSArray destination = getCOSArrayFromDestination(cosDictionary);
-                        
-            return getPageFromCOSArray(document, (COSArray)destination);           
-        }
-        
-        return null;
-	}
-
-	private COSArray getCOSArrayFromDestination(COSDictionary cosDictionary) {
-		COSObject cosObject = cosDictionary.get(COSName.create("D")); //$NON-NLS-1$
-		if(cosObject instanceof COSArray){
-			return (COSArray)cosObject;
-		}
-		if(cosObject instanceof COSString){
-			String destinationName = cosObject.getValueString(null);
-			if(destinationName == null || destinationName.length() <= 0){
-				return null;
-			}
-				
-        	COSDictionary dests = cosDictionary.getDoc().getCatalog().cosGetDests();
-    		if (dests != null) {
-    			for (Iterator<?> i = dests.keySet().iterator(); i.hasNext();) {
-    				COSName key = (COSName) i.next();
-    				if(key.stringValue().equals(destinationName)){
-    					cosDictionary = (COSDictionary)dests.get(key);
-    					cosObject = cosDictionary.get(COSName.create("D")); //$NON-NLS-1$
-    					if(cosObject instanceof COSArray){
-    						return (COSArray)cosObject;
-    					}
-    				}
-    			}
-    		}
-    		
-    		COSDictionary names = cosDictionary.getDoc().getCatalog().cosGetNames();
-    		if (names != null) {
-    			COSDictionary destsDict = names.get(COSCatalog.DK_Dests).asDictionary();
-    			if (destsDict != null) {
-    				CDSNameTreeNode destsTree = CDSNameTreeNode.createFromCos(destsDict);
-    				for (Iterator<?> i = destsTree.iterator(); i.hasNext();) {
-    					CDSNameTreeEntry entry = (CDSNameTreeEntry) i.next();        					
-    					if(entry.getName().stringValue().equals(destinationName)){
-    						if(entry.getValue() instanceof COSDictionary){
-	    						cosDictionary = (COSDictionary)entry.getValue();
-	    						cosObject = cosDictionary.get(COSName.create("D")); //$NON-NLS-1$
-	        					if(cosObject instanceof COSArray){
-	        						return (COSArray)cosObject;
-	        					}
-    						}
-    						else if(entry.getValue() instanceof COSArray){
-    							return (COSArray)entry.getValue();
-    						}
-        				}
-    				}
-    			}
-    		}
-    		
-    		
-		}
-		return null;
-	}
-
-	private Integer getPageFromCOSArray(PDDocument document, COSArray destination) {
-		//DOCEAR: fallback if no etry was found
-		if(destination == null) {
-			return 1;
-		}
-		Iterator<?> it = destination.iterator();
-	    while(it.hasNext()){
-	         COSObject o = (COSObject)it.next();
-	         if(o.isIndirect()){  //the page is indirect referenced
-	             o.dereference();
-	         }
-	         PDPage page = document.getPageTree().getFirstPage();
-	         while(page != null){
-	             if(page.cosGetObject().equals(o)){
-	                 return page.getNodeIndex() + 1;
-	             }
-	             page = page.getNextPage();
-	         }	                 
-	    }
-	    return null;
-	}
-
 	public AnnotationModel searchAnnotation(URI uri, NodeModel node) throws Exception {
 		this.currentFile = uri;
 		if(!this.isImportAll()) this.setImportAll(true);
@@ -656,7 +432,7 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 	}
 	
 	public AnnotationModel searchAnnotation(IAnnotation annotation) throws Exception {
-		if(annotation.getAnnotationID() != null && annotation.getAnnotationID().getUri() != null && annotation.getObjectNumber() != null){
+		if(annotation.getAnnotationID() != null && annotation.getAnnotationID().getUri() != null){
 			this.currentFile = annotation.getAnnotationID().getUri();
 			if(!this.isImportAll()) this.setImportAll(true);
 			List<AnnotationModel> annotations = this.importAnnotations(annotation.getAnnotationID().getUri());
@@ -669,7 +445,7 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 	}
 	
 	
-	public AnnotationModel searchAnnotation(List<AnnotationModel> annotations, NodeModel node) {
+	private AnnotationModel searchAnnotation(List<AnnotationModel> annotations, NodeModel node) {
 		for(AnnotationModel annotation : annotations){           
 			AnnotationModel extensionModel = AnnotationController.getModel(node, false);
 			if(extensionModel == null){
@@ -692,9 +468,9 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		return null;
 	}
 	
-	public AnnotationModel searchAnnotation(List<AnnotationModel> annotations, IAnnotation target) {
+	private AnnotationModel searchAnnotation(List<AnnotationModel> annotations, IAnnotation target) {
 		for(AnnotationModel annotation : annotations){ 
-			if(annotation.getObjectNumber().equals(target.getObjectNumber())){
+			if(annotation.getObjectID() == target.getObjectID()){
 				return annotation;
 			}
 			else{
@@ -712,6 +488,5 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 	public void setImportAll(boolean importAll) {
 		this.importAll = importAll;
 	}
-
 
 }

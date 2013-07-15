@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.docear.plugin.core.features.AnnotationID;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
 import org.docear.plugin.pdfutilities.pdf.PdfAnnotationImporter;
 import org.freeplane.core.util.LogUtils;
@@ -16,11 +15,11 @@ public class AnnotationModel implements IAnnotation{
 	private AnnotationID id;
 	private AnnotationType annotationType;
 	private Integer page;
-	private Integer generationNumber;
+	//private Integer generationNumber;
 	private URI destinationUri;	
 	private String title;
 	private boolean isNew;
-	private Integer objectNumber;
+	private final long objectID;
 	private URI uri;
 	private Object annotationObject;	
 	
@@ -28,30 +27,31 @@ public class AnnotationModel implements IAnnotation{
 	private List<AnnotationModel> children = new ArrayList<AnnotationModel>();
 	private AnnotationModel parent;
 	private boolean isInserted;
+	private int oldObjectNumber = -1;
 	
-	public AnnotationModel(){}; //needed for serialization
-	
-	public AnnotationModel(AnnotationID id){
-		this.setAnnotationID(id);
+//	public AnnotationModel() {}; //required for serialization
+//	
+	public AnnotationModel(long id){
+		this(id, null);
 	}
 	
-	public AnnotationModel(AnnotationID id, AnnotationType type){
-		this.setAnnotationID(id);
+	public AnnotationModel(long id, AnnotationType type){
+		this.objectID = id;
 		this.annotationType = type;
 	}
 	
 	public AnnotationID getAnnotationID() {	
-		if(id == null && uri != null && objectNumber != null){
-			id = new AnnotationID(uri, objectNumber);
+		if(id == null && uri != null){
+			id = new AnnotationID(uri, objectID);
 		}
 		return id;
 	}
 
-	public void setAnnotationID(AnnotationID id) {
-		this.id = id;
-		this.objectNumber = id.getObjectNumber();
-		this.uri = id.getUri();
-	}
+//	public void setAnnotationID(AnnotationID id) {
+//		this.id = id;
+//		this.objectNumber = id.getObjectID();
+//		this.uri = id.getUri();
+//	}
 	
 	public AnnotationType getAnnotationType() {
 		return annotationType;
@@ -65,18 +65,18 @@ public class AnnotationModel implements IAnnotation{
 		return page;
 	}
 	
-	public void updatePage() {		
+	public void updatePage() {
 		try {
 			IAnnotation annotation = new PdfAnnotationImporter().searchAnnotation(this);
 			if(annotation != null && annotation.getPage() != null){
-				this.page = annotation.getPage();				
+				this.page = annotation.getPage();
 			}
 			else{
-				LogUtils.warn("Could not update Page!");				
+				LogUtils.warn("Could not update Page!");
 			}
 		}
 		catch (Exception e) {
-			LogUtils.warn("Could not update Page!", e);			
+			LogUtils.warn("Could not update Page!", e);
 		}
 	}
 	
@@ -84,24 +84,16 @@ public class AnnotationModel implements IAnnotation{
 		this.page = page;
 	}
 	
-	public Integer getObjectNumber() {
-		return this.objectNumber;
+	public long getObjectID() {
+		return this.objectID;
 	}
-	
-	public void setObjectNumber(Integer objectNumber) {
-		this.objectNumber = objectNumber;
-		if(this.uri != null){
-			this.id = new AnnotationID(this.getUri(), objectNumber);
-		}
-	}
-	
-	public Integer getGenerationNumber() {
-		return generationNumber;
-	}
-	
-	public void setGenerationNumber(Integer generationNumber) {
-		this.generationNumber = generationNumber;
-	}	
+//	
+//	public void setObjectID(Integer objectNumber) {
+//		this.objectNumber = objectNumber;
+//		if(this.uri != null){
+//			this.id = new AnnotationID(this.getUri(), objectNumber);
+//		}
+//	}
 	
 	public String getTitle() {
 		return title;
@@ -143,15 +135,13 @@ public class AnnotationModel implements IAnnotation{
 		return this.getTitle();
 	}
 	
-	public URI getUri(){
+	public URI getSource() {
 		return this.uri;
 	}
 	
-	public void setUri(URI absoluteUri){
+	public void setSource(URI absoluteUri){
 		this.uri = absoluteUri;
-		if(this.objectNumber != null){
-			this.id = new AnnotationID(absoluteUri, this.getObjectNumber());
-		}		
+		this.id = new AnnotationID(absoluteUri, this.objectID);
 	}
 	
 	public boolean hasNewChildren(){
@@ -190,11 +180,11 @@ public class AnnotationModel implements IAnnotation{
 	}
 
 	public String getDocumentHash() {
-		return AnnotationController.getDocumentHash(getUri());
+		return AnnotationController.getDocumentHash(getSource());
 	}
 	
 	public String getDocumentTitle() {
-		return AnnotationController.getDocumentTitle(getUri());
+		return AnnotationController.getDocumentTitle(getSource());
 	}
 
 	public AnnotationModel getParent() {
@@ -215,6 +205,15 @@ public class AnnotationModel implements IAnnotation{
 	
 	public int getChildIndex(AnnotationModel child){
 		return this.children.indexOf(child);
+	}
+
+	public void setOldObjectNumber(int number) {
+		this.oldObjectNumber  = number;
+		
+	}
+	
+	public int getOldObjectNumber() {
+		return oldObjectNumber;
 	}
 	
 }

@@ -5,7 +5,6 @@ import java.net.URI;
 import org.freeplane.core.extension.IExtension;
 
 public class DocearMapModelExtension implements IExtension {
-	
 	public final static String MAP_ID_ATTRIBUTE = "dcr_id";
 	public final static String MAP_URI_ATTRIBUTE = "dcr_uri";
 	

@@ -10,6 +10,7 @@ import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.event.DocearEvent;
 import org.docear.plugin.core.event.DocearEventType;
 import org.docear.plugin.core.event.IDocearEventListener;
+import org.docear.plugin.core.features.DocearFileBackupController;
 import org.docear.plugin.services.features.io.DocearConnectionProvider;
 import org.docear.plugin.services.features.recommendations.RecommendationsController;
 import org.docear.plugin.services.features.recommendations.actions.ShowRecommendationsAction;
@@ -20,6 +21,7 @@ import org.docear.plugin.services.features.upload.MapLifeCycleListener;
 import org.docear.plugin.services.features.upload.UploadController;
 import org.docear.plugin.services.features.user.DocearUser;
 import org.docear.plugin.services.features.user.DocearUserController;
+import org.docear.plugin.services.features.user.UserFileBackupHandler;
 import org.docear.plugin.services.features.user.action.DocearClearUserDataAction;
 import org.docear.plugin.services.features.user.workspace.DocearWorkspaceSettings;
 import org.docear.plugin.services.workspace.DocearWorkspaceModel;
@@ -42,6 +44,7 @@ public class ServiceController {
 	private final Map<Class<? extends ADocearServiceFeature>, ADocearServiceFeature> features = new LinkedHashMap<Class<? extends ADocearServiceFeature>, ADocearServiceFeature>();
 	
 	private ServiceController(ModeController modeController) {
+		DocearFileBackupController.setFileBackupHandler(new UserFileBackupHandler());
 		WorkspaceController.getModeExtension(modeController).setModel(new DocearWorkspaceModel());
 		initListeners(modeController);
 

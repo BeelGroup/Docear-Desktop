@@ -109,7 +109,7 @@ public class AnnotationConflictDropdownBoxPanel extends JPanel {
 			}
 		}
 		else{
-			return URIUtils.getFile(selected.getUri()).getName();
+			return URIUtils.getFile(selected.getSource()).getName();
 		}
 	}
 

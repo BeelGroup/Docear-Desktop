@@ -30,7 +30,7 @@ public class AnnotationConflictPanel extends JPanel {
 		init();
 	}
 	
-	public AnnotationConflictPanel(Integer objectNumber) {
+	public AnnotationConflictPanel(long objectNumber) {
 		init();
 		this.setTitle(objectNumber);
 	}
@@ -61,7 +61,7 @@ public class AnnotationConflictPanel extends JPanel {
 				RowSpec.decode("bottom:5dlu"),})); //$NON-NLS-1$
 	}
 	
-	public void setTitle(Integer objectNumber){
+	public void setTitle(long objectNumber){
 		label.setText(TextUtils.getText("AnnotationConflictPanel.12") + objectNumber); //$NON-NLS-1$
 	}
 	

@@ -41,7 +41,7 @@ public class ImportMetadateForNodeLink extends AFreeplaneAction {
 				return;
 			}
 
-			URI uri = model.getUri();
+			URI uri = model.getSource();
 			JabRefCommons.showMetadataDialog(uri);
 		} catch (Exception ex) {
 			// ex.printStackTrace();

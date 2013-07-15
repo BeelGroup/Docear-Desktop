@@ -22,7 +22,6 @@ import javax.swing.SwingUtilities;
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.event.DocearEvent;
 import org.docear.plugin.core.event.DocearEventType;
-import org.docear.plugin.core.features.AnnotationID;
 import org.docear.plugin.core.features.DocearMapModelController;
 import org.docear.plugin.core.logger.DocearLogEvent;
 import org.docear.plugin.core.ui.SwingWorkerDialog;
@@ -31,6 +30,7 @@ import org.docear.plugin.core.util.HtmlUtils;
 import org.docear.plugin.core.util.NodeUtilities;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
+import org.docear.plugin.pdfutilities.features.AnnotationID;
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
 import org.docear.plugin.pdfutilities.features.AnnotationNodeModel;
 import org.docear.plugin.pdfutilities.features.DocearNodeMonitoringExtension;
@@ -528,14 +528,14 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 					NodeModel node = ((MMapController) Controller.getCurrentModeController().getMapController()).newNode(tempAnnotation.getTitle(),
 							target.getMap());
 					AnnotationController.setModel(node, tempAnnotation);
-					NodeUtilities.setLinkFrom(tempAnnotation.getUri(), node);
+					NodeUtilities.setLinkFrom(tempAnnotation.getSource(), node);
 					result.push(node);
 					tempAnnotation.setInserted(true);
 					tempAnnotation = tempAnnotation.getParent();
 				} while (tempAnnotation != null);
 				if (!isFlattenSubfolders(target)) {
 					File pdfDirFile = MonitoringUtils.getPdfDirFromMonitoringNode(target);
-					File annoFile = URIUtils.getAbsoluteFile(annotation.getUri());
+					File annoFile = URIUtils.getAbsoluteFile(annotation.getSource());
 					if (annoFile != null) {
 						File parent = annoFile.getParentFile();
 						while (parent != null && !MonitoringUtils.isParent(pdfDirFile, parent)/*parent.equals(pdfDirFile)*/) {
@@ -613,10 +613,10 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 							addAnnotationsToImportedFiles(pdf, target);
 						}
 						else {
-							AnnotationID id = new AnnotationID(uri, 0);
-							AnnotationModel annotation = new AnnotationModel(id, AnnotationType.FILE);
+							AnnotationModel annotation = new AnnotationModel(0, AnnotationType.FILE);
+							annotation.setSource(uri);
 							annotation.setTitle(file.getName());
-							annotation.setUri(uri);
+							AnnotationID id = annotation.getAnnotationID();
 							if (!importedFiles.containsKey(id)) {
 								importedFiles.put(id, annotation);
 							}

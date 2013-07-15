@@ -2,6 +2,9 @@ package org.docear.plugin.pdfutilities.features;
 
 import java.io.IOException;
 
+import org.docear.plugin.core.features.DocearMapModelController;
+import org.docear.plugin.core.features.DocearMapModelExtension;
+import org.docear.plugin.core.features.DocearRequiredConversionController;
 import org.docear.plugin.pdfutilities.features.IAnnotation.AnnotationType;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
 import org.freeplane.core.extension.IExtension;
@@ -12,6 +15,7 @@ import org.freeplane.core.io.ITreeWriter;
 import org.freeplane.core.io.ReadManager;
 import org.freeplane.core.io.WriteManager;
 import org.freeplane.core.util.LogUtils;
+import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.n3.nanoxml.XMLElement;
 import org.freeplane.plugin.workspace.URIUtils;
@@ -21,7 +25,7 @@ public class AnnotationXmlBuilder implements IElementDOMHandler, IExtensionEleme
 	private static final String ANNOTATION_PAGE_XML_TAG = "page"; //$NON-NLS-1$
 	private static final String ANNOTATION_TYPE_XML_TAG = "type"; //$NON-NLS-1$
 	private static final String ANNOTATION_OBJECT_NUMBER_XML_TAG = "object_number"; //$NON-NLS-1$
-	private static final String ANNOTATION_GENERATION_NUMBER_XML_TAG = "generation_number"; //$NON-NLS-1$
+	private static final String ANNOTATION_OBJECT_ID_XML_TAG = "object_id"; //$NON-NLS-1$
 	private static final String DOCUMENT_HASH_XML_TAG = "document_hash"; //$NON-NLS-1$
 	private static final String PDF_ANNOTATION_XML_TAG = "pdf_annotation"; //$NON-NLS-1$
 	private static final String PDF_TITLE_XML_TAG = "pdf_title";
@@ -73,7 +77,7 @@ public class AnnotationXmlBuilder implements IElementDOMHandler, IExtensionEleme
 			public void setAttribute(Object node, String value) {
 				final AnnotationModel annotation = (AnnotationModel) node;
 				try{
-					annotation.setObjectNumber(Integer.parseInt(value));
+					annotation.setOldObjectNumber(Integer.parseInt(value));
 				} catch(NumberFormatException e){
 					LogUtils.warn("Could not Parse Pdf Annotation Object Number."); //$NON-NLS-1$
 				}
@@ -81,28 +85,28 @@ public class AnnotationXmlBuilder implements IElementDOMHandler, IExtensionEleme
 			
 		});
 		
-		reader.addAttributeHandler(PDF_ANNOTATION_XML_TAG, ANNOTATION_GENERATION_NUMBER_XML_TAG, new IAttributeHandler() {
-			
-			public void setAttribute(Object node, String value) {
-				final AnnotationModel annotation = (AnnotationModel) node;
-				try{
-					annotation.setGenerationNumber(Integer.parseInt(value));
-				} catch(NumberFormatException e){
-					LogUtils.warn("Could not Parse Pdf Annotation Generation Number."); //$NON-NLS-1$
-				}
-			}
-			
-		});
+//		reader.addAttributeHandler(PDF_ANNOTATION_XML_TAG, ANNOTATION_GENERATION_NUMBER_XML_TAG, new IAttributeHandler() {
+//			
+//			public void setAttribute(Object node, String value) {
+//				final AnnotationModel annotation = (AnnotationModel) node;
+//				try{
+//					annotation.setGenerationNumber(Integer.parseInt(value));
+//				} catch(NumberFormatException e){
+//					LogUtils.warn("Could not Parse Pdf Annotation Generation Number."); //$NON-NLS-1$
+//				}
+//			}
+//			
+//		});
 		
 		reader.addAttributeHandler(PDF_ANNOTATION_XML_TAG, DOCUMENT_HASH_XML_TAG, new IAttributeHandler() {
 			
 			public void setAttribute(Object node, String value) {
 				final AnnotationModel annotation = (AnnotationModel) node;
 				try {
-					AnnotationController.registerDocumentHash(annotation.getUri(), value);
+					AnnotationController.registerDocumentHash(annotation.getSource(), value);
 				}
 				catch (Throwable e) {
-					System.out.println("Error ("+e.getMessage()+") for: "+annotation.getUri());
+					System.out.println("Error ("+e.getMessage()+") for: "+annotation.getSource());
 				}
 			}
 			
@@ -111,15 +115,30 @@ public class AnnotationXmlBuilder implements IElementDOMHandler, IExtensionEleme
 	}
 
 	public Object createElement(Object parent, String tag, XMLElement attributes) {
+		if(attributes == null) {
+			return null;
+		}
 		if (tag.equals(PDF_ANNOTATION_XML_TAG)) {
 			final AnnotationModel oldAnnotationModel = AnnotationController.getModel((NodeModel) parent, false);
 			if(oldAnnotationModel != null){
 				return oldAnnotationModel;
 			}
 			else{
-				AnnotationModel model = new AnnotationModel();
-				model.setUri(URIUtils.getAbsoluteURI((NodeModel) parent));
-				return model;				
+				AnnotationModel model = new AnnotationModel(-1);
+				try{
+					MapModel map = ((NodeModel)parent).getMap();
+					DocearMapModelExtension mapExt = DocearMapModelController.getModel(map);
+					if(mapExt != null && mapExt.getVersion().compareTo(DocearMapModelController.CURRENT_MAP_VERSION) < 0) {
+						DocearRequiredConversionController.setRequiredConversion(new ConvertAnnotationsExtension(), map);
+					}
+					String obj_id = attributes.getAttribute(ANNOTATION_OBJECT_ID_XML_TAG, null);
+					model = new AnnotationModel(Long.parseLong(obj_id));
+				}
+				catch(NumberFormatException e){
+					//LogUtils.warn("Could not Parse Pdf Annotation Object ID.");
+				}
+				model.setSource(URIUtils.getAbsoluteURI((NodeModel) parent));
+				return model;
 			}
 		}
 		return null;
@@ -158,20 +177,20 @@ public class AnnotationXmlBuilder implements IElementDOMHandler, IExtensionEleme
 			pdfAnnotation.setAttribute(ANNOTATION_PAGE_XML_TAG, "" + page); //$NON-NLS-1$
 		}
 		
-		final Integer objectNumber = model.getObjectNumber();
-		if (objectNumber != null) {
-			pdfAnnotation.setAttribute(ANNOTATION_OBJECT_NUMBER_XML_TAG, "" + objectNumber); //$NON-NLS-1$
+		final long objectID = model.getObjectID();
+		if(objectID >= 0) {
+			pdfAnnotation.setAttribute(ANNOTATION_OBJECT_ID_XML_TAG, "" + objectID); //$NON-NLS-1$
 		}
 		
-		final Integer generationNumber = model.getGenerationNumber();
-		if (generationNumber != null) {
-			pdfAnnotation.setAttribute(ANNOTATION_GENERATION_NUMBER_XML_TAG, "" + generationNumber); //$NON-NLS-1$
+		final int objectNumber = model.getOldObjectNumber();
+		if(objectNumber >= 0) {
+			pdfAnnotation.setAttribute(ANNOTATION_OBJECT_NUMBER_XML_TAG, "" + objectNumber); //$NON-NLS-1$
 		}
 		
 		final String documentHash = model.getDocumentHash();
 		if(documentHash != null && documentHash.length() > 0){
 			pdfAnnotation.setAttribute(DOCUMENT_HASH_XML_TAG, "" + documentHash);
-			final String documentTitle = AnnotationController.getDocumentTitle(model.getUri());
+			final String documentTitle = AnnotationController.getDocumentTitle(model.getSource());
 			if(documentTitle != null) {
 				final XMLElement pdftitle = new XMLElement();
 				pdftitle.setName(PDF_TITLE_XML_TAG);

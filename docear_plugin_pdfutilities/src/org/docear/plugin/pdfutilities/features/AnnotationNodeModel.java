@@ -1,6 +1,5 @@
 package org.docear.plugin.pdfutilities.features;
 
-import org.docear.plugin.core.features.AnnotationID;
 import org.freeplane.features.map.NodeModel;
 
 public class AnnotationNodeModel extends AnnotationModel {
@@ -15,13 +14,13 @@ public class AnnotationNodeModel extends AnnotationModel {
 		this.node = node;
 	}
 
-	public AnnotationNodeModel(NodeModel node, AnnotationID id) {		
+	public AnnotationNodeModel(NodeModel node, long id) {
 		super(id);
 		this.node = node;
 	}
 	
-	public AnnotationNodeModel(NodeModel node, AnnotationID id, AnnotationType type) {
-		super( id, type);
+	public AnnotationNodeModel(NodeModel node, long id, AnnotationType type) {
+		super(id, type);
 		this.node = node;		
 	}
 

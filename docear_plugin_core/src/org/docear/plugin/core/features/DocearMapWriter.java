@@ -109,10 +109,10 @@ public class DocearMapWriter extends MapWriter {
 			}
 			else{
 				final String version = modelExtension.getVersion();
-				if (version != null && version.length() > 0) {			
+				if (version != null && version.trim().length() > 0) {			
 					writer.addAttribute("version", "docear " + version);			
 				} else {
-					// FIXME: DOCEAR - version not set, why and what to do?
+					//DOCEAR - fixme: version not set, why and what to do?
 					LogUtils.warn("version is null! This should not happen!");
 				}
 
