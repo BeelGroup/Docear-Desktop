@@ -238,12 +238,7 @@ public class AnnotationConverter implements IMapLifeCycleListener {
 			if(!document.isReadOnly()) {
 				if((bookmarkExt != null && bookmarkExt.isDocumentModified()) 
 						|| (annotationExt != null && annotationExt.isDocumentModified())) {
-					try {
-						document.save();
-					}
-					catch (Exception e) {
-						LogUtils.warn(document.getLocator().getFullName(), e);
-					}
+					document.save();
 				}
 			}
 		}
