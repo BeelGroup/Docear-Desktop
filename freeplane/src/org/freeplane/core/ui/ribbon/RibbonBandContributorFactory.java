@@ -9,6 +9,7 @@ import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies;
+import org.pushingpixels.flamingo.api.ribbon.resize.IconRibbonBandResizePolicy;
 import org.pushingpixels.flamingo.api.ribbon.resize.RibbonBandResizePolicy;
 
 public class RibbonBandContributorFactory implements IRibbonContributorFactory {
@@ -73,8 +74,9 @@ public class RibbonBandContributorFactory implements IRibbonContributorFactory {
 						}
 						else if("low2mid".equals(policyStr.toLowerCase().trim())) {
 							policyList.add(new CoreRibbonResizePolicies.Low2Mid(band.getControlPanel()));
-						}
+						}	
 					}
+					policyList.add(new IconRibbonBandResizePolicy(band.getControlPanel()));
 					band.setResizePolicies(policyList);
 				}
 					
