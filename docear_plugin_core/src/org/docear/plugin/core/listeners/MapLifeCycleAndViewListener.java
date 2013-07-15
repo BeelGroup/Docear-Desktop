@@ -12,6 +12,8 @@ import org.docear.plugin.core.actions.ChooseMapProjectAffiliationAction;
 import org.docear.plugin.core.features.DocearFileBackupController;
 import org.docear.plugin.core.features.DocearMapModelController;
 import org.docear.plugin.core.features.DocearMapModelExtension;
+import org.docear.plugin.core.features.DocearRequiredConversionController;
+import org.docear.plugin.core.features.DocearWorkspaceLinkConverted;
 import org.docear.plugin.core.logger.DocearLogEvent;
 import org.docear.plugin.core.ui.MapIdsConflictsPanel;
 import org.freeplane.core.ui.components.UITools;
@@ -50,9 +52,9 @@ public class MapLifeCycleAndViewListener implements IMapLifeCycleListener, IMapV
 				DocearController.getController().getDocearEventLogger().appendToLog(this, DocearLogEvent.MAP_NEW);
 			}
 			
-			if(DocearMapModelController.hasConvertedLinks(map)) {
+			if(DocearRequiredConversionController.hasRequiredConversion(DocearWorkspaceLinkConverted.class, map)) {
 				try {
-					DocearFileBackupController.createBackup("convert_links", map);
+					DocearFileBackupController.createBackupForConversion(map);
 				} catch (IOException e) {
 					LogUtils.warn(e);
 				}

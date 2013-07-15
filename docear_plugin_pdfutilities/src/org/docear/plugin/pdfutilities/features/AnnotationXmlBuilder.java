@@ -137,8 +137,13 @@ public class AnnotationXmlBuilder implements IElementDOMHandler, IExtensionEleme
 				catch(NumberFormatException e){
 					//LogUtils.warn("Could not Parse Pdf Annotation Object ID.");
 				}
-				model.setSource(URIUtils.getAbsoluteURI((NodeModel) parent));
-				return model;
+				try {
+					model.setSource(URIUtils.getAbsoluteURI((NodeModel) parent));
+					return model;
+				}
+				catch (Exception e) {
+					LogUtils.warn(e);
+				}
 			}
 		}
 		return null;

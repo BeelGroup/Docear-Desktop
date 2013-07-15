@@ -146,7 +146,7 @@ public class DocearMapModelExtensionXmlBuilder implements IElementDOMHandler, IE
 							URI uri = project.getRelativeURI(URIUtils.getAbsoluteFile(hyperlink).toURI());
 							if(uri != null) {
 								value = uri.toString();
-								DocearMapModelController.setWorkspaceLinkConverted(map);
+								DocearRequiredConversionController.setRequiredConversion(new DocearWorkspaceLinkConverted(), map);
 							}
 						}
 					

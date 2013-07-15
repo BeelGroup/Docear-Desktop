@@ -12,7 +12,6 @@ import org.docear.plugin.core.features.DocearNodeModifiedExtensionController;
 import org.docear.plugin.core.features.DocearNodePrivacyExtensionController;
 import org.docear.plugin.core.features.DocearNodePrivacyExtensionController.DocearNodePrivacyExtension;
 import org.docear.plugin.core.features.DocearNodePrivacyExtensionController.DocearPrivacyLevel;
-import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.IMapLifeCycleListener;
 import org.freeplane.features.map.INodeSelectionListener;
 import org.freeplane.features.map.INodeView;
@@ -93,7 +92,7 @@ public class DocearCoreOmniListenerAdapter implements IMapLifeCycleListener, INo
 	 * 
 	 */
 	public void mapChanged(MapChangeEvent event) {
-		LogUtils.info("mapChanged: "+event.getProperty());
+//		LogUtils.info("mapChanged: "+event.getProperty());
 		DocearMapModelExtension dmme = event.getMap().getExtension(DocearMapModelExtension.class);
 		if (dmme != null && dmme.getType() != null) {
 			

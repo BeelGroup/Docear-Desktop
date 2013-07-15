@@ -29,6 +29,7 @@ import org.docear.plugin.core.actions.DocearShowDataProcessingTermsAction;
 import org.docear.plugin.core.actions.DocearShowTermsOfUseAction;
 import org.docear.plugin.core.actions.SaveAction;
 import org.docear.plugin.core.actions.SaveAsAction;
+import org.docear.plugin.core.features.DocearLifeCycleObserver;
 import org.docear.plugin.core.features.DocearMapModelController;
 import org.docear.plugin.core.features.DocearMapModelExtension;
 import org.docear.plugin.core.features.DocearMapWriter;
@@ -298,14 +299,11 @@ public class CoreConfiguration extends ALanguageController {
 		}));
 		
 		// set up context menu for workspace
-		//WORKSPACE - info: test if this works without
-//		WorkspaceController.getController().addWorkspaceListener(WORKSPACE_CHANGE_LISTENER);		
 		
 		addPluginDefaults(Controller.getCurrentController());
 		addMenus(modeController);
 		
 		registerListeners(modeController);
-		//prepareWorkspace();
 		
 		replaceFreeplaneStringsAndActions(modeController);
 		DocearMapModelController.install(new DocearMapModelController(modeController));
@@ -526,15 +524,23 @@ public class CoreConfiguration extends ALanguageController {
 	private void registerListeners(ModeController modeController) {
 		Controller.getCurrentController().getOptionPanelController().addPropertyLoadListener(new PropertyLoadListener());
 		Controller.getCurrentController().getResourceController().addPropertyChangeListener(new PropertyListener());
-		modeController.getMapController().addMapLifeCycleListener(new MapLifeCycleAndViewListener());
+		
+		DocearLifeCycleObserver observer = new DocearLifeCycleObserver(modeController);
+		DocearController.getController().setLifeCycleObserver(observer);
 		DocearCoreOmniListenerAdapter adapter = new DocearCoreOmniListenerAdapter();
-		modeController.getMapController().addMapLifeCycleListener(adapter);
+		observer.addMapLifeCycleListener(adapter);
+		observer.addMapViewChangeListener(adapter);
+		observer.addMapLifeCycleListener(new MapLifeCycleAndViewListener());
+		observer.addMapViewChangeListener(new MapLifeCycleAndViewListener());
+		
+		//modeController.getMapController().addMapLifeCycleListener(new MapLifeCycleAndViewListener());
+		//modeController.getMapController().addMapLifeCycleListener(adapter);
 		modeController.getMapController().addMapChangeListener(adapter);
 		modeController.getMapController().addNodeChangeListener(adapter);
 		modeController.getMapController().addNodeSelectionListener(adapter);
 		DocearController.getController().addDocearEventListener(adapter);
-		Controller.getCurrentController().getMapViewManager().addMapViewChangeListener(adapter);
-		Controller.getCurrentController().getMapViewManager().addMapViewChangeListener(new MapLifeCycleAndViewListener());
+//		Controller.getCurrentController().getMapViewManager().addMapViewChangeListener(adapter);
+//		Controller.getCurrentController().getMapViewManager().addMapViewChangeListener(new MapLifeCycleAndViewListener());
 		WorkspaceController.getModeExtension(modeController).getIOController().registerNodeActionListener(AWorkspaceTreeNode.class, WorkspaceActionEvent.WSNODE_OPEN_DOCUMENT, new WorkspaceOpenDocumentListener());
 	}	
 	

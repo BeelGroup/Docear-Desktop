@@ -89,7 +89,7 @@ public class ServiceController {
 	}
 
 	private void initListeners(ModeController modeController) {
-		modeController.getMapController().addMapLifeCycleListener(mapLifeCycleListener);
+		DocearController.getController().getLifeCycleObserver().addMapLifeCycleListener(mapLifeCycleListener);
 	}
 
 	public static ServiceController getController() {

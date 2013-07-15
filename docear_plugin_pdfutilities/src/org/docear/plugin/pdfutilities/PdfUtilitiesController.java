@@ -1022,7 +1022,7 @@ public class PdfUtilitiesController extends ALanguageController {
 
 		this.modecontroller.getMapController().addNodeChangeListener(new PdfNodeChangeListener());		
 		DocearAutoMonitoringListener autoMonitoringListener = new DocearAutoMonitoringListener();
-		this.modecontroller.getMapController().addMapLifeCycleListener(autoMonitoringListener);
+		DocearController.getController().getLifeCycleObserver().addMapLifeCycleListener(autoMonitoringListener);
 		Controller.getCurrentController().getViewController().getJFrame().addWindowFocusListener(autoMonitoringListener);
 	}
 

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.FileUtils;
@@ -37,8 +38,25 @@ public final class DocearFileBackupController implements IFileBackupHandler {
 		return backupHandler;
 	}
 	
-	public static void createBackup(String label, MapModel map) throws IOException {
-		getFileBackupHandler().createMapBackup(label, map);
+	public static void addMapBackup(String backupLabel, MapModel map) {
+		if(map == null || backupLabel == null) {
+			return;
+		}
+		DocearMapBackupStack stack = map.getExtension(DocearMapBackupStack.class);
+		if(stack == null) {
+			stack = new DocearMapBackupStack();
+			map.putExtension(stack);
+		}
+		stack.addLabel(backupLabel);
+	}
+	
+	public static void createBackupForConversion(MapModel map) throws IOException {
+		DocearMapBackupStack stack = map.getExtension(DocearMapBackupStack.class);
+		Iterator<String> iter = stack.iterator();
+		while(iter.hasNext()) {
+			getFileBackupHandler().createMapBackup(iter.next(), map);
+			iter.remove();
+		}
 	}
 	
 	public static void createBackup(String label, File file) throws IOException {

@@ -1,10 +1,14 @@
 package org.docear.plugin.core.features;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
-public class DocearWorkspaceLinkConverted implements IRequiredConversion {
-	
-	private boolean needsBackup = true;
-	
+import org.freeplane.core.extension.IExtension;
+
+public class DocearMapBackupStack implements IExtension{
+
+	private final Set<String> label = new HashSet<String>();
 	/***********************************************************************************
 	 * CONSTRUCTORS
 	 **********************************************************************************/
@@ -12,16 +16,15 @@ public class DocearWorkspaceLinkConverted implements IRequiredConversion {
 	/***********************************************************************************
 	 * METHODS
 	 **********************************************************************************/
-
+	public void addLabel(String label) {
+		this.label.add(label);
+	}
+	
+	public Iterator<String> iterator() {
+		return label.iterator();
+	}
+	
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
 	 **********************************************************************************/
-	
-	public boolean requiresBackup() {
-		return needsBackup ;
-	}
-
-	public String getBackupLabel() {
-		return "convert_links";
-	}
 }
