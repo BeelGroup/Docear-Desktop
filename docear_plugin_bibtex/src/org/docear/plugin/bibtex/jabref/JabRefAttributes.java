@@ -115,7 +115,16 @@ public class JabRefAttributes {
 
 	public void setReferenceToNode(BibtexEntry entry) throws ResolveDuplicateEntryAbortedException {
 		NodeModel node = Controller.getCurrentModeController().getMapController().getSelectedNode();
-		setReferenceToNode(new Reference(entry), node);
+		try {
+			WorkspaceMapModelExtension mapExt = WorkspaceController.getMapModelExtension(node.getMap());
+			JabRefProjectExtension ext = (JabRefProjectExtension) mapExt.getProject().getExtensions(JabRefProjectExtension.class);
+
+			setReferenceToNode(new Reference(ext.getBaseHandle().getBasePanel(), entry), node);
+		}
+		catch(Exception e) {
+			LogUtils.warn("JabRefAttributes.setReferenceToNode()");
+		}
+		//setReferenceToNode(new Reference(entry), node);
 	}
 
 	public void removeReferenceFromNode(NodeModel node) {
@@ -324,7 +333,17 @@ public class JabRefAttributes {
 	}
 
 	public boolean setReferenceToNode(BibtexEntry entry, NodeModel node) throws ResolveDuplicateEntryAbortedException {
-		return setReferenceToNode(new Reference(entry), node);
+		//return setReferenceToNode(new Reference(entry), node);
+		try {
+			WorkspaceMapModelExtension mapExt = WorkspaceController.getMapModelExtension(node.getMap());
+			JabRefProjectExtension ext = (JabRefProjectExtension) mapExt.getProject().getExtensions(JabRefProjectExtension.class);
+
+			return setReferenceToNode(new Reference(ext.getBaseHandle().getBasePanel(), entry), node);
+		}
+		catch(Exception e) {
+			LogUtils.warn("JabRefAttributes.setReferenceToNode(): "+e.getMessage());
+			return false;
+		}
 	}
 
 	public boolean setReferenceToNode(Reference reference, NodeModel node) throws ResolveDuplicateEntryAbortedException {
