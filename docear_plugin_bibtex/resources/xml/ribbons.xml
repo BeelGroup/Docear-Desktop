@@ -1,27 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- REFERENCES -->
 <menu_structure>
-    <menu_category name="ribbon">
-        <ribbon_taskbar></ribbon_taskbar>
-        <ribbon_menu></ribbon_menu>
-        <ribbon_task name="docear">
-            <ribbon_band name="references" resize_policies="Mirror, High2Mid">
-                <ribbon_action action="AddNewReferenceAction" priority="TOP" />
-                <ribbon_action action="AddExistingReferenceAction" priority="TOP" />
-                <ribbon_action action="RemoveReferenceAction" priority="TOP" />
-                <ribbon_action action="ShowInRefManagerAction" priority="Medium" />
-                <ribbon_action action="CopyBibtexKeyToClipboardAction" priority="Medium" />
-                <ribbon_action action="CopyCiteKeyToClipboardAction" priority="Medium" />
-            </ribbon_band>
-            <ribbon_band name="update" resize_policies="Mirror">
-                <ribbon_action action="UpdateReferencesCurrentMapAction" priority="Medium" />
-                <ribbon_action action="UpdateReferencesAllOpenMapsAction" priority="Medium" />
-                <ribbon_contributor name="UpdateReferencesAllMapsAction" priority="Medium" />
-            </ribbon_band>
-        </ribbon_task>
-        <ribbon_task name="project">
-            <ribbon_band name="main">
-                <ribbon_contributor name="ChangeBibtexDatabaseAction" />
-            </ribbon_band>
-        </ribbon_task>
-    </menu_category>    
+	<menu_category name="ribbon">
+	    <ribbon_task name="home">
+	    	<ribbon_band name="misc" resize_policies="Mirror" orderPriority="last" >
+			   	<ribbon_action action="AddNewReferenceAction" priority="medium" >
+					<ribbon_action action="AddExistingReferenceAction"/>
+					<ribbon_action action="ShowInRefManagerAction"/>
+				</ribbon_action>				
+			</ribbon_band>
+		</ribbon_task>
+			
+		<ribbon_task name="references" orderPriority="1000">
+			<ribbon_band name="references_main" resize_policies="Mirror">
+				<ribbon_action action="AddNewReferenceAction" priority="TOP" />
+				<ribbon_action action="AddExistingReferenceAction" priority="TOP" />
+				<ribbon_action action="RemoveReferenceAction" priority="TOP" />
+				<ribbon_action action="ShowInRefManagerAction" priority="Medium" />
+				<ribbon_action action="CopyBibtexKeyToClipboardAction" priority="Medium" />
+				<ribbon_action action="CopyCiteKeyToClipboardAction" priority="Medium" />
+				<ribbon_action action="UpdateReferencesCurrentMapAction" priority="Medium">
+					<ribbon_action action="UpdateReferencesAllOpenMapsAction" />
+					<ribbon_action action="UpdateReferencesAllMapsAction" />
+					<ribbon_action action="UpdateReferencesInLibraryAction" />
+				</ribbon_action>
+			</ribbon_band>
+			<ribbon_band name="reference_settings" resize_policies="Mirror">
+				<ribbon_action action="ChangeBibtexDatabaseAction" priority="TOP" />
+				<ribbon_action action="ShowAllAttributesAction" />
+				<ribbon_action action="HideAllAttributesAction" />
+			</ribbon_band>
+		</ribbon_task>
+		
+		<ribbon_task name="project" orderPriority="3000">
+			<ribbon_band name="main" resize_policies="Mirror">
+			    <ribbon_action action="ChangeBibtexDatabaseAction" priority="TOP" />
+			</ribbon_band>
+		</ribbon_task>
+	</menu_category>
 </menu_structure>

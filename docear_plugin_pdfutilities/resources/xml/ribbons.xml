@@ -1,15 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <menu_structure>
-    <menu_category name="ribbon">
-        <ribbon_taskbar></ribbon_taskbar>
-        <ribbon_menu></ribbon_menu>
-        <ribbon_task name="docear">
-            <ribbon_band name="pdfutilities" resize_policies="Mirror, High2Mid">
-                <ribbon_contributor name="pdf_annotations" />
-            </ribbon_band>
-            <ribbon_band name="monitoring" resize_policies="Mirror, High2Mid">
-                <ribbon_contributor name="pdf_monitoring" />
-            </ribbon_band>
-        </ribbon_task>
-    </menu_category>
+	<menu_category name="ribbon">
+		<ribbon_task name="home">
+		    <ribbon_band name="misc" resize_policies="Mirror" orderPriority="last">
+		        <ribbon_action action="UpdateMonitoringFolderAction" priority="medium" />
+		        <ribbon_action action="ImportNewAnnotationsAction" priority="medium" >
+					<ribbon_action action="ImportAllAnnotationsAction" />
+				</ribbon_action>
+		    </ribbon_band>
+		</ribbon_task>
+		
+		<ribbon_task name="files_and_monitoring">
+			<ribbon_band name="monitoring" resize_policies="Mirror">
+				<ribbon_action action="UpdateMonitoringFolderAction" priority="TOP" />
+				<ribbon_action action="AddMonitoringFolderAction" />
+				<!--ribbon_action action="EditMonitoringFolderAction" / -->
+				<ribbon_action action="DeleteMonitoringFolderAction" />
+			</ribbon_band>
+			<ribbon_band name="monitoring_settings" resize_policies="Mirror">
+				<ribbon_contributor name="pdf_monitoring" />
+				<!--ribbon_action name="Flatten directories (default)" > 
+					<ribbon_action name="Flatten directories (on)" /> 
+					<ribbon_action name="Flatten directories (off)" /> 
+				</ribbon_action>
+				<ribbon_action name="Read sub-directories (default)" > 
+					<ribbon_action name="Read sub-directories (on)" /> 
+					<ribbon_action name="Read sub-directories (off)" /> 
+				</ribbon_action> 
+				<ribbon_action name="Auto-refresh on opening mind map (default)" > 
+					<ribbon_action name="Auto-refresh on opening mind map (on)" /> 
+					<ribbon_action name="Auto-refresh on opening mind map (off)" /> 
+				</ribbon_action -->
+			</ribbon_band>
+			<ribbon_band name="pdf" resize_policies="Mirror">
+				<ribbon_contributor name="pdf_annotations" />
+				<ribbon_action action="ImportNewAnnotationsAction" priority="TOP" />
+				<ribbon_action action="ImportAllAnnotationsAction" priority="TOP" />
+			</ribbon_band>
+		</ribbon_task>
+		
+		<ribbon_task name="project" orderPriority="3000">
+			<ribbon_band name="literature" resize_policies="Mirror">
+				<ribbon_action action="workspace.action.node.add.repository" priority="TOP" />
+				<ribbon_action action="workspace.action.node.remove.repository" priority="TOP" />
+			</ribbon_band>
+		</ribbon_task>
+	</menu_category>
 </menu_structure>

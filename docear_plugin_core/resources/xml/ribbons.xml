@@ -1,26 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <menu_structure>
-    <menu_category name="ribbon">
-	    <ribbon_taskbar></ribbon_taskbar>
-	    <ribbon_menu>
-	       <primary_entry name="help">
-	           <entry_group name="licenses">
-	               <ribbon_action action="DocearShowTermsOfUse" />
-	               <ribbon_action action="DocearShowDataPrivacyStatement" />
-	               <ribbon_action action="DocearShowDataProcessingTerms" />
-            </entry_group>
-            </primary_entry>
-	    </ribbon_menu>
-	    <ribbon_task name="docear" orderPriority="1000">
-	       <ribbon_band name="debug" resize_policies="Mirror">
-	           <ribbon_contributor name="node_privacy" />
-	       </ribbon_band>
-	    </ribbon_task>
-	    <ribbon_task name="project">
-	       <ribbon_band name="repository" resize_policies="Mirror, High2Mid">
-		       <ribbon_action action="workspace.action.node.add.repository" priority="TOP" />
-		       <ribbon_action action="workspace.action.node.remove.repository"  priority="TOP" />
-	       </ribbon_band>
-        </ribbon_task>
-    </menu_category>
+	<menu_category name="ribbon">
+		<ribbon_task name="help">
+		    <ribbon_band name="licences" resize_policies="Mirror" orderPriority="1000">
+				<ribbon_action action="GPLPanelAction" />
+				<ribbon_action action="DataPrivacyPanelAction" />
+				<ribbon_action action="TOSPanelAction" priority="top" />
+				<ribbon_action action="DataProcessingPanelAction" />
+			</ribbon_band>
+			<ribbon_band name="contact" resize_policies="Mirror" orderPriority="2000">
+			    <ribbon_action action="ContactAction" priority="top" />
+				<ribbon_action action="ManualAction" priority="top"/>
+				<ribbon_action action="FAQAction" priority="top"/>
+				<!--ribbon_action name="Videos" /-->								
+			</ribbon_band>
+		</ribbon_task>
+	</menu_category>
 </menu_structure>

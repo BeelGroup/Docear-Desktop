@@ -1559,28 +1559,8 @@ public class PdfUtilitiesController extends ALanguageController {
 				
 				@Override
 				public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
-					
-					final JCommandButton updateButton = RibbonActionContributorFactory.createCommandButton(updateMonitoringFolderAction);
-					ChildProperties childProps = new ChildProperties();
-					childProps.set(RibbonElementPriority.class, RibbonElementPriority.TOP);
-					parent.addChild(updateButton, childProps);
-					
-					final JCommandButton addFolderButton = RibbonActionContributorFactory.createCommandButton(addMonitoringFolderAction);
-					childProps = new ChildProperties();
-					childProps.set(RibbonElementPriority.class, RibbonElementPriority.MEDIUM);
-					parent.addChild(addFolderButton, childProps);
-					//TODO: needs some work. e.g. literature_repository cannot be resolved to a URI
-//					final JCommandButton editButton = RibbonActionContributorFactory.createCommandButton(editMonitoringFolderAction);
-//					childProps = new ChildProperties();
-//					childProps.set(RibbonElementPriority.class, RibbonElementPriority.MEDIUM);
-//					parent.addChild(editButton, childProps);
-					final JCommandButton delFolderButton = RibbonActionContributorFactory.createCommandButton(deleteMonitoringFolderAction);
-					childProps = new ChildProperties();
-					childProps.set(RibbonElementPriority.class, RibbonElementPriority.MEDIUM);
-					parent.addChild(delFolderButton, childProps);
-					
 					final JCommandToggleButton flattenButton = RibbonActionContributorFactory.createCommandToggleButton(monitoringFlattenSubfoldersAction);
-					childProps = new ChildProperties();
+					ChildProperties childProps = new ChildProperties();
 					childProps.set(RibbonElementPriority.class, RibbonElementPriority.MEDIUM);
 					parent.addChild(flattenButton, childProps);
 					
@@ -1639,23 +1619,8 @@ public class PdfUtilitiesController extends ALanguageController {
     								selected = false;
     							}
     							
-    							updateMonitoringFolderAction.setEnabled();
-    							updateButton.setEnabled(updateMonitoringFolderAction.isEnabled());
-    							
     							flattenButton.getActionModel().setSelected(selected);
     							flattenButton.setEnabled(updateMonitoringFolderAction.isEnabled());
-    							
-    							updateMonitoringFolderAction.setEnabled();
-    							updateButton.setEnabled(updateMonitoringFolderAction.isEnabled());
-    							
-    							addMonitoringFolderAction.setEnabled();
-    							addFolderButton.setEnabled(addMonitoringFolderAction.isEnabled());
-    							
-//    							editMonitoringFolderAction.setEnabled();
-//    							editButton.setEnabled(editMonitoringFolderAction.isEnabled());
-    							
-    							deleteMonitoringFolderAction.setEnabled();
-    							delFolderButton.setEnabled(deleteMonitoringFolderAction.isEnabled());
     							
     							autoMonitoringButton.setEnabled(MonitoringUtils.isMonitoringNode(node));
     							subfoldersButton.setEnabled(MonitoringUtils.isMonitoringNode(node));

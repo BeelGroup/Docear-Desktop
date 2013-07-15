@@ -1,15 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- PROJECT -->
 <menu_structure>
-    <menu_category name="ribbon">
-        <ribbon_taskbar></ribbon_taskbar>
-        <ribbon_menu></ribbon_menu>
-        <ribbon_task name="project" orderPriority="-1000">
-            <ribbon_band name="main" resize_policies="Mirror, High2Mid">
-                <ribbon_action action="workspace.action.project.new" priority="TOP" />
-                <ribbon_action action="workspace.action.project.import"  priority="TOP" />
-                
-                <ribbon_contributor name="project_band_main" />
-           </ribbon_band>
-        </ribbon_task>
-    </menu_category>
+	<menu_category name="ribbon">
+		<ribbon_task name="project" orderPriority="3000">
+			<ribbon_band name="main" resize_policies="Mirror" >
+				<ribbon_action action="workspace.action.project.new" priority="TOP" />
+				<ribbon_action action="workspace.action.project.import" />
+		
+				<ribbon_action action="workspace.action.project.remove" />
+				<ribbon_action action="workspace.action.node.rename" />
+				<ribbon_action action="workspace.action.node.open.location" priority="Top" />
+				
+				<!--ribbon_action name="Show recommendations" priority="TOP" / -->
+			</ribbon_band>
+			
+			<!--ribbon_band name="file_management" resize_policies="Mirror"> 
+				<ribbon_action name="Create folder" priority="TOP" /> 
+				<ribbon_action name="Create mind map" priority="TOP"/> 
+				<ribbon_action name="Add file shortcut" /> 
+				<ribbon_action name="Add folder shortcut" /> 
+				<ribbon_action name="Delete file/folder" /> 
+				<ribbon_action name="Remove	from workspace" /> 
+				<ribbon_action action="workspace.action.node.rename" /> 
+			</ribbon_band -->
+		</ribbon_task>  
+
+		<!-- PDF FILES & MONITORING-->
+		<!-- <ribbon_task name="files_and_monitoring" orderPriority="2000">		   
+		   <ribbon_band name="files" resize_policies="Mirror">
+				<ribbon_action name="Delete file" priority="TOP" />
+				<ribbon_action name="Copy file" />
+				<ribbon_action name="Rename file" />
+				<ribbon_action name="Add file link" />
+	       </ribbon_band>
+		</ribbon_task> -->
+	</menu_category>
 </menu_structure>
