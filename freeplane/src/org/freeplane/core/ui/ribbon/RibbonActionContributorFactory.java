@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 
 import javax.swing.Action;
@@ -25,6 +24,7 @@ import org.freeplane.core.ui.IAcceleratorChangeListener;
 import org.freeplane.core.ui.ribbon.RibbonSeparatorContributorFactory.RibbonSeparator;
 import org.freeplane.core.ui.ribbon.StructureTree.StructurePath;
 import org.freeplane.core.util.Compat;
+import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.Controller;
 import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
@@ -45,9 +45,10 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 
 	public static final String ACTION_KEY_PROPERTY = "ACTION_KEY";
 	public static final String ACTION_NAME_PROPERTY = "ACTION_NAME";
+	public static final String ACTION_CHANGE_LISTENER = "ACTION_CHANGE_LISTENER";
+	
 	private final RibbonBuilder builder;
 	private ActionAcceleratorChangeListener changeListener;
-	private ActionChangeObserver observer;
 
 	
 	/***********************************************************************************
@@ -58,15 +59,6 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 		this.builder = builder;
 		builder.getAcceleratorManager().addAcceleratorChangeListener(getAccelChangeListener());
 	}
-
-	
-	private ActionChangeObserver getChangeObserver() {
-		if(observer == null) {
-			observer = new ActionChangeObserver();
-		}
-		return observer;
-	}
-
 
 	/***********************************************************************************
 	 * METHODS
@@ -270,8 +262,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 				return key;
 			}
 			
-			public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
-				builder.getMapChangeAdapter().addListener(getChangeObserver());
+			public void contribute(RibbonBuildContext context, ARibbonContributor parent) {			
 				final String actionKey = attributes.getProperty("action");
 				ChildProperties childProps = new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", "")));
 				childProps.set(RibbonElementPriority.class, getPriority(attributes.getProperty("priority", "medium")));
@@ -300,9 +291,8 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 						if(ks != null) {
 							updateRichTooltip(button, action, ks);
 						}
-						getAccelChangeListener().addAction(actionKey, button);						
-						getChangeObserver().addAction(action, button);
 						
+						builder.getMapChangeAdapter().addListener(new ActionChangeListener(action, button));	
 						parent.addChild(button, childProps);
 					}
 				}
@@ -350,7 +340,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 									}
 									menuButton.setEnabled(button.isEnabled());
 									menuButton.putClientProperty(ACTION_KEY_PROPERTY, action);
-									KeyStroke ks = context.getBuilder().getAcceleratorManager().getAccelerator(actionKey);
+									KeyStroke ks = context.getBuilder().getAcceleratorManager().getAccelerator(action.getKey());
 									updateRichTooltip(menuButton, action, ks);
 									updateActionState(action, menuButton);
 								}
@@ -392,6 +382,15 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 			public void addChild(Object child, ChildProperties properties) {
 				if(child instanceof AbstractCommandButton) {
 					childButtons.add((AbstractCommandButton) child);
+					Object obj = ((AbstractCommandButton) child).getClientProperty(ACTION_KEY_PROPERTY);
+					if(obj != null) {
+						try {
+							builder.getMapChangeAdapter().removeListener((IChangeObserver) ((AFreeplaneAction) obj).getValue(ACTION_CHANGE_LISTENER));
+						}
+						catch(Exception e) {
+							LogUtils.info("RibbonActionContributorFactory.getContributor(...).new ARibbonContributor() {...}.addChild(): "+e.getMessage());
+						}
+					}
 				}
 				if(child instanceof RibbonSeparator) {
 					childButtons.add(new JSeparator(JSeparator.HORIZONTAL));
@@ -465,30 +464,28 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 		}
 	}
 	
-	public static class ActionChangeObserver implements IChangeObserver {
+	public static class ActionChangeListener implements IChangeObserver {		
 		
-		private final Map<AFreeplaneAction, AbstractCommandButton> actionMap = new HashMap<AFreeplaneAction, AbstractCommandButton>();
+		private final AFreeplaneAction action;
+		private final AbstractCommandButton button;
 		
 		/***********************************************************************************
 		 * CONSTRUCTORS
 		 **********************************************************************************/
-
+		public ActionChangeListener(AFreeplaneAction action, AbstractCommandButton button) {
+			if(button == null || action == null) {
+				throw new IllegalArgumentException("NULL");
+			}
+			this.action = action;
+			this.button = button;
+			action.putValue(ACTION_CHANGE_LISTENER, this);
+		}
 		/***********************************************************************************
 		 * METHODS
 		 **********************************************************************************/
 		
-		public void addAction(AFreeplaneAction action, AbstractCommandButton button) {
-			actionMap.put(action, button);
-		}
-		
-		public void clear() {
-			actionMap.clear();
-		}
-		
 		public void updateState(CurrentState state) {
-			for (Entry<AFreeplaneAction, AbstractCommandButton> entry : actionMap.entrySet()) {
-				updateActionState(entry.getKey(), entry.getValue());
-			}
+			updateActionState(action, button);
 		}
 	};
 }
