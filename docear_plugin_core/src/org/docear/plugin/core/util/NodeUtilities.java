@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.NullArgumentException;
+import org.docear.plugin.core.DocearController;
+import org.docear.plugin.core.features.DocearLifeCycleObserver.MapEventType;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.attribute.AttributeController;
 import org.freeplane.features.attribute.AttributeRegistry;
@@ -98,6 +100,7 @@ public class NodeUtilities {
 				URL url = MModeWorkspaceUrlManager.getController().getAbsoluteUrl(map, uri);
 				final MapIO mapIO = (MapIO) Controller.getCurrentModeController().getExtension(MapIO.class);
 				mapIO.load(url, map);
+				DocearController.getController().getLifeCycleObserver().fireMapEvent(MapEventType.CREATED, map);
 				return map;
 			}
 			catch (MalformedURLException e) {

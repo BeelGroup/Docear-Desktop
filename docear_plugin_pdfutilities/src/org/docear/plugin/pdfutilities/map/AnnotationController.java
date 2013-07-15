@@ -14,6 +14,7 @@ import java.util.concurrent.Executors;
 
 import org.apache.commons.io.FileUtils;
 import org.docear.pdf.PdfDataExtractor;
+import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.util.HtmlUtils;
 import org.docear.plugin.pdfutilities.features.AnnotationConverter;
 import org.docear.plugin.pdfutilities.features.AnnotationID;
@@ -68,7 +69,7 @@ public class AnnotationController implements IExtension{
 		final WriteManager writeManager = mapController.getWriteManager();
 		AnnotationXmlBuilder builder = new AnnotationXmlBuilder();
 		builder.registerBy(readManager, writeManager);
-		modeController.getMapController().addMapLifeCycleListener(new AnnotationConverter());
+		DocearController.getController().getLifeCycleObserver().addMapLifeCycleListener(new AnnotationConverter());
 	}
 	
 	public static void markNewAnnotations(AnnotationModel importedAnnotation, Map<AnnotationID, Collection<AnnotationNodeModel>> oldAnnotations){

@@ -16,6 +16,7 @@ import java.util.Vector;
 import org.docear.plugin.core.event.DocearEvent;
 import org.docear.plugin.core.event.DocearEventType;
 import org.docear.plugin.core.event.IDocearEventListener;
+import org.docear.plugin.core.features.DocearLifeCycleObserver;
 import org.docear.plugin.core.features.DocearMapModelExtension;
 import org.docear.plugin.core.features.DocearProgressObserver;
 import org.docear.plugin.core.io.IOTools;
@@ -62,6 +63,8 @@ public class DocearController implements IDocearEventListener {
 			return c1.getName().compareTo(c2.getName());
 		}
 	});
+
+	private DocearLifeCycleObserver lifeCycleObserver;
 	
 	/***********************************************************************************
 	 * CONSTRUCTORS
@@ -328,6 +331,17 @@ public class DocearController implements IDocearEventListener {
 			LogUtils.warn(e);
 			return "Terms of Use";
 		}
+	}
+	
+	protected void setLifeCycleObserver(DocearLifeCycleObserver observer) {
+		if(lifeCycleObserver != null) {
+			throw new RuntimeException("observer already set");
+		}
+		this.lifeCycleObserver = observer;
+	}
+	
+	public DocearLifeCycleObserver getLifeCycleObserver() {
+		return this.lifeCycleObserver;
 	}
 	
 	public static ResourceController getPropertiesController() {

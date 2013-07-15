@@ -183,7 +183,7 @@ public class ReferencesController extends ALanguageController implements IDocear
 		MapChangeListenerAdapter changeListenerAdapter = new MapChangeListenerAdapter();		
 		this.modeController.getMapController().addNodeChangeListener(changeListenerAdapter);
 		this.modeController.getMapController().addMapChangeListener(changeListenerAdapter);
-		this.modeController.getMapController().addMapLifeCycleListener(changeListenerAdapter);
+		DocearController.getController().getLifeCycleObserver().addMapLifeCycleListener(changeListenerAdapter);
 		
 		DocearController.getController().addDocearEventListener(this);
 		Controller.getCurrentController().addAction(new AddRecommendedDocumentAction());

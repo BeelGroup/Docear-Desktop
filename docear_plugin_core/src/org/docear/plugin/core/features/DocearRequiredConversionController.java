@@ -19,6 +19,9 @@ public final class DocearRequiredConversionController {
 		}
 		if(!map.containsExtension(conversion.getClass())) {
 			map.addExtension(conversion);
+			if(conversion.requiresBackup()) {
+				DocearFileBackupController.addMapBackup(conversion.getBackupLabel(), map);
+			}
 		}
 	}
 	
@@ -29,6 +32,7 @@ public final class DocearRequiredConversionController {
 	public static boolean hasRequiredConversion(Class<? extends IRequiredConversion> clazz, MapModel map) {
 		return getRequiredConversion(clazz, map) != null;
 	}
+	
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
 	 **********************************************************************************/

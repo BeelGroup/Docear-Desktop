@@ -41,7 +41,7 @@ public class AnnotationConverter implements IMapLifeCycleListener {
 		if(map == null) {
 			throw new IllegalArgumentException("NULL");
 		}
-		DocearFileBackupController.createBackup("convert_annotations", map);
+		DocearFileBackupController.createBackupForConversion(map);
 		new AnnotationConversionProcess(map).convert();
 		LogUtils.info("converted annotations for "+map.getTitle()+" - "+map.getFile());
 	}
@@ -116,32 +116,36 @@ public class AnnotationConverter implements IMapLifeCycleListener {
 					synchronized (documentCache) {
 						ExtractorAdaptor adapter = documentCache.get(file);
 						if(adapter == null) {
-							adapter = new ExtractorAdaptor(getPDDocument(file));
-							documentCache.put(file, adapter);
+							PDDocument document = getPDDocument(file);
+							if(document != null) {
+								adapter = new ExtractorAdaptor(document);
+								documentCache.put(file, adapter);
+							}
 						}
-						
-						switch (extensionModel.getAnnotationType()) {
-						case BOOKMARK:
-						case BOOKMARK_WITH_URI:
-						case BOOKMARK_WITHOUT_DESTINATION:
-							for (APDMetaObject bookmark : adapter.getBookmarkExtractor().getMetaObjects()) {
-								if(bookmark instanceof Bookmark) {
-									if(bookmark.getObjectNumber() == extensionModel.getOldObjectNumber()) {
-										AnnotationController.setModel(node, cloneAnnotation(bookmark, extensionModel));
+						if(adapter != null) {
+							switch (extensionModel.getAnnotationType()) {
+							case BOOKMARK:
+							case BOOKMARK_WITH_URI:
+							case BOOKMARK_WITHOUT_DESTINATION:
+								for (APDMetaObject bookmark : adapter.getBookmarkExtractor().getMetaObjects()) {
+									if(bookmark instanceof Bookmark) {
+										if(bookmark.getObjectNumber() == extensionModel.getOldObjectNumber()) {
+											AnnotationController.setModel(node, cloneAnnotation(bookmark, extensionModel));
+											return;
+										}
+									}
+								}
+								break;
+							case HIGHLIGHTED_TEXT:
+							case COMMENT:
+								for (APDMetaObject annotation : adapter.getAnnotationExtractor().getMetaObjects()) {
+									if(annotation.getObjectNumber() == extensionModel.getOldObjectNumber()) {
+										AnnotationController.setModel(node, cloneAnnotation(annotation, extensionModel));
 										return;
 									}
 								}
+								break;
 							}
-							break;
-						case HIGHLIGHTED_TEXT:
-						case COMMENT:
-							for (APDMetaObject annotation : adapter.getAnnotationExtractor().getMetaObjects()) {
-								if(annotation.getObjectNumber() == extensionModel.getOldObjectNumber()) {
-									AnnotationController.setModel(node, cloneAnnotation(annotation, extensionModel));
-									return;
-								}
-							}
-							break;
 						}
 					}
 				}
@@ -206,6 +210,9 @@ public class AnnotationConverter implements IMapLifeCycleListener {
 		 * CONSTRUCTORS
 		 **********************************************************************************/
 		public ExtractorAdaptor(PDDocument document) {
+			if(document == null) {
+				throw new IllegalArgumentException("NULL");
+			}
 			this.document = document;
 			
 		}
@@ -229,18 +236,25 @@ public class AnnotationConverter implements IMapLifeCycleListener {
 		
 		public void save() throws IOException {
 			if(!document.isReadOnly()) {
-				if(bookmarkExt.isDocumentModified() || annotationExt.isDocumentModified()) {
+				if((bookmarkExt != null && bookmarkExt.isDocumentModified()) 
+						|| (annotationExt != null && annotationExt.isDocumentModified())) {
 					document.save();
 				}
 			}
 		}
 		
 		public void close() throws IOException {
-			annotationExt.resetAll();
-			annotationExt = null;
-			bookmarkExt.resetAll();
-			bookmarkExt = null;
-			document.close();
+			if(annotationExt != null) {
+				annotationExt.resetAll();
+				annotationExt = null;
+			}
+			if(bookmarkExt != null) {
+				bookmarkExt.resetAll();
+				bookmarkExt = null;
+			}
+			if(document != null) {
+				document.close();
+			}
 		}
 		
 		/***********************************************************************************

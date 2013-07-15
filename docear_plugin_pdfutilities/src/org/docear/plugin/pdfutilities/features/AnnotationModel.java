@@ -141,7 +141,13 @@ public class AnnotationModel implements IAnnotation{
 	
 	public void setSource(URI absoluteUri){
 		this.uri = absoluteUri;
-		this.id = new AnnotationID(absoluteUri, this.objectID);
+		if(absoluteUri == null) {
+			this.id = null;
+		}
+		else {
+			this.id = new AnnotationID(absoluteUri, this.objectID);
+		}
+		
 	}
 	
 	public boolean hasNewChildren(){
