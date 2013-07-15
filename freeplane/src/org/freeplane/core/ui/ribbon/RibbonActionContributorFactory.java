@@ -227,7 +227,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 		return changeListener;
 	}
 	
-	public static void updateActionState(AFreeplaneAction action, AbstractCommandButton button) {
+	public static void updateActionState(AFreeplaneAction action, AbstractCommandButton button) {		
 		if(AFreeplaneAction.checkEnabledOnChange(action)) {
 			action.setEnabled();
 			button.setEnabled(action.isEnabled());
@@ -289,6 +289,9 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 								StructurePath path = context.getCurrentPath();
 								((JCommandButton)button).setCommandButtonKind(CommandButtonKind.ACTION_AND_POPUP_MAIN_ACTION);
 								((JCommandButton)button).setPopupCallback(getPopupPanelCallBack(path, context));
+								KeyStroke ks = context.getBuilder().getAcceleratorManager().getAccelerator(actionKey);
+								updateRichTooltip(button, action, ks);
+								updateActionState(action, button);
 							}
 						}
 						button.putClientProperty(ACTION_KEY_PROPERTY, action);
