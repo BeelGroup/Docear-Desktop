@@ -7,7 +7,10 @@ import java.util.Collection;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
+import org.docear.plugin.bibtex.JabRefProjectExtension;
+import org.docear.plugin.bibtex.ReferencesController;
 import org.docear.plugin.bibtex.dialogs.ExistingReferencesDialog;
+import org.docear.plugin.bibtex.jabref.JabRefCommons;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.ui.components.UITools;
@@ -17,6 +20,9 @@ import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.url.UrlManager;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.features.AWorkspaceModeExtension;
+import org.freeplane.plugin.workspace.features.WorkspaceMapModelExtension;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
 @EnabledAction(checkOnNodeChange=true)
 public class AddExistingReferenceAction extends AFreeplaneAction {
@@ -36,8 +42,21 @@ public class AddExistingReferenceAction extends AFreeplaneAction {
 		URI link = null;
 		String name = null;
 		// check for conflicting file links (two nodes linking to at least two distinct files)
+		AWorkspaceProject project = null;
 		for (NodeModel node : nodes) {
-			try {
+			if(project == null) {
+				WorkspaceMapModelExtension modelExt = WorkspaceController.getMapModelExtension(node.getMap(), false);
+				if(modelExt != null) {
+					project = modelExt.getProject();
+					JabRefProjectExtension ext = (JabRefProjectExtension) project.getExtensions(JabRefProjectExtension.class);
+					ext.selectBasePanel();
+				}
+			}
+			//DOCEAR - ToDo: show error msg
+			if(project == null) {
+				return;
+			}
+			try {				
 				URI tempLink = NodeLinks.getLink(node);
 				String tempName = UrlManager.getController().getAbsoluteFile(node.getMap(), tempLink).getName();
 
