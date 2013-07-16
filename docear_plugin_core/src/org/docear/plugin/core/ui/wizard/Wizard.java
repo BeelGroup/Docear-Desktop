@@ -9,6 +9,7 @@ import java.awt.Frame;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
@@ -28,6 +29,7 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
+import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.TextUtils;
 
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -211,7 +213,10 @@ public class Wizard {
 		
 		SwingUtilities.updateComponentTreeUI(wizard);
 		wizard.pack();
+		UITools.backOtherWindows();
 		wizard.setVisible(true);
+		Window.getWindows();
+		wizard.toFront();
 		try {
 			returnCodeObserver.join();
 		} catch (InterruptedException e) {
@@ -350,9 +355,6 @@ public class Wizard {
 				}
 				
 			};
-			
-			
-			
 		}
 		return dragHandler;
 	}
