@@ -11,6 +11,7 @@ import javax.swing.JFileChooser;
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.logger.DocearLogEvent;
 import org.docear.plugin.core.util.NodeUtilities;
+import org.docear.plugin.core.workspace.AVirtualDirectory;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
 import org.docear.plugin.pdfutilities.util.MonitoringUtils;
 import org.freeplane.core.ui.EnabledAction;
@@ -35,7 +36,7 @@ public class EditMonitoringFolderAction extends AbstractMonitoringAction {
 	public void actionPerformed(ActionEvent e) {
 		JFileChooser fileChooser;
 		File value = MonitoringUtils.getPdfDirFromMonitoringNode((Controller.getCurrentController().getSelection().getSelected()));
-		if(value != null){
+		if(value != null && !(value instanceof AVirtualDirectory)){
 			fileChooser = new JFileChooser(value);
 		}
 		else{
