@@ -115,9 +115,11 @@ public class FontStyleContributorFactory implements IRibbonContributorFactory {
 	private void addDefaultToggleHandler(final RibbonBuildContext context, final AFreeplaneAction action, final JCommandToggleButton button) {
 		context.getBuilder().getMapChangeAdapter().addListener(new IChangeObserver() {
 			public void updateState(CurrentState state) {
-				if (AFreeplaneAction.checkSelectionOnChange(action)) {
-					action.setSelected();
-					button.getActionModel().setSelected(action.isSelected());
+				if(state.isNodeChangeEvent()) {
+    				if (AFreeplaneAction.checkSelectionOnChange(action)) {
+    					action.setSelected();
+    					button.getActionModel().setSelected(action.isSelected());
+    				}
 				}
 			}
 		});

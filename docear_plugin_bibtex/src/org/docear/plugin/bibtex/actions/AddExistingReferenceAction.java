@@ -8,9 +8,7 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 import org.docear.plugin.bibtex.JabRefProjectExtension;
-import org.docear.plugin.bibtex.ReferencesController;
 import org.docear.plugin.bibtex.dialogs.ExistingReferencesDialog;
-import org.docear.plugin.bibtex.jabref.JabRefCommons;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.ui.components.UITools;
@@ -20,7 +18,6 @@ import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.url.UrlManager;
 import org.freeplane.plugin.workspace.WorkspaceController;
-import org.freeplane.plugin.workspace.features.AWorkspaceModeExtension;
 import org.freeplane.plugin.workspace.features.WorkspaceMapModelExtension;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
@@ -91,7 +88,8 @@ public class AddExistingReferenceAction extends AFreeplaneAction {
 
 	@Override
 	public void setEnabled() {
-		setEnabled(WorkspaceController.getCurrentProject() != null);
+		NodeModel node = Controller.getCurrentModeController().getMapController().getSelectedNode();
+		setEnabled(Controller.getCurrentModeController().getMapController().getSelectedNode() != null);		
 	}
 	
 	

@@ -17,6 +17,7 @@ import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.AFreeplaneAction;
@@ -26,7 +27,10 @@ import org.freeplane.core.ui.ribbon.StructureTree.StructurePath;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
+import org.freeplane.features.map.MapModel;
 import org.freeplane.features.mode.Controller;
+import org.freeplane.features.ui.CloseAction;
+import org.freeplane.features.url.mindmapmode.OpenAction;
 import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandButton.CommandButtonKind;
@@ -485,7 +489,17 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 		 **********************************************************************************/
 		
 		public void updateState(CurrentState state) {
-			updateActionState(action, button);
+			if(state.isNodeChangeEvent()) {
+				updateActionState(action, button);
+			}
+			else if(state.allMapsClosed()) {
+				action.setEnabled(false);
+				button.setEnabled(false);
+			}
+			else {
+				action.setEnabled(true);
+				button.setEnabled(true);
+			}
 		}
 	};
 }

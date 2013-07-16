@@ -210,6 +210,7 @@ public class MModeControllerFactory {
 		modeController.getMapController().addNodeSelectionListener(userInputListenerFactory.getRibbonBuilder().getMapChangeAdapter());
 		modeController.getMapController().addNodeChangeListener(userInputListenerFactory.getRibbonBuilder().getMapChangeAdapter());
 		modeController.getMapController().addMapChangeListener(userInputListenerFactory.getRibbonBuilder().getMapChangeAdapter());
+		modeController.getMapController().addMapLifeCycleListener(userInputListenerFactory.getRibbonBuilder().getMapChangeAdapter());
 		final MFileManager fileManager = new MFileManager();
 		UrlManager.install(fileManager);
 		MMapIO.install(modeController);
