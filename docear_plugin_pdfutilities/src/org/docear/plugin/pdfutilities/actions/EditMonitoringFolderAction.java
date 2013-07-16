@@ -19,7 +19,6 @@ import org.freeplane.features.link.mindmapmode.MLinkController;
 import org.freeplane.features.map.IMapSelection;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
-import org.freeplane.plugin.workspace.URIUtils;
 
 @EnabledAction(checkOnNodeChange=true)
 public class EditMonitoringFolderAction extends AbstractMonitoringAction {
@@ -35,9 +34,9 @@ public class EditMonitoringFolderAction extends AbstractMonitoringAction {
 
 	public void actionPerformed(ActionEvent e) {
 		JFileChooser fileChooser;
-		Object value = MonitoringUtils.getPdfDirFromMonitoringNode((Controller.getCurrentController().getSelection().getSelected()));
+		File value = MonitoringUtils.getPdfDirFromMonitoringNode((Controller.getCurrentController().getSelection().getSelected()));
 		if(value != null){
-			fileChooser = new JFileChooser(URIUtils.getAbsoluteFile((URI)value));
+			fileChooser = new JFileChooser(value);
 		}
 		else{
 			fileChooser = new JFileChooser();
