@@ -156,6 +156,7 @@ public class DocearSetupWizardAction extends AFreeplaneAction {
 		//choose further actions page
 		desc = new WizardPageDescriptor("page.second", new SecondPagePanel()) {
 			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
+				((SecondPagePanel)getPage()).getUser();
 				if(DATA_OPTION.SYNCH.equals(context.get(DATA_OPTION.class))) {
 					return context.getModel().getPage("page.project.synch");
 				}

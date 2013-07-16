@@ -11,22 +11,19 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import net.sf.jabref.BasePanel;
-import net.sf.jabref.BibtexDatabase;
 import net.sf.jabref.BibtexEntry;
 import net.sf.jabref.GUIGlobals;
 import net.sf.jabref.gui.FileListTableModel;
 
 import org.docear.plugin.bibtex.jabref.JabRefAttributes;
-import org.docear.plugin.bibtex.jabref.JabrefWrapper;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.plugin.workspace.URIUtils;
-import org.freeplane.plugin.workspace.WorkspaceController;
 
 public class Reference {
 	public class Item {
 		private String name;
 		private String value;
-		
+
 		public Item(String name, String value) {
 			this.name = name;
 			this.value = value;
@@ -40,60 +37,92 @@ public class Reference {
 			return value;
 		}
 	}
-	
+
 	private final Item key;
 	private final ArrayList<Item> attributes;
 	private Set<URI> uris = new HashSet<URI>();
 	private URL url = null;
-	
+
 	public Reference(BasePanel basePanel, BibtexEntry entry) {
-		JabRefAttributes jabRefAttributes = ReferencesController.getController().getJabRefAttributes();		
-		
+		// JabRefAttributes jabRefAttributes = ReferencesController.getController().getJabRefAttributes();
+		//
+		// attributes = new ArrayList<Reference.Item>();
+		//
+		// if (entry.getCiteKey() == null || entry.getCiteKey().trim().length() == 0) {
+		// jabRefAttributes.generateBibtexEntry(entry);
+		// }
+		//
+		// this.key = new Item(jabRefAttributes.getKeyAttribute(), entry.getCiteKey());
+		// for (Entry<String, String> valueAttributes : jabRefAttributes.getValueAttributes().entrySet()) {
+		// attributes.add(new Item(valueAttributes.getKey(), entry.getField(valueAttributes.getValue())));
+		// }
+		//
+		// String fileField = entry.getField(GUIGlobals.FILE_FIELD);
+		// if (fileField != null) {
+		// FileListTableModel model = new FileListTableModel();
+		// model.setContent(fileField);
+		//
+		// for (int i=0; i<model.getRowCount(); i++) {
+		// uris.add(new File(model.getEntry(i).getLink()).toURI());
+		// }
+		// }
+		//
+		// try {
+		// String url = entry.getField("url");
+		// if(url != null && url.trim().length() > 0) {
+		// this.url = new URL(url);
+		// }
+		// }
+		// catch (MalformedURLException e) {
+		// //LogUtils.info("org.docear.plugin.bibtex.Reference(): "+e.getMessage());
+		// }
+		JabRefAttributes jabRefAttributes = ReferencesController.getController().getJabRefAttributes();
+
 		attributes = new ArrayList<Reference.Item>();
-		
+
 		if (entry.getCiteKey() == null || entry.getCiteKey().trim().length() == 0) {
-			jabRefAttributes.generateBibtexEntry(entry);			
+			jabRefAttributes.generateBibtexEntry(entry);
 		}
-		
-		this.key = new Item(jabRefAttributes.getKeyAttribute(), entry.getCiteKey());		
+
+		this.key = new Item(jabRefAttributes.getKeyAttribute(), entry.getCiteKey());
 		for (Entry<String, String> valueAttributes : jabRefAttributes.getValueAttributes().entrySet()) {
 			attributes.add(new Item(valueAttributes.getKey(), entry.getField(valueAttributes.getValue())));
 		}
-		
+
 		String fileField = entry.getField(GUIGlobals.FILE_FIELD);
 		if (fileField != null) {
 			FileListTableModel model = new FileListTableModel();
 			model.setContent(fileField);
-			
-			for (int i=0; i<model.getRowCount(); i++) {
+			for (int i = 0; i < model.getRowCount(); i++) {
 				String link = model.getEntry(i).getLink();
-				File f = new File(basePanel.getFile().getParentFile(), link);
+				File f = new File(link);
+				//DOCEAR - todo: check if the path is absolute
+				if(!f.isAbsolute()) {
+					f = new File(basePanel.getFile().getParentFile(), link);
+				}
 				try {
 					f = f.getCanonicalFile();
-				}
-				catch (IOException e) {
+				} catch (IOException e) {
 					e.printStackTrace();
-				}				
-				
+				}
 				uris.add(f.toURI());
 			}
 		}
-		
+
 		try {
 			String url = entry.getField("url");
-			if(url != null && url.trim().length() > 0) {
+			if (url != null && url.trim().length() > 0) {
 				this.url = new URL(url);
 			}
-		}
-		catch (MalformedURLException e) {
-			//LogUtils.info("org.docear.plugin.bibtex.Reference(): "+e.getMessage());
+		} catch (MalformedURLException e) {
+			// LogUtils.info("org.docear.plugin.bibtex.Reference(): "+e.getMessage());
 		}
 	}
 
 	public Item getKey() {
 		return key;
 	}
-	
+
 	public ArrayList<Item> getAttributes() {
 		return attributes;
 	}
@@ -105,45 +134,43 @@ public class Reference {
 	public void addUri(URI uri) {
 		this.uris.add(uri);
 	}
-	
+
 	public URL getUrl() {
 		return this.url;
 	}
-	
+
 	public boolean containsLink(URI nodeLink) {
 		File file = URIUtils.getAbsoluteFile(nodeLink);
-		
+
 		if (file != null) {
 			String name = file.getName();
-    		for (URI uri : getUris()) {
-    			if (name.equalsIgnoreCase(new File(uri).getName())) {
-    				return true;
-    			}			
-    		}
-		}
-		else {		
-    		try {
-				if (this.url.toExternalForm().equals(nodeLink.toURL().toExternalForm())) {
+			for (URI uri : getUris()) {
+				if (name.equalsIgnoreCase(new File(uri).getName())) {
 					return true;
 				}
 			}
-			catch (MalformedURLException e) {
+		} else {
+			try {
+				if (this.url.toExternalForm().equals(nodeLink.toURL().toExternalForm())) {
+					return true;
+				}
+			} catch (MalformedURLException e) {
 				LogUtils.info(e.getMessage());
 			}
 		}
-		
+
 		return false;
 	}
-	
-	public boolean containsFile(File file) {	
+
+	public boolean containsFile(File file) {
 		if (file != null) {
 			String name = file.getName();
-    		for (URI uri : getUris()) {
-    			if (name.equals(new File(uri).getName())) {
-    				return true;
-    			}			
-    		}
-		}		
+			for (URI uri : getUris()) {
+				if (name.equals(new File(uri).getName())) {
+					return true;
+				}
+			}
+		}
 		return false;
-	}	
+	}
 }

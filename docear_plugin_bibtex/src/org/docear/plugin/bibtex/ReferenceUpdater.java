@@ -238,44 +238,41 @@ public class ReferenceUpdater extends AMindmapUpdater {
 			// BibtexEntry bibtexEntry = database.getEntryByKey(entry.getKey());
 			// if (bibtexEntry != null) {
 			BibtexEntry bibtexEntry = entry.getKey();
-			
 			try {
-    			WorkspaceMapModelExtension mapExt = WorkspaceController.getMapModelExtension(entry.getValue().iterator().next().getMap());
-    			JabRefProjectExtension ext = (JabRefProjectExtension) mapExt.getProject().getExtensions(JabRefProjectExtension.class);
-    			
-    			Reference reference = new Reference(ext.getBaseHandle().getBasePanel(), bibtexEntry);
-    			for (NodeModel node : entry.getValue()) {
-    				if (isIgnored(reference, node)) {
-    					continue;
-    				}
-    
-    				String key = jabRefAttributes.getBibtexKey(node);
-    				try {
-    					if (key == null) {
-    						changes = true;
-    						ReferencesController.getController().getJabRefAttributes().setReferenceToNode(reference, node);
-    					}
-    					else {
-    						changes = changes | ReferencesController.getController().getJabRefAttributes().setReferenceToNode(bibtexEntry, node);
-    					}
-    				}
-    				catch (ResolveDuplicateEntryAbortedException e) {
-    					if (e.getFile() != null) {
-    						((Set<String>) session.getSessionObject(MapModificationSession.FILE_IGNORE_LIST)).add(e.getFile().getName());
-    					}
-    					else {
-    						((Set<String>) session.getSessionObject(MapModificationSession.URL_IGNORE_LIST)).add(e.getUrl().toExternalForm());
-    					}
-    				}
-    				
-    				if(Thread.currentThread().isInterrupted()) {
-    					return changes;
-    				}
-    			}
+				WorkspaceMapModelExtension mapExt = WorkspaceController.getMapModelExtension(entry.getValue().iterator().next().getMap());
+				JabRefProjectExtension ext = (JabRefProjectExtension) mapExt.getProject().getExtensions(JabRefProjectExtension.class);
+
+				Reference reference = new Reference(ext.getBaseHandle().getBasePanel(), bibtexEntry);
+
+				for (NodeModel node : entry.getValue()) {
+					if (isIgnored(reference, node)) {
+						continue;
+					}
+
+					String key = jabRefAttributes.getBibtexKey(node);
+					try {
+						if (key == null) {
+							changes = true;
+							ReferencesController.getController().getJabRefAttributes().setReferenceToNode(reference, node);
+						} else {
+							changes = changes | ReferencesController.getController().getJabRefAttributes().setReferenceToNode(bibtexEntry, node);
+						}
+					} catch (ResolveDuplicateEntryAbortedException e) {
+						if (e.getFile() != null) {
+							((Set<String>) session.getSessionObject(MapModificationSession.FILE_IGNORE_LIST)).add(e.getFile().getName());
+						} else {
+							((Set<String>) session.getSessionObject(MapModificationSession.URL_IGNORE_LIST)).add(e.getUrl().toExternalForm());
+						}
+					}
+
+					if (Thread.currentThread().isInterrupted()) {
+						return changes;
+					}
+				}
 			}
-    		catch (Exception e) {    			
-    			LogUtils.warn("ReferenceUpdater.updateReferenceNodes(): " + e.getMessage());
-    		}
+			catch (Exception e) {
+				LogUtils.warn("ReferenceUpdater.updateReferenceNodes(): " + e.getMessage());
+			}
 		}
 		return changes;
 	}
