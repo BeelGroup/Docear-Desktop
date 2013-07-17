@@ -10,6 +10,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 
+import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -593,7 +594,7 @@ public class ReferencesController extends ALanguageController implements IDocear
 		public boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed, boolean consumed) {
 			Object source = e.getSource();
 			if(hasPackageNameOrAncestor(source, "net.sf.jabref")) {
-				if(jabrefWrapper.getJabrefFrame().getMenuBar().processKeyBinding(ks, e, condition, pressed)) {
+				if(jabrefWrapper.getJabrefFrame().getMenuBar().processKeyBinding(ks, e, JComponent.WHEN_IN_FOCUSED_WINDOW, pressed)) {
 					e.consume();
 				}
 				return true;
