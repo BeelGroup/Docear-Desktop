@@ -162,7 +162,7 @@ public class FButtonBar extends JComponent implements IAcceleratorChangeListener
 			        & (KeyEvent.CTRL_MASK | KeyEvent.META_MASK | KeyEvent.SHIFT_MASK | KeyEvent.ALT_MASK | KeyEvent.ALT_GRAPH_MASK);
 			final JButton[] buttonRow = createButtons(modifiers);
 			final JButton button = buttonRow[newButtonNumber];
-			final String text = TextUtils.getText(action.getKey() + ".text");
+			final String text = TextUtils.getText(action.getTextKey());
 			button.setText(text);
 			button.setToolTipText(text);
 			button.setAction(action);
