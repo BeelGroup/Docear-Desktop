@@ -11,6 +11,7 @@ import javax.swing.JFileChooser;
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.logger.DocearLogEvent;
 import org.docear.plugin.core.util.NodeUtilities;
+import org.docear.plugin.core.workspace.AVirtualDirectory;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
 import org.docear.plugin.pdfutilities.util.MonitoringUtils;
 import org.freeplane.core.ui.EnabledAction;
@@ -19,7 +20,6 @@ import org.freeplane.features.link.mindmapmode.MLinkController;
 import org.freeplane.features.map.IMapSelection;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
-import org.freeplane.plugin.workspace.URIUtils;
 
 @EnabledAction(checkOnNodeChange=true)
 public class EditMonitoringFolderAction extends AbstractMonitoringAction {
@@ -36,9 +36,9 @@ public class EditMonitoringFolderAction extends AbstractMonitoringAction {
 
 	public void actionPerformed(ActionEvent e) {
 		JFileChooser fileChooser;
-		Object value = MonitoringUtils.getPdfDirFromMonitoringNode((Controller.getCurrentController().getSelection().getSelected()));
-		if(value != null){
-			fileChooser = new JFileChooser(URIUtils.getAbsoluteFile((URI)value));
+		File value = MonitoringUtils.getPdfDirFromMonitoringNode((Controller.getCurrentController().getSelection().getSelected()));
+		if(value != null && !(value instanceof AVirtualDirectory)){
+			fileChooser = new JFileChooser(value);
 		}
 		else{
 			fileChooser = new JFileChooser();

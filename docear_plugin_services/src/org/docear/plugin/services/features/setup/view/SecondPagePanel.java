@@ -408,6 +408,17 @@ public class SecondPagePanel extends AWizardPage {
 		return chckbxSynchronization != null && chckbxSynchronization.isSelected();
 	}
 	
+	public DocearUser getUser() {
+		DocearUser user = cachedContext.get(DocearUser.class);
+		if(getServicePanel().isVisible()) {
+			user.setBackupEnabled(isOnlineBackupEnabled());
+			user.setCollaborationEnabled(isCollaborationEnabled());
+			user.setRecommendationsEnabled(isRecommendationsEnabled());
+			user.setSynchronizationEnabled(isSynchronizationEnabled());
+		}
+		return user;
+	}
+	
 	public boolean isTermsAccepted() {
 		return (localUser && chckbxAcceptUsageTerms.isSelected()) || (chckbxAcceptTOS.isSelected() && chckbxAcceptUsageTerms.isSelected());
 	}

@@ -35,6 +35,7 @@ import org.freeplane.core.extension.ExtensionContainer;
 import org.freeplane.core.extension.IExtension;
 import org.freeplane.core.extension.SmallExtensionMap;
 import org.freeplane.core.util.HtmlUtils;
+import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.XmlUtils;
 import org.freeplane.features.filter.Filter;
 import org.freeplane.features.filter.FilterInfo;
@@ -172,7 +173,12 @@ public class NodeModel implements MutableTreeNode {
 		}
 		final Iterator<INodeView> iterator = views.iterator();
 		while (iterator.hasNext()) {
-			iterator.next().nodeChanged(nodeChangeEvent);
+			try {
+				iterator.next().nodeChanged(nodeChangeEvent);
+			}
+			catch (Exception e) {
+				LogUtils.warn(e);
+			}
 		}
 	}
 

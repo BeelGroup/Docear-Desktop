@@ -10,7 +10,6 @@ import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.event.DocearEvent;
 import org.docear.plugin.services.DocearServiceException;
 import org.docear.plugin.services.DocearServiceException.DocearServiceExceptionType;
-import org.docear.plugin.services.features.user.DocearUser;
 import org.docear.plugin.services.ServiceController;
 import org.freeplane.core.util.LogUtils;
 
@@ -37,7 +36,6 @@ public class FiletransferClient {
 	
 	public boolean sendFile(File file, boolean deleteIfTransferred) throws DocearServiceException {
 		if (!ServiceController.getCurrentUser().isTransmissionEnabled() || !ServiceController.getCurrentUser().isOnline() || file == null) {
-			DocearUser user = ServiceController.getCurrentUser();
 			return false;
 		}
 		DocearController.getController().dispatchDocearEvent(new DocearEvent(this.getClass(), START_UPLOAD));
@@ -54,7 +52,8 @@ public class FiletransferClient {
 				try {
 					if(response==null || !response.getClientResponseStatus().equals(ClientResponse.Status.OK)) {
 						//System.out.println(response.getEntity(String.class));
-						throw new IOException("file upload not accepted ("+ response+"):"+response.getEntity(String.class));
+						
+						throw new IOException("file upload not accepted ("+ response+"; "+ServiceController.getConnectionController().getDefaultHeader("accessToken")+"):"+response.getEntity(String.class));
 					}
 					else if (deleteIfTransferred) {
 						try {
