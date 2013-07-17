@@ -3,6 +3,7 @@ package org.docear.plugin.bibtex.actions;
 import java.awt.event.ActionEvent;
 import java.net.URI;
 import java.util.Collection;
+import java.util.Iterator;
 
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
@@ -14,6 +15,7 @@ import net.sf.jabref.BibtexEntryType;
 import net.sf.jabref.EntryTypeDialog;
 import net.sf.jabref.export.DocearSaveDatabaseAction;
 
+import org.docear.plugin.bibtex.JabRefProjectExtension;
 import org.docear.plugin.bibtex.ReferencesController;
 import org.docear.plugin.bibtex.jabref.JabRefCommons;
 import org.docear.plugin.bibtex.jabref.JabrefWrapper;
@@ -28,6 +30,8 @@ import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.url.UrlManager;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.features.WorkspaceMapModelExtension;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
 @EnabledAction(checkOnNodeChange=true)
 public class AddNewReferenceAction extends AFreeplaneAction {
@@ -43,11 +47,24 @@ public class AddNewReferenceAction extends AFreeplaneAction {
 	
 	@Override
 	public void setEnabled() {
-		setEnabled(WorkspaceController.getCurrentProject() != null);
+		setEnabled(Controller.getCurrentModeController().getMapController().getSelectedNode() != null);
 	}
 
-	public void actionPerformed(ActionEvent e) {		
+	public void actionPerformed(ActionEvent e) {
 		Collection<NodeModel> nodes = Controller.getCurrentModeController().getMapController().getSelectedNodes();
+				
+		if (nodes != null) {
+			Iterator<NodeModel> iter = nodes.iterator();
+			if (iter.hasNext()) {
+        		WorkspaceMapModelExtension modelExt = WorkspaceController.getMapModelExtension(iter.next().getMap(), false);
+        		if(modelExt != null) {
+        			AWorkspaceProject project = modelExt.getProject();
+        			JabRefProjectExtension ext = (JabRefProjectExtension) project.getExtensions(JabRefProjectExtension.class);
+        			ext.selectBasePanel();
+        		}
+			}
+		}
+		
 		if (DocearSaveDatabaseAction.JABREF_DATABASE_SAVE_SUCCESS.equals(e.getActionCommand())) {
 			addCreatedReference(e);
 			return;

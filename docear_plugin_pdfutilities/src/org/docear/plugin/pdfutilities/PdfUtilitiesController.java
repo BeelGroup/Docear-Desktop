@@ -1,5 +1,6 @@
 package org.docear.plugin.pdfutilities;
 
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.dnd.DropTarget;
 import java.awt.event.ActionEvent;
@@ -1562,9 +1563,10 @@ public class PdfUtilitiesController extends ALanguageController {
 					final JCommandToggleButton flattenButton = RibbonActionContributorFactory.createCommandToggleButton(monitoringFlattenSubfoldersAction);
 					ChildProperties childProps = new ChildProperties();
 					childProps.set(RibbonElementPriority.class, RibbonElementPriority.MEDIUM);
+					addDefaultToggleHandler(context, flattenButton);
 					parent.addChild(flattenButton, childProps);
 					
-					final JCommandButton autoMonitoringButton = RibbonActionContributorFactory.createCommandButton(RibbonActionContributorFactory.getDummyAction("auto_monitoring")); 
+					final JCommandButton autoMonitoringButton = RibbonActionContributorFactory.createCommandButton(RibbonActionContributorFactory.getDummyAction("auto_monitoring"));					
 					autoMonitoringButton.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
 					autoMonitoringButton.setPopupCallback(new PopupPanelCallback() {
 						
@@ -1585,6 +1587,7 @@ public class PdfUtilitiesController extends ALanguageController {
 					});
 					childProps = new ChildProperties();
 					childProps.set(RibbonElementPriority.class, RibbonElementPriority.MEDIUM);
+					addDefaultToggleHandler(context, autoMonitoringButton);
 					parent.addChild(autoMonitoringButton, childProps);
 					final JCommandButton subfoldersButton = RibbonActionContributorFactory.createCommandButton(RibbonActionContributorFactory.getDummyAction("subfolders")); 
 					subfoldersButton.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
@@ -1607,6 +1610,7 @@ public class PdfUtilitiesController extends ALanguageController {
 					});
 					childProps = new ChildProperties();
 					childProps.set(RibbonElementPriority.class, RibbonElementPriority.MEDIUM);
+					addDefaultToggleHandler(context, subfoldersButton);
 					parent.addChild(subfoldersButton, childProps);
 					
 					context.getBuilder().getMapChangeAdapter().addListener(new IChangeObserver() {
@@ -1688,6 +1692,7 @@ public class PdfUtilitiesController extends ALanguageController {
 					});
 					ChildProperties childProps = new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", "")));
 					childProps.set(RibbonElementPriority.class, RibbonActionContributorFactory.getPriority(attributes.getProperty("priority", "")));
+					addDefaultToggleHandler(context, importAnnotationEnabledButton);
 					parent.addChild(importAnnotationEnabledButton, childProps);
 					
 					importAllAnnotationsAction.setEnabled();
@@ -1712,6 +1717,7 @@ public class PdfUtilitiesController extends ALanguageController {
 					});
 					childProps = new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", "")));
 					childProps.set(RibbonElementPriority.class, RibbonActionContributorFactory.getPriority(attributes.getProperty("priority", "")));
+					addDefaultToggleHandler(context, annoButton);
 					parent.addChild(annoButton, childProps);
 					
 
@@ -1721,6 +1727,7 @@ public class PdfUtilitiesController extends ALanguageController {
 					
 					childProps = new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", "")));
 					childProps.set(RibbonElementPriority.class, RibbonActionContributorFactory.getPriority(attributes.getProperty("priority", "")));
+					addDefaultToggleHandler(context, delButton);
 					parent.addChild(delButton, childProps);
 					
 					
@@ -1742,6 +1749,21 @@ public class PdfUtilitiesController extends ALanguageController {
 				}
 			};
 		}
+	}
+	
+	private void addDefaultToggleHandler(final RibbonBuildContext context, final Component component) {
+		context.getBuilder().getMapChangeAdapter().addListener(new IChangeObserver() {
+			public void updateState(CurrentState state) {
+				if(state.isNodeChangeEvent()) {					
+				}
+				else if(state.allMapsClosed()) {					
+					component.setEnabled(false);
+				}
+				else {					
+					component.setEnabled(true);
+				}
+			}
+		});
 	}
 
 }

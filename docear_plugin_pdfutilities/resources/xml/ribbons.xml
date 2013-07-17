@@ -18,7 +18,7 @@
 				<ribbon_action action="DeleteMonitoringFolderAction" />
 			</ribbon_band>
 			<ribbon_band name="monitoring_settings" resize_policies="Mirror">
-				<ribbon_contributor name="pdf_monitoring" />
+				<ribbon_contributor name="pdf_monitoring" />				
 				<!--ribbon_action name="Flatten directories (default)" > 
 					<ribbon_action name="Flatten directories (on)" /> 
 					<ribbon_action name="Flatten directories (off)" /> 

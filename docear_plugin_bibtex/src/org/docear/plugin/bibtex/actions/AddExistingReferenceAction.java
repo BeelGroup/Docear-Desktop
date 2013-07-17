@@ -87,8 +87,7 @@ public class AddExistingReferenceAction extends AFreeplaneAction {
 	}
 
 	@Override
-	public void setEnabled() {
-		NodeModel node = Controller.getCurrentModeController().getMapController().getSelectedNode();
+	public void setEnabled() {		
 		setEnabled(Controller.getCurrentModeController().getMapController().getSelectedNode() != null);		
 	}
 	

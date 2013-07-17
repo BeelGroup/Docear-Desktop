@@ -58,6 +58,7 @@
 			</primary_entry>
 			<primary_entry action="OpenUserDirAction" />
 			<primary_entry action="PropertyAction" />
+			<primary_entry action="show_jabref_preferences" />
 			<primary_entry action="AboutAction"/> 
 			<primary_entry action="UpdateCheckAction" /> 
 			<primary_entry name="help">
@@ -425,6 +426,7 @@
 			<ribbon_band name="tools_misc" resize_policies="Mirror">
 				<ribbon_action action="OpenUserDirAction" priority="top"/>							
 				<ribbon_action action="PropertyAction" accelerator="control COMMA" priority="top"/>
+				<ribbon_action action="show_jabref_preferences" priority="TOP" />
 				<ribbon_action action="AddMenuItemLinkAction" />
 				<ribbon_action name="menu_time" priority="medium">
 					<ribbon_action action="TimeManagementAction" accelerator="control T" />
