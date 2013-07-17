@@ -101,6 +101,7 @@ import org.freeplane.core.resources.OptionPanelController.PropertyLoadListener;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.resources.components.IPropertyControl;
 import org.freeplane.core.resources.components.RadioButtonProperty;
+import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.IMenuContributor;
 import org.freeplane.core.ui.IMouseListener;
 import org.freeplane.core.ui.MenuBuilder;
@@ -1717,7 +1718,6 @@ public class PdfUtilitiesController extends ALanguageController {
 					});
 					childProps = new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", "")));
 					childProps.set(RibbonElementPriority.class, RibbonActionContributorFactory.getPriority(attributes.getProperty("priority", "")));
-					addDefaultToggleHandler(context, annoButton);
 					parent.addChild(annoButton, childProps);
 					
 
@@ -1727,18 +1727,16 @@ public class PdfUtilitiesController extends ALanguageController {
 					
 					childProps = new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", "")));
 					childProps.set(RibbonElementPriority.class, RibbonActionContributorFactory.getPriority(attributes.getProperty("priority", "")));
-					addDefaultToggleHandler(context, delButton);
+					addDefaultToggleHandler(context, deleteFileAction, delButton);
 					parent.addChild(delButton, childProps);
-					
-					
 					
 					context.getBuilder().getMapChangeAdapter().addListener(new IChangeObserver() {
 						public void updateState(CurrentState state) {
 							importAllAnnotationsAction.setEnabled();
 							importAllChildAnnotationsAction.setEnabled();
-							annoButton.setEnabled(importAllAnnotationsAction.isEnabled() || importAllChildAnnotationsAction.isEnabled());
-							deleteFileAction.setEnabled();
-							delButton.setEnabled(deleteFileAction.isEnabled());
+							annoButton.setEnabled((importAllAnnotationsAction.isEnabled() || importAllChildAnnotationsAction.isEnabled()) && !state.allMapsClosed());
+//							deleteFileAction.setEnabled();
+//							delButton.setEnabled(deleteFileAction.isEnabled());
 						}
 					});
 					
@@ -1749,6 +1747,20 @@ public class PdfUtilitiesController extends ALanguageController {
 				}
 			};
 		}
+	}
+	
+	private void addDefaultToggleHandler(final RibbonBuildContext context, final AFreeplaneAction action, final Component component) {
+		context.getBuilder().getMapChangeAdapter().addListener(new IChangeObserver() {
+			public void updateState(CurrentState state) {				
+				if(state.allMapsClosed()) {					
+					component.setEnabled(false);
+				}
+				else {					
+					action.setEnabled();
+					component.setEnabled(action.isEnabled());
+				}
+			}
+		});
 	}
 	
 	private void addDefaultToggleHandler(final RibbonBuildContext context, final Component component) {
