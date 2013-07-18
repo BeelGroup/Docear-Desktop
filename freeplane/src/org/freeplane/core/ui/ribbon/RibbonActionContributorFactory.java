@@ -17,7 +17,6 @@ import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
 
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.AFreeplaneAction;
@@ -27,10 +26,7 @@ import org.freeplane.core.ui.ribbon.StructureTree.StructurePath;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
-import org.freeplane.features.map.MapModel;
 import org.freeplane.features.mode.Controller;
-import org.freeplane.features.ui.CloseAction;
-import org.freeplane.features.url.mindmapmode.OpenAction;
 import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandButton.CommandButtonKind;
@@ -295,6 +291,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 						if(ks != null) {
 							updateRichTooltip(button, action, ks);
 						}
+						getAccelChangeListener().addAction(actionKey, button);
 						
 						builder.getMapChangeAdapter().addListener(new ActionChangeListener(action, button));	
 						parent.addChild(button, childProps);
@@ -390,6 +387,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 					if(obj != null) {
 						try {
 							builder.getMapChangeAdapter().removeListener((IChangeObserver) ((AFreeplaneAction) obj).getValue(ACTION_CHANGE_LISTENER));
+							getAccelChangeListener().removeAction(((AFreeplaneAction) obj).getKey());
 						}
 						catch(Exception e) {
 							LogUtils.info("RibbonActionContributorFactory.getContributor(...).new ARibbonContributor() {...}.addChild(): "+e.getMessage());
@@ -446,6 +444,10 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 		
 		public void addAction(String actionKey, AbstractCommandButton button) {
 			actionMap.put(actionKey, button);
+		}
+		
+		public void removeAction(String actionKey) {
+			actionMap.remove(actionKey);
 		}
 		
 		public void clear() {
