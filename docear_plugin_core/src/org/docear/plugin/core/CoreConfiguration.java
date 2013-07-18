@@ -397,7 +397,7 @@ public class CoreConfiguration extends ALanguageController {
 		resController.setProperty("docearPdfInspectorLocation", coreProperties.getProperty("docearPdfInspectorLocation"));
 		resController.setProperty("freeplaneAddOnLocation", coreProperties.getProperty("freeplaneAddOnLocation"));
 		resController.setProperty("jabrefAddOnLocation", coreProperties.getProperty("jabrefAddOnLocation"));
-		
+		resController.setProperty("org.freeplane.plugin.bugreport", "org.freeplane.plugin.bugreport.denied");
 //		if (resController.getProperty("ApplicationName").equals("Docear")) {
 //			resController.setProperty("first_start_map", "/doc/docear-welcome.mm");
 //			resController.setProperty("tutorial_map", "/doc/docear-welcome.mm");
@@ -486,6 +486,7 @@ public class CoreConfiguration extends ALanguageController {
 
 	private void replaceFreeplaneStringsAndActions(ModeController modeController) {
 		disableAutoUpdater();
+		disableBugReporter();
 		
 		//replace this actions if docear_core is present
 		modeController.removeAction("SaveAsAction");
@@ -514,6 +515,15 @@ public class CoreConfiguration extends ALanguageController {
 			
 			public void propertiesLoaded(Collection<IPropertyControl> properties) {
 				((IPropertyControl) optionController.getPropertyControl("check_updates_automatically")).setEnabled(false);
+			}
+		});
+	}
+	
+	private void disableBugReporter() {
+		final OptionPanelController optionController = Controller.getCurrentController().getOptionPanelController();		
+		optionController.addPropertyLoadListener(new OptionPanelController.PropertyLoadListener() {
+			public void propertiesLoaded(Collection<IPropertyControl> properties) {
+				((IPropertyControl) optionController.getPropertyControl("org.freeplane.plugin.bugreport")).setEnabled(false);
 			}
 		});
 	}
