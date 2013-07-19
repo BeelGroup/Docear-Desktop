@@ -110,19 +110,19 @@ public class WinRegistry {
 	   * @throws IllegalAccessException
 	   * @throws InvocationTargetException
 	   */
-	  public static String readString(int hkey, String key, String valueName) 
-		throws IllegalArgumentException, IllegalAccessException, 
-		InvocationTargetException {
-	    if (hkey == HKEY_LOCAL_MACHINE) {
-	      return readString(systemRoot, hkey, key, valueName);
-	    }
-	    else if (hkey == HKEY_CURRENT_USER) {
-	      return readString(userRoot, hkey, key, valueName);
-	    }
-	    else {
-	      throw new IllegalArgumentException("hkey=" + hkey);
-	    }
-	  }
+	public static String readString(int hkey, String key, String valueName) throws IOException {
+		try {
+			if (hkey == HKEY_LOCAL_MACHINE) {
+				return readString(systemRoot, hkey, key, valueName);
+			} else if (hkey == HKEY_CURRENT_USER) {
+				return readString(userRoot, hkey, key, valueName);
+			} else {
+				throw new IllegalArgumentException("hkey=" + hkey);
+			}
+		} catch (Exception e) {
+			throw new IOException(e);
+		}
+	}
 
 	  /**
 	   * Read value(s) and value name(s) form given key 
@@ -133,9 +133,7 @@ public class WinRegistry {
 	   * @throws IllegalAccessException
 	   * @throws InvocationTargetException
 	   */
-	  public static Map<String, String> readStringValues(int hkey, String key) 
-		throws IllegalArgumentException, IllegalAccessException, 
-		InvocationTargetException {
+	  public static Map<String, String> readStringValues(int hkey, String key)  throws IOException, IllegalArgumentException {
 	    if (hkey == HKEY_LOCAL_MACHINE) {
 	      return readStringValues(systemRoot, hkey, key);
 	    }
@@ -156,21 +154,24 @@ public class WinRegistry {
 	   * @throws IllegalAccessException
 	   * @throws InvocationTargetException
 	   */
-	  public static List<String> readStringSubKeys(int hkey, String key) 
-	    throws IllegalArgumentException, IllegalAccessException,
-	    InvocationTargetException {
-	    if (hkey == HKEY_LOCAL_MACHINE) {
-	      return readStringSubKeys(systemRoot, hkey, key);
-	    }
-	    else if (hkey == HKEY_CURRENT_USER) {
-	      return readStringSubKeys(userRoot, hkey, key);
-	    }
-	    else if (hkey == HKEY_CLASSES_ROOT){
-	    	return readStringSubKeys(systemRoot, hkey, key);
-	    }
-	    else {
-	      throw new IllegalArgumentException("hkey=" + hkey);
-	    }
+	  public static List<String> readStringSubKeys(int hkey, String key) throws IOException {
+		try {
+		    if (hkey == HKEY_LOCAL_MACHINE) {
+		      return readStringSubKeys(systemRoot, hkey, key);
+		    }
+		    else if (hkey == HKEY_CURRENT_USER) {
+		      return readStringSubKeys(userRoot, hkey, key);
+		    }
+		    else if (hkey == HKEY_CLASSES_ROOT){
+		    	return readStringSubKeys(systemRoot, hkey, key);
+		    }
+		    else {
+		      throw new IllegalArgumentException("hkey=" + hkey);
+		    }
+		}
+		catch (Exception e) {
+			throw new IOException(e);
+		}
 	  }
 
 	  /**
@@ -264,15 +265,25 @@ public class WinRegistry {
 			  throw new IOException(e);
 		  }
 	  }
-	  static int keycount;
-	  private static void printSubKey(int hkey, String key, PrintStream printer) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, IOException {
-		  printer.println("["+getHKeyName(hkey)+"\\"+key+"]");
-		  keycount++;
+	  
+	  public static Set<Entry<String, Object>> getKeyValues(int hkey, String key) throws IOException {
+//		  System.out.println("["+getHKeyName(hkey)+"\\"+key+"]");
 		  Set<Entry<String, Object>> entries = new HashSet<Entry<String, Object>>();
 		  try{
 			  entries = Advapi32Util.registryGetValues(getHKey(hkey), key).entrySet();
 		  } 
-		  catch(IllegalArgumentException e){}
+		  catch(Exception e){
+			  throw new IOException(e);
+		  }
+		  
+		  return entries;
+	  }
+	  
+	  static int keycount;
+	  private static void printSubKey(int hkey, String key, PrintStream printer) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, IOException {
+		  printer.println("["+getHKeyName(hkey)+"\\"+key+"]");
+		  keycount++;
+		  Set<Entry<String, Object>> entries = getKeyValues(hkey, key);
 		  
 		  for(Entry<String, Object> entry : entries) {
 			  if(entry.getValue() instanceof Integer) {
@@ -360,33 +371,30 @@ public class WinRegistry {
 	    return (valb != null ? new String(valb).trim() : null);
 	  }
 
-	  private static Map<String,String> readStringValues
-	    (Preferences root, int hkey, String key)
-	    throws IllegalArgumentException, IllegalAccessException,
-	    InvocationTargetException {
-	    HashMap<String, String> results = new HashMap<String,String>();
-	    int[] handles = (int[]) regOpenKey.invoke(root, new Object[] {
-	        new Integer(hkey), toCstr(key), new Integer(KEY_READ) });
-	    if (handles[1] != REG_SUCCESS) {
-	      return null;
-	    }
-	    int[] info = (int[]) regQueryInfoKey.invoke(root,
-	        new Object[] { new Integer(handles[0]) });
+	private static Map<String, String> readStringValues(Preferences root, int hkey, String key) throws IOException {
+		try {
+			HashMap<String, String> results = new HashMap<String, String>();
+			int[] handles = (int[]) regOpenKey.invoke(root, new Object[] { new Integer(hkey), toCstr(key), new Integer(KEY_READ) });
+			if (handles[1] != REG_SUCCESS) {
+				return null;
+			}
+			int[] info = (int[]) regQueryInfoKey.invoke(root, new Object[] { new Integer(handles[0]) });
 
-	    int count = info[2]; // count  
-	    int maxlen = info[4]; // value length max
-	    for(int index=0; index<count; index++)  {
-	      byte[] name = (byte[]) regEnumValue.invoke(root, new Object[] {
-	          new Integer
-	            (handles[0]), new Integer(index), new Integer(maxlen + 1)});
-	      if(name != null){
-	    	  String value = readString(hkey, key, new String(name));
-	    	  results.put(new String(name).trim(), value);
-	      }
-	    }
-	    regCloseKey.invoke(root, new Object[] { new Integer(handles[0]) });
-	    return results;
-	  }
+			int count = info[2]; // count
+			int maxlen = info[4]; // value length max
+			for (int index = 0; index < count; index++) {
+				byte[] name = (byte[]) regEnumValue.invoke(root, new Object[] { new Integer(handles[0]), new Integer(index), new Integer(maxlen + 1) });
+				if (name != null) {
+					String value = readString(hkey, key, new String(name));
+					results.put(new String(name).trim(), value);
+				}
+			}
+			regCloseKey.invoke(root, new Object[] { new Integer(handles[0]) });
+			return results;
+		} catch (Exception e) {
+			throw new IOException(e);
+		}
+	}
 
 	  private static List<String> readStringSubKeys
 	    (Preferences root, int hkey, String key)
