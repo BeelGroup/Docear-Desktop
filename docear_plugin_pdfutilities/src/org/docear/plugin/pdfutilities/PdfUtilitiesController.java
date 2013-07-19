@@ -1752,8 +1752,10 @@ public class PdfUtilitiesController extends ALanguageController {
 	private void addDefaultToggleHandler(final RibbonBuildContext context, final AFreeplaneAction action, final Component component) {
 		context.getBuilder().getMapChangeAdapter().addListener(new IChangeObserver() {
 			public void updateState(CurrentState state) {				
-				if(state.allMapsClosed()) {					
-					component.setEnabled(false);
+				if(state.allMapsClosed()) {
+					if (action.getValue(RibbonActionContributorFactory.MANDATORY_PROPERTY) == null) {
+						component.setEnabled(action.isAlwaysEnabled());
+					}
 				}
 				else {					
 					action.setEnabled();

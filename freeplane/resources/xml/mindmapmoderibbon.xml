@@ -1,11 +1,11 @@
 <menu_structure>
 	<menu_category name="ribbon">
 		<ribbon_taskbar>
-			<ribbon_action action="NewMapAction" accelerator="control N" />
-			<ribbon_action action="EncryptedMap" />	
+			<ribbon_action action="NewMapAction" accelerator="control N" mandatory="true"/>
+			<ribbon_action action="EncryptedMap" mandatory="true"/>	
 			<separator />
-			<ribbon_action action="OpenAction" accelerator="control O" />
-			<ribbon_action action="OpenURLMapAction" />		
+			<ribbon_action action="OpenAction" accelerator="control O" mandatory="true"/>
+			<ribbon_action action="OpenURLMapAction" mandatory="true"/>		
 			<separator />
 			<ribbon_action action="SaveAction" accelerator="control S" />
 			<ribbon_action action="SaveAsAction" accelerator="control shift S" />
@@ -15,16 +15,16 @@
 		<ribbon_menu>
 			<primary_entry name="new">
 				<entry_group name="new">
-					<ribbon_action action="NewMapAction" accelerator="control N" />
-					<ribbon_action action="new_map_from_user_templates" />
-					<ribbon_action action="EncryptedMap" />					
-					<ribbon_action action="RevertAction" />	
+					<ribbon_action action="NewMapAction" accelerator="control N" mandatory="true"/>
+					<ribbon_action action="new_map_from_user_templates" mandatory="true"/>
+					<ribbon_action action="EncryptedMap" mandatory="true"/>					
+					<ribbon_action action="RevertAction" mandatory="true"/>	
 				</entry_group>
 			</primary_entry>
 			<primary_entry name="open">
 			    <entry_group name="open">
-			        <ribbon_action action="OpenAction" accelerator="control O" />
-					<ribbon_action action="OpenURLMapAction" />			        
+			        <ribbon_action action="OpenAction" accelerator="control O" mandatory="true" />
+					<ribbon_action action="OpenURLMapAction" mandatory="true" />			        
 			    </entry_group>
 			</primary_entry>
 			<primary_entry name="save">
@@ -56,39 +56,39 @@
 					<ribbon_action action="PrintAction" accelerator="control P" />
 				</entry_group>
 			</primary_entry>
-			<primary_entry action="OpenUserDirAction" />
-			<primary_entry action="PropertyAction" />
-			<primary_entry action="show_jabref_preferences" />
-			<primary_entry action="AboutAction"/> 
-			<primary_entry action="UpdateCheckAction" /> 
+			<primary_entry action="OpenUserDirAction" mandatory="true"/>
+			<primary_entry action="PropertyAction" mandatory="true"/>
+			<primary_entry action="show_jabref_preferences" mandatory="true"/>
+			<primary_entry action="AboutAction" mandatory="true"/> 
+			<primary_entry action="UpdateCheckAction" mandatory="true"/> 
 			<primary_entry name="help">
 			    <entry_group name="help">					
-					<ribbon_action action="GettingStartedAction" accelerator="F1" />
-					<ribbon_action action="DocumentationAction" />	
-					<ribbon_action action="OnlineReference" />	
-					<ribbon_action action="HotKeyInfoAction"/>  
+					<ribbon_action action="GettingStartedAction" accelerator="F1" mandatory="true"/>
+					<ribbon_action action="DocumentationAction" mandatory="true"/>	
+					<ribbon_action action="OnlineReference" mandatory="true"/>	
+					<ribbon_action action="HotKeyInfoAction" mandatory="true"/>  
 				</entry_group>
 			</primary_entry>
 			<primary_entry name="web_resources">
 				<entry_group name="web_resources">				    
-					<ribbon_action action="OpenFreeplaneSiteAction" />
-					<ribbon_action action="AskForHelp" />
-					<ribbon_action action="ReportBugAction" />
-					<ribbon_action action="RequestFeatureAction" />
+					<ribbon_action action="OpenFreeplaneSiteAction" mandatory="true"/>
+					<ribbon_action action="AskForHelp" mandatory="true"/>
+					<ribbon_action action="ReportBugAction" mandatory="true"/>
+					<ribbon_action action="RequestFeatureAction" mandatory="true"/>
 				</entry_group>			    
 			</primary_entry>					
-			<footer_entry action="CloseAction" accelerator="control W" />
-			<footer_entry action="QuitAction" />			
+			<footer_entry action="CloseAction" accelerator="control W" mandatory="true"/>
+			<footer_entry action="QuitAction" mandatory="true"/>			
 		</ribbon_menu>		
 		
 		<!-- HOME -->
  		<ribbon_task name="home" orderPriority="first">
 		   <ribbon_band name="basics" resize_policies="Mirror">
-				<ribbon_action action="NewMapAction" accelerator="control N" >
-                    <ribbon_action action="EncryptedMap" /> 
+				<ribbon_action action="NewMapAction" accelerator="control N" mandatory="true" >
+                    <ribbon_action action="EncryptedMap" mandatory="true"/> 
                 </ribbon_action>
-                <ribbon_action action="OpenAction" accelerator="control O" >
-                    <ribbon_action action="OpenURLMapAction" />     
+                <ribbon_action action="OpenAction" accelerator="control O" mandatory="true">
+                    <ribbon_action action="OpenURLMapAction" mandatory="true"/>     
                 </ribbon_action>
                 <ribbon_action action="SaveAction" accelerator="control S" >
                     <ribbon_action action="SaveAsAction" accelerator="control shift S" />
@@ -514,19 +514,19 @@
 		<!-- HELP -->
 		<ribbon_task name="help" orderPriority="last">
 			<ribbon_band name="help_misc" resize_policies="Mirror" orderPriority="0">
-                <ribbon_action action="OpenUserDirAction" priority="top"/>
-				<!--ribbon_action name="Open log files" /-->
-				<ribbon_action action="UpdateCheckAction" priority="top" />
-				<ribbon_action action="PropertyAction" accelerator="control COMMA" priority="top" />
+                <ribbon_action action="OpenUserDirAction" priority="top" mandatory="true"/>
+				<!--ribbon_action name="Open log files" mandatory="true" /-->
+				<ribbon_action action="UpdateCheckAction" priority="top" mandatory="true"/>
+				<ribbon_action action="PropertyAction" accelerator="control COMMA" priority="top" mandatory="true"/>
 			</ribbon_band>			
 			<ribbon_band name="contact" resize_policies="Mirror" orderPriority="2000">				
-				<ribbon_action action="AskForHelp" />
-				<ribbon_action action="RequestFeatureAction" />
-				<ribbon_action action="ReportBugAction" />
+				<ribbon_action action="AskForHelp" mandatory="true"/>
+				<ribbon_action action="RequestFeatureAction" mandatory="true"/>
+				<ribbon_action action="ReportBugAction" mandatory="true"/>
 			</ribbon_band>
 			<ribbon_band name="about" resize_policies="Mirror" orderPriority="last" >
-				<ribbon_action action="OpenFreeplaneSiteAction" priority="top" />
-				<ribbon_action action="AboutAction" priority="top"/>
+				<ribbon_action action="OpenFreeplaneSiteAction" priority="top" mandatory="true"/>
+				<ribbon_action action="AboutAction" priority="top" mandatory="true"/>
 			</ribbon_band>
 		</ribbon_task>	
 		

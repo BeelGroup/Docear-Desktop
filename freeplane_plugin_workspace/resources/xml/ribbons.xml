@@ -4,12 +4,12 @@
 	<menu_category name="ribbon">
 		<ribbon_task name="project" orderPriority="3000">
 			<ribbon_band name="main" resize_policies="Mirror" >
-				<ribbon_action action="workspace.action.project.new" priority="TOP" />
-				<ribbon_action action="workspace.action.project.import" />
+				<ribbon_action action="workspace.action.project.new" priority="TOP" mandatory="true" />
+				<ribbon_action action="workspace.action.project.import" mandatory="true"/>
 		
-				<ribbon_action action="workspace.action.project.remove" />
-				<ribbon_action action="workspace.action.node.rename" />
-				<ribbon_action action="workspace.action.node.open.location" priority="Top" />
+				<ribbon_action action="workspace.action.project.remove" mandatory="true"/>
+				<ribbon_action action="workspace.action.node.rename" mandatory="true"/>
+				<ribbon_action action="workspace.action.node.open.location" priority="Top" mandatory="true"/>
 				
 				<!--ribbon_action name="Show recommendations" priority="TOP" / -->
 			</ribbon_band>

@@ -3,15 +3,15 @@
 	<menu_category name="ribbon">
 		<ribbon_task name="help">
 		    <ribbon_band name="licences" resize_policies="Mirror" orderPriority="1000">
-				<ribbon_action action="GPLPanelAction" />
-				<ribbon_action action="DataPrivacyPanelAction" />
-				<ribbon_action action="TOSPanelAction" priority="top" />
-				<ribbon_action action="DataProcessingPanelAction" />
+				<ribbon_action action="GPLPanelAction" mandatory="true"/>
+				<ribbon_action action="DataPrivacyPanelAction" mandatory="true"/>
+				<ribbon_action action="TOSPanelAction" priority="top" mandatory="true"/>
+				<ribbon_action action="DataProcessingPanelAction" mandatory="true"/>
 			</ribbon_band>
 			<ribbon_band name="contact" resize_policies="Mirror" orderPriority="2000">
-			    <ribbon_action action="ContactAction" priority="top" />
-				<ribbon_action action="ManualAction" priority="top"/>
-				<ribbon_action action="FAQAction" priority="top"/>
+			    <ribbon_action action="ContactAction" priority="top" mandatory="true"/>
+				<ribbon_action action="ManualAction" priority="top" mandatory="true"/>
+				<ribbon_action action="FAQAction" priority="top" mandatory="true"/>
 				<!--ribbon_action name="Videos" /-->								
 			</ribbon_band>
 		</ribbon_task>

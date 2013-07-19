@@ -46,6 +46,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 	public static final String ACTION_KEY_PROPERTY = "ACTION_KEY";
 	public static final String ACTION_NAME_PROPERTY = "ACTION_NAME";
 	public static final String ACTION_CHANGE_LISTENER = "ACTION_CHANGE_LISTENER";
+	public static final String MANDATORY_PROPERTY = "MANDATORY";
 	
 	private final RibbonBuilder builder;
 	private ActionAcceleratorChangeListener changeListener;
@@ -264,12 +265,17 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 			
 			public void contribute(RibbonBuildContext context, ARibbonContributor parent) {			
 				final String actionKey = attributes.getProperty("action");
+				final boolean mandatory = Boolean.parseBoolean(attributes.getProperty("mandatory", "false").toLowerCase());
 				ChildProperties childProps = new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", "")));
 				childProps.set(RibbonElementPriority.class, getPriority(attributes.getProperty("priority", "medium")));
 				
 				if(actionKey != null) {
 					AFreeplaneAction action = context.getBuilder().getMode().getAction(actionKey);
+					
 					if(action != null) {
+						if(mandatory) {
+							action.putValue(MANDATORY_PROPERTY, mandatory);
+						}
 						AbstractCommandButton button;
 						if(isSelectionListener(action)) {
 							button = createCommandToggleButton(action);
@@ -495,8 +501,10 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 				updateActionState(action, button);
 			}
 			else if(state.allMapsClosed()) {
-				action.setEnabled(false);
-				button.setEnabled(false);
+				if (action.getValue(MANDATORY_PROPERTY) == null) {
+					action.setEnabled(false);
+					button.setEnabled(false);
+				}
 			}
 			else {
 				action.setEnabled(true);

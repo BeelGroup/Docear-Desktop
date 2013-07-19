@@ -26,16 +26,16 @@
 				</ribbon_action>
 			</ribbon_band>
 			<ribbon_band name="reference_settings" resize_policies="Mirror">
-				<ribbon_action action="ChangeBibtexDatabaseAction" priority="TOP" />				
+				<ribbon_action action="ChangeBibtexDatabaseAction" priority="TOP" mandatory="true"/>				
 				<ribbon_action action="ShowAllAttributesAction" />
 				<ribbon_action action="HideAllAttributesAction" />
-				<ribbon_action action="show_jabref_preferences" />
+				<ribbon_action action="show_jabref_preferences" mandatory="true"/>
 			</ribbon_band>
 		</ribbon_task>
 		
 		<ribbon_task name="project" orderPriority="3000">
 			<ribbon_band name="main" resize_policies="Mirror">
-			    <ribbon_action action="ChangeBibtexDatabaseAction" priority="TOP" />
+			    <ribbon_action action="ChangeBibtexDatabaseAction" priority="TOP" mandatory="true" />
 			</ribbon_band>
 		</ribbon_task>
 	</menu_category>

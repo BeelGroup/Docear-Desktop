@@ -39,7 +39,7 @@ public abstract class AFreeplaneAction extends AbstractAction implements IFreepl
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;	
 
 	static public boolean checkEnabledOnChange(final AFreeplaneAction action) {
 		final EnabledAction annotation = action.getClass().getAnnotation(EnabledAction.class);
@@ -75,6 +75,7 @@ public abstract class AFreeplaneAction extends AbstractAction implements IFreepl
 
 	final private String key;
 	private boolean selected = false;
+	private boolean alwaysEnabled = false;
 	
 	static private Map<String, ImageIcon> iconCache = new HashMap<String, ImageIcon>();
 
@@ -158,6 +159,14 @@ public abstract class AFreeplaneAction extends AbstractAction implements IFreepl
 
 	public boolean isSelected() {
 		return selected;
+	}
+	
+	public void setAlwaysEnabled(boolean alwaysEnabled) {
+		this.alwaysEnabled = alwaysEnabled;
+	}
+	
+	public boolean isAlwaysEnabled() {
+		return this.alwaysEnabled;
 	}
 
 	public void setEnabled() {
