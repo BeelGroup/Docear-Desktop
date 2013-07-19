@@ -285,7 +285,7 @@ public class RibbonAcceleratorManager implements IKeyStrokeProcessor, IAccelerat
 	public boolean processKeyBinding(KeyStroke ks, KeyEvent event, int condition, boolean pressed, boolean consumed) {
 		if (!consumed && condition == JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT) {
 			AFreeplaneAction action = accelerators.get(ks);
-			if(action != null) {
+			if(action != null && action.isEnabled()) {
 				if(action != null && SwingUtilities.notifyAction(action, ks, event, event.getComponent(), event.getModifiers())) {
 					return true;
 				}

@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 
 import org.docear.plugin.core.ui.MultiLineActionLabel;
 import org.docear.plugin.pdfutilities.pdf.PdfReaderFileFilter;
+import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.Controller;
@@ -18,6 +19,7 @@ import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
+import javax.swing.JCheckBox;
 
 public class ViewerSettingsChangeErrorDialog extends JPanel {
 
@@ -34,6 +36,8 @@ public class ViewerSettingsChangeErrorDialog extends JPanel {
 				FormFactory.RELATED_GAP_COLSPEC,
 				ColumnSpec.decode("default:grow"),},
 			new RowSpec[] {
+				FormFactory.RELATED_GAP_ROWSPEC,
+				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
@@ -59,6 +63,7 @@ public class ViewerSettingsChangeErrorDialog extends JPanel {
 		});
 		
 		add(lbl, "2, 6");
+		
 		link.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent e) {
@@ -74,12 +79,23 @@ public class ViewerSettingsChangeErrorDialog extends JPanel {
 					try {
 						Controller.getCurrentController().getViewController().openDocument(URI.create("http://www.docear.org/support/user-manual/"+anchor));
 					}
-					catch (IOException ex) {						
+					catch (IOException ex) {
 						LogUtils.warn(ex);
 					}
 				}
 			}
 		});
-
+		
+		final JCheckBox chckbxNeverAskAgain = new JCheckBox(TextUtils.getText("docear.validate_pdf_xchange.settings_change_error.never_show_again"));
+		add(chckbxNeverAskAgain, "2, 8");
+		chckbxNeverAskAgain.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ResourceController.getResourceController().setProperty("docear.pdfxc.settings.error.never_show_again", chckbxNeverAskAgain.isSelected());
+			}
+		});
+	}
+	
+	public static boolean showWarningEnabled() {
+		return !Boolean.parseBoolean(ResourceController.getResourceController().getProperty("docear.pdfxc.settings.error.never_show_again", "false"));
 	}
 }

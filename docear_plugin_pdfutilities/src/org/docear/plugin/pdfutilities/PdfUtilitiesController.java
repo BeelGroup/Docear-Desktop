@@ -27,7 +27,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -255,9 +257,9 @@ public class PdfUtilitiesController extends ALanguageController {
 	}
 
 	public void showViewerSelectionIfNecessary(boolean force) {
-		List<PDFReaderHandle> readers = getPdfViewers();		
+		List<PDFReaderHandle> readers = getPdfViewers();
 		Boolean showReaderDialog = showReaderDialogNewPdfReader(readers);
-		if (showReaderDialog != null || force) {
+		if (force || showReaderDialog != null) {
 			InstalledPdfReadersDialog dialog = new InstalledPdfReadersDialog(readers.toArray(new PDFReaderHandle[] {}), showReaderDialog);
 
 			if (JOptionPane.showConfirmDialog(UITools.getFrame(), dialog, TextUtils.getText("docear.validate_pdf_xchange.headline"), JOptionPane.OK_CANCEL_OPTION)  == JOptionPane.OK_OPTION) {
@@ -298,12 +300,16 @@ public class PdfUtilitiesController extends ALanguageController {
 				}
 				
 				try {
-					if (!hasCompatibleSettings(reader.getExecFile())) {					
-						JOptionPane.showMessageDialog(UITools.getFrame(), new ViewerSettingsChangeErrorDialog(reader.getExecFile()), TextUtils.getText("docear.validate_pdf_xchange.settings_change_error.title"), JOptionPane.WARNING_MESSAGE);
+					if (!hasCompatibleSettings(reader.getExecFile())) {
+						if(ViewerSettingsChangeErrorDialog.showWarningEnabled()) {
+							JOptionPane.showMessageDialog(UITools.getFrame(), new ViewerSettingsChangeErrorDialog(reader.getExecFile()), TextUtils.getText("docear.validate_pdf_xchange.settings_change_error.title"), JOptionPane.WARNING_MESSAGE);
+						}
 					}
 				}
 				catch (IOException e) {
-					JOptionPane.showMessageDialog(UITools.getFrame(), new ViewerSettingsChangeErrorDialog(reader.getExecFile()), TextUtils.getText("docear.validate_pdf_xchange.headline"), JOptionPane.WARNING_MESSAGE);
+					if(ViewerSettingsChangeErrorDialog.showWarningEnabled()) {
+						JOptionPane.showMessageDialog(UITools.getFrame(), new ViewerSettingsChangeErrorDialog(reader.getExecFile()), TextUtils.getText("docear.validate_pdf_xchange.headline"), JOptionPane.WARNING_MESSAGE);
+					}
 				}		
 			}
 			else {
@@ -487,6 +493,49 @@ public class PdfUtilitiesController extends ALanguageController {
 		return handles;
 	}
 
+	private void getPdfViewersByExt() {
+		try {
+			//HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\.pdf\\(default)
+			Set<Entry<String, Object>> entries = WinRegistry.getKeyValues(WinRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Classes\\.pdf");
+			for (Entry<String, Object> entry : entries) {
+				if(entry.getKey().trim().length() == 0) {
+					//HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\{ProgId}\\shell\\open\\command\\(default)
+					String exec = stripPath(WinRegistry.readString(WinRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Classes\\"+entry.getValue()+"\\shell\\open\\command\\", ""));
+					//HKEY_CURRENT_USER\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\MuiCache\\{progPath}
+					String friendlyName = WinRegistry.readString(WinRegistry.HKEY_CURRENT_USER, "Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\MuiCache", exec);
+					LogUtils.info(friendlyName+": "+exec);
+				}
+			}
+			//HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\.pdf\\OpenWithList\\{appName}\\
+			for(String appName : WinRegistry.readStringSubKeys(WinRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Classes\\.pdf\\OpenWithList")) {
+				//HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\Applications\\{appName}\\FriendlyAppName
+				String friendlyName = WinRegistry.readString(WinRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Classes\\Applications\\"+appName, "FriendlyAppName");
+				//HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\Applications\\{appName}\\shell\\open\\command\\
+				String exec = stripPath(WinRegistry.readString(WinRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Classes\\Applications\\"+appName+"\\shell\\open\\command\\", ""));
+				LogUtils.info(friendlyName+": "+exec);
+			}
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private String stripPath(String openPath) {
+		if(openPath != null) {
+			int i = openPath.indexOf("\"");
+			if(i > -1) {
+				openPath = openPath.substring(i+1);
+				i = openPath.indexOf("\"");
+				if(i > -1) {
+					openPath = openPath.substring(0, i); 
+					
+				}
+			}
+			return openPath;
+		}
+		return null;
+	}
+
 	private void checkForDefaultReader(List<PDFReaderHandle> handles) {
 		if (!Compat.isWindowsOS()) {
 			return;
@@ -579,7 +628,7 @@ public class PdfUtilitiesController extends ALanguageController {
 		String viewerCommand = Controller.getCurrentController().getResourceController().getProperty(OPEN_ON_PAGE_READER_COMMAND_KEY);
 		if (viewerCommand != null) {
 			try {
-				if (!hasCompatibleSettings(viewerCommand)) {
+				if (!hasCompatibleSettings(viewerCommand) && ViewerSettingsChangeErrorDialog.showWarningEnabled()) {
 					return false;
 				}
 			}
@@ -1060,9 +1109,8 @@ public class PdfUtilitiesController extends ALanguageController {
 //				}
 			}
 		});
-		//WORKSPACE - todo: adjust to new initiation process
-				showViewerSelectionIfNecessary();				
-				
+		showViewerSelectionIfNecessary();
+		
 		WorkspaceController.getCurrentModel().addWorldModelListener(new DefaultWorkspaceModelListener());
 
 		modeController.getMapController().addNodeChangeListener(new PdfNodeChangeListener());		
@@ -1124,28 +1172,6 @@ public class PdfUtilitiesController extends ALanguageController {
 		if (preferences == null) throw new RuntimeException("cannot open docear.pdf_utilities plugin preferences"); //$NON-NLS-1$
 
 		((MModeController)modeController).getOptionPanelBuilder().load(preferences);
-		//DOCEAR - todo: Does not work, because the properties are set in an extra dialog with the validator still using the old values
-//		Controller.getCurrentController().addOptionValidator(new IValidator() {
-//			
-//			public ValidationResult validate(Properties properties) {
-//				ValidationResult result = new ValidationResult();
-//				boolean openOnPageActivated = Boolean.parseBoolean(properties.getProperty(OPEN_PDF_VIEWER_ON_PAGE_KEY));
-//				if (openOnPageActivated) {					
-//					String readerCommand = properties.getProperty(OPEN_ON_PAGE_READER_COMMAND_KEY, "").trim(); //$NON-NLS-1$
-//					if (readerCommand != null && !readerCommand.isEmpty()) {						
-//						if (!readerFilter.isPdfXChange(readerCommand) && !readerFilter.isFoxit(readerCommand) && !readerFilter.isAdobe(readerCommand)) {
-//							result.addWarning(TextUtils.getText(OPEN_ON_PAGE_WARNING_KEY));
-//						}
-//					}
-//					else if (readerCommand == null || readerCommand.trim().length() == 0) {
-//						result.addError(TextUtils.getText(OPEN_ON_PAGE_ERROR_KEY));						
-//						return result;
-//					}					
-//				}
-//				return result;
-//			}
-//
-//		});
 	}
 
 	public void importRegistrySettings(URL regResource) throws IOException {
@@ -1285,7 +1311,6 @@ public class PdfUtilitiesController extends ALanguageController {
 			LogUtils.warn("org.docear.plugin.pdfutilities.PdfUtilitiesController.hasCompatibleSettings(): " + e.getMessage());
 			throw new IOException("Could not validate PDF-X-Change Viewer settings!");
 		}
-
 		return false;
 	}	
 	
