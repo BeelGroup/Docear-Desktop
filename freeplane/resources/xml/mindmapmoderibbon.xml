@@ -160,9 +160,8 @@
 					<ribbon_action action="RemoveIcon_0_Action" />
 					<ribbon_action action="RemoveIconAction" />
 				</ribbon_action>
-				<ribbon_action action="CloudAction" >
-					<ribbon_action action="CloudColorAction" />
-				</ribbon_action>
+				<ribbon_action action="CloudAction" />
+				<ribbon_action action="CloudColorAction" />				
 				<ribbon_action action="EditNoteInDialogAction" >
 					<ribbon_action action="RemoveNoteAction" />
 				</ribbon_action>
@@ -266,9 +265,8 @@
 			</ribbon_band>
 			<ribbon_band name="icons" resize_policies="Mirror">
                 <ribbon_action action="IconSelectionPlugin" />
-			    <ribbon_action action="HierarchicalIconsAction" >
-    				<ribbon_action action="HierarchicalIcons2Action" />				
-                </ribbon_action>
+			    <ribbon_action action="HierarchicalIconsAction" />
+    			<ribbon_action action="HierarchicalIcons2Action" />
 				<ribbon_action action="RemoveAllIconsAction">
     				<ribbon_action action="RemoveIcon_0_Action" />
 	    			<ribbon_action action="RemoveIconAction" />
@@ -329,7 +327,7 @@
 				<ribbon_action action="FormatPaste" accelerator="alt shift V" priority="medium" />
 
                 <ribbon_action name="automatic_layout">
-				    <ribbon_action action="AutomaticLayoutControllerAction.HEADINGS" >
+				    <ribbon_action action="AutomaticLayoutControllerAction.HEADINGS" />
 					<ribbon_action action="AutomaticLayoutControllerAction.ALL" />
 					<ribbon_action action="AutomaticLayoutControllerAction.null" />
 				</ribbon_action>
