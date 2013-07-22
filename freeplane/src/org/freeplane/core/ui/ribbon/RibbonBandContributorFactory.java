@@ -16,70 +16,66 @@ public class RibbonBandContributorFactory implements IRibbonContributorFactory {
 
 	public ARibbonContributor getContributor(final Properties attributes) {
 		return new ARibbonContributor() {
-			
+
 			private JRibbonBand band;
 			private boolean valid = false;
+
 			public String getKey() {
 				return attributes.getProperty("name");
 			}
-			
+
 			public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
-				if(parent == null) {
+				if (parent == null) {
 					return;
 				}
-				band = new JRibbonBand(TextUtils.getText("ribbon.band."+attributes.getProperty("name")), null);
-    			//read policies and sub-contributions
-    			context.processChildren(context.getCurrentPath(), this);
-    			setResizePolicies(attributes.getProperty("resize_policies"));
-    			if(valid) {
-    				parent.addChild(band, new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", ""))));
-    			}
-				
+				band = new JRibbonBand(TextUtils.getText("ribbon.band." + attributes.getProperty("name")), null);
+				// read policies and sub-contributions
+				context.processChildren(context.getCurrentPath(), this);
+				setResizePolicies(attributes.getProperty("resize_policies"));
+				band.setFocusable(false);
+				if (valid) {
+					parent.addChild(band, new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", ""))));
+				}
+
 			}
-			
+
 			public void addChild(Object child, ChildProperties properties) {
-				if(child instanceof AbstractCommandButton) {
+				if (child instanceof AbstractCommandButton) {
 					RibbonElementPriority priority = properties.get(RibbonElementPriority.class);
-					if(priority == null) {
+					if (priority == null) {
 						priority = RibbonElementPriority.TOP;
 					}
 					band.addCommandButton((AbstractCommandButton) child, priority);
 					valid = true;
 				}
-				
+
 			}
-			
+
 			private void setResizePolicies(String policiesString) {
-				if(policiesString != null) {
+				if (policiesString != null) {
 					String[] tokens = policiesString.split(",");
 					List<RibbonBandResizePolicy> policyList = new ArrayList<RibbonBandResizePolicy>();
 					for (String policyStr : tokens) {
-						if("none".equals(policyStr.toLowerCase().trim())) {
+						if ("none".equals(policyStr.toLowerCase().trim())) {
 							policyList.add(new CoreRibbonResizePolicies.None(band.getControlPanel()));
-						}
-						else if("mirror".equals(policyStr.toLowerCase().trim())) {
+						} else if ("mirror".equals(policyStr.toLowerCase().trim())) {
 							policyList.add(new CoreRibbonResizePolicies.Mirror(band.getControlPanel()));
-						}
-						else if("high2low".equals(policyStr.toLowerCase().trim())) {
+						} else if ("high2low".equals(policyStr.toLowerCase().trim())) {
 							policyList.add(new CoreRibbonResizePolicies.High2Low(band.getControlPanel()));
-						}
-						else if("high2mid".equals(policyStr.toLowerCase().trim())) {
+						} else if ("high2mid".equals(policyStr.toLowerCase().trim())) {
 							policyList.add(new CoreRibbonResizePolicies.High2Mid(band.getControlPanel()));
-						}
-						else if("mid2low".equals(policyStr.toLowerCase().trim())) {
+						} else if ("mid2low".equals(policyStr.toLowerCase().trim())) {
 							policyList.add(new CoreRibbonResizePolicies.Mid2Low(band.getControlPanel()));
-						}
-						else if("mid2mid".equals(policyStr.toLowerCase().trim())) {
+						} else if ("mid2mid".equals(policyStr.toLowerCase().trim())) {
 							policyList.add(new CoreRibbonResizePolicies.Mid2Mid(band.getControlPanel()));
-						}
-						else if("low2mid".equals(policyStr.toLowerCase().trim())) {
+						} else if ("low2mid".equals(policyStr.toLowerCase().trim())) {
 							policyList.add(new CoreRibbonResizePolicies.Low2Mid(band.getControlPanel()));
-						}	
+						}
 					}
 					policyList.add(new IconRibbonBandResizePolicy(band.getControlPanel()));
 					band.setResizePolicies(policyList);
 				}
-					
+
 			}
 		};
 	}
