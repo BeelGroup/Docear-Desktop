@@ -180,6 +180,10 @@ public class AccelerateableAction implements IFreeplaneAction {
 	public static JDialog getAcceleratorOnNextClickActionDialog() {
 		return setAcceleratorOnNextClickActionDialog;
 	}
+	
+	public static KeyStroke getAcceleratorForNextClick() {
+		return acceleratorForNextClickedAction;
+	}
 
 	public void addPropertyChangeListener(final PropertyChangeListener listener) {
 		originalAction.addPropertyChangeListener(listener);
