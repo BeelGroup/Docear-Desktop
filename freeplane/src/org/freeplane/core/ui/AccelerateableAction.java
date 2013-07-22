@@ -127,7 +127,7 @@ public class AccelerateableAction implements IFreeplaneAction {
     private static JDialog setAcceleratorOnNextClickActionDialog;
     private static KeyStroke acceleratorForNextClickedAction;
 
-	static boolean isNewAcceleratorOnNextClickEnabled() {
+	public static boolean isNewAcceleratorOnNextClickEnabled() {
 		return setAcceleratorOnNextClickActionDialog != null;
 	}
 
@@ -144,14 +144,14 @@ public class AccelerateableAction implements IFreeplaneAction {
 			text = TextUtils.format("SetAccelerator.keystrokeDetected", toString(accelerator)) + "\n" + text;
 		final Frame frame = Controller.getCurrentController().getViewController().getFrame();
 		setAcceleratorOnNextClickActionDialog = UITools.createCancelDialog(frame, title, text);
-		setAcceleratorOnNextClickActionDialog.addComponentListener(new ComponentAdapter() {
+		getAcceleratorOnNextClickActionDialog().addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentHidden(final ComponentEvent e) {
 				setAcceleratorOnNextClickActionDialog = null;
 				acceleratorForNextClickedAction = null;
 			}
 		});
-		setAcceleratorOnNextClickActionDialog.setVisible(true);
+		getAcceleratorOnNextClickActionDialog().setVisible(true);
 	}
 
 	public AccelerateableAction(final MenuBuilder menuBuilder, final AFreeplaneAction originalAction) {
@@ -164,7 +164,7 @@ public class AccelerateableAction implements IFreeplaneAction {
 		final boolean newAcceleratorOnNextClickEnabled = AccelerateableAction.isNewAcceleratorOnNextClickEnabled();
 		final KeyStroke newAccelerator = acceleratorForNextClickedAction;
 		if (newAcceleratorOnNextClickEnabled) {
-			setAcceleratorOnNextClickActionDialog.setVisible(false);
+			getAcceleratorOnNextClickActionDialog().setVisible(false);
 		}
 		final Object source = e.getSource();
 		if ((newAcceleratorOnNextClickEnabled || 0 != (e.getModifiers() & ActionEvent.CTRL_MASK))
@@ -175,6 +175,10 @@ public class AccelerateableAction implements IFreeplaneAction {
 			return;
 		}
 		originalAction.actionPerformed(e);
+	}
+	
+	public static JDialog getAcceleratorOnNextClickActionDialog() {
+		return setAcceleratorOnNextClickActionDialog;
 	}
 
 	public void addPropertyChangeListener(final PropertyChangeListener listener) {
