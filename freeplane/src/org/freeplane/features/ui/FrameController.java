@@ -53,6 +53,7 @@ import javax.swing.JPanel;
 import javax.swing.RootPaneContainer;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.basic.BasicComboBoxEditor;
 import javax.swing.plaf.metal.MetalFileChooserUI;
 
@@ -536,22 +537,15 @@ abstract public class FrameController implements ViewController {
 			else {
 				LookAndFeelInfo[] lafInfos = UIManager.getInstalledLookAndFeels();
 				boolean setLnF = false;
-				for(LookAndFeelInfo lafInfo : lafInfos){
-					if(lafInfo.getName().equalsIgnoreCase(lookAndFeel)){										
-						UIManager.setLookAndFeel(lafInfo.getClassName());						
-						Controller.getCurrentController().getResourceController().setProperty("lookandfeel", lafInfo.getClassName());
-						setLnF = true;
-						break;										
-					}
-					if(lafInfo.getClassName().equals(lookAndFeel)){
-						UIManager.setLookAndFeel(lafInfo.getClassName());
-						setLnF = true;
-						break;
-					}
-				}
+				setLnF = setLookAndFeel(lookAndFeel, lafInfos);
 				if(!setLnF){
-					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-					Controller.getCurrentController().getResourceController().setProperty("lookandfeel", "default");
+					if (!"freeplane".equals(Controller.getCurrentController().getResourceController().getProperty("ApplicationName", "freeplane").toLowerCase())) {
+						setLookAndFeel("nimbus", lafInfos);
+					}
+					else {
+						UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+						Controller.getCurrentController().getResourceController().setProperty("lookandfeel", "default");
+					}
 				}
 			}
 		}
@@ -574,6 +568,25 @@ abstract public class FrameController implements ViewController {
 			catch (Throwable t1){
 			}
 		}
+	}
+
+	private static boolean setLookAndFeel(final String lookAndFeel, LookAndFeelInfo[] lafInfos) throws ClassNotFoundException,
+			InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
+		boolean setLnF = false;
+		for(LookAndFeelInfo lafInfo : lafInfos){
+			if(lafInfo.getName().equalsIgnoreCase(lookAndFeel)){										
+				UIManager.setLookAndFeel(lafInfo.getClassName());						
+				Controller.getCurrentController().getResourceController().setProperty("lookandfeel", lafInfo.getClassName());
+				setLnF = true;
+				break;										
+			}
+			if(lafInfo.getClassName().equals(lookAndFeel)){
+				UIManager.setLookAndFeel(lafInfo.getClassName());
+				setLnF = true;
+				break;
+			}
+		}
+		return setLnF;
 	}
 
 	public void addObjectTypeInfo(Object value) {
