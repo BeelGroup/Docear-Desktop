@@ -281,13 +281,16 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 						AbstractCommandButton button;
 						if(isSelectionListener(action)) {
 							button = createCommandToggleButton(action);
+							if (context.hasChildren(context.getCurrentPath())) {
+								LogUtils.severe("RibbonActionContributorFactory.getContributor(): can't add popup menu to toggle button for action: "+context.getCurrentPath().toString());
+							}
 						}
 						else {
 							button = createCommandButton(action);
 							if(context.hasChildren(context.getCurrentPath())) {
 								StructurePath path = context.getCurrentPath();
-								((JCommandButton)button).setCommandButtonKind(CommandButtonKind.ACTION_AND_POPUP_MAIN_ACTION);
 								((JCommandButton)button).setPopupCallback(getPopupPanelCallBack(path, context));
+								((JCommandButton)button).setCommandButtonKind(CommandButtonKind.ACTION_AND_POPUP_MAIN_ACTION);								
 								KeyStroke ks = context.getBuilder().getAcceleratorManager().getAccelerator(actionKey);
 								updateRichTooltip(button, action, ks);
 								updateActionState(action, button);
@@ -314,8 +317,8 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 						updateRichTooltip(button, action, null);
 						if(context.hasChildren(context.getCurrentPath())) {
 							StructurePath path = context.getCurrentPath();
-							button.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
 							button.setPopupCallback(getPopupPanelCallBack(path, context));
+							button.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
 						}
 						parent.addChild(button, childProps);
 					}
@@ -364,8 +367,8 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 								
 								if(button instanceof JCommandButton) {
 									if(((JCommandButton) button).getPopupCallback() != null) {
-										((JCommandMenuButton)menuButton).setCommandButtonKind(((JCommandButton) button).getCommandButtonKind());
 										((JCommandMenuButton)menuButton).setPopupCallback(((JCommandButton) button).getPopupCallback());
+										((JCommandMenuButton)menuButton).setCommandButtonKind(((JCommandButton) button).getCommandButtonKind());										
 									}
 								}
 								//clear all RibbonActionListeners from the menuButton
