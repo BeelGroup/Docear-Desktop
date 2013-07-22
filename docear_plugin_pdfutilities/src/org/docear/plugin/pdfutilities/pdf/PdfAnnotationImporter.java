@@ -225,17 +225,26 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		try {
 			List<APDMetaObject> metaObjects = extractor.getMetaObjects();
 			this.modifiedDocument = extractor.isDocumentModified() || this.modifiedDocument;
-			for (APDMetaObject meta : metaObjects) {
-				AnnotationModel annotation = new AnnotationModel(meta.getUID());
-				transferMetaObject(meta, annotation);
-				annotations.add(annotation);
-			}
+			importBookmarksRecursive(annotations, metaObjects);
 		}
 		finally {
 			extractor.resetAll();
 		}
 		
 	}
+
+	private void importBookmarksRecursive(List<AnnotationModel> annotations, List<APDMetaObject> metaObjects) {
+		for (APDMetaObject meta : metaObjects) {
+			AnnotationModel annotation = new AnnotationModel(meta.getUID());
+			transferMetaObject(meta, annotation);
+			annotations.add(annotation);
+			if(meta.hasChildren()) {
+				importBookmarksRecursive(annotations, meta.getChildren());
+			}
+		}
+	}
+	
+	
 	
 	private void transferMetaObject(APDMetaObject meta, AnnotationModel annotation) {
 		
