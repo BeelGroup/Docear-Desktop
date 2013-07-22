@@ -55,6 +55,7 @@ import org.freeplane.features.url.UrlManager;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.features.WorkspaceMapModelExtension;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.view.swing.map.NodeView;
 
 public class JabRefAttributes {
@@ -117,14 +118,18 @@ public class JabRefAttributes {
 		NodeModel node = Controller.getCurrentModeController().getMapController().getSelectedNode();
 		try {
 			WorkspaceMapModelExtension mapExt = WorkspaceController.getMapModelExtension(node.getMap());
-			JabRefProjectExtension ext = (JabRefProjectExtension) mapExt.getProject().getExtensions(JabRefProjectExtension.class);
-
-			setReferenceToNode(new Reference(ext.getBaseHandle().getBasePanel(), entry), node);
+			AWorkspaceProject project = mapExt.getProject();
+			if(project != null) {
+				JabRefProjectExtension ext = (JabRefProjectExtension) project.getExtensions(JabRefProjectExtension.class);
+				setReferenceToNode(new Reference(ext.getBaseHandle().getBasePanel(), entry), node);
+			}
+			else {
+				setReferenceToNode(new Reference(ReferencesController.getController().getJabrefWrapper().getBasePanel(), entry), node);
+			}
 		}
 		catch(Exception e) {
 			LogUtils.warn("JabRefAttributes.setReferenceToNode()");
 		}
-		//setReferenceToNode(new Reference(entry), node);
 	}
 
 	public void removeReferenceFromNode(NodeModel node) {
@@ -336,9 +341,16 @@ public class JabRefAttributes {
 		//return setReferenceToNode(new Reference(entry), node);
 		try {
 			WorkspaceMapModelExtension mapExt = WorkspaceController.getMapModelExtension(node.getMap());
-			JabRefProjectExtension ext = (JabRefProjectExtension) mapExt.getProject().getExtensions(JabRefProjectExtension.class);
-
-			return setReferenceToNode(new Reference(ext.getBaseHandle().getBasePanel(), entry), node);
+			AWorkspaceProject project = mapExt.getProject();
+			if(project != null) {
+				JabRefProjectExtension ext = (JabRefProjectExtension) project.getExtensions(JabRefProjectExtension.class);
+				return setReferenceToNode(new Reference(ext.getBaseHandle().getBasePanel(), entry), node);
+			}
+			else {
+				return setReferenceToNode(new Reference(ReferencesController.getController().getJabrefWrapper().getBasePanel(), entry), node);
+			}
+			//JabRefProjectExtension ext = (JabRefProjectExtension) mapExt.getProject().getExtensions(JabRefProjectExtension.class);
+			//return setReferenceToNode(new Reference(ext.getBaseHandle().getBasePanel(), entry), node);
 		}
 		catch(Exception e) {
 			LogUtils.warn("JabRefAttributes.setReferenceToNode(): "+e.getMessage());
