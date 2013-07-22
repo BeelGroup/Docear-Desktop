@@ -20,6 +20,7 @@ import javax.swing.KeyStroke;
 
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.AFreeplaneAction;
+import org.freeplane.core.ui.AccelerateableAction;
 import org.freeplane.core.ui.IAcceleratorChangeListener;
 import org.freeplane.core.ui.ribbon.RibbonSeparatorContributorFactory.RibbonSeparator;
 import org.freeplane.core.ui.ribbon.StructureTree.StructurePath;
@@ -84,6 +85,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 		
 //		updateRichTooltip(button, action, null);
 		button.addActionListener(new RibbonActionListener(action));
+		button.setFocusable(false);
 		return button;
 	}
 
@@ -95,6 +97,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 		
 		updateRichTooltip(button, action, null);
 		button.addActionListener(new RibbonActionListener(action));
+		button.setFocusable(false);
 		return button;
 	}
 	
@@ -106,6 +109,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 		
 		updateRichTooltip(button, action, null);
 		button.addActionListener(new RibbonActionListener(action));
+		button.setFocusable(false);
 		return button;
 	}
 	
@@ -117,6 +121,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 		
 		updateRichTooltip(button, action, null);
 		button.addActionListener(new RibbonActionListener(action));
+		button.setFocusable(false);
 		return button;
 	}
 	
@@ -128,6 +133,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 		
 		updateRichTooltip(button, action, null);
 		button.addActionListener(new RibbonActionListener(action));
+		button.setFocusable(false);
 		return button;
 	}
 	
@@ -318,6 +324,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 							button.setPopupCallback(getPopupPanelCallBack(path, context));
 							button.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
 						}
+						button.setFocusable(false);
 						parent.addChild(button, childProps);
 					}
 				}
@@ -426,15 +433,29 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 
 		public void actionPerformed(ActionEvent e) {
 			AFreeplaneAction action = Controller.getCurrentModeController().getAction(key);
-			if(action == null) {
+			
+			if(action == null || linkAccelerator(action, e)) {
 				return;
 			}
-			if ((0 != (e.getModifiers() & ActionEvent.CTRL_MASK))/*
-			        && source instanceof IKeyBindingManager && !((IKeyBindingManager) source).isKeyBindingProcessed()/**/) {
-				builder.getAcceleratorManager().newAccelerator(action, null);				
+			
+			if ((0 != (e.getModifiers() & ActionEvent.CTRL_MASK))) {
+				builder.getAcceleratorManager().newAccelerator(action, null);
 				return;
 			}
 			action.actionPerformed(e);
+		}
+
+		private boolean linkAccelerator(AFreeplaneAction action, ActionEvent e) {
+			final boolean newAcceleratorOnNextClickEnabled = AccelerateableAction.isNewAcceleratorOnNextClickEnabled();
+			if (newAcceleratorOnNextClickEnabled) {
+				AccelerateableAction.getAcceleratorOnNextClickActionDialog().setVisible(false);
+			}
+			final Object source = e.getSource();
+			if ((newAcceleratorOnNextClickEnabled || 0 != (e.getModifiers() & ActionEvent.CTRL_MASK)) && source instanceof AbstractCommandButton) {
+				builder.getAcceleratorManager().newAccelerator(action, AccelerateableAction.getAcceleratorForNextClick());
+				return true;
+			}
+			return false;
 		}
 		
 		
