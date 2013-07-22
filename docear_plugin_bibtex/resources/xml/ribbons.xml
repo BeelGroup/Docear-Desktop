@@ -11,7 +11,7 @@
 			</ribbon_band>
 		</ribbon_task>
 			
-		<ribbon_task name="references" orderPriority="1000">
+		<ribbon_task name="references" orderPriority="3000">
 			<ribbon_band name="references_main" resize_policies="Mirror">
 				<ribbon_action action="AddNewReferenceAction" priority="TOP" />
 				<ribbon_action action="AddExistingReferenceAction" priority="TOP" />

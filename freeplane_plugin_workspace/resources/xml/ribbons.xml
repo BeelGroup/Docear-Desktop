@@ -2,7 +2,7 @@
 <!-- PROJECT -->
 <menu_structure>
 	<menu_category name="ribbon">
-		<ribbon_task name="project" orderPriority="3000">
+		<ribbon_task name="project" orderPriority="1000">
 			<ribbon_band name="main" resize_policies="Mirror" >
 				<ribbon_action action="workspace.action.project.new" priority="TOP" mandatory="true" />
 				<ribbon_action action="workspace.action.project.import" mandatory="true"/>
