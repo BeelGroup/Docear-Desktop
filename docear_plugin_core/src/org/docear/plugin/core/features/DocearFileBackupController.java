@@ -13,7 +13,7 @@ import org.freeplane.features.map.MapModel;
 import org.freeplane.plugin.workspace.URIUtils;
 
 public final class DocearFileBackupController implements IFileBackupHandler {
-	public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yy-M-d-HH-mm-ss");
+	public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
 	private static IFileBackupHandler backupHandler;
 	
 	/***********************************************************************************

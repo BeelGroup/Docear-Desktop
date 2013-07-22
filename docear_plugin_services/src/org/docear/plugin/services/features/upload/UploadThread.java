@@ -17,8 +17,8 @@ public class UploadThread extends DocearThread {
 	}
 
 	public void execute() {
+		DocearLogger.info(this+" started.");
 		while (!isTerminated()) {
-			DocearLogger.info(this+" running.");
 			int backupMinutes = uploadCtrl.getUploadInterval();
 			startUpload();
 			try {
@@ -28,7 +28,7 @@ public class UploadThread extends DocearThread {
 			} catch (InterruptedException e) {
 			}
 		}
-
+		DocearLogger.info(this+" stopped.");
 	}
 
 	public void startUpload() {

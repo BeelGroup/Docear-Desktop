@@ -3,6 +3,7 @@ package org.docear.plugin.pdfutilities.features;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -127,13 +128,9 @@ public class AnnotationConverter implements IMapLifeCycleListener {
 							case BOOKMARK:
 							case BOOKMARK_WITH_URI:
 							case BOOKMARK_WITHOUT_DESTINATION:
-								for (APDMetaObject bookmark : adapter.getBookmarkExtractor().getMetaObjects()) {
-									if(bookmark instanceof Bookmark) {
-										if(bookmark.getObjectNumber() == extensionModel.getOldObjectNumber()) {
-											AnnotationController.setModel(node, cloneAnnotation(bookmark, extensionModel));
-											return;
-										}
-									}
+								APDMetaObject bookmark = findComparableBookmark(extensionModel.getOldObjectNumber(), adapter.getBookmarkExtractor().getMetaObjects());
+								if(bookmark != null) {
+									AnnotationController.setModel(node, cloneAnnotation(bookmark, extensionModel));
 								}
 								break;
 							case HIGHLIGHTED_TEXT:
@@ -141,7 +138,7 @@ public class AnnotationConverter implements IMapLifeCycleListener {
 								for (APDMetaObject annotation : adapter.getAnnotationExtractor().getMetaObjects()) {
 									if(annotation.getObjectNumber() == extensionModel.getOldObjectNumber()) {
 										AnnotationController.setModel(node, cloneAnnotation(annotation, extensionModel));
-										return;
+										break;
 									}
 								}
 								break;
@@ -156,6 +153,24 @@ public class AnnotationConverter implements IMapLifeCycleListener {
 			for(NodeModel child : node.getChildren()) {
 				convertAnnotation(child);
 			}
+		}
+
+		private APDMetaObject findComparableBookmark(int objectNumber, List<APDMetaObject> bookmarks) {
+			for (APDMetaObject bookmark : bookmarks) {
+				if(bookmark instanceof Bookmark) {
+					if(bookmark.getObjectNumber() == objectNumber) {
+						return bookmark;
+					}
+					
+					if(bookmark.hasChildren()) {
+						bookmark = findComparableBookmark(objectNumber, bookmark.getChildren());
+						if(bookmark != null) {
+							return bookmark;
+						}
+					}
+				}
+			}
+			return null;
 		}
 		
 		private PDDocument getPDDocument(File file) throws IOException, COSLoadException, COSRuntimeException {
