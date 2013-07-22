@@ -375,7 +375,7 @@ public class JabRefAttributes {
 			File f = new File(fle.getLink());
 			if (filename.equals(f.getName())) {
 				model.removeEntry(i);
-				System.out.println(oldVal + " <--> " + model.getStringRepresentation());
+				LogUtils.info(oldVal + " <--> " + model.getStringRepresentation());
 				i--;
 			}
 		}

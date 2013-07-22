@@ -106,7 +106,7 @@ public class AnnotationXmlBuilder implements IElementDOMHandler, IExtensionEleme
 					AnnotationController.registerDocumentHash(annotation.getSource(), value);
 				}
 				catch (Throwable e) {
-					System.out.println("Error ("+e.getMessage()+") for: "+annotation.getSource());
+					LogUtils.info("Error ("+e.getMessage()+") for: "+annotation.getSource());
 				}
 			}
 			

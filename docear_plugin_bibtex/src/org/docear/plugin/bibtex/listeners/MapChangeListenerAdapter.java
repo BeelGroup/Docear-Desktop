@@ -18,6 +18,7 @@ import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.features.DocearMapModelExtension;
 import org.docear.plugin.core.features.MapModificationSession;
 import org.docear.plugin.core.mindmap.MindmapUpdateController;
+import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.map.AMapChangeListenerAdapter;
 import org.freeplane.features.map.MapChangeEvent;
@@ -117,7 +118,7 @@ public class MapChangeListenerAdapter extends AMapChangeListenerAdapter {
 					}
 				}
 				catch (ResolveDuplicateEntryAbortedException e) {
-					System.out.println("MapChangeListenerAdapter.nodeChanged interrupted");
+					LogUtils.info("MapChangeListenerAdapter.nodeChanged interrupted");
 					if(ignores != null) {
 						if(nodeFileName != null) {
 							ignores.add(nodeFileName);

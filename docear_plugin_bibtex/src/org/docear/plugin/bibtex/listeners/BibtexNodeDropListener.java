@@ -34,7 +34,7 @@ public class BibtexNodeDropListener extends DocearNodeDropListener {
 	}
 
 	public void drop(final DropTargetDropEvent dtde) {
-		LogUtils.info("BibtexNodeDropListener Drop activated....");
+		//LogUtils.info("BibtexNodeDropListener Drop activated....");
 		final MainView mainView = (MainView) dtde.getDropTargetContext().getComponent();
 		final NodeView targetNodeView = mainView.getNodeView();
 

@@ -1206,7 +1206,7 @@ public class PdfUtilitiesController extends ALanguageController {
 		}
 
 		try {
-			System.out.println(command);
+			LogUtils.info(Arrays.toString(command));
 			if (Runtime.getRuntime().exec(command).waitFor() != 0) {
 				throw new IOException("Could not import document settings!");
 			}

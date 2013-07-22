@@ -121,7 +121,7 @@ public class RecommendationsController extends ADocearServiceFeature {
 						((JProgressBar)monitor.getAccessibleContext().getAccessibleChild(1)).setIndeterminate(true);
 						long l = System.currentTimeMillis();
 						Collection<RecommendationEntry> recommendations = getNewRecommendations(true);
-						System.out.println("exec time: "+(System.currentTimeMillis()-l));
+						LogUtils.info("recommendation request time: "+(System.currentTimeMillis()-l));
 						model = new RecommendationsModel(recommendations);
 						return model;
 					}

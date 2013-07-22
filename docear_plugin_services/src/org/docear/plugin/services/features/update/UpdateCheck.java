@@ -105,8 +105,6 @@ public class UpdateCheck extends ADocearServiceFeature {
 					return;
 				}
 				DocearController.getPropertiesController().setProperty("docer.update_checker.savedLatestVersion", latestVersionString);
-				System.out.println(latestVersion.getStatus());
-				System.out.println(latestVersion.getStatusNumber());
 				SwingUtilities.invokeLater(new Runnable() {					
 					public void run() {
 						try {

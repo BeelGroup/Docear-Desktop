@@ -282,7 +282,7 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 			}
 		}
 		time = System.currentTimeMillis() - time;
-		System.out.println("execution time: " + (time / 1000));
+		LogUtils.info("monitoring execution time: " + (time / 1000));
 
 	}
 

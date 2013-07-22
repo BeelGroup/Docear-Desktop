@@ -217,13 +217,13 @@ public class DocearAutoMonitoringListener implements IMapLifeCycleListener,  Win
 	
 	private void onModifyFile(File file, WatchKey key) {
 		synchronized (watchables) {
-			System.out.println("modified "+ file);
+			//System.out.println("modified "+ file);
 		}
 	}
 
 	private void onDeleteFile(File file, WatchKey key) {
 		synchronized (watchables) {
-			System.out.println("deleted "+ file);
+			//System.out.println("deleted "+ file);
 			Set<Entry<WatchKey, String>> entries= watchables.entrySet();
 			for (Entry<WatchKey, String> entry : entries) {
 				if(entry.getValue().equals(file.getPath())) {
@@ -236,7 +236,7 @@ public class DocearAutoMonitoringListener implements IMapLifeCycleListener,  Win
 
 	private void onCreateFile(File file, WatchKey key) {
 		synchronized (watchables) {
-			System.out.println("created "+ file);
+			//System.out.println("created "+ file);
 			if(file.exists()) {
 				if(file.isDirectory()) {
 					addMonitoringDirectory(keyMapMap.get(key), file);
