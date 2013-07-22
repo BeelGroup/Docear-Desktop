@@ -225,8 +225,7 @@
 				<ribbon_action action="ExternalImageChangeAction" />
 				<ribbon_action action="ExternalImageRemoveAction" />
 			</ribbon_band>
-			<ribbon_band name="formula_latex" resize_policies="Mirror">
-				<ribbon_action action="LatexInsertLatexAction" plugin="org.freeplane.plugin.latex" />
+			<ribbon_band name="formula_latex" resize_policies="Mirror">				
 				<ribbon_action action="LatexEditLatexAction" plugin="org.freeplane.plugin.latex" />
 				<ribbon_action action="LatexDeleteLatexAction" plugin="org.freeplane.plugin.latex" />
 			</ribbon_band>
