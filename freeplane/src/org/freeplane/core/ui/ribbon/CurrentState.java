@@ -24,7 +24,7 @@ public class CurrentState {
 	}
 	
 	public boolean isNodeChangeEvent() {
-		return map.get(OpenAction.class) == null && map.get(CloseAction.class) == null;
+		return map.get(OpenAction.class) == null && map.get(CloseAction.class) == null && Controller.getCurrentController().getMapViewManager().getMaps().size() >= 1;
 	}
 	
 	public boolean allMapsClosed() {
