@@ -329,7 +329,7 @@
 				<ribbon_action action="FormatPaste" accelerator="alt shift V" priority="medium" />
 
                 <ribbon_action name="automatic_layout">
-				    <ribbon_action action="AutomaticLayoutControllerAction.HEADINGS" />
+				    <ribbon_action action="AutomaticLayoutControllerAction.HEADINGS" >
 					<ribbon_action action="AutomaticLayoutControllerAction.ALL" />
 					<ribbon_action action="AutomaticLayoutControllerAction.null" />
 				</ribbon_action>

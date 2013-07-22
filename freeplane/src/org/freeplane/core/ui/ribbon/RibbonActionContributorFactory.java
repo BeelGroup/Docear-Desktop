@@ -279,6 +279,9 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 						AbstractCommandButton button;
 						if(isSelectionListener(action)) {
 							button = createCommandToggleButton(action);
+							if (context.hasChildren(context.getCurrentPath())) {
+								LogUtils.severe("RibbonActionContributorFactory.getContributor(): can't add popup menu to toggle button for action: "+context.getCurrentPath().toString());
+							}
 						}
 						else {
 							button = createCommandButton(action);
