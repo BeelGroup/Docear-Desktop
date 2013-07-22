@@ -112,11 +112,11 @@
 		   <ribbon_band name="nodes" resize_policies="Mirror">
                 <ribbon_action action="ToggleFoldedAction" accelerator="SPACE" priority="top" >
 					<ribbon_action action="ToggleChildrenFoldedAction" accelerator="control SPACE" />
-					<ribbon_action action="UnfoldAllAction" accelerator="alt END" priority="top" />
-					<ribbon_action action="FoldAllAction" accelerator="alt HOME" priority="top" />
+					<ribbon_action action="UnfoldAllAction" accelerator="alt END" />
+					<ribbon_action action="FoldAllAction" accelerator="alt HOME" />
 				</ribbon_action>
 				<ribbon_action action="NewChildAction" accelerator="INSERT"	priority="top"/>
-					<ribbon_action action="NewSiblingAction" accelerator="ENTER" priority="top">
+					<ribbon_action action="NewSiblingAction" accelerator="ENTER">
 					<ribbon_action action="NewPreviousSiblingAction" accelerator="shift ENTER" />
 				</ribbon_action>
 				<ribbon_action action="EditAction" priority="Medium" >
