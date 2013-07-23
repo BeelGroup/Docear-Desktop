@@ -8,6 +8,8 @@ public class AnnotationID {
 	private String id;
 	private final URI uri;
 	private final long objectID;
+	private boolean isCreated;
+	private int internalObjectNumber;
 	
 	public AnnotationID(URI absoluteUri, long objectID) throws IllegalArgumentException{
 		if(absoluteUri == null){
@@ -34,9 +36,23 @@ public class AnnotationID {
 	
 	public boolean equals(Object object){
 		if(object instanceof AnnotationID) {
+			boolean firstStepCleared = false;
+			//first compare the UIDs
 			if(this.getObjectID() == ((AnnotationID) object).getObjectID()) {
+					firstStepCleared = true;
+			}
+			else {
+				//if the UIDs not match and one of them was fresh generated try to compare the object numbers
+				if(isCreated || ((AnnotationID) object).isCreated) {
+					if(this.internalObjectNumber == ((AnnotationID) object).internalObjectNumber) {
+						firstStepCleared = true;
+					}
+				}
+			}
+			//compare the document affiliation
+			if(firstStepCleared) {
 				return this.getUri().getPath().toLowerCase(Locale.ENGLISH).equals(((AnnotationID) object).getUri().getPath().toLowerCase(Locale.ENGLISH));
-			}			
+			}
 			return false;
 		}
 		else{
@@ -51,6 +67,14 @@ public class AnnotationID {
 	
 	public String toString() {
 		return getId();
+	}
+
+	public void setIsNewID(boolean isNewID) {
+		this.isCreated = isNewID;
+	}
+
+	public void setObjectNumber(int number) {
+		this.internalObjectNumber = number;
 	}
 	
 	
