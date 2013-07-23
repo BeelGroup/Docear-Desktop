@@ -597,12 +597,12 @@ public class PdfUtilitiesController extends ALanguageController {
 			else if(app.getName().startsWith("Adobe Acrobat")) {
 				viewers.put("Adobe Acrobat Pro.app", new PDFReaderHandle("Adobe Acrobat Pro", app.getAbsolutePath(), null));
 			}
-			/*else if(app.getName().startsWith("Skim")) {
-				viewers.put("Skim.app", new PDFReaderHandle("Skim", app.getAbsolutePath(), null));
-			}
+//			else if(app.getName().startsWith("Skim")) {
+//				viewers.put("Skim.app", new PDFReaderHandle("Skim", app.getAbsolutePath(), null));
+//			}
 			else if(app.getName().startsWith("Preview")) {
 				viewers.put("Preview.app", new PDFReaderHandle("Preview", app.getAbsolutePath(), null));
-			}*/
+			}
 		}
 		for(File subDir : appDirectory.listFiles(new DirectoryFileFilter())){
 			if(!subDir.getName().endsWith(".app")){
