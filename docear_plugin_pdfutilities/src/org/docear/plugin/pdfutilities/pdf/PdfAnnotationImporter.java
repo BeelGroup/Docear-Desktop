@@ -249,6 +249,7 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 	private void transferMetaObject(APDMetaObject meta, AnnotationModel annotation) {
 		
 		annotation.setOldObjectNumber(meta.getObjectNumber());
+		annotation.setIsNewID(meta.getContext().isNewID());
 		annotation.setSource(this.currentFile);
 		annotation.setTitle(meta.getText());
 		annotation.setAnnotationType(getAnnotationTypeFromMeta(meta.getType()));

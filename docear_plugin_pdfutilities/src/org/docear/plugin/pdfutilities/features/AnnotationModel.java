@@ -14,23 +14,22 @@ public class AnnotationModel implements IAnnotation{
 	
 	private AnnotationID id;
 	private AnnotationType annotationType;
+	private AnnotationModel parent;
 	private Integer page;
-	//private Integer generationNumber;
 	private URI destinationUri;	
 	private String title;
-	private boolean isNew;
 	private final long objectID;
+	private int oldObjectNumber = -1;
 	private URI uri;
 	private Object annotationObject;	
 	
-	private boolean isConflicted;
 	private List<AnnotationModel> children = new ArrayList<AnnotationModel>();
-	private AnnotationModel parent;
-	private boolean isInserted;
-	private int oldObjectNumber = -1;
 	
-//	public AnnotationModel() {}; //required for serialization
-//	
+	private boolean isConflicted;
+	private boolean isNew;
+	private boolean isInserted;
+	private boolean isNewID = false;
+	
 	public AnnotationModel(long id){
 		this(id, null);
 	}
@@ -43,15 +42,11 @@ public class AnnotationModel implements IAnnotation{
 	public AnnotationID getAnnotationID() {	
 		if(id == null && uri != null){
 			id = new AnnotationID(uri, objectID);
+			id.setIsNewID(this.isNewID);
+			id.setObjectNumber(this.oldObjectNumber);
 		}
 		return id;
 	}
-
-//	public void setAnnotationID(AnnotationID id) {
-//		this.id = id;
-//		this.objectNumber = id.getObjectID();
-//		this.uri = id.getUri();
-//	}
 	
 	public AnnotationType getAnnotationType() {
 		return annotationType;
@@ -215,11 +210,21 @@ public class AnnotationModel implements IAnnotation{
 
 	public void setOldObjectNumber(int number) {
 		this.oldObjectNumber  = number;
+		if(getAnnotationID() != null) {
+			id.setObjectNumber(oldObjectNumber);
+		}
 		
 	}
 	
 	public int getOldObjectNumber() {
 		return oldObjectNumber;
+	}
+
+	public void setIsNewID(boolean isNewID) {
+		this.isNewID = isNewID;
+		if(getAnnotationID() != null) {
+			id.setIsNewID(this.isNewID);
+		}
 	}
 	
 }
