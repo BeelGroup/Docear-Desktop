@@ -8,7 +8,7 @@
 				<ribbon_action action="workspace.action.project.import" mandatory="true"/>
 		
 				<ribbon_action action="workspace.action.project.remove" mandatory="true"/>
-				<ribbon_action action="workspace.action.node.rename" mandatory="true"/>
+				<ribbon_action action="workspace.action.project.rename" mandatory="true"/>
 				<ribbon_action action="workspace.action.project.open.location" priority="Top"/>
 				
 				<!--ribbon_action name="Show recommendations" priority="TOP" / -->

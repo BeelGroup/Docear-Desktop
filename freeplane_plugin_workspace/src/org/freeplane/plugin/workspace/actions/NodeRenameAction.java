@@ -35,10 +35,8 @@ public class NodeRenameAction extends AWorkspaceAction {
 			setEnabled();
 		}
 	}
-
-	public void actionPerformed(final ActionEvent e) {
-		AWorkspaceTreeNode targetNode = this.getNodeFromActionEvent(e);
-		
+	
+	public void actionPerformed(AWorkspaceTreeNode targetNode) {
 		String oldName = targetNode.getName();
 		NodeRenameDialogPanel panel;
 //		if (targetNode instanceof IMutableLinkNode) {
@@ -77,10 +75,14 @@ public class NodeRenameAction extends AWorkspaceAction {
 					JOptionPane.showMessageDialog(UITools.getFrame(), TextUtils.getText("error_rename_file") + " ("+ex.getMessage()+")", 
 							TextUtils.getText("error_rename_file_title"), JOptionPane.ERROR_MESSAGE);
 				}
-			}
-			
+			}			
 		}
+	}
 
+	public void actionPerformed(final ActionEvent e) {
+		AWorkspaceTreeNode targetNode = this.getNodeFromActionEvent(e);
+		
+		actionPerformed(targetNode);
 	}
 
 }
