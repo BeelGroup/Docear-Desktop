@@ -66,12 +66,15 @@ public class ReferenceUpdater extends AMindmapUpdater {
     		DocearController.getController().getSemaphoreController().lock("MindmapUpdate");
     		
     		WorkspaceMapModelExtension mapExt = WorkspaceController.getMapModelExtension(map);
-    		if(mapExt == null || mapExt.getProject() == null) {
+    		if(mapExt == null || mapExt.getProject() == null || !mapExt.getProject().isLoaded()) {
     			//DOCEAR - todo: what to do?
     			return false;
     		}
     		else {    			
     			JabRefProjectExtension prjExt = (JabRefProjectExtension) mapExt.getProject().getExtensions(JabRefProjectExtension.class);
+    			if(prjExt == null) {
+    				return false;
+    			}
     			ReferencesController.getController().getJabrefWrapper().getJabrefFrame().showBasePanel(prjExt.getBaseHandle().getBasePanel());
     		}
     		
@@ -240,6 +243,9 @@ public class ReferenceUpdater extends AMindmapUpdater {
 			BibtexEntry bibtexEntry = entry.getKey();
 			try {
 				WorkspaceMapModelExtension mapExt = WorkspaceController.getMapModelExtension(entry.getValue().iterator().next().getMap());
+				if(mapExt.getProject() == null || !mapExt.getProject().isLoaded()) {
+					return false;
+				}
 				JabRefProjectExtension ext = (JabRefProjectExtension) mapExt.getProject().getExtensions(JabRefProjectExtension.class);
 
 				Reference reference = new Reference(ext.getBaseHandle().getBasePanel(), bibtexEntry);

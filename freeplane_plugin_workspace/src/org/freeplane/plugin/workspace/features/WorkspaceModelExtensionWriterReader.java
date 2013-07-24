@@ -1,5 +1,9 @@
 package org.freeplane.plugin.workspace.features;
 
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.freeplane.core.extension.IExtension;
 import org.freeplane.core.io.IAttributeHandler;
 import org.freeplane.core.io.IExtensionAttributeWriter;
@@ -11,6 +15,7 @@ import org.freeplane.features.map.MapController;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.ModeController;
+import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
@@ -19,12 +24,16 @@ public class WorkspaceModelExtensionWriterReader implements IExtensionAttributeW
 	private static final String PROJECT_ID_XML_TAG = "project";
 	private static final String MAP_EXTENSION_XML_TAG = "map";
 	private static final String PROJECT_HOME_XML_TAG = "project_last_home";
-		
+
+	private final Map<MapModel, TempProjectItem> tempProjectCache = new HashMap<MapModel, TempProjectItem>();
+	
 	private WorkspaceModelExtensionWriterReader(MapController mapController) {
 		registerAttributeHandlers(mapController.getReadManager());
 		mapController.getWriteManager().addExtensionAttributeWriter(WorkspaceMapModelExtension.class, this);	
 		mapController.addMapLifeCycleListener(new IMapLifeCycleListener() {			
-			public void onRemove(MapModel map) {}
+			public void onRemove(MapModel map) {
+				
+			}
 			
 			public void onCreate(MapModel map) {
 				WorkspaceMapModelExtension wmme = WorkspaceController.getMapModelExtension(map);
@@ -55,10 +64,10 @@ public class WorkspaceModelExtensionWriterReader implements IExtensionAttributeW
 				
 				WorkspaceMapModelExtension wmme = WorkspaceController.getMapModelExtension(mapModel); 
 				if(wmme.getProject() == null) {
+					updateProjectPathIndex(mapModel, value, null);
 					AWorkspaceProject prj = WorkspaceController.getCurrentModel().getProject(value);
 					if(prj == null) {
-						//WORKSPACE - todo: propagate exception
-						LogUtils.warn("project with id="+value+" was not found");
+						LogUtils.info("project with id="+value+" is not loaded");
 						return;
 					}
 					wmme.setProject(prj);
@@ -70,23 +79,45 @@ public class WorkspaceModelExtensionWriterReader implements IExtensionAttributeW
 			
 			public void setAttribute(Object map, String value) {
 				final MapModel mapModel = (MapModel) map;
-				
-				WorkspaceMapModelExtension wmme = WorkspaceController.getMapModelExtension(mapModel); 
+				updateProjectPathIndex(mapModel, null, URIUtils.createURI(value));
+			}
+		});
+		
+	}
+
+	private void updateProjectPathIndex(MapModel key, String id, URI path) {
+		synchronized (tempProjectCache) {
+			TempProjectItem item = tempProjectCache.get(key);
+			if(item == null) {
+				item = new TempProjectItem();
+				tempProjectCache.put(key, item);
+			}
+			
+			if(id != null) {
+				item.projectID = id;
+			}
+			
+			if(path != null) {
+				item.projectPath = path;
+			}
+			//index
+			if(item.isComplete()) {
+				WorkspaceMapModelExtension wmme = WorkspaceController.getMapModelExtension(key); 
+				AWorkspaceProject project = WorkspaceController.getCachedProjectByID(item.projectID);
 				if(wmme.getProject() == null) {
-					//WORKSPACE - todo: find project for uri?
-//					AWorkspaceProject prj = WorkspaceController.getCurrentModel().getProject(value);
-//					if(prj == null) {
-//						//WORKSPACE - todo: propagate exception
-//						LogUtils.warn("project with id="+value+" was not found");
-//						return;
-//					}
-//					wmme.setProject(prj);
+					if(project == null) {
+						project = AWorkspaceProject.create(item.projectID, item.projectPath);
+					}
+					WorkspaceController.addMapToProject(key, project);
+					WorkspaceController.indexProject(project);
 				}
 				else {
-					//ignore
+					WorkspaceController.indexProject(wmme.getProject());
 				}
-			}			
-		});
+				
+				tempProjectCache.remove(key);
+			}
+		}
 	}
 
 	public void writeAttributes(ITreeWriter writer, Object userObject, IExtension extension) {
@@ -104,5 +135,12 @@ public class WorkspaceModelExtensionWriterReader implements IExtensionAttributeW
 		new WorkspaceModelExtensionWriterReader(modeController.getMapController());
 	}
 	
-	
+	static class TempProjectItem {
+		public String projectID = null;
+		public URI projectPath = null;
+		
+		public boolean isComplete() {
+			return projectID != null && projectPath != null;
+		}
+	}
 }

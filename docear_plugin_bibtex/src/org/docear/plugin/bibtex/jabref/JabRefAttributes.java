@@ -121,11 +121,14 @@ public class JabRefAttributes {
 			AWorkspaceProject project = mapExt.getProject();
 			if(project != null) {
 				JabRefProjectExtension ext = (JabRefProjectExtension) project.getExtensions(JabRefProjectExtension.class);
-				setReferenceToNode(new Reference(ext.getBaseHandle().getBasePanel(), entry), node);
+				if(ext != null) {
+					setReferenceToNode(new Reference(ext.getBaseHandle().getBasePanel(), entry), node);
+					return;
+				}
 			}
-			else {
-				setReferenceToNode(new Reference(ReferencesController.getController().getJabrefWrapper().getBasePanel(), entry), node);
-			}
+			
+			setReferenceToNode(new Reference(ReferencesController.getController().getJabrefWrapper().getBasePanel(), entry), node);
+			
 		}
 		catch(Exception e) {
 			LogUtils.warn("JabRefAttributes.setReferenceToNode()");
@@ -311,26 +314,29 @@ public class JabRefAttributes {
 			}
 		}
 		finally {
-			// do not overwrite existing links
-			NodeLinks nodeLinks = NodeLinks.getLinkExtension(node);
-			if (nodeLinks == null || nodeLinks.getHyperLink() == null) {
-				// add link to node
-				if (reference.getUris().size() > 0) {
-					((MLinkController) MLinkController.getController()).setLinkTypeDependantLink(node, reference.getUris().iterator().next());
-					changes = true;
-				}
-				else {
-					URL url = reference.getUrl();
-					if (url != null) {						
-						((MLinkController) MLinkController.getController()).setLinkTypeDependantLink(node, URI.create(url.toExternalForm()));
-
+			try {
+				// do not overwrite existing links
+				NodeLinks nodeLinks = NodeLinks.getLinkExtension(node);
+				if (nodeLinks == null || nodeLinks.getHyperLink() == null) {
+					// add link to node
+					if (reference.getUris().size() > 0) {
+						((MLinkController) MLinkController.getController()).setLinkTypeDependantLink(node, reference.getUris().iterator().next());
 						changes = true;
+					}
+					else {
+						URL url = reference.getUrl();
+						if (url != null) {						
+							((MLinkController) MLinkController.getController()).setLinkTypeDependantLink(node, URI.create(url.toExternalForm()));
+	
+							changes = true;
+						}
 					}
 				}
 			}
-
-			synchronized (updateNodeLock) {
-				updateNodeLock = false;
+			finally {
+				synchronized (updateNodeLock) {
+					updateNodeLock = false;
+				}
 			}
 		}
 
@@ -344,16 +350,16 @@ public class JabRefAttributes {
 			AWorkspaceProject project = mapExt.getProject();
 			if(project != null) {
 				JabRefProjectExtension ext = (JabRefProjectExtension) project.getExtensions(JabRefProjectExtension.class);
-				return setReferenceToNode(new Reference(ext.getBaseHandle().getBasePanel(), entry), node);
+				if(ext != null) {
+					return setReferenceToNode(new Reference(ext.getBaseHandle().getBasePanel(), entry), node);
+				}
 			}
-			else {
-				return setReferenceToNode(new Reference(ReferencesController.getController().getJabrefWrapper().getBasePanel(), entry), node);
-			}
-			//JabRefProjectExtension ext = (JabRefProjectExtension) mapExt.getProject().getExtensions(JabRefProjectExtension.class);
-			//return setReferenceToNode(new Reference(ext.getBaseHandle().getBasePanel(), entry), node);
+			
+			return setReferenceToNode(new Reference(ReferencesController.getController().getJabrefWrapper().getBasePanel(), entry), node);
 		}
 		catch(Exception e) {
 			LogUtils.warn("JabRefAttributes.setReferenceToNode(): "+e.getMessage());
+			e.printStackTrace();
 			return false;
 		}
 	}
@@ -527,13 +533,19 @@ public class JabRefAttributes {
 	// findBibtexEntryForPDF
 	public BibtexEntry findBibtexEntryForURL(URI nodeUri, MapModel map, boolean ignoreDuplicates) throws ResolveDuplicateEntryAbortedException {
 		WorkspaceMapModelExtension mapExt = WorkspaceController.getMapModelExtension(map);
-		if(mapExt == null || mapExt.getProject() == null) {
+		if(mapExt == null || mapExt.getProject() == null || !mapExt.getProject().isLoaded()) {
 			//DOCEAR - todo: what to do?
 			return null;
 		}
 		else {    			
 			JabRefProjectExtension prjExt = (JabRefProjectExtension) mapExt.getProject().getExtensions(JabRefProjectExtension.class);
-			ReferencesController.getController().getJabrefWrapper().getJabrefFrame().showBasePanel(prjExt.getBaseHandle().getBasePanel());
+			if(prjExt == null) {
+				return null;
+			}
+			else {
+				ReferencesController.getController().getJabrefWrapper().getJabrefFrame().showBasePanel(prjExt.getBaseHandle().getBasePanel());
+				
+			}
 		}
 		
 		BibtexDatabase database = ReferencesController.getController().getJabrefWrapper().getDatabase();
@@ -624,7 +636,7 @@ public class JabRefAttributes {
 
 	public BibtexEntry findBibtexEntryForPDF(URI uri, MapModel map, boolean ignoreDuplicates) throws ResolveDuplicateEntryAbortedException {
 		WorkspaceMapModelExtension mapExt = WorkspaceController.getMapModelExtension(map);
-		if(mapExt == null || mapExt.getProject() == null) {
+		if(mapExt == null || mapExt.getProject() == null || !mapExt.getProject().isLoaded()) {
 			//DOCEAR - todo: what to do?
 			return null;
 		}

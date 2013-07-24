@@ -59,8 +59,12 @@ public class AddNewReferenceAction extends AFreeplaneAction {
         		WorkspaceMapModelExtension modelExt = WorkspaceController.getMapModelExtension(iter.next().getMap(), false);
         		if(modelExt != null) {
         			AWorkspaceProject project = modelExt.getProject();
-        			JabRefProjectExtension ext = (JabRefProjectExtension) project.getExtensions(JabRefProjectExtension.class);
-        			ext.selectBasePanel();
+        			if(project == null || !project.isLoaded()) {
+        				return;
+        			}
+	        		JabRefProjectExtension ext = (JabRefProjectExtension) project.getExtensions(JabRefProjectExtension.class);
+	        		ext.selectBasePanel();
+        			
         		}
 			}
 		}

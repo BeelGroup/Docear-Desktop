@@ -152,10 +152,12 @@ public class ProjectLoader implements IProjectSettingsIOHandler {
 			if(projectSettings.exists()) {
 				getDefaultResultProcessor().setProject(project);
 				this.load(projectSettings.toURI());
+				project.setLoaded();
 				return LOAD_RETURN_TYPE.EXISTING_PROJECT;
 			}
 			else {
 				createDefaultProject(project);
+				project.setLoaded();
 				return LOAD_RETURN_TYPE.NEW_PROJECT;
 			}
 		}

@@ -30,7 +30,7 @@ public class MapViewListener implements MouseListener, INodeSelectionListener {
 			WorkspaceMapModelExtension ext = WorkspaceController.getMapModelExtension(Controller.getCurrentController().getMap());
 			if(ext != null) {
 				AWorkspaceProject project = ext.getProject();
-				if(project != null) {
+				if(project != null && project.isLoaded()) {
 					JabRefProjectExtension jpe = (JabRefProjectExtension) project.getExtensions(JabRefProjectExtension.class);
 					if(jpe != null && !jpe.getBaseHandle().getBasePanel().equals(bp)) {
 						jpe.selectBasePanel();
@@ -97,7 +97,7 @@ public class MapViewListener implements MouseListener, INodeSelectionListener {
 		DocearReferenceUpdateController.lock();
 		try {
 			WorkspaceMapModelExtension mapExt = WorkspaceController.getMapModelExtension(mapModel);
-    		if(mapExt == null || mapExt.getProject() == null) {
+    		if(mapExt == null || mapExt.getProject() == null || !mapExt.getProject().isLoaded()) {
     			//DOCEAR - todo: what to do?
     		}
     		else {    			

@@ -46,11 +46,14 @@ public class AddExistingReferenceAction extends AFreeplaneAction {
 				if(modelExt != null) {
 					project = modelExt.getProject();
 					JabRefProjectExtension ext = (JabRefProjectExtension) project.getExtensions(JabRefProjectExtension.class);
+					if(ext == null) {
+						return;
+					}
 					ext.selectBasePanel();
 				}
 			}
 			//DOCEAR - ToDo: show error msg
-			if(project == null) {
+			if(project == null || !project.isLoaded()) {
 				return;
 			}
 			try {				

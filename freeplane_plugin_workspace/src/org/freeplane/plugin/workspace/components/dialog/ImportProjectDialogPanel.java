@@ -227,7 +227,10 @@ public class ImportProjectDialogPanel extends JPanel {
 			
 			File settings = new File(folder, "settings.xml");
 			if(settings.exists()) {
-				AWorkspaceProject project = AWorkspaceProject.create(folder.getName(), home.getParentFile().toURI());
+				AWorkspaceProject project /*= WorkspaceController.getProjectFromCache(folder.getName()); 
+				if(project == null) {
+					project*/ = AWorkspaceProject.create(folder.getName(), home.getParentFile().toURI());
+				//}
 				String item = new TempProjectLoader().getMetaInfo(project);
 				if(item == null) {
 					continue;

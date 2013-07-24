@@ -3,7 +3,9 @@ package org.freeplane.plugin.workspace.model;
 import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
@@ -23,9 +25,11 @@ import org.freeplane.plugin.workspace.model.project.ProjectModel;
 import org.freeplane.plugin.workspace.nodes.WorkspaceRootNode;
 
 public abstract class WorkspaceModel implements TreeModel {	
+	private final static Map<String, AWorkspaceProject> projectCacheIndex = new HashMap<String, AWorkspaceProject>();
 	
 	protected List<AWorkspaceProject> projects = new ArrayList<AWorkspaceProject>();
 	protected final List<WorkspaceModelListener> listeners = new ArrayList<WorkspaceModelListener>();
+	
 	
 	protected WorkspaceRootNode root;
 	protected IProjectModelListener projectModelListener;
@@ -36,9 +40,11 @@ public abstract class WorkspaceModel implements TreeModel {
 		}
 		synchronized (projects) {
 			if(!projects.contains(project)) {
+				unindexProject(project.getProjectID());
+				indexProject(project);
 				projects.add(project);
 				project.getModel().addProjectModelListener(getTreeModelListener());
-				fireProjectInserted(project);				
+				fireProjectInserted(project);
 			}
 		}
 	}
@@ -53,7 +59,6 @@ public abstract class WorkspaceModel implements TreeModel {
 				projects.remove(project);
 				project.getModel().removeProjectModelListener(getTreeModelListener());
 				fireProjectRemoved(project, index);
-				
 			}
 		}
 	}
@@ -298,25 +303,61 @@ public abstract class WorkspaceModel implements TreeModel {
 
 	public AWorkspaceProject getProject(WorkspaceTreeModel model) {
 		synchronized (this.projects) {
-    		for (AWorkspaceProject project : this.projects) {
-    			if(project.getModel().equals(model)) {
-    				return project;
-    			}
-    		}
+			for(AWorkspaceProject project : this.projects) {
+				if (project.getModel().equals(model)) {
+					return project;
+				}
+			}
 		}
 		return null;
 	}
 
 	public AWorkspaceProject getProject(String projectID) {
 		synchronized (this.projects) {
-    		for (AWorkspaceProject project : this.projects) {
-    			if(project.getProjectID().equals(projectID)) {
-    				return project;
-    			}
-    		}
+			for(AWorkspaceProject project : this.projects) {
+				if (project.getProjectID().equals(projectID)) {
+					return project;
+				}
+			}
 		}
 		return null;
 	}
+
+	public void indexProject(AWorkspaceProject project) {
+		if(project == null) {
+			return;
+		}
+		synchronized (projectCacheIndex) {
+			if (!projectCacheIndex.containsKey(project.getProjectID())) {
+				projectCacheIndex.put(project.getProjectID(), project);
+			}
+		}
+	}
+
+	public void unindexProject(String projectID) {
+		if(projectID == null) {
+			return;
+		}
+		synchronized (projectCacheIndex) {
+			projectCacheIndex.remove(projectID);
+		}
+	}
+
+	public void clearProjectPathIndex() {
+		synchronized (projectCacheIndex) {
+			projectCacheIndex.clear();
+		}
+	}
+
+	public AWorkspaceProject getCachedProjectByID(String projectID) {
+		if(projectID == null) {
+			return null;
+		}
+		synchronized (projectCacheIndex) {
+			return projectCacheIndex.get(projectID);
+		}
+	}
+	
 	/**********************************************************************
 	 * NESTED CLASSES
 	 **********************************************************************/

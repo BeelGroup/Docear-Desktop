@@ -8,19 +8,6 @@ public class DocearWorkspaceModel extends WorkspaceModel {
 
 	private static final int XTRA_NODES = 2;
 
-	public void addProject(AWorkspaceProject project) {
-		if(project == null) {
-			return;
-		}
-		synchronized (projects) {
-			if(!projects.contains(project)) {
-				projects.add(project);
-				project.getModel().addProjectModelListener(getTreeModelListener());
-				fireProjectInserted(project);				
-			}
-		}
-	}
-	
 	public void removeProject(AWorkspaceProject project) {
 		if(project == null) {
 			return;

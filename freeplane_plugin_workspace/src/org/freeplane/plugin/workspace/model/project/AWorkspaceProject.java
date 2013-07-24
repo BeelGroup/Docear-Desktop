@@ -10,10 +10,9 @@ import org.freeplane.plugin.workspace.model.WorkspaceModelEvent.WorkspaceModelEv
 public abstract class AWorkspaceProject {	
 	
 	private Map<Class<? extends IWorkspaceProjectExtension>, IWorkspaceProjectExtension> extensions = new LinkedHashMap<Class<? extends IWorkspaceProjectExtension>, IWorkspaceProjectExtension>();
-	
 	private static IWorkspaceProjectCreater creator = null;
-
 	private ProjectModel model;
+	private boolean isLoaded = false;
 	
 	public abstract ProjectVersion getVersion();
 	
@@ -26,7 +25,6 @@ public abstract class AWorkspaceProject {
 	public abstract URI getRelativeURI(URI uri);
 	
 	public abstract String getProjectName();
-	
 	
 	public ProjectModel getModel() {
 		if(this.model == null) {
@@ -68,7 +66,15 @@ public abstract class AWorkspaceProject {
 		synchronized (extensions) {
 			return this.extensions.remove(key);
 		}
-	}	
+	}
+	
+	public boolean isLoaded() {
+		return isLoaded;
+	}
+	
+	public void setLoaded() {
+		isLoaded = true;
+	}
 		
 	public static void setCurrentProjectCreator(IWorkspaceProjectCreater pCreator) {
 		creator = pCreator;

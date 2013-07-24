@@ -1,6 +1,7 @@
 package org.freeplane.plugin.workspace.features;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -10,13 +11,20 @@ import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.osgi.service.url.AbstractURLStreamHandlerService;
 
 public class ProjectURLHandler extends AbstractURLStreamHandlerService {
-
+	
 	public URLConnection openConnection(URL url) throws IOException {
-		//WORKSPACE - todo: extend with meaningful exception messages
-		AWorkspaceProject project = WorkspaceController.getCurrentModel().getProject(url.getAuthority());
+		String projectID = url.getAuthority();
+		AWorkspaceProject project = WorkspaceController.getCurrentModel().getProject(projectID);
+		
+//		if(project == null) {
+			project = WorkspaceController.getCachedProjectByID(projectID);
+			System.out.println("");
+	//	}
+		
 		if(project == null) {
-			throw new IOException("project with id="+url.getAuthority()+" is missing");
+			throw new IOException("project with id="+projectID+" is missing");
 		}
+		
 		URL absolutePath = resolve(project, url);
 		return absolutePath.openConnection();
 	}
@@ -35,15 +43,20 @@ public class ProjectURLHandler extends AbstractURLStreamHandlerService {
 		
 		URL absolutePath = url;
 		try {
-			String urlFile = url.getFile();
-			urlFile = urlFile.startsWith("/") ? urlFile.substring(1): urlFile;
 			String projectUrl = project.getProjectHome().toURL().toExternalForm();
-			projectUrl = projectUrl.endsWith("/") ? projectUrl.substring(0, projectUrl.length()-1): projectUrl;
-			absolutePath = new URL(projectUrl+"/"+urlFile);
+			absolutePath = createAbsoluteURL(projectUrl, url);
 		} catch (Exception e) {
 			throw new IOExceptionWithCause(e);
 		}
 		return absolutePath;
 	}
 
+	private static URL createAbsoluteURL(String projectBase, URL projectRelativeURL) throws MalformedURLException {
+		URL absolutePath;
+		String urlFile = projectRelativeURL.getFile();
+		urlFile = urlFile.startsWith("/") ? urlFile.substring(1): urlFile;
+		projectBase = projectBase.endsWith("/") ? projectBase.substring(0, projectBase.length()-1): projectBase;
+		absolutePath = new URL(projectBase+"/"+urlFile);
+		return absolutePath;
+	}
 }

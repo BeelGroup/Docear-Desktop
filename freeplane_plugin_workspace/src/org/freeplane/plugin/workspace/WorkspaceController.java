@@ -41,7 +41,7 @@ public final class WorkspaceController implements IExtension {
 	public static final String PROJECT_RESOURCE_URL_PROTOCOL = "project";
 	public static final String PROPERTY_RESOURCE_URL_PROTOCOL = "property";
 	public static final String WORKSPACE_VERSION = "1.0";
-		
+	
 	private static WorkspaceController self;
 	private static Map<Class<? extends ModeController>, Class<? extends AWorkspaceModeExtension>> modeWorkspaceCtrlMap = new HashMap<Class<? extends ModeController>, Class<? extends AWorkspaceModeExtension>>();
 	
@@ -238,6 +238,7 @@ public final class WorkspaceController implements IExtension {
 
 	public static void loadProject(AWorkspaceProject project) throws IOException {
 		getCurrentModeExtension().getProjectLoader().loadProject(project);
+		indexProject(project);
 	}
 
 	public static URI getDefaultProjectHome() {
@@ -296,6 +297,20 @@ public final class WorkspaceController implements IExtension {
 		}
 		return oldProject;
 	}
+	
+	public static void indexProject(AWorkspaceProject project) {
+		if(project == null) {
+			return;
+		}
+		getCurrentModeExtension().getModel().indexProject(project);
+	}
+	
+	public static AWorkspaceProject getCachedProjectByID(String projectID) {
+		if(projectID == null) {
+			return null;
+		}
+		return getCurrentModeExtension().getModel().getCachedProjectByID(projectID);
+	}
 
 	public static void save() {
 		getCurrentModeExtension().save();
@@ -308,7 +323,5 @@ public final class WorkspaceController implements IExtension {
 	public static void clear() {
 		getCurrentModeExtension().clear();
 	}
-
-	
 	
 }

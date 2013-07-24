@@ -134,11 +134,13 @@ public class DocearProjectLoader extends ProjectLoader {
 			if(projectSettings.exists()) {
 				getDefaultResultProcessor().setProject(project);
 				load(projectSettings.toURI());
+				project.setLoaded();
 				return LOAD_RETURN_TYPE.EXISTING_PROJECT;
 			}
 			else {
 				createDefaultProject((DocearWorkspaceProject)project);
 				((ProjectRootNode)project.getModel().getRoot()).setVersion(DocearWorkspaceProject.CURRENT_PROJECT_VERSION.getVersionString());
+				project.setLoaded();
 				return LOAD_RETURN_TYPE.NEW_PROJECT;
 			}
 		}

@@ -79,13 +79,12 @@ public class DocearImportProjectAction extends AWorkspaceAction {
 		if(project == null) {
 			return;
 		}
-		
 		String projectName = null;		
 		DocearProjectSettings settings = project.getExtensions(DocearProjectSettings.class);
+		
 		if(settings != null) {
 			projectName = settings.getProjectName();
 		}
-		
 		WorkspaceController.getCurrentModel().addProject(project);
 		if(project.getExtensions(DocearConversionDescriptor.class) != null) {
 			try {
