@@ -32,8 +32,7 @@
 					<ribbon_action name="Auto-refresh on opening mind map (off)" /> 
 				</ribbon_action -->
 			</ribbon_band>
-			<ribbon_band name="pdf" resize_policies="Mirror">
-				<ribbon_contributor name="pdf_annotations" />
+			<ribbon_band name="pdf" resize_policies="Mirror">				
 				<ribbon_action action="ImportNewAnnotationsAction" priority="TOP" />
 				<ribbon_action action="ImportAllAnnotationsAction" priority="TOP" />
 			</ribbon_band>
@@ -42,7 +41,7 @@
 		<ribbon_task name="project" orderPriority="3000">
 			<ribbon_band name="literature" resize_policies="Mirror">
 				<ribbon_action action="workspace.action.node.add.repository" priority="TOP" />
-				<ribbon_action action="workspace.action.node.remove.repository" priority="TOP" />
+				<ribbon_action action="workspace.action.ribbon.remove.repository" priority="TOP" />
 			</ribbon_band>
 		</ribbon_task>
 	</menu_category>

@@ -37,9 +37,11 @@ import net.sf.jabref.imports.PostOpenAction;
 
 import org.docear.plugin.bibtex.ReferencesController;
 import org.docear.plugin.bibtex.actions.DocearHandleDuplicateWarning;
+import org.docear.plugin.bibtex.actions.DocearTransformZoteroFile;
 import org.docear.plugin.bibtex.actions.DocearTransformZoteroPathsAction;
 import org.docear.plugin.bibtex.actions.FilePathValidatorAction;
 import org.docear.plugin.bibtex.actions.HandleDuplicateKeys;
+import org.docear.plugin.bibtex.actions.IPreOpenAction;
 import org.docear.plugin.bibtex.listeners.MapViewListener;
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.event.DocearEvent;
@@ -58,9 +60,12 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 
 	private static final int MAX_TRY_OPEN = 5;
 
+	private static ArrayList<IPreOpenAction> preOpenActions = new ArrayList<IPreOpenAction>();
 	private static ArrayList<PostOpenAction> postOpenActions = new ArrayList<PostOpenAction>();
 
 	static {
+		preOpenActions.add(new DocearTransformZoteroFile());
+		
 		postOpenActions.add(new DocearTransformZoteroPathsAction());
 		// bibtex files exported by mendeley do not contain leading "/" for
 		// absolute paths so we do not know if
@@ -264,6 +269,11 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 
 	private JabRefBaseHandle openIt(File file, boolean raisePanel) {
 		JabRefBaseHandle handle = null;
+		for (IPreOpenAction action : preOpenActions) {
+			if (action.isActionNecessary(file)) {
+				action.performAction(file);
+			}
+		}
 		if ((file != null) && (file.exists())) {
 			if (!isCompatibleToJabref(file)) {
 				JHyperlink hyperlink = new JHyperlink("http://www.docear.org/support/user-manual/#docear_and_mendeley ",

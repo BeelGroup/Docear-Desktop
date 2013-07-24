@@ -30,6 +30,7 @@ import org.freeplane.plugin.workspace.dnd.DnDController;
 import org.freeplane.plugin.workspace.dnd.WorkspaceTransferHandler;
 import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
+import org.freeplane.plugin.workspace.features.WorkspaceNodeSelectionHandler;
 import org.freeplane.plugin.workspace.handler.DefaultNodeTypeIconManager;
 import org.freeplane.plugin.workspace.handler.INodeTypeIconManager;
 import org.freeplane.plugin.workspace.listener.DefaultTreeExpansionListener;
@@ -66,6 +67,7 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 	private InputController inputController;
 	private ExpandedStateHandler expandedStateHandler;
 	private boolean paintingEnabled;
+	private WorkspaceNodeSelectionHandler nodeSelectionHandler;
 	
 	public TreeView() {
 		this.setLayout(new BorderLayout());
@@ -89,6 +91,7 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 		mTree.setCellEditor(new WorkspaceCellEditor(mTree, (DefaultTreeCellRenderer) mTree.getCellRenderer()));
 		mTree.addTreeExpansionListener(new DefaultTreeExpansionListener());
 		mTree.addTreeExpansionListener(getExpandedStateHandler());
+		mTree.addTreeSelectionListener(getNodeSelectionHandler().getTreeSelectionListener());
         mTree.addTreeSelectionListener(new DefaultWorkspaceSelectionListener());
         mTree.addTreeSelectionListener(getProjectSelectionHandler());
         //WORKSPACE - impl(later): enable multi selection 
@@ -337,5 +340,12 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 	public final static String TOP_TOOLBAR_STACK = BorderLayout.NORTH;
 	public void addToolBar(Component comp, String toolBarStack) {
 		this.add(comp, toolBarStack);
+	}
+
+	public WorkspaceNodeSelectionHandler getNodeSelectionHandler() {
+		if(nodeSelectionHandler == null) {
+			nodeSelectionHandler = new WorkspaceNodeSelectionHandler();
+		}
+		return nodeSelectionHandler;
 	}
 }
