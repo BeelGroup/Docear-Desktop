@@ -17,6 +17,7 @@ import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
+import javax.swing.event.TreeSelectionEvent;
 
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.IMenuContributor;
@@ -27,6 +28,7 @@ import org.freeplane.core.ui.components.OneTouchCollapseResizer.CollapseDirectio
 import org.freeplane.core.ui.components.OneTouchCollapseResizer.ComponentCollapseListener;
 import org.freeplane.core.ui.components.ResizeEvent;
 import org.freeplane.core.ui.components.ResizerListener;
+import org.freeplane.core.ui.ribbon.RibbonMapChangeAdapter;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
@@ -65,6 +67,7 @@ import org.freeplane.plugin.workspace.components.TreeView;
 import org.freeplane.plugin.workspace.creator.DefaultFileNodeCreator;
 import org.freeplane.plugin.workspace.dnd.WorkspaceTransferable;
 import org.freeplane.plugin.workspace.features.AWorkspaceModeExtension;
+import org.freeplane.plugin.workspace.features.IWorkspaceNodeSelectionListener;
 import org.freeplane.plugin.workspace.features.IWorkspaceSettingsHandler;
 import org.freeplane.plugin.workspace.handler.DefaultFileNodeIconHandler;
 import org.freeplane.plugin.workspace.handler.DirectoryMergeConflictDialog;
@@ -193,6 +196,13 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 			}
 		});
 		//RIBBONS - workspace
+		final RibbonMapChangeAdapter adapter = modeController.getUserInputListenerFactory().getRibbonBuilder().getMapChangeAdapter();
+		getView().addProjectSelectionListener(getWSSelectionListener(adapter));		
+		getView().getNodeSelectionHandler().add(new IWorkspaceNodeSelectionListener() {			
+			public void selectionChanged(TreeSelectionEvent event) {
+				adapter.selectionChanged(event);
+			}
+		});
 		modeController.getUserInputListenerFactory().getRibbonBuilder().registerContributorFactory("project_band_main", new WorkspaceProjectBandContributorFactory(this));
 		File file = new File(Compat.getApplicationUserDirectory(), "workspace_ribbon.xml");
 		if (file.exists()) {
@@ -310,6 +320,21 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 		WorkspaceController.addAction(new FileNodeDeleteAction());
 		
 		WorkspaceController.addAction(new PhysicalFolderSortOrderAction());
+	}
+	
+	private IProjectSelectionListener getWSSelectionListener(final RibbonMapChangeAdapter mapChangeAdapter) {
+		if(projectSelectionListener == null) {
+			projectSelectionListener = new IProjectSelectionListener() {				
+				
+				public void selectionChanged(ProjectSelectionEvent evt) {
+					if(mapChangeAdapter != null) {
+						mapChangeAdapter.selectionChanged(evt.getSelectedProject());
+					}
+					currentSelectedProject = evt.getSelectedProject();
+				}
+			};
+		}
+		return projectSelectionListener;
 	}
 
 	private void saveSettings() {

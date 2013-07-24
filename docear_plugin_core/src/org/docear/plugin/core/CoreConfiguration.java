@@ -23,6 +23,7 @@ import org.apache.commons.io.IOExceptionWithCause;
 import org.docear.plugin.core.actions.DocearAboutAction;
 import org.docear.plugin.core.actions.DocearOpenUrlAction;
 import org.docear.plugin.core.actions.DocearQuitAction;
+import org.docear.plugin.core.actions.DocearRemoveRepositoryPathRibbonAction;
 import org.docear.plugin.core.actions.DocearSetNodePrivacyAction;
 import org.docear.plugin.core.actions.DocearShowDataPrivacyStatementAction;
 import org.docear.plugin.core.actions.DocearShowDataProcessingTermsAction;
@@ -61,7 +62,6 @@ import org.freeplane.core.resources.components.IPropertyControl;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.IMenuContributor;
 import org.freeplane.core.ui.MenuBuilder;
-import org.freeplane.core.ui.ribbon.RibbonMapChangeAdapter;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.ConfigurationUtils;
 import org.freeplane.core.util.LogUtils;
@@ -88,8 +88,6 @@ import org.freeplane.plugin.workspace.mindmapmode.FileFolderDropHandler;
 import org.freeplane.plugin.workspace.mindmapmode.VirtualFolderDropHandler;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
-import org.freeplane.plugin.workspace.model.project.IProjectSelectionListener;
-import org.freeplane.plugin.workspace.model.project.ProjectSelectionEvent;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 
 import com.sun.jna.platform.win32.Kernel32;
@@ -120,8 +118,7 @@ public class CoreConfiguration extends ALanguageController {
 	public static final String DOCUMENT_REPOSITORY_PATH = "@@literature_repository@@";
 	public static final String LIBRARY_PATH = "@@library_mindmaps@@"; 
 	private IControllerExecuteExtension docearExecutor;
-	private IProjectSelectionListener selectionListener; 
-		
+			
 	public CoreConfiguration() {			
 		LogUtils.info("org.docear.plugin.core.CoreConfiguration() initializing...");
 	}
@@ -275,6 +272,7 @@ public class CoreConfiguration extends ALanguageController {
 	protected void initMode(ModeController modeController) {
 		WorkspaceController.replaceAction(new DocearAddRepositoryPathAction());
 		WorkspaceController.replaceAction(new DocearRemoveRepositoryPathAction());
+		WorkspaceController.replaceAction(new DocearRemoveRepositoryPathRibbonAction());
 		WorkspaceController.replaceAction(new DocearLibraryOpenLocation());
 		WorkspaceController.replaceAction(new DocearNewProjectAction());
 		WorkspaceController.replaceAction(new DocearLibraryNewMindmap());
@@ -286,7 +284,6 @@ public class CoreConfiguration extends ALanguageController {
 		if(view != null) {
 			view.getTransferHandler().registerNodeDropHandler(FolderTypeLibraryNode.class, new VirtualFolderDropHandler());
 			view.getTransferHandler().registerNodeDropHandler(LiteratureRepositoryPathNode.class, new FileFolderDropHandler());
-			view.addProjectSelectionListener(getWSSelectionListener(modeController.getUserInputListenerFactory().getRibbonBuilder().getMapChangeAdapter()));
 		}
 		
 		DocearController.getController().getDocearEventLogger().appendToLog(this, DocearLogEvent.APPLICATION_STARTED);
@@ -322,20 +319,6 @@ public class CoreConfiguration extends ALanguageController {
 		
 		registerController(modeController);
 		UrlManager.getController().setLastCurrentDir(URIUtils.getAbsoluteFile(WorkspaceController.getModeExtension(modeController).getDefaultProjectHome()));	
-	}
-	
-	private IProjectSelectionListener getWSSelectionListener(final RibbonMapChangeAdapter mapChangeAdapter) {
-		if(selectionListener == null) {
-			selectionListener = new IProjectSelectionListener() {				
-				@Override
-				public void selectionChanged(ProjectSelectionEvent evt) {
-					if(mapChangeAdapter != null) {
-						mapChangeAdapter.selectionChanged(evt.getSelectedProject());
-					}
-				}
-			};
-		}
-		return selectionListener;
 	}
 
 	private void loadAndStoreVersion(Controller controller) {

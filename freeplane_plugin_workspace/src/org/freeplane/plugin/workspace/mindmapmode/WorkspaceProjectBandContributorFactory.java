@@ -48,6 +48,7 @@ public class WorkspaceProjectBandContributorFactory implements IRibbonContributo
 				}
 			}
 		});
+		
 	}
 	
 	/***********************************************************************************

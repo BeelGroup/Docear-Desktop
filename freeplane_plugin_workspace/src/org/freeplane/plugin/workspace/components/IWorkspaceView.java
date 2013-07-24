@@ -5,6 +5,7 @@ import java.awt.Component;
 import javax.swing.tree.TreePath;
 
 import org.freeplane.plugin.workspace.dnd.IWorkspaceTransferHandler;
+import org.freeplane.plugin.workspace.features.WorkspaceNodeSelectionHandler;
 import org.freeplane.plugin.workspace.handler.INodeTypeIconManager;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.project.IProjectSelectionListener;
@@ -35,4 +36,6 @@ public interface IWorkspaceView {
 	public boolean isPaintingEnabled();
 	
 	public void setPaintingEnabled(boolean enabled);
+	
+	public WorkspaceNodeSelectionHandler getNodeSelectionHandler();
 }

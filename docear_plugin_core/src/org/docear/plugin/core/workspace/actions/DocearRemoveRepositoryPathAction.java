@@ -10,6 +10,7 @@ import org.docear.plugin.core.workspace.node.FolderTypeLiteratureRepositoryNode;
 import org.docear.plugin.core.workspace.node.LiteratureRepositoryPathNode;
 import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.ui.components.UITools;
+import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.actions.AWorkspaceAction;
@@ -54,16 +55,13 @@ public class DocearRemoveRepositoryPathAction extends AWorkspaceAction {
 	 * REQUIRED METHODS FOR INTERFACES
 	 **********************************************************************************/
 	
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		AWorkspaceProject project = WorkspaceController.getCurrentProject();
+	public void actionPerformed(AWorkspaceProject project, AWorkspaceTreeNode... targetNodes) {
 		if(DocearWorkspaceProject.isCompatible(project)) {
 			FolderTypeLiteratureRepositoryNode litRepoNode = project.getExtensions(FolderTypeLiteratureRepositoryNode.class);
 			if(litRepoNode == null) {
 				return;
 			}
 			
-			AWorkspaceTreeNode[] targetNodes = getSelectedNodes(e);
 			if(targetNodes == null || targetNodes.length == 0) {
 				return;
 			}
@@ -95,8 +93,21 @@ public class DocearRemoveRepositoryPathAction extends AWorkspaceAction {
 					view.refreshView();
 				}
 			}
-			
 		}
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		try {
+    		AWorkspaceProject project = WorkspaceController.getCurrentProject();
+    		AWorkspaceTreeNode[] targetNodes = getSelectedNodes(e);
+    		
+    		actionPerformed(project, targetNodes);
+		}
+		catch(Exception ex) {
+			LogUtils.warn("DocearRemoveRepositoryPathAction.actionPerformed(): " + ex.getMessage());
+		}
+		
 
 	}
 }

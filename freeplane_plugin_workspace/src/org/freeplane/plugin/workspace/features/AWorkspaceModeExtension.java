@@ -116,6 +116,10 @@ public abstract class AWorkspaceModeExtension implements IExtension {
 			
 			public void addProjectSelectionListener(IProjectSelectionListener projectSelectionListener) {
 			}
+
+			public WorkspaceNodeSelectionHandler getNodeSelectionHandler() {
+				return new WorkspaceNodeSelectionHandler();
+			}
 		};
 	}
 	
