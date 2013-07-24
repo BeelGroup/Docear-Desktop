@@ -1254,43 +1254,30 @@ public class PdfUtilitiesController extends ALanguageController {
 		try {
 			
 			String line;
-			if(filter.isPdfXChange(readerCommand)){
-				boolean ret = false;
+			if(filter.isPdfXChange(readerCommand)){				
 				exportRegistryKey("HKEY_CURRENT_USER\\Software\\Tracker Software\\PDFViewer\\Documents", exportFile);
 				BufferedReader reader = new BufferedReader(new FileReader(exportFile));
+				
+				exportRegistryKey("HKEY_CURRENT_USER\\Software\\Tracker Software\\PDFViewer\\Commenting", exportFile);
+				reader = new BufferedReader(new FileReader(exportFile));
+				int found = 0;
 				try {
 					while ((line = reader.readLine()) != null) {
-						if ("\"SaveMethod\"=dword:00000002".equals(line.trim())) {
-							ret = true;
-							break;
+						if ("\"CopySelTextToDrawingPopup\"=dword:00000001".equals(line.trim())) {
+							found++;
+						}
+						else if ("\"CopySelTextToHilightPopup\"=dword:00000001".equals(line.trim())) {
+							found++;
+						}
+						if (found == 2) {
+							return true;
 						}
 					}
 				}
 				finally {
 					reader.close();
 				}
-	
-				if (ret) {
-					exportRegistryKey("HKEY_CURRENT_USER\\Software\\Tracker Software\\PDFViewer\\Commenting", exportFile);
-					reader = new BufferedReader(new FileReader(exportFile));
-					int found = 0;
-					try {
-						while ((line = reader.readLine()) != null) {
-							if ("\"CopySelTextToDrawingPopup\"=dword:00000001".equals(line.trim())) {
-								found++;
-							}
-							else if ("\"CopySelTextToHilightPopup\"=dword:00000001".equals(line.trim())) {
-								found++;
-							}
-							if (found == 2) {
-								return true;
-							}
-						}
-					}
-					finally {
-						reader.close();
-					}
-				}
+				
 			}
 			if(filter.isAcrobat(readerCommand)){
 				exportRegistryKey("HKEY_CURRENT_USER\\Software\\Adobe\\Adobe Acrobat\\10.0\\Annots\\cPrefs", exportFile);
