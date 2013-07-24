@@ -51,6 +51,7 @@ import org.freeplane.plugin.workspace.actions.NodeRefreshAction;
 import org.freeplane.plugin.workspace.actions.NodeRemoveAction;
 import org.freeplane.plugin.workspace.actions.NodeRenameAction;
 import org.freeplane.plugin.workspace.actions.PhysicalFolderSortOrderAction;
+import org.freeplane.plugin.workspace.actions.ProjectOpenLocationAction;
 import org.freeplane.plugin.workspace.actions.WorkspaceCollapseAction;
 import org.freeplane.plugin.workspace.actions.WorkspaceExpandAction;
 import org.freeplane.plugin.workspace.actions.WorkspaceImportProjectAction;
@@ -290,6 +291,7 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 		WorkspaceController.addAction(new NodeNewFolderAction());
 		WorkspaceController.addAction(new NodeNewLinkAction());
 		WorkspaceController.addAction(new NodeOpenLocationAction());
+		WorkspaceController.addAction(new ProjectOpenLocationAction());
 		
 		//WORKSPACE - fixed: #332
 		WorkspaceController.addAction(new NodeCutAction());
