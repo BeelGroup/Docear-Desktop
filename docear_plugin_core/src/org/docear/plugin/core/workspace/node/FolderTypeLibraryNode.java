@@ -55,7 +55,7 @@ public class FolderTypeLibraryNode extends AFolderNode implements ILibraryReposi
 	
 	public FolderTypeLibraryNode(String type) {
 		super(type);
-		DocearController.getController().addDocearEventListener(this);
+		DocearController.getController().getEventQueue().addEventListener(this);
 		WorkspaceController.getCurrentModel().addTreeModelListener(this);
 	}	
 	

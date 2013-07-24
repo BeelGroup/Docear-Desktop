@@ -11,9 +11,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.Vector;
 
 import org.docear.plugin.core.event.DocearEvent;
+import org.docear.plugin.core.event.DocearEventQueue;
 import org.docear.plugin.core.event.DocearEventType;
 import org.docear.plugin.core.event.IDocearEventListener;
 import org.docear.plugin.core.features.DocearLifeCycleObserver;
@@ -48,10 +48,8 @@ public class DocearController implements IDocearEventListener {
 	private final SemaphoreController semaphoreController = new SemaphoreController();
 	
 	private final DocearEventLogger docearEventLogger = new DocearEventLogger();
-	
-	private final Vector<IDocearEventListener> docearListeners = new Vector<IDocearEventListener>();		
 	private final static DocearController docearController = new DocearController();
-	
+	private final DocearEventQueue eventQueue = new DocearEventQueue();
 	private final Set<String> workingThreads = new HashSet<String>();
 	private final boolean firstRun;
 	private boolean applicationShutdownAborted = false;
@@ -73,7 +71,7 @@ public class DocearController implements IDocearEventListener {
 	protected DocearController() {
 		firstRun = !DocearController.getPropertiesController().getBooleanProperty(DOCEAR_FIRST_RUN_PROPERTY);
 		setApplicationIdentifiers();
-		addDocearEventListener(this);
+		eventQueue.addEventListener(this);
 	}
 	/***********************************************************************************
 	 * METHODS
@@ -81,6 +79,10 @@ public class DocearController implements IDocearEventListener {
 
 	public boolean isDocearFirstStart() {
 		return firstRun;
+	}
+	
+	public DocearEventQueue getEventQueue() {
+		return eventQueue;
 	}
 	
 	public boolean isLicenseDialogNecessary() {		
@@ -168,27 +170,7 @@ public class DocearController implements IDocearEventListener {
 		}
 	}
 		
-	public void addDocearEventListener(IDocearEventListener listener) {
-		if(this.docearListeners.contains(listener)) {
-			return;
-		}
-		this.docearListeners.add(listener);
-	}
 	
-	public void removeDocearEventListener(IDocearEventListener listener) {
-		this.docearListeners.remove(listener);
-	}
-	
-	public void removeAllDocearEventListeners() {
-		this.docearListeners.removeAllElements();
-	}
-	
-	public void dispatchDocearEvent(DocearEvent event) {
-		//LogUtils.info("DOCEAR: dispatchEvent: "+ event);
-		for(IDocearEventListener listener : this.docearListeners) {
-			listener.handleEvent(event);
-		}
-	}
 		
 	public DocearEventLogger getDocearEventLogger() {
 		return this.docearEventLogger;
@@ -241,7 +223,7 @@ public class DocearController implements IDocearEventListener {
 	}
 	
 	public boolean shutdown() {	
-		dispatchDocearEvent(new DocearEvent(this, null, DocearEventType.APPLICATION_CLOSING));
+		getEventQueue().dispatchEvent(new DocearEvent(this, null, DocearEventType.APPLICATION_CLOSING));
 		
 		Controller.getCurrentController().getViewController().saveProperties();
 		DocearController.getPropertiesController().saveProperties();
@@ -250,7 +232,7 @@ public class DocearController implements IDocearEventListener {
 			return false;
 		}
 		if(Controller.getCurrentController().getViewController().quit()) {
-			dispatchDocearEvent(new DocearEvent(this, null, DocearEventType.FINISH_THREADS));
+			getEventQueue().dispatchEvent(new DocearEvent(this, null, DocearEventType.FINISH_THREADS));
 			if(!waitThreadsReady()){
 				return false;
 			}

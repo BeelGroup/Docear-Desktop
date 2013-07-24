@@ -217,7 +217,7 @@ public class RecommendationsView extends JPanel {
 				}
 				else if(e.getID() == RecommendationEntryComponent.IMPORT_RECOMMENDATION) {
 					//WORKSPACE - DOCEAR todo: change EventType -> recommendations are project independent, so there is no specific library
-					DocearController.getController().dispatchDocearEvent(new DocearEvent(page, null, DocearEventType.IMPORT_TO_LIBRARY, recommendation.getTitle()));
+					DocearController.getController().getEventQueue().dispatchEvent(new DocearEvent(page, null, DocearEventType.IMPORT_TO_LIBRARY, recommendation.getTitle()));
 				}
 			}
 

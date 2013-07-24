@@ -5,8 +5,6 @@ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -65,7 +63,7 @@ public class UploadController extends ADocearServiceFeature {
 	private final Set<File> uploadFiles = new HashSet<File>();
 	
 	public UploadController() {
-		DocearController.getController().addDocearEventListener(new IDocearEventListener() {		
+		DocearController.getController().getEventQueue().addEventListener(new IDocearEventListener() {		
 			public void handleEvent(DocearEvent event) {
 				if (event.getType() == DocearEventType.APPLICATION_CLOSING) {
 					shutdown();

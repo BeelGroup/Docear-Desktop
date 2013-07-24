@@ -48,6 +48,10 @@ public class DocearUserController extends ADocearServiceFeature {
 	 **********************************************************************************/
 	public DocearUserController() {
 		initListeners();
+		setupLastUser();
+	}
+
+	protected void setupLastUser() {
 		String name = DocearController.getPropertiesController().getProperty(DOCEAR_CONNECTION_USERNAME_PROPERTY);//ResourceController.getResourceController().getProperty(DOCEAR_CONNECTION_USERNAME_PROPERTY);
 		DocearUser user = loadUser(name);
 		user.activate();
@@ -150,10 +154,13 @@ public class DocearUserController extends ADocearServiceFeature {
 	}
 	
 	private void initListeners() {
-		DocearController.getController().addDocearEventListener(new IDocearEventListener() {
+		DocearController.getController().getEventQueue().addEventListener(new IDocearEventListener() {
 
 			public void handleEvent(DocearEvent event) {
-				if (event.getSource().equals(connectionBar) && WorkspaceDocearServiceConnectionBar.ACTION_COMMAND_TOGGLE_CONNECTION_STATE.equals(event.getEventObject())) {
+				if(event.getEventObject() instanceof LoadWorkspaceEvent) {
+					((Runnable) event.getEventObject()).run();
+				}
+				else if (event.getSource().equals(connectionBar) && WorkspaceDocearServiceConnectionBar.ACTION_COMMAND_TOGGLE_CONNECTION_STATE.equals(event.getEventObject())) {
 					DocearUser user = getActiveUser();
 					user.toggleTransmissionEnabled();
 				}
@@ -194,7 +201,7 @@ public class DocearUserController extends ADocearServiceFeature {
 					}
 					adjustInfoBarConnectionState((DocearUser) event.getUser());
 					ServiceController.getConnectionController().setDefaultHeader("accessToken", ((DocearUser) event.getUser()).getAccessToken());
-					WorkspaceController.load();
+					DocearController.getController().getEventQueue().invoke(new DocearEvent(this, new LoadWorkspaceEvent()));
 				}
 				else {
 					getActiveUser().activate();

@@ -82,6 +82,7 @@ public class ServiceController {
 		try {
 			registerFeatureController(feature.getClass(), feature);
 			feature.installDefaults(Controller.getCurrentModeController());
+			LogUtils.info("Docear Service feature installed: "+feature.getClass().getName());
 		} catch (AlreadyRegisteredException e) {
 			LogUtils.warn(e);
 		}
@@ -123,7 +124,7 @@ public class ServiceController {
 		if (defaults == null) throw new RuntimeException("cannot open " + ResourceController.PLUGIN_DEFAULTS_RESOURCE);
 		Controller.getCurrentController().getResourceController().addDefaults(defaults);
 		
-		DocearController.getController().addDocearEventListener(new IDocearEventListener() {		
+		DocearController.getController().getEventQueue().addEventListener(new IDocearEventListener() {		
 			public void handleEvent(DocearEvent event) {
 				if (event.getType() == DocearEventType.APPLICATION_CLOSING) {
 					shutdown();

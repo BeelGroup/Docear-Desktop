@@ -39,7 +39,7 @@ public class AddRecommendedDocumentAction extends AFreeplaneAction implements ID
 
 	public AddRecommendedDocumentAction() {
 		super(key);
-		DocearController.getController().addDocearEventListener(this);
+		DocearController.getController().getEventQueue().addEventListener(this);
 	}
 
 	@Override

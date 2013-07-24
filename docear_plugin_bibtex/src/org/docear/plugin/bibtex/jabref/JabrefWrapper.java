@@ -496,7 +496,7 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 					SaveDatabaseAction saveAction = new SaveDatabaseAction(handle.getBasePanel());
 					saveAction.runCommand();
 					if (saveAction.isCancelled() || !saveAction.isSuccess()) {						
-						DocearController.getController().dispatchDocearEvent(new DocearEvent(this, null, DocearEventType.APPLICATION_CLOSING_ABORTED));
+						DocearController.getController().getEventQueue().dispatchEvent(new DocearEvent(this, null, DocearEventType.APPLICATION_CLOSING_ABORTED));
 					}
 					DocearController.getController().removeWorkingThreadHandle("ReferenceQuitAction");
 				}

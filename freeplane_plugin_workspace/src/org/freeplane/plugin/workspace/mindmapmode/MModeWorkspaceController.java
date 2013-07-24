@@ -224,7 +224,7 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 //	}
 	
 	private void setupModel(ModeController modeController) {
-		getModel();
+		load();
 	}
 
 	private void setupView(ModeController modeController) {

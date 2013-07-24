@@ -84,6 +84,7 @@ import org.freeplane.plugin.workspace.features.AWorkspaceModeExtension;
 import org.freeplane.plugin.workspace.features.ProjectURLHandler;
 import org.freeplane.plugin.workspace.model.WorkspaceModelEvent;
 import org.freeplane.plugin.workspace.model.WorkspaceModelListener;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.model.project.IProjectSelectionListener;
 import org.freeplane.plugin.workspace.model.project.ProjectSelectionEvent;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
@@ -155,7 +156,8 @@ public class ReferencesController extends ALanguageController implements IDocear
 		this.addMenuEntries();
 		this.registerListeners();
 
-		this.initJabref();		
+		this.initJabref();
+		//setupInitialProjects(modeController);
 	}
 
 	private void setPreferencesForDocear() {
@@ -186,7 +188,7 @@ public class ReferencesController extends ALanguageController implements IDocear
 		this.modeController.getMapController().addMapChangeListener(changeListenerAdapter);
 		DocearController.getController().getLifeCycleObserver().addMapLifeCycleListener(changeListenerAdapter);
 		
-		DocearController.getController().addDocearEventListener(this);
+		DocearController.getController().getEventQueue().addEventListener(this);
 		Controller.getCurrentController().addAction(new AddRecommendedDocumentAction());
 	}
 	
@@ -290,6 +292,23 @@ public class ReferencesController extends ALanguageController implements IDocear
 				WorkspacePopupMenuBuilder.insertAction(popupMenu, WorkspacePopupMenuBuilder.SEPARATOR, 1);
 			}
 		});
+	}
+	
+	private void setupInitialProjects(ModeController modeController) {
+		for (AWorkspaceProject project : WorkspaceController.getModeExtension(modeController).getModel().getProjects()) {
+			if(project instanceof DocearWorkspaceProject) {
+				try {
+					final File file = URIUtils.getFile(ProjectURLHandler.resolve(project, ((DocearWorkspaceProject)project).getBibtexDatabase().toURL()).toURI());
+					if(file == null) {
+						return;
+					}
+					addOrUpdateProjectExtension((DocearWorkspaceProject) project, null);
+				} catch (Exception e) {
+					LogUtils.warn(e);
+				}
+			}
+		}
+		
 	}
 	
 	private void addOrUpdateProjectExtension(DocearWorkspaceProject project, JabRefBaseHandle handle) {

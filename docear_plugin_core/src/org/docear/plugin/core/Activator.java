@@ -33,6 +33,7 @@ public class Activator extends WorkspaceDependingService {
         
 		getConfig().initMode(modeController);		
 		startPluginServices(context, modeController);
+		DocearController.getController().getEventQueue().start();
 	}
 	
 	protected Collection<IWorkspaceDependingControllerExtension> getControllerExtensions() {

@@ -38,7 +38,7 @@ public class FiletransferClient {
 		if (!ServiceController.getCurrentUser().isTransmissionEnabled() || !ServiceController.getCurrentUser().isOnline() || file == null) {
 			return false;
 		}
-		DocearController.getController().dispatchDocearEvent(new DocearEvent(this.getClass(), START_UPLOAD));
+		DocearController.getController().getEventQueue().dispatchEvent(new DocearEvent(this.getClass(), START_UPLOAD));
 		FileInputStream inStream = null;
 		try {
 			inStream = new FileInputStream(file);
@@ -75,12 +75,12 @@ public class FiletransferClient {
 			}
 		}
 		catch(ClientHandlerException ex) {
-			DocearController.getController().dispatchDocearEvent(new DocearEvent(this.getClass(), NO_CONNECTION));
+			DocearController.getController().getEventQueue().dispatchEvent(new DocearEvent(this.getClass(), NO_CONNECTION));
 			throw new DocearServiceException("no connection to the server", DocearServiceExceptionType.NO_CONNECTION);
 		}
 		catch (Exception ex) {
 			LogUtils.warn("Could not upload "+ file.getPath(), ex);
-			DocearController.getController().dispatchDocearEvent(new DocearEvent(this.getClass(), STOP_UPLOAD));
+			DocearController.getController().getEventQueue().dispatchEvent(new DocearEvent(this.getClass(), STOP_UPLOAD));
 			return false;
 		}
 		finally {
@@ -90,7 +90,7 @@ public class FiletransferClient {
 			catch (Exception e) {				
 			}
 		}
-		DocearController.getController().dispatchDocearEvent(new DocearEvent(this.getClass(), STOP_UPLOAD));
+		DocearController.getController().getEventQueue().dispatchEvent(new DocearEvent(this.getClass(), STOP_UPLOAD));
 		return true;
 	}
 	

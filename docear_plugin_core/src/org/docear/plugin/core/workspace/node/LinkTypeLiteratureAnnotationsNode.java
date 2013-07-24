@@ -125,7 +125,7 @@ public class LinkTypeLiteratureAnnotationsNode extends ALinkNode implements IWor
 				try {
 					if(mapIO.newMap(f.toURI().toURL())) {
 						DocearEvent evnt = new DocearEvent(this, (DocearWorkspaceProject) WorkspaceController.getCurrentModel().getProject(getModel()), DocearEventType.NEW_LITERATURE_ANNOTATIONS, Controller.getCurrentController().getMap());
-						DocearController.getController().dispatchDocearEvent(evnt);
+						DocearController.getController().getEventQueue().dispatchEvent(evnt);
 					}
 				}
 				catch (Exception e) {

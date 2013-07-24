@@ -193,7 +193,7 @@ public class DocearNodeDropListener extends MNodeDropListener {
 											}	
 							            	
 							            	DocearEvent event = new DocearEvent(newNode, (DocearWorkspaceProject) WorkspaceController.getProject(newNode.getMap()), DocearEventType.MINDMAP_ADD_PDF_TO_NODE, true);
-							            	DocearController.getController().dispatchDocearEvent(event);
+							            	DocearController.getController().getEventQueue().dispatchEvent(event);
 						            	}
 						            	catch (Exception e) {
 						            		LogUtils.severe(e);

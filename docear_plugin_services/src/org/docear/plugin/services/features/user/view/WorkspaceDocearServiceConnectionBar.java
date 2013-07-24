@@ -55,7 +55,7 @@ public class WorkspaceDocearServiceConnectionBar extends JToolBar {
 		public void mouseEntered(MouseEvent e) {}
 		
 		public void mouseClicked(MouseEvent e) {
-			DocearController.getController().dispatchDocearEvent(new DocearEvent(CONNECTION_BAR_CLICKED, e));
+			DocearController.getController().getEventQueue().dispatchEvent(new DocearEvent(CONNECTION_BAR_CLICKED, e));
 		}
 	}; 
 	
@@ -71,7 +71,7 @@ public class WorkspaceDocearServiceConnectionBar extends JToolBar {
 		button = add(new AbstractAction("Connection", onIcon) {
 			private static final long serialVersionUID = 1L;
 			public void actionPerformed(ActionEvent e) {
-				DocearController.getController().dispatchDocearEvent(new DocearEvent(WorkspaceDocearServiceConnectionBar.this, ACTION_COMMAND_TOGGLE_CONNECTION_STATE));				
+				DocearController.getController().getEventQueue().dispatchEvent(new DocearEvent(WorkspaceDocearServiceConnectionBar.this, ACTION_COMMAND_TOGGLE_CONNECTION_STATE));				
 			}
 		});
 		configureComponent(button);

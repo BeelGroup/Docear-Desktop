@@ -100,7 +100,6 @@ public class CoreConfiguration extends ALanguageController {
 	private static final String DOCEAR = "Docear";
 	private static final String APPLICATION_NAME = "ApplicationName";
 	private static final String DOCUMENTATION_ACTION = "DocumentationAction";
-	private static final String DOCEAR_WEB_DOCU_LOCATION = "docear_webDocuLocation";
 	private static final String WEB_DOCU_LOCATION = "webDocuLocation";
 	private static final String REQUEST_FEATURE_ACTION = "RequestFeatureAction";
 	private static final String DOCEAR_FEATURE_TRACKER_LOCATION = "docear_featureTrackerLocation";
@@ -591,7 +590,7 @@ public class CoreConfiguration extends ALanguageController {
 		modeController.getMapController().addMapChangeListener(adapter);
 		modeController.getMapController().addNodeChangeListener(adapter);
 		modeController.getMapController().addNodeSelectionListener(adapter);
-		DocearController.getController().addDocearEventListener(adapter);
+		DocearController.getController().getEventQueue().addEventListener(adapter);
 //		Controller.getCurrentController().getMapViewManager().addMapViewChangeListener(adapter);
 //		Controller.getCurrentController().getMapViewManager().addMapViewChangeListener(new MapLifeCycleAndViewListener());
 		WorkspaceController.getModeExtension(modeController).getIOController().registerNodeActionListener(AWorkspaceTreeNode.class, WorkspaceActionEvent.WSNODE_OPEN_DOCUMENT, new WorkspaceOpenDocumentListener());

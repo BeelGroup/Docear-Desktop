@@ -2,6 +2,7 @@ package org.freeplane.plugin.workspace.model;
 
 import java.awt.Toolkit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -293,7 +294,7 @@ public abstract class WorkspaceModel implements TreeModel {
 	}
 	
 	public List<AWorkspaceProject> getProjects() {
-		return this.projects;
+		return Collections.unmodifiableList(this.projects);
 	}
 
 	public static WorkspaceModel createDefaultModel() {

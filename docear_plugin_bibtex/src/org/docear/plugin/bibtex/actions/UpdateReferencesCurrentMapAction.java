@@ -23,7 +23,7 @@ public class UpdateReferencesCurrentMapAction extends AFreeplaneAction implement
 
 	public UpdateReferencesCurrentMapAction() {
 		super(KEY);
-		DocearController.getController().addDocearEventListener(this);
+		DocearController.getController().getEventQueue().addEventListener(this);
 	}
 
 	public void actionPerformed(ActionEvent e) {

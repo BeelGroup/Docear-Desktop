@@ -135,6 +135,7 @@ import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.mindmapmode.MModeWorkspaceUrlManager;
 import org.freeplane.plugin.workspace.model.WorkspaceModelEvent;
 import org.freeplane.plugin.workspace.model.WorkspaceModelListener;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.model.project.IProjectModelListener;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
@@ -1074,7 +1075,7 @@ public class PdfUtilitiesController extends ALanguageController {
 
 		modeController.getMapController().addNodeSelectionListener(new DocearNodeSelectionListener());
 
-		DocearController.getController().addDocearEventListener(new IDocearEventListener() {
+		DocearController.getController().getEventQueue().addEventListener(new IDocearEventListener() {
 
 			public void handleEvent(DocearEvent event) {
 				if (DocearEventType.NEW_INCOMING.equals(event.getType())) {
@@ -1112,11 +1113,20 @@ public class PdfUtilitiesController extends ALanguageController {
 		showViewerSelectionIfNecessary();
 		
 		WorkspaceController.getCurrentModel().addWorldModelListener(new DefaultWorkspaceModelListener());
+		//setupInitialProjects(modeController);
 
 		modeController.getMapController().addNodeChangeListener(new PdfNodeChangeListener());		
 		DocearAutoMonitoringListener autoMonitoringListener = new DocearAutoMonitoringListener();
 		DocearController.getController().getLifeCycleObserver().addMapLifeCycleListener(autoMonitoringListener);
 		Controller.getCurrentController().getViewController().getJFrame().addWindowFocusListener(autoMonitoringListener);
+	}
+
+	private void setupInitialProjects(ModeController modeController) {
+		for (AWorkspaceProject project : WorkspaceController.getModeExtension(modeController).getModel().getProjects()) {
+			project.getModel().removeProjectModelListener(getProjectModelListener());
+			project.getModel().addProjectModelListener(getProjectModelListener());
+		}
+		
 	}
 
 	private IProjectModelListener getProjectModelListener() {

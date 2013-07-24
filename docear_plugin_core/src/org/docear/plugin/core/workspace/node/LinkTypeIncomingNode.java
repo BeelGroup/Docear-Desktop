@@ -123,7 +123,7 @@ public class LinkTypeIncomingNode extends ALinkNode implements IWorkspaceNodeAct
 					}
 					else {
 						DocearEvent evnt = new DocearEvent(this, (DocearWorkspaceProject) WorkspaceController.getCurrentModel().getProject(getModel()), DocearEventType.NEW_INCOMING, map);
-						DocearController.getController().dispatchDocearEvent(evnt);
+						DocearController.getController().getEventQueue().dispatchEvent(evnt);
 						//DOCEAR - todo: remove when updating a node attribute is working correctly
 						Controller.getCurrentController().close(true);
 					}
@@ -136,7 +136,7 @@ public class LinkTypeIncomingNode extends ALinkNode implements IWorkspaceNodeAct
 					if(mapIO.newMap(f.toURI().toURL())) {
 						MapModel map = Controller.getCurrentController().getMap();						
 						DocearEvent evnt = new DocearEvent(this, (DocearWorkspaceProject) WorkspaceController.getCurrentModel().getProject(getModel()), DocearEventType.NEW_INCOMING, map);
-						DocearController.getController().dispatchDocearEvent(evnt);
+						DocearController.getController().getEventQueue().dispatchEvent(evnt);
 					}
 				}
 				catch (Exception e) {

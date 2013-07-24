@@ -128,7 +128,7 @@ public class LinkTypeMyPublicationsNode extends ALinkNode implements IWorkspaceN
 				try {
 					if(mapIO.newMap(f.toURI().toURL())) {
 						DocearEvent evnt = new DocearEvent(this, (DocearWorkspaceProject) WorkspaceController.getCurrentModel().getProject(getModel()), DocearEventType.NEW_MY_PUBLICATIONS, Controller.getCurrentController().getMap());
-						DocearController.getController().dispatchDocearEvent(evnt);
+						DocearController.getController().getEventQueue().dispatchEvent(evnt);
 					}
 				}
 				catch (Exception e) {
