@@ -45,11 +45,6 @@ public class AddNewReferenceAction extends AFreeplaneAction {
 		super(KEY);
 	}
 	
-	@Override
-	public void setEnabled() {
-		setEnabled(Controller.getCurrentModeController().getMapController().getSelectedNode() != null);
-	}
-
 	public void actionPerformed(ActionEvent e) {
 		Collection<NodeModel> nodes = Controller.getCurrentModeController().getMapController().getSelectedNodes();
 				
@@ -176,6 +171,18 @@ public class AddNewReferenceAction extends AFreeplaneAction {
 
 		JTabbedPane tabbedPane = (JTabbedPane) toolBar.getComponent(1);
 		tabbedPane.setSelectedComponent(ReferencesController.getController().getJabrefWrapper().getJabrefFrame());
+	}
+	
+	@Override
+	public void setEnabled() {
+		try {	
+    		NodeModel node = Controller.getCurrentModeController().getMapController().getSelectedNode();
+    		WorkspaceMapModelExtension modelExt = WorkspaceController.getMapModelExtension(node.getMap(), false);
+    		setEnabled(modelExt.getProject() != null);
+		}
+		catch (Exception e) {
+			setEnabled(false);
+		}
 	}
 
 }
