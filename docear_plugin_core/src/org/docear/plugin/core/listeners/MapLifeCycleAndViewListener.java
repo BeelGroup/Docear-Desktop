@@ -108,7 +108,7 @@ public class MapLifeCycleAndViewListener implements IMapLifeCycleListener, IMapV
 		}
 	}
 		
-	public void afterViewChange(Component oldView, Component newView) {
+	public void afterViewChange(Component oldView, Component newView) {		
 	}
 
 	public void afterViewClose(Component oldView) {
