@@ -18,6 +18,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import net.sf.jabref.BasePanel;
 import net.sf.jabref.BibtexDatabase;
@@ -47,6 +49,8 @@ import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.event.DocearEvent;
 import org.docear.plugin.core.event.DocearEventType;
 import org.docear.plugin.core.logger.DocearLogEvent;
+import org.docear.plugin.core.logging.DocearLogger;
+import org.docear.plugin.core.util.WinRegistry;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.Compat;
@@ -120,6 +124,17 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 	}
 
 	private void registerListeners() {
+		getJabrefFrame().getTabbedPane().addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				BasePanel bp = getJabrefFrame().basePanel();
+				if (bp != null) {
+					updateWindowsRegistry(bp.getFile());
+				}
+			}
+		});
+		
 		Controller.getCurrentController().getMapViewManager().addMapViewChangeListener(this);
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -178,7 +193,6 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 		}
 		else {
 			handle = openIt(file, raisePanel);
-			//updateWindowsRegistry(file);
 			if(handle != null) {
 				synchronized (baseHandles ) {
 					baseHandles.put(file, handle);
@@ -255,16 +269,16 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 	}
 
 	private void updateWindowsRegistry(File file) {
-//		if(Compat.isWindowsOS()) {
-//			try {
-//				WinRegistry.createKey(WinRegistry.HKEY_CURRENT_USER, "SOFTWARE\\Docear4Word");
-//				WinRegistry.writeStringValue(WinRegistry.HKEY_CURRENT_USER, "SOFTWARE\\Docear4Word", "BibTexDatabase", file.getAbsolutePath());
-//				WinRegistry.writeStringValue(WinRegistry.HKEY_CURRENT_USER, "ENVIRONMENT", "docear_bibtex_current", file.getAbsolutePath());
-//			} 
-//			catch (Exception e) {
-//				DocearLogger.warn("org.docear.plugin.bibtex.jabref.JabrefWrapper.updateWindowsRegistry(): "+e.getMessage());
-//			}
-//		}
+		if(Compat.isWindowsOS()) {
+			try {
+				WinRegistry.createKey(WinRegistry.HKEY_CURRENT_USER, "SOFTWARE\\Docear4Word");
+				WinRegistry.writeStringValue(WinRegistry.HKEY_CURRENT_USER, "SOFTWARE\\Docear4Word", "BibTexDatabase", file.getAbsolutePath());
+				WinRegistry.writeStringValue(WinRegistry.HKEY_CURRENT_USER, "ENVIRONMENT", "docear_bibtex_current", file.getAbsolutePath());
+			} 
+			catch (Exception e) {
+				DocearLogger.warn("org.docear.plugin.bibtex.jabref.JabrefWrapper.updateWindowsRegistry(): "+e.getMessage());
+			}
+		}
 	}
 
 	private JabRefBaseHandle openIt(File file, boolean raisePanel) {

@@ -10,6 +10,7 @@ import net.sf.jabref.BasePanel;
 import net.sf.jabref.BibtexEntry;
 import net.sf.jabref.export.DocearReferenceUpdateController;
 
+import org.docear.plugin.bibtex.JabRefProjectExtension;
 import org.docear.plugin.bibtex.ReferenceUpdater;
 import org.docear.plugin.bibtex.ReferencesController;
 import org.docear.plugin.bibtex.jabref.JabRefAttributes;
@@ -26,10 +27,19 @@ import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeChangeEvent;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.url.UrlManager;
+import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.features.WorkspaceMapModelExtension;
 
 public class MapChangeListenerAdapter extends AMapChangeListenerAdapter {
 
 	public void mapChanged(MapChangeEvent event) {
+		try {
+			WorkspaceMapModelExtension wmme = WorkspaceController.getMapModelExtension(event.getMap());
+			wmme.getProject().getExtensions(JabRefProjectExtension.class).selectBasePanel();
+		}
+		catch(Exception e) {
+			LogUtils.warn("MapChangeListenerAdapter.mapChanged(): "+e.getMessage());
+		}
 	}
 
 	public void onNodeDeleted(NodeModel parent, NodeModel child, int index) {
