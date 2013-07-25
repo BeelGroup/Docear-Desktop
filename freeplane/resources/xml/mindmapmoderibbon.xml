@@ -458,7 +458,16 @@
 
 		<!-- VIEW -->
 		<ribbon_task name="view">
-		    <ribbon_contributor	name="zoomContributor" />	
+		    <ribbon_contributor	name="zoomContributor" />
+		    <ribbon_band name="view_mode" resize_policies="Mirror">
+			    <ribbon_action action="ToggleRibbonAction" priority="top" accelerator="control R"/>
+			    <ribbon_action action="CenterSelectedNodeAction" priority="top" >
+			        <ribbon_action action="SetBooleanPropertyAction.center_selected_node" />
+			    </ribbon_action>
+				<ribbon_action action="ViewLayoutTypeAction.OUTLINE" />
+				<ribbon_action action="ToggleFullScreenAction"/>
+                <ribbon_action action="SetBooleanPropertyAction.presentation_mode" />
+			</ribbon_band>	
 			<ribbon_band name="elements" resize_policies="Mirror">
                 <ribbon_action action="ToggleDetailsAction" accelerator="alt F2" />
 				<ribbon_action name="attribute_options" priority="top">
@@ -492,16 +501,7 @@
 				<ribbon_action action="ToggleLeftToolbarAction" priority="top"/>
 				<ribbon_action action="ToggleStatusAction" />
 				<ribbon_action action="ToggleScrollbarsAction"/>
-			</ribbon_band>
-			<ribbon_band name="view_mode" resize_policies="Mirror">
-			    <ribbon_action action="ToggleRibbonAction" priority="top" accelerator="control R"/>
-			    <ribbon_action action="CenterSelectedNodeAction" priority="top" >
-			        <ribbon_action action="SetBooleanPropertyAction.center_selected_node" />
-			    </ribbon_action>
-				<ribbon_action action="ViewLayoutTypeAction.OUTLINE" />
-				<ribbon_action action="ToggleFullScreenAction"/>
-                <ribbon_action action="SetBooleanPropertyAction.presentation_mode" />
-			</ribbon_band>
+			</ribbon_band>			
 			<ribbon_band name="view_misc" resize_policies="Mirror">
 				<ribbon_action action="ShowSelectionAsRectangleAction" />
 				<ribbon_action action="SetBooleanPropertyAction.highlight_formulas" />
