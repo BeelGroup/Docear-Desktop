@@ -1,5 +1,6 @@
 package org.freeplane.core.ui.ribbon.special;
 
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -10,14 +11,18 @@ import javax.swing.KeyStroke;
 import org.freeplane.core.resources.SetBooleanPropertyAction;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.ribbon.ARibbonContributor;
+import org.freeplane.core.ui.ribbon.CurrentState;
+import org.freeplane.core.ui.ribbon.IChangeObserver;
 import org.freeplane.core.ui.ribbon.IRibbonContributorFactory;
 import org.freeplane.core.ui.ribbon.RibbonActionContributorFactory;
 import org.freeplane.core.ui.ribbon.RibbonActionContributorFactory.ActionAcceleratorChangeListener;
+import org.freeplane.core.ui.ribbon.RibbonActionContributorFactory.ActionChangeListener;
 import org.freeplane.core.ui.ribbon.RibbonBuildContext;
 import org.freeplane.core.ui.ribbon.RibbonBuilder;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.view.swing.map.MapViewController;
+import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
 import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandButton.CommandButtonKind;
@@ -59,13 +64,15 @@ public class ZoomContributorFactory implements IRibbonContributorFactory {
 				}				
 				JFlowRibbonBand band = new JFlowRibbonBand(TextUtils.getText("ribbon.band.zoom"), null, null);
 				
-				JComboBox zoomBox = ((MapViewController) Controller.getCurrentController().getMapViewManager()).createZoomBox();				
+				JComboBox zoomBox = ((MapViewController) Controller.getCurrentController().getMapViewManager()).createZoomBox();
+				addDefaultToggleHandler(context,zoomBox);
 				band.addFlowComponent(zoomBox);
 				
 				AFreeplaneAction action = context.getBuilder().getMode().getAction("FitToPage");				
 				JCommandButton button = RibbonActionContributorFactory.createCommandButton(action);				
 				button.setDisplayState(CommandButtonDisplayState.MEDIUM);
 				getAccelChangeListener().addAction(action.getKey(), button);
+				addDefaultToggleHandler(context, action, button);
 				band.addFlowComponent(button);
 				
 				action = context.getBuilder().getMode().getAction("CenterSelectedNodeAction");
@@ -85,6 +92,7 @@ public class ZoomContributorFactory implements IRibbonContributorFactory {
 						return popupmenu;
 					}
 				});
+				addDefaultToggleHandler(context, action, button);
 				band.addFlowComponent(button);
 				
 				button = new JCommandButton(TextUtils.getText("menu_viewmode"));
@@ -98,38 +106,39 @@ public class ZoomContributorFactory implements IRibbonContributorFactory {
     					JCommandToggleMenuButton toggleButton = RibbonActionContributorFactory.createCommandToggleMenuButton(action);
     					getAccelChangeListener().addAction(action.getKey(), toggleButton);
     					KeyStroke ks = context.getBuilder().getAcceleratorManager().getAccelerator(action.getKey());
-    					RibbonActionContributorFactory.updateRichTooltip(toggleButton, action, ks);
+    					RibbonActionContributorFactory.updateRichTooltip(toggleButton, action, ks);    					
     					popupmenu.addMenuButton(toggleButton);
     					
     					action = context.getBuilder().getMode().getAction("ToggleFullScreenAction");
     					toggleButton = RibbonActionContributorFactory.createCommandToggleMenuButton(action);
     					ks = context.getBuilder().getAcceleratorManager().getAccelerator(action.getKey());
-    					RibbonActionContributorFactory.updateRichTooltip(toggleButton, action, ks);    					
+    					RibbonActionContributorFactory.updateRichTooltip(toggleButton, action, ks);
     					popupmenu.addMenuButton(toggleButton);
     					
     					SetBooleanPropertyAction presentationModeAction = (SetBooleanPropertyAction) context.getBuilder().getMode().getAction("SetBooleanPropertyAction.presentation_mode");    					
     					toggleButton = RibbonActionContributorFactory.createCommandToggleMenuButton(presentationModeAction);
     					toggleButton.getActionModel().setSelected(presentationModeAction.isPropertySet());
     					ks = context.getBuilder().getAcceleratorManager().getAccelerator(presentationModeAction.getKey());
-    					RibbonActionContributorFactory.updateRichTooltip(toggleButton, presentationModeAction, ks);
+    					RibbonActionContributorFactory.updateRichTooltip(toggleButton, presentationModeAction, ks);    					
     					popupmenu.addMenuButton(toggleButton);
     					
     					action = context.getBuilder().getMode().getAction("ShowSelectionAsRectangleAction");
     					toggleButton = RibbonActionContributorFactory.createCommandToggleMenuButton(action);
     					ks = context.getBuilder().getAcceleratorManager().getAccelerator(action.getKey());
-    					RibbonActionContributorFactory.updateRichTooltip(toggleButton, action, ks);
+    					RibbonActionContributorFactory.updateRichTooltip(toggleButton, action, ks);    					
     					popupmenu.addMenuButton(toggleButton);
     					
     					SetBooleanPropertyAction highlightFormulasAction = (SetBooleanPropertyAction) context.getBuilder().getMode().getAction("SetBooleanPropertyAction.highlight_formulas");
     					toggleButton = RibbonActionContributorFactory.createCommandToggleMenuButton(highlightFormulasAction);
     					toggleButton.getActionModel().setSelected(highlightFormulasAction.isPropertySet());
     					ks = context.getBuilder().getAcceleratorManager().getAccelerator(highlightFormulasAction.getKey());
-    					RibbonActionContributorFactory.updateRichTooltip(toggleButton, highlightFormulasAction, ks);
+    					RibbonActionContributorFactory.updateRichTooltip(toggleButton, highlightFormulasAction, ks);    					
     					popupmenu.addMenuButton(toggleButton);
     					
     					return popupmenu;
     				}
 				});
+				addDefaultToggleHandler(context, action, button);
 				band.addFlowComponent(button);
 				
 				
@@ -146,15 +155,22 @@ public class ZoomContributorFactory implements IRibbonContributorFactory {
 		};
 	}
 	
-	/***********************************************************************************
-	 * CONSTRUCTORS
-	 **********************************************************************************/
-
-	/***********************************************************************************
-	 * METHODS
-	 **********************************************************************************/
-
-	/***********************************************************************************
-	 * REQUIRED METHODS FOR INTERFACES
-	 **********************************************************************************/
+	private void addDefaultToggleHandler(final RibbonBuildContext context, final Component component) {
+		context.getBuilder().getMapChangeAdapter().addListener(new IChangeObserver() {
+			public void updateState(CurrentState state) {
+				if(state.isNodeChangeEvent()) {					
+				}
+				else if(state.allMapsClosed()) {					
+					component.setEnabled(false);
+				}
+				else {					
+					component.setEnabled(true);
+				}
+			}
+		});
+	}
+	
+	private void addDefaultToggleHandler(final RibbonBuildContext context, final AFreeplaneAction action, final AbstractCommandButton button) {		
+		context.getBuilder().getMapChangeAdapter().addListener(new ActionChangeListener(action, button));
+	}	
 }
