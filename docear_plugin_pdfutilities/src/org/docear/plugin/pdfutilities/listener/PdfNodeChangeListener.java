@@ -10,8 +10,10 @@ import org.docear.plugin.pdfutilities.features.AnnotationModel;
 import org.docear.plugin.pdfutilities.features.AnnotationNodeModel;
 import org.docear.plugin.pdfutilities.features.IAnnotation.AnnotationType;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
+import org.docear.plugin.pdfutilities.pdf.DocumentReadOnlyException;
 import org.docear.plugin.pdfutilities.pdf.PdfAnnotationImporter;
 import org.docear.plugin.pdfutilities.pdf.PdfFileFilter;
+import org.docear.plugin.pdfutilities.pdf.ReadOnlyExceptionWarningHandler;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.map.INodeChangeListener;
@@ -20,7 +22,6 @@ import org.freeplane.features.mode.Controller;
 import org.freeplane.plugin.workspace.URIUtils;
 
 import de.intarsys.pdf.cos.COSRuntimeException;
-import de.intarsys.pdf.parser.COSLoadException;
 
 public class PdfNodeChangeListener implements INodeChangeListener {
 
@@ -61,8 +62,19 @@ public class PdfNodeChangeListener implements INodeChangeListener {
 			AnnotationNodeModel annotation = AnnotationController.getAnnotationNodeModel(node);
 			if(annotation != null && annotation.getAnnotationType() != null && !annotation.getAnnotationType().equals(AnnotationType.PDF_FILE)){
 				try {
-					new PdfAnnotationImporter().renameAnnotation(annotation, event.getNewValue().toString());
-					System.gc();
+					ReadOnlyExceptionWarningHandler warningHandler = new ReadOnlyExceptionWarningHandler();
+					warningHandler.prepare();
+					while(warningHandler.retry()) {
+						try {
+							new PdfAnnotationImporter().renameAnnotation(annotation, event.getNewValue().toString());
+							System.gc();
+						} catch (DocumentReadOnlyException e) {
+							if(warningHandler.skip()) {
+								break;
+							}					
+							warningHandler.showDialog(URIUtils.getFile(annotation.getSource()));
+						}
+					}
 				} catch (IOException e) {
 					if(e.getMessage().equals("destination is read only")){ //$NON-NLS-1$
 						Object[] options = { TextUtils.getText("DocearRenameAnnotationListener.1"), TextUtils.getText("DocearRenameAnnotationListener.2"),TextUtils.getText("DocearRenameAnnotationListener.3") }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -78,8 +90,6 @@ public class PdfNodeChangeListener implements INodeChangeListener {
 					else{
 						LogUtils.severe("DocearRenameAnnotationListener IOException at Target("+node.getText()+"): ", e); //$NON-NLS-1$ //$NON-NLS-2$
 					}
-				} catch (COSLoadException e) {
-					LogUtils.severe("DocearRenameAnnotationListener COSLoadException at Target("+node.getText()+"): ", e); //$NON-NLS-1$ //$NON-NLS-2$
 				} catch (COSRuntimeException e) {
 					LogUtils.severe("DocearRenameAnnotationListener COSRuntimeException at Target("+node.getText()+"): ", e); //$NON-NLS-1$ //$NON-NLS-2$
 				}

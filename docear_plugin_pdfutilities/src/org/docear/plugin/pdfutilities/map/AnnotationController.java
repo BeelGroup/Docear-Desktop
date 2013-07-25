@@ -157,25 +157,31 @@ public class AnnotationController implements IExtension{
 			setModel(node, null);
 			return null;
 		}
+		//DOCEAR - FixMe: what about the source uri? 
 		AnnotationNodeModel model;
 		if(annotation != null && annotation.getAnnotationType() != null && !annotation.getAnnotationType().equals(AnnotationType.PDF_FILE)) {	
-			model = new AnnotationNodeModel(node, annotation.getObjectID(), annotation.getAnnotationType());
-			model.setSource(uri);
+			model = new AnnotationNodeModel(node, annotation);
+			//model.setSource(uri);
 			return model;
 		}		
-		if(annotation != null && file != null && annotation.getAnnotationType().equals(AnnotationType.PDF_FILE)){
-			model = new AnnotationNodeModel(node, 0, AnnotationType.PDF_FILE);
-			model.setSource(uri);
+		if(annotation != null && file != null && annotation.getAnnotationType().equals(AnnotationType.PDF_FILE)) {
+			model = new AnnotationNodeModel(node, annotation);
+			//model.setSource(uri);
 			return model; 
 		}		
 		if(annotation == null && file != null && file.getName().equals(node.getText()) && isPdfFile(file)){
-			model = new AnnotationNodeModel(node, 0, AnnotationType.PDF_FILE);
-			model.setSource(uri);
+			model = new AnnotationNodeModel(node, annotation);
+			model.setAnnotationType(AnnotationType.PDF_FILE);
+			//model.setSource(uri);
 			return model; 
 		}
 		if(annotation == null && file != null && file.getName().equals(node.getText()) && !isPdfFile(file)){
-			model = new AnnotationNodeModel(node, 0, AnnotationType.FILE);
-			model.setSource(uri);
+			if(annotation == null) {
+				annotation = new AnnotationModel(0);
+				((AnnotationModel)annotation).setSource(uri);
+			}
+			model = new AnnotationNodeModel(node, annotation);
+			model.setAnnotationType(AnnotationType.FILE);
 			return model; 
 		}
 		return null;

@@ -13,7 +13,9 @@ import org.docear.plugin.pdfutilities.features.AnnotationNodeModel;
 import org.docear.plugin.pdfutilities.features.IAnnotation;
 import org.docear.plugin.pdfutilities.features.IAnnotation.AnnotationType;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
+import org.docear.plugin.pdfutilities.pdf.DocumentReadOnlyException;
 import org.docear.plugin.pdfutilities.pdf.PdfAnnotationImporter;
+import org.docear.plugin.pdfutilities.pdf.ReadOnlyExceptionWarningHandler;
 import org.docear.plugin.pdfutilities.ui.conflict.ImportConflictDialog;
 import org.docear.plugin.pdfutilities.util.MonitoringUtils;
 import org.freeplane.core.ui.EnabledAction;
@@ -21,8 +23,6 @@ import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.plugin.workspace.URIUtils;
-
-import de.intarsys.pdf.parser.COSLoadException;
 
 @EnabledAction(checkOnNodeChange=true)
 public class ImportNewAnnotationsAction extends ImportAnnotationsAction {
@@ -49,22 +49,31 @@ public class ImportNewAnnotationsAction extends ImportAnnotationsAction {
 		else{
 			URI uri = URIUtils.getAbsoluteURI(selected);
             try {
-            	PdfAnnotationImporter importer = new PdfAnnotationImporter();            	
-				Collection<AnnotationModel> annotations = importer.importAnnotations(uri);				
-				Map<AnnotationID, Collection<AnnotationNodeModel>> oldAnnotations = MonitoringUtils.getOldAnnotationsFromCurrentMap();				
-				annotations = AnnotationController.markNewAnnotations(annotations, oldAnnotations);
-				Map<AnnotationID, Collection<IAnnotation>> conflicts = AnnotationController.getConflictedAnnotations(annotations, oldAnnotations);
-				if(conflicts.size() > 0){
-					ImportConflictDialog dialog = new ImportConflictDialog(Controller.getCurrentController().getViewController().getJFrame(), conflicts);
-					dialog.showDialog();
+            	PdfAnnotationImporter importer = new PdfAnnotationImporter();
+            	ReadOnlyExceptionWarningHandler warningHandler = new ReadOnlyExceptionWarningHandler();
+				warningHandler.prepare();
+				while(warningHandler.retry()) {
+					try {
+						Collection<AnnotationModel> annotations = importer.importAnnotations(uri);				
+						Map<AnnotationID, Collection<AnnotationNodeModel>> oldAnnotations = MonitoringUtils.getOldAnnotationsFromCurrentMap();				
+						annotations = AnnotationController.markNewAnnotations(annotations, oldAnnotations);
+						Map<AnnotationID, Collection<IAnnotation>> conflicts = AnnotationController.getConflictedAnnotations(annotations, oldAnnotations);
+						if(conflicts.size() > 0){
+							ImportConflictDialog dialog = new ImportConflictDialog(Controller.getCurrentController().getViewController().getJFrame(), conflicts);
+							dialog.showDialog();
+						}
+						//System.gc();
+		                MonitoringUtils.insertNewChildNodesFrom(annotations, selected.isLeft(), selected, selected);
+					} catch (DocumentReadOnlyException e) {
+						if(warningHandler.skip()) {
+							break;
+						}					
+						warningHandler.showDialog(URIUtils.getFile(uri));
+					}
 				}
-				//System.gc();
-                MonitoringUtils.insertNewChildNodesFrom(annotations, selected.isLeft(), selected, selected);
 			} catch (IOException e) {
 				LogUtils.severe("ImportAllAnnotationsAction IOException at URI("+uri+"): ", e); //$NON-NLS-1$ //$NON-NLS-2$
-			} catch (COSLoadException e) {
-				LogUtils.severe("ImportAllAnnotationsAction ImportException at URI("+uri+"): ", e); //$NON-NLS-1$ //$NON-NLS-2$
-			}	
+			}
 		}
 
 	}

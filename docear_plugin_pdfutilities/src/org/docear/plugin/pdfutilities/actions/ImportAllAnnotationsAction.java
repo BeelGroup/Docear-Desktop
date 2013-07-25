@@ -8,7 +8,9 @@ import java.util.List;
 
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
 import org.docear.plugin.pdfutilities.features.IAnnotation.AnnotationType;
+import org.docear.plugin.pdfutilities.pdf.DocumentReadOnlyException;
 import org.docear.plugin.pdfutilities.pdf.PdfAnnotationImporter;
+import org.docear.plugin.pdfutilities.pdf.ReadOnlyExceptionWarningHandler;
 import org.docear.plugin.pdfutilities.util.MonitoringUtils;
 import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.util.LogUtils;
@@ -17,7 +19,6 @@ import org.freeplane.features.mode.Controller;
 import org.freeplane.plugin.workspace.URIUtils;
 
 import de.intarsys.pdf.cos.COSRuntimeException;
-import de.intarsys.pdf.parser.COSLoadException;
 
 @EnabledAction(checkOnNodeChange=true)
 public class ImportAllAnnotationsAction extends ImportAnnotationsAction {
@@ -43,14 +44,23 @@ public class ImportAllAnnotationsAction extends ImportAnnotationsAction {
 		else{
 			URI uri = URIUtils.getAbsoluteURI(selected);
             try {
-            	PdfAnnotationImporter importer = new PdfAnnotationImporter();            	
-				List<AnnotationModel> annotations = importer.importAnnotations(uri); 
-				//System.gc();
-				MonitoringUtils.insertChildNodesFrom(annotations, selected.isLeft(), selected);
+            	ReadOnlyExceptionWarningHandler warningHandler = new ReadOnlyExceptionWarningHandler();
+				warningHandler.prepare();
+				while(warningHandler.retry()) {
+					try {
+		            	PdfAnnotationImporter importer = new PdfAnnotationImporter();            	
+						List<AnnotationModel> annotations = importer.importAnnotations(uri); 
+						//System.gc();
+						MonitoringUtils.insertChildNodesFrom(annotations, selected.isLeft(), selected);
+					} catch (DocumentReadOnlyException e) {
+						if(warningHandler.skip()) {
+							break;
+						}					
+						warningHandler.showDialog(URIUtils.getFile(uri));
+					}
+				}
 			} catch (IOException e) {
 				LogUtils.severe("ImportAllAnnotationsAction IOException at URI("+uri+"): ", e); //$NON-NLS-1$ //$NON-NLS-2$
-			} catch (COSLoadException e) {
-				LogUtils.severe("ImportAllAnnotationsAction COSLoadException at URI("+uri+"): ", e); //$NON-NLS-1$ //$NON-NLS-2$
 			} catch (COSRuntimeException e) {
 				LogUtils.severe("ImportAllAnnotationsAction COSRuntimeException at URI("+uri+"): ", e); //$NON-NLS-1$ //$NON-NLS-2$
 			}

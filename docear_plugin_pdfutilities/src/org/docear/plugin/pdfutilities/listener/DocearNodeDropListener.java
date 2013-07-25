@@ -27,8 +27,10 @@ import org.docear.plugin.core.ui.SwingWorkerDialog;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
+import org.docear.plugin.pdfutilities.pdf.DocumentReadOnlyException;
 import org.docear.plugin.pdfutilities.pdf.PdfAnnotationImporter;
 import org.docear.plugin.pdfutilities.pdf.PdfFileFilter;
+import org.docear.plugin.pdfutilities.pdf.ReadOnlyExceptionWarningHandler;
 import org.docear.plugin.pdfutilities.util.MonitoringUtils;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
@@ -44,7 +46,6 @@ import org.freeplane.view.swing.ui.mindmapmode.MNodeDropListener;
 import org.jdesktop.swingworker.SwingWorker;
 
 import de.intarsys.pdf.cos.COSRuntimeException;
-import de.intarsys.pdf.parser.COSLoadException;
 
 
 public class DocearNodeDropListener extends MNodeDropListener {
@@ -157,50 +158,57 @@ public class DocearNodeDropListener extends MNodeDropListener {
 					targetNode.getMap().getExtension(DocearMapModelExtension.class).setMapModificationSession(session);
 				}
 				session.putSessionObject(MapModificationSession.FILE_IGNORE_LIST , new HashSet<String>());
-				
-				for(final File file : fileList){	
+				ReadOnlyExceptionWarningHandler warningHandler = new ReadOnlyExceptionWarningHandler();
+				for(final File file : fileList){
+					warningHandler.prepare();
 					if(Thread.currentThread().isInterrupted()) return null;
 					firePropertyChange(SwingWorkerDialog.NEW_FILE, null, file.getName());
 		        	boolean importAnnotations = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.AUTO_IMPORT_ANNOTATIONS_KEY);
 		            if(new PdfFileFilter().accept(file) && importAnnotations){	
 		            	List<AnnotationModel> annotations = new ArrayList<AnnotationModel>();
 		            	try{
-		            		PdfAnnotationImporter importer = new PdfAnnotationImporter();
-		            		annotations = importer.importAnnotations(file.toURI());
+		            		while(warningHandler.retry()) {
+		    					try {
+				            		PdfAnnotationImporter importer = new PdfAnnotationImporter();
+				            		annotations = importer.importAnnotations(file.toURI());
+		    					} catch (DocumentReadOnlyException e) {
+		    						if(warningHandler.skip()) {
+		    							annotations = null;
+		    							break;
+		    						}					
+		    						warningHandler.showDialog(file);
+		    					}
+		    				}
 		            		//System.gc();
 		            	} catch(COSRuntimeException e) {			                		
 		            		LogUtils.warn("Exception during import on file: " + file.getName(), e); //$NON-NLS-1$
 		            	} catch(IOException e) {
 		            		LogUtils.warn("Exception during import on file: " + file.getName(), e); //$NON-NLS-1$
-		            	} catch(COSLoadException e) {
-		            		LogUtils.warn("Exception during import on file: " + file.getName(), e); //$NON-NLS-1$
 		            	}
-		            	final List<AnnotationModel> finalAnnotations;
+		            	
 		            	if(annotations != null){
-		            		finalAnnotations = annotations;	 
+		            		final List<AnnotationModel> finalAnnotations = annotations;
+		            		SwingUtilities.invokeAndWait(
+							        new Runnable() {
+							            public void run(){
+							            	try {
+								            	URI uri = file.toURI();
+								            	NodeModel newNode = MonitoringUtils.insertChildNodesFromPdf(uri, finalAnnotations, isLeft, targetNode);	            
+								            	for(AnnotationModel annotation : getInsertedNodes(finalAnnotations)){
+													firePropertyChange(SwingWorkerDialog.DETAILS_LOG_TEXT, null, TextUtils.getText("DocearNodeDropListener.4") + annotation.getTitle() +TextUtils.getText("DocearNodeDropListener.5"));												 //$NON-NLS-1$ //$NON-NLS-2$
+												}	
+								            	
+								            	DocearEvent event = new DocearEvent(newNode, (DocearWorkspaceProject) WorkspaceController.getProject(newNode.getMap()), DocearEventType.MINDMAP_ADD_PDF_TO_NODE, true);
+								            	DocearController.getController().getEventQueue().dispatchEvent(event);
+							            	}
+							            	catch (Exception e) {
+							            		LogUtils.severe(e);
+							            	}
+							            }
+							        }
+							   );
 		            	}
-		            	else{
-		            		finalAnnotations = new ArrayList<AnnotationModel>();
-		            	}
-		            	SwingUtilities.invokeAndWait(
-						        new Runnable() {
-						            public void run(){
-						            	try {
-							            	URI uri = file.toURI();
-							            	NodeModel newNode = MonitoringUtils.insertChildNodesFromPdf(uri, finalAnnotations, isLeft, targetNode);	            
-							            	for(AnnotationModel annotation : getInsertedNodes(finalAnnotations)){
-												firePropertyChange(SwingWorkerDialog.DETAILS_LOG_TEXT, null, TextUtils.getText("DocearNodeDropListener.4") + annotation.getTitle() +TextUtils.getText("DocearNodeDropListener.5"));												 //$NON-NLS-1$ //$NON-NLS-2$
-											}	
-							            	
-							            	DocearEvent event = new DocearEvent(newNode, (DocearWorkspaceProject) WorkspaceController.getProject(newNode.getMap()), DocearEventType.MINDMAP_ADD_PDF_TO_NODE, true);
-							            	DocearController.getController().getEventQueue().dispatchEvent(event);
-						            	}
-						            	catch (Exception e) {
-						            		LogUtils.severe(e);
-						            	}
-						            }
-						        }
-						   );	
+		            	
 		            }
 		            else {		            	
 		    			ModeController modeController = Controller.getCurrentController().getModeController();

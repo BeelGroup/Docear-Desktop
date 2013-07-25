@@ -33,8 +33,10 @@ import org.docear.plugin.pdfutilities.features.DocearNodeMonitoringExtension.Doc
 import org.docear.plugin.pdfutilities.features.IAnnotation.AnnotationType;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
 import org.docear.plugin.pdfutilities.map.MapConverter;
+import org.docear.plugin.pdfutilities.pdf.DocumentReadOnlyException;
 import org.docear.plugin.pdfutilities.pdf.PdfAnnotationImporter;
 import org.docear.plugin.pdfutilities.pdf.PdfFileFilter;
+import org.docear.plugin.pdfutilities.pdf.ReadOnlyExceptionWarningHandler;
 import org.docear.plugin.pdfutilities.util.CustomFileFilter;
 import org.docear.plugin.pdfutilities.util.CustomFileListFilter;
 import org.docear.plugin.pdfutilities.util.MonitoringUtils;
@@ -54,7 +56,6 @@ import org.freeplane.view.swing.map.NodeView;
 import org.jdesktop.swingworker.SwingWorker;
 
 import de.intarsys.pdf.cos.COSRuntimeException;
-import de.intarsys.pdf.parser.COSLoadException;
 
 public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<IAnnotation>>, AnnotationModel[]> {
 	private final List<NodeModel> targets;
@@ -507,6 +508,7 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 		for (AnnotationID id : importedFiles.keySet()) {
 			if (canceled()) return false;
 			fireProgressUpdate(100 * count / importedFiles.keySet().size());
+			System.out.println("");
 			if (!nodeIndex.containsKey(id)) {
 				importedFiles.get(id).setNew(true);
 				newAnnotations.add(importedFiles.get(id));
@@ -550,15 +552,28 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 	private boolean loadMonitoredFiles(NodeModel target) throws InterruptedException, InvocationTargetException {
 		fireStatusUpdate(SwingWorkerDialog.SET_PROGRESS_BAR_DETERMINATE, null, null);
 		fireStatusUpdate(SwingWorkerDialog.PROGRESS_BAR_TEXT, null, TextUtils.getText("AbstractMonitoringAction.23")); //$NON-NLS-1$
+		ReadOnlyExceptionWarningHandler warningHandler = new ReadOnlyExceptionWarningHandler();
 		for (URI uri : monitorFiles) {
+			warningHandler.prepare();
 			if (canceled()) return false;
 			try {
 				fireProgressUpdate(100 * monitorFiles.indexOf(uri) / monitorFiles.size());
 				File file = URIUtils.getAbsoluteFile(uri);
 				fireStatusUpdate(SwingWorkerDialog.NEW_FILE, null, file.getName());
 				if (new PdfFileFilter().accept(uri)) {
-					AnnotationModel pdf = new PdfAnnotationImporter().importPdf(uri);
-					addAnnotationsToImportedFiles(pdf, target);
+					AnnotationModel pdf;
+					while(warningHandler.retry()) {
+						try {
+							pdf = new PdfAnnotationImporter().importPdf(uri);
+							addAnnotationsToImportedFiles(pdf, target);
+							warningHandler.consume();
+						} catch (DocumentReadOnlyException e) {
+							if(warningHandler.skip()) {
+								break;
+							}
+							warningHandler.showDialog(file);
+						}
+					}
 				}
 				else {
 					AnnotationModel annotation = new AnnotationModel(0, AnnotationType.FILE);
@@ -575,9 +590,6 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 			}
 			catch (COSRuntimeException e) {
 				LogUtils.info("COSRuntimeException during update file: " + uri); //$NON-NLS-1$
-			}
-			catch (COSLoadException e) {
-				LogUtils.info("COSLoadException during update file: " + uri); //$NON-NLS-1$
 			}
 		}
 		return true;

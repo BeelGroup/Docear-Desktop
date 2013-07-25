@@ -140,7 +140,8 @@ public class AnnotationModel implements IAnnotation{
 			this.id = null;
 		}
 		else {
-			this.id = new AnnotationID(absoluteUri, this.objectID);
+			this.id = null;
+			getAnnotationID();
 		}
 		
 	}

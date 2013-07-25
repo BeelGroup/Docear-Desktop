@@ -5,13 +5,15 @@ import java.io.IOException;
 import javax.swing.JOptionPane;
 
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
+import org.docear.plugin.pdfutilities.pdf.DocumentReadOnlyException;
 import org.docear.plugin.pdfutilities.pdf.PdfAnnotationImporter;
+import org.docear.plugin.pdfutilities.pdf.ReadOnlyExceptionWarningHandler;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
+import org.freeplane.plugin.workspace.URIUtils;
 
 import de.intarsys.pdf.cos.COSRuntimeException;
-import de.intarsys.pdf.parser.COSLoadException;
 
 public class SolveConflictForPdf implements ISolveConflictCommand {
 	
@@ -26,7 +28,18 @@ public class SolveConflictForPdf implements ISolveConflictCommand {
 
 	public void solveConflict() {
 		try {
-			new PdfAnnotationImporter().renameAnnotation(getTarget(), getNewTitle());
+			ReadOnlyExceptionWarningHandler warningHandler = new ReadOnlyExceptionWarningHandler();
+			warningHandler.prepare();
+			while(warningHandler.retry()) {
+				try {
+					new PdfAnnotationImporter().renameAnnotation(getTarget(), getNewTitle());
+				} catch (DocumentReadOnlyException e) {
+					if(warningHandler.skip()) {
+						break;
+					}					
+					warningHandler.showDialog(URIUtils.getFile(getTarget().getSource()));
+				}
+			}
 			//System.gc();
 		} catch (IOException e) {
 			if(e.getMessage().equals("destination is read only")){ //$NON-NLS-1$
@@ -41,8 +54,6 @@ public class SolveConflictForPdf implements ISolveConflictCommand {
 			else{
 				LogUtils.severe("SolveConflictForPdf IOException at Target("+target.getTitle()+"): ", e); //$NON-NLS-1$ //$NON-NLS-2$
 			}			
-		} catch (COSLoadException e) {
-			LogUtils.severe("SolveConflictForPdf COSLoadException at Target("+target.getTitle()+"): ", e); //$NON-NLS-1$ //$NON-NLS-2$
 		} catch (COSRuntimeException e) {
 			LogUtils.severe("SolveConflictForPdf COSRuntimeException at Target("+target.getTitle()+"): ", e); //$NON-NLS-1$ //$NON-NLS-2$
 		}

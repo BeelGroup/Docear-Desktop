@@ -29,7 +29,6 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.TextUtils;
 
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -65,14 +64,15 @@ public class Wizard {
 	private JButton skipButton;
 	private JButton nextButton;
 	private JButton cancelButton;
+	private JButton closeButton;
 
 	private volatile int returnCode = NOT_DEFINED;
 	private Thread returnCodeObserver;
 	private WizardContext context;
 	private boolean cancelEnabled = true;
 	private boolean cancelButtonEnabled = false;
+	private boolean skipEnabled = false;
 	private boolean drawButtonBarSeparator = false;
-	private JButton closeButton;
 	private JEditorPane titleComponent;
 	private WizardPageDescriptor startPageIdentifier;
 	private MouseAdapter dragHandler;
@@ -102,6 +102,13 @@ public class Wizard {
 	}
 
 	public void setCurrentPage(Object id) {
+		if(id == null) {
+			throw new IllegalArgumentException("NULL");
+		}
+		if(FINISH_PAGE.getIdentifier().equals(id)) {
+			finish();
+			return;
+		}
 		resetControls();
 		WizardPageDescriptor oldPageDescriptor = wizardModel.getCurrentPageDescriptor();
 
@@ -126,6 +133,14 @@ public class Wizard {
 	
 	public boolean isCancelEnabled() {
 		return cancelEnabled;
+	}
+	
+	public void setSkipEnabled(boolean enabled) {
+		this.skipEnabled = enabled;
+	}
+	
+	public boolean isSkipEnabled() {
+		return skipEnabled;
 	}
 	
 	public void setCancelButtonEnabled(boolean enabled) {
@@ -213,7 +228,6 @@ public class Wizard {
 		
 		SwingUtilities.updateComponentTreeUI(wizard);
 		wizard.pack();
-		UITools.backOtherWindows();
 		wizard.setVisible(true);
 		Window.getWindows();
 		wizard.toFront();
@@ -313,10 +327,12 @@ public class Wizard {
 		
 		backButton = new JButton("back");
 		nextButton = new JButton("next");
+		skipButton = new JButton("skip");
 		cancelButton = new JButton("cancel");
 
 		backButton.addActionListener(wizardController);
 		nextButton.addActionListener(wizardController);
+		skipButton.addActionListener(wizardController);
 		cancelButton.addActionListener(wizardController);
 		closeButton.addActionListener(wizardController);
 
@@ -366,6 +382,9 @@ public class Wizard {
 		}
 		Box buttonBox = new Box(BoxLayout.X_AXIS);
 		buttonBox.setBorder(new EmptyBorder(new Insets(5, 10, 5, 10)));
+		
+		buttonBox.add(skipButton);
+		buttonBox.add(Box.createHorizontalStrut(10));
 		buttonBox.add(backButton);
 		buttonBox.add(Box.createHorizontalStrut(10));
 		buttonBox.add(nextButton);
@@ -373,6 +392,7 @@ public class Wizard {
 			buttonBox.add(Box.createHorizontalStrut(30));
 			buttonBox.add(cancelButton);
 		}
+		
 		buttonPanel.add(buttonBox, java.awt.BorderLayout.EAST);
 		
 	}
@@ -426,10 +446,11 @@ public class Wizard {
 			backButton.setText(TextUtils.getText("docear.setup.wizard.controls.back"));
 		}
 		if(skipButton != null) {
-			skipButton.setVisible(true);
+			skipButton.setVisible(isSkipEnabled());
 			skipButton.setEnabled(true);
 			skipButton.setText(TextUtils.getText("docear.setup.wizard.controls.skip"));
 		}
+		closeButton.setVisible(isCancelEnabled());
 	}
 
 	

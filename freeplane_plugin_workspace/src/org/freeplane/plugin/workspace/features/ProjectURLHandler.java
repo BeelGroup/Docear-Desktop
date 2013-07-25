@@ -14,12 +14,7 @@ public class ProjectURLHandler extends AbstractURLStreamHandlerService {
 	
 	public URLConnection openConnection(URL url) throws IOException {
 		String projectID = url.getAuthority();
-		AWorkspaceProject project = WorkspaceController.getCurrentModel().getProject(projectID);
-		
-//		if(project == null) {
-			project = WorkspaceController.getCachedProjectByID(projectID);
-			System.out.println("");
-	//	}
+		AWorkspaceProject project = WorkspaceController.getCachedProjectByID(projectID);
 		
 		if(project == null) {
 			throw new IOException("project with id="+projectID+" is missing");

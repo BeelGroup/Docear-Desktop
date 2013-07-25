@@ -10,16 +10,18 @@ import javax.swing.JOptionPane;
 import org.docear.plugin.pdfutilities.features.AnnotationNodeModel;
 import org.docear.plugin.pdfutilities.features.IAnnotation.AnnotationType;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
+import org.docear.plugin.pdfutilities.pdf.DocumentReadOnlyException;
 import org.docear.plugin.pdfutilities.pdf.PdfAnnotationImporter;
+import org.docear.plugin.pdfutilities.pdf.ReadOnlyExceptionWarningHandler;
 import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.map.NodeChangeEvent;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
+import org.freeplane.plugin.workspace.URIUtils;
 
 import de.intarsys.pdf.cos.COSRuntimeException;
-import de.intarsys.pdf.parser.COSLoadException;
 
 @EnabledAction(checkOnNodeChange = true )
 public class RemoveLinebreaksAction extends ImportAnnotationsAction {
@@ -66,9 +68,21 @@ public class RemoveLinebreaksAction extends ImportAnnotationsAction {
 		if(model != null){
 			NodeChangeEvent event = new NodeChangeEvent(selected, NodeModel.NODE_TEXT, selected.getText(), text);
 			try {
-				if(new PdfAnnotationImporter().renameAnnotation(model, text)){					
-					selected.setText(text);
-					selected.fireNodeChanged(event);
+				ReadOnlyExceptionWarningHandler warningHandler = new ReadOnlyExceptionWarningHandler();
+				warningHandler.prepare();
+				while(warningHandler.retry()) {
+					try {
+						if(new PdfAnnotationImporter().renameAnnotation(model, text)){					
+							selected.setText(text);
+							selected.fireNodeChanged(event);
+						}
+					} catch (DocumentReadOnlyException e) {
+						if(warningHandler.skip()) {
+							break;
+						}					
+						warningHandler.showDialog(URIUtils.getFile(model.getSource()));
+					}
+						
 				}
 			} catch (IOException e) {
 				if(e.getMessage().equals("destination is read only")){ //$NON-NLS-1$
@@ -88,9 +102,8 @@ public class RemoveLinebreaksAction extends ImportAnnotationsAction {
 				else{
 					LogUtils.severe("RemoveLinebreaksAction IOException at Target("+selected.getText()+"): ", e); //$NON-NLS-1$ //$NON-NLS-2$
 				}
-			} catch (COSLoadException e) {
-				LogUtils.severe("RemoveLinebreaksAction COSLoadException at Target("+selected.getText()+"): ", e); //$NON-NLS-1$ //$NON-NLS-2$
-			} catch (COSRuntimeException e) {
+			} 
+			catch (COSRuntimeException e) {
 				LogUtils.severe("RemoveLinebreaksAction COSRuntimeException at Target("+selected.getText()+"): ", e); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}

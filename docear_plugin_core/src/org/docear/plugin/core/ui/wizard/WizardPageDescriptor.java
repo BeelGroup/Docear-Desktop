@@ -35,6 +35,10 @@ public class WizardPageDescriptor {
 	public WizardPageDescriptor getBackPageDescriptor(WizardContext context) {
 		return context.getTraversalLog().getPreviousPage(context);
 	}
+	
+	public WizardPageDescriptor getSkipPageDescriptor(WizardContext context) {
+		return null;
+	}
 
 	public void aboutToDisplayPage(WizardContext context) {
 		getPage().preparePage(context);
@@ -47,6 +51,8 @@ public class WizardPageDescriptor {
 	public void aboutToHidePage(WizardContext context) {
 		getPage().setVisible(false);
 	}
+	
+	
 
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES

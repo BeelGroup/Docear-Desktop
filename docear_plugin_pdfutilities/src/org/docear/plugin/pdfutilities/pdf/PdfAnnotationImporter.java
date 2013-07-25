@@ -19,6 +19,7 @@ import org.docear.pdf.annotation.CommentAnnotation;
 import org.docear.pdf.annotation.HighlightAnnotation;
 import org.docear.pdf.bookmark.Bookmark;
 import org.docear.pdf.bookmark.BookmarkExtractor;
+import org.docear.pdf.feature.ADocumentCreator;
 import org.docear.pdf.feature.AObjectType;
 import org.docear.pdf.feature.APDMetaObject;
 import org.docear.pdf.feature.PageDestination;
@@ -43,14 +44,12 @@ import com.google.common.base.CharMatcher;
 import de.intarsys.pdf.content.CSDeviceBasedInterpreter;
 import de.intarsys.pdf.cos.COSArray;
 import de.intarsys.pdf.cos.COSRuntimeException;
-import de.intarsys.pdf.parser.COSLoadException;
 import de.intarsys.pdf.pd.PDAnnotation;
 import de.intarsys.pdf.pd.PDDocument;
 import de.intarsys.pdf.pd.PDOutlineItem;
 import de.intarsys.pdf.pd.PDPage;
 import de.intarsys.pdf.pd.PDTextMarkupAnnotation;
 import de.intarsys.pdf.tools.kernel.PDFGeometryTools;
-import de.intarsys.tools.locator.FileLocator;
 
 public class PdfAnnotationImporter implements IAnnotationImporter {
 	
@@ -63,7 +62,7 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 	public PdfAnnotationImporter(){
 	}
 	
-	public Map<URI, List<AnnotationModel>> importAnnotations(List<URI> files) throws IOException, COSLoadException, COSRuntimeException{
+	public Map<URI, List<AnnotationModel>> importAnnotations(List<URI> files) throws IOException, DocumentReadOnlyException {
 		Map<URI, List<AnnotationModel>> annotationMap = new HashMap<URI, List<AnnotationModel>>();
 		
 		for(URI file : files){
@@ -73,7 +72,7 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		return annotationMap;
 	}	
 	
-	public List<AnnotationModel> importAnnotations(URI uri) throws IOException, COSLoadException, COSRuntimeException{
+	public List<AnnotationModel> importAnnotations(URI uri) throws IOException, DocumentReadOnlyException {
 		List<AnnotationModel> annotations = new ArrayList<AnnotationModel>();
 		
 		this.currentFile = uri;
@@ -100,16 +99,12 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		return annotations;
 	}
 	
-	public AnnotationModel importPdf(URI uri) throws IOException, COSLoadException, COSRuntimeException{
+	public AnnotationModel importPdf(URI uri) throws IOException, DocumentReadOnlyException {
 		Collection<AnnotationModel> importedAnnotations = new ArrayList<AnnotationModel>();
 		try{
 			importedAnnotations = importAnnotations(uri);
 		} catch(IOException e){
 			LogUtils.info("IOexception during update file: "+ uri); //$NON-NLS-1$
-		} catch(COSRuntimeException e){
-			LogUtils.info("COSRuntimeException during update file: "+ uri); //$NON-NLS-1$
-		} catch(COSLoadException e){
-			LogUtils.info("COSLoadException during update file: "+ uri); //$NON-NLS-1$
 		}
 		URI absoluteUri = URIUtils.getAbsoluteURI(uri);
 		AnnotationModel root = new AnnotationModel(0, AnnotationType.PDF_FILE);
@@ -119,7 +114,7 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		return root;
 	}
 	
-	public boolean renameAnnotation(IAnnotation annotation, String newTitle) throws COSRuntimeException, IOException, COSLoadException{
+	public boolean renameAnnotation(IAnnotation annotation, String newTitle) throws IOException, DocumentReadOnlyException {
 		if(newTitle.startsWith("<HTML>") || newTitle.startsWith("<html>")){
 			newTitle = HtmlUtils.extractText(newTitle);
 		}
@@ -170,8 +165,7 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		return setPDObject;		
 	}
 
-
-	public PDDocument getPDDocument(URI uri) throws IOException,	COSLoadException, COSRuntimeException {
+	public PDDocument getPDDocument(URI uri) throws IOException, DocumentReadOnlyException {
 		MapModel map = Controller.getCurrentController().getMap();
 		URI absoluteUri = URIUtils.resolveURI(URIUtils.getAbsoluteURI(map), uri);
 		File file = URIUtils.getFile(absoluteUri);
@@ -179,11 +173,16 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 			return null;
 		}
 		
+		PDDocument document = ADocumentCreator.getPDDocument(file);
 		
-		FileLocator locator = new FileLocator(file);
-		PDDocument document = PDDocument.createFromLocator(locator);
-		locator = null;
+		if(document != null && document.isReadOnly()) {
+			document.close();
+			document = null;
+			throw new DocumentReadOnlyException();
+		}
+			
 		return document;
+		
 	}
 	
 	private void importAnnotations(PDDocument document, List<AnnotationModel> annotations) throws IOException {

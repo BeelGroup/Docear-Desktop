@@ -26,6 +26,7 @@ import org.docear.plugin.services.features.user.action.DocearUserLoginAction;
 import org.docear.plugin.services.features.user.action.DocearUserRegistrationAction;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.components.UITools;
+import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 
@@ -57,9 +58,9 @@ public class DocearSetupWizardAction extends AFreeplaneAction {
 	public static void startWizard(boolean exitOnCancel) {
 		Wizard wiz = new Wizard(UITools.getFrame());
 		initWizard(wiz);
-		
-		UITools.backOtherWindows(); 
-		
+		if(!Compat.isWindowsOS()) {
+			UITools.backOtherWindows();
+		}
 		int ret = wiz.show();
 		if(ret == Wizard.OK_OPTION) {
 			if(wiz.getContext().get(DocearLocalUser.class) != null) {

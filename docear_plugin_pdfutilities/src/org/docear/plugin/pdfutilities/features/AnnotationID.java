@@ -16,13 +16,14 @@ public class AnnotationID {
 			throw new IllegalArgumentException(this.getClass().getName() + ": Uri can not be null."); //$NON-NLS-1$
 		}
 		this.uri = absoluteUri.normalize();
-		
-		String uri = this.uri.getPath().toLowerCase(Locale.ENGLISH).trim();
-		this.id = uri + " " + Long.toString(objectID);
 		this.objectID = objectID;
 	}
 
 	public String getId() {
+		if(id == null) {
+			String uri = this.uri.getPath().toLowerCase(Locale.ENGLISH).trim();
+			this.id = uri + " " + Long.toString(objectID);
+		}
 		return id;
 	}
 	
@@ -32,6 +33,10 @@ public class AnnotationID {
 	
 	public long getObjectID(){
 		return this.objectID;
+	}
+	
+	public boolean isNewCreated() {
+		return isCreated;
 	}
 	
 	public boolean equals(Object object){
@@ -60,8 +65,8 @@ public class AnnotationID {
 		}
 	}
 	
-	public int hashCode(){		
-		return this.getId().hashCode();
+	public int hashCode() {		
+		return this.getUri().toString().hashCode();//this.getId().hashCode();
 		
 	}
 	

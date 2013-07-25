@@ -49,9 +49,9 @@ public class WizardController implements ActionListener {
 				}
 			}
 			else if(e.getSource().equals(wizard.getContext().getSkipButton())) {
-				WizardPageDescriptor desc = wizard.getContext().getCurrentDescriptor().getNextPageDescriptor(wizard.getContext());
-				if(desc == null) {
-					wizard.getContext().getBackButton().setEnabled(false);
+				WizardPageDescriptor desc = wizard.getContext().getCurrentDescriptor().getSkipPageDescriptor(wizard.getContext());
+				if(desc == null || Wizard.FINISH_PAGE.equals(desc)) {
+					wizard.finish();
 				}
 				else {
 					wizard.setCurrentPage(desc.getIdentifier());
