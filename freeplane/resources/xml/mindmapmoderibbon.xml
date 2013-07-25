@@ -494,7 +494,10 @@
 				<ribbon_action action="ToggleScrollbarsAction"/>
 			</ribbon_band>
 			<ribbon_band name="view_mode" resize_policies="Mirror">
-                <ribbon_action action="ToggleRibbonAction" priority="top" />
+			    <ribbon_action action="ToggleRibbonAction" priority="top" accelerator="control R"/>
+			    <ribbon_action action="CenterSelectedNodeAction" priority="top" >
+			        <ribbon_action action="SetBooleanPropertyAction.center_selected_node" />
+			    </ribbon_action>
 				<ribbon_action action="ViewLayoutTypeAction.OUTLINE" />
 				<ribbon_action action="ToggleFullScreenAction"/>
                 <ribbon_action action="SetBooleanPropertyAction.presentation_mode" />
