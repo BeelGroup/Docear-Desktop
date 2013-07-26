@@ -76,6 +76,7 @@ public class RemoveLinebreaksAction extends ImportAnnotationsAction {
 							selected.setText(text);
 							selected.fireNodeChanged(event);
 						}
+		                warningHandler.consume();
 					} catch (DocumentReadOnlyException e) {
 						if(warningHandler.skip()) {
 							break;

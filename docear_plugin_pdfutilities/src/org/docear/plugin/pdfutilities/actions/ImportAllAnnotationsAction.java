@@ -52,6 +52,7 @@ public class ImportAllAnnotationsAction extends ImportAnnotationsAction {
 						List<AnnotationModel> annotations = importer.importAnnotations(uri); 
 						//System.gc();
 						MonitoringUtils.insertChildNodesFrom(annotations, selected.isLeft(), selected);
+		                warningHandler.consume();
 					} catch (DocumentReadOnlyException e) {
 						if(warningHandler.skip()) {
 							break;
