@@ -163,7 +163,20 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 		BibtexDatabase database = pr.getDatabase();
 		database.addDatabaseChangeListener(ReferencesController.getJabRefChangeListener());
 		
-		BasePanel bp = new BasePanel(getJabrefFrame(), database, file, pr.getMetaData(), pr.getEncoding());
+		BasePanel bp;
+		// dirty hack, nimbus is sometimes not loaded fast enough
+		try {
+			bp = new BasePanel(getJabrefFrame(), database, file, pr.getMetaData(), pr.getEncoding());
+		}
+		catch (Exception e) {
+			LogUtils.info("JabrefWrapper.addNewDatabase(): database could not be loaded, trying again in 500 ms");
+			try {
+				Thread.sleep(800);
+			}
+			catch (InterruptedException e1) {
+			}
+			bp = new BasePanel(getJabrefFrame(), database, file, pr.getMetaData(), pr.getEncoding());
+		}
 
 		// file is set to null inside the EventDispatcherThread
 		// SwingUtilities.invokeLater(new OpenItSwingHelper(bp, file,
