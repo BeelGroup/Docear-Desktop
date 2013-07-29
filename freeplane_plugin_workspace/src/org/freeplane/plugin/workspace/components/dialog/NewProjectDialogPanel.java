@@ -199,7 +199,18 @@ public class NewProjectDialogPanel extends JPanel {
 			|| '§' == keyChar
 			|| '&' == keyChar
 			|| '\'' == keyChar
+			|| '/' == keyChar
+			|| '\\' == keyChar
+			|| '\'' == keyChar
 			|| '´' == keyChar
+			|| ':' == keyChar
+			|| '>' == keyChar
+			|| '<' == keyChar
+			|| '?' == keyChar
+			|| '*' == keyChar
+			|| '"' == keyChar
+			|| '#' == keyChar
+			|| '|' == keyChar
 		) {
 			return true;
 		}

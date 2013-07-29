@@ -64,6 +64,7 @@ public class ImportNewAnnotationsAction extends ImportAnnotationsAction {
 						}
 						//System.gc();
 		                MonitoringUtils.insertNewChildNodesFrom(annotations, selected.isLeft(), selected, selected);
+		                warningHandler.consume();
 					} catch (DocumentReadOnlyException e) {
 						if(warningHandler.skip()) {
 							break;

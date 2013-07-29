@@ -68,6 +68,7 @@ public class PdfNodeChangeListener implements INodeChangeListener {
 						try {
 							new PdfAnnotationImporter().renameAnnotation(annotation, event.getNewValue().toString());
 							System.gc();
+							warningHandler.consume();
 						} catch (DocumentReadOnlyException e) {
 							if(warningHandler.skip()) {
 								break;

@@ -33,6 +33,7 @@ public class SolveConflictForPdf implements ISolveConflictCommand {
 			while(warningHandler.retry()) {
 				try {
 					new PdfAnnotationImporter().renameAnnotation(getTarget(), getNewTitle());
+	                warningHandler.consume();
 				} catch (DocumentReadOnlyException e) {
 					if(warningHandler.skip()) {
 						break;

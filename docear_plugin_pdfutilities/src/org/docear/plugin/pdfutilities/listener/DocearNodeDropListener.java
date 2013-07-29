@@ -171,6 +171,7 @@ public class DocearNodeDropListener extends MNodeDropListener {
 		    					try {
 				            		PdfAnnotationImporter importer = new PdfAnnotationImporter();
 				            		annotations = importer.importAnnotations(file.toURI());
+					                warningHandler.consume();
 		    					} catch (DocumentReadOnlyException e) {
 		    						if(warningHandler.skip()) {
 		    							annotations = null;
