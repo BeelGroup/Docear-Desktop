@@ -101,7 +101,7 @@ public class VirtualFolderDropHandler implements INodeDropHandler {
 	 */
 	private AWorkspaceTreeNode createFSNodeLinks(AWorkspaceTreeNode targetNode, File file) {
 		AWorkspaceTreeNode node = null;
-		AWorkspaceProject project = WorkspaceController.getProject(targetNode);
+		AWorkspaceProject project = WorkspaceController.getSelectedProject(targetNode);
 		if(file.isDirectory()) {
 			FolderLinkNode pNode = new FolderLinkNode();			
 			pNode.setPath(project.getRelativeURI(file.toURI()));

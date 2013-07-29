@@ -141,7 +141,7 @@ public abstract class AWorkspaceAction extends AFreeplaneAction {
 		if(node == null) {
 			return null;
 		}
-		return WorkspaceController.getProject(node);
+		return WorkspaceController.getSelectedProject(node);
 	}
 	
 	public WorkspacePopupMenu getRootPopupMenu(Component component) {

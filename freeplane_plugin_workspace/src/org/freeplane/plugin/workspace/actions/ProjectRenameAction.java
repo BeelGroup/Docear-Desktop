@@ -21,7 +21,7 @@ public class ProjectRenameAction extends AWorkspaceAction {
 	@Override
 	public void setEnabled() {
 		try {
-			setEnabled(WorkspaceController.getCurrentProject().getModel().getRoot() != null);
+			setEnabled(WorkspaceController.getSelectedProject().getModel().getRoot() != null);
 		}
 		catch(NullPointerException e) {
 			setEnabled(false);
@@ -31,7 +31,7 @@ public class ProjectRenameAction extends AWorkspaceAction {
 	public void actionPerformed(ActionEvent e) {
 		NodeRenameAction action = new NodeRenameAction();
 		WorkspaceController.getController();		
-		AWorkspaceTreeNode projectNode = WorkspaceController.getCurrentProject().getModel().getRoot();
+		AWorkspaceTreeNode projectNode = WorkspaceController.getSelectedProject().getModel().getRoot();
 		action.actionPerformed(projectNode);
 	}
 

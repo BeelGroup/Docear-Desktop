@@ -36,7 +36,7 @@ public class DocearAddRepositoryPathAction extends AWorkspaceAction {
 	 * METHODS
 	 **********************************************************************************/
 	public void setEnabled() {
-		setEnabled(DocearWorkspaceProject.isCompatible(WorkspaceController.getCurrentProject()));
+		setEnabled(DocearWorkspaceProject.isCompatible(WorkspaceController.getSelectedProject()));
 	}
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
@@ -44,7 +44,7 @@ public class DocearAddRepositoryPathAction extends AWorkspaceAction {
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		AWorkspaceProject project = WorkspaceController.getCurrentProject();
+		AWorkspaceProject project = WorkspaceController.getSelectedProject();
 		if(DocearWorkspaceProject.isCompatible(project)) {
 			FolderTypeLiteratureRepositoryNode litRepoNode = project.getExtensions(FolderTypeLiteratureRepositoryNode.class);
 			if(litRepoNode == null) {

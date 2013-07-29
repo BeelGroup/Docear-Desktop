@@ -80,7 +80,7 @@ public class MModeWorkspaceLinkController extends MLinkController {
 		}
 		try {
 			if (linkType == LINK_RELATIVE_TO_PROJECT) {
-				return WorkspaceController.getCurrentProject().getRelativeURI(input.getAbsoluteFile().toURI());
+				return WorkspaceController.getSelectedProject().getRelativeURI(input.getAbsoluteFile().toURI());
 			}
 			if (map == null) {
 				return input.toURI().normalize();

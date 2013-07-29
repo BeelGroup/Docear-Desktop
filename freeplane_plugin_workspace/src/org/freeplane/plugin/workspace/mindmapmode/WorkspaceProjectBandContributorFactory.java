@@ -69,7 +69,7 @@ public class WorkspaceProjectBandContributorFactory implements IRibbonContributo
 			
 			@Override
 			public void contribute(final RibbonBuildContext context, ARibbonContributor parent) {
-				boolean enabled = (WorkspaceController.getCurrentProject() != null);
+				boolean enabled = (WorkspaceController.getSelectedProject() != null);
 				removeButton = RibbonActionContributorFactory.createCommandButton(WorkspaceController.getAction("workspace.action.project.remove"));
 				removeButton.setEnabled(enabled);
 				

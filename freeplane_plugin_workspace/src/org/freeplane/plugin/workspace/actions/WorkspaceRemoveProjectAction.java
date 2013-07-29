@@ -36,7 +36,7 @@ public class WorkspaceRemoveProjectAction extends AWorkspaceAction {
 	 **********************************************************************************/	
 	@Override
 	public void setEnabled() {
-		if(WorkspaceController.getCurrentProject() == null) {
+		if(WorkspaceController.getSelectedProject() == null) {
 			setEnabled(false);
 		}
 		else {
@@ -49,7 +49,7 @@ public class WorkspaceRemoveProjectAction extends AWorkspaceAction {
 	 * REQUIRED METHODS FOR INTERFACES
 	 **********************************************************************************/
 	public void actionPerformed(ActionEvent e) {
-		AWorkspaceProject project = WorkspaceController.getCurrentProject();
+		AWorkspaceProject project = WorkspaceController.getSelectedProject();
 		if(project == null) {
 			return;
 		}

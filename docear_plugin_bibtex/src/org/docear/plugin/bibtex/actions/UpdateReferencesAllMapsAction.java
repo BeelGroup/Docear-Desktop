@@ -25,7 +25,7 @@ public class UpdateReferencesAllMapsAction extends AFreeplaneAction {
 	}
 	
 	public void setEnabled() {
-		setEnabled(DocearWorkspaceProject.isCompatible(WorkspaceController.getCurrentProject()));
+		setEnabled(DocearWorkspaceProject.isCompatible(WorkspaceController.getMapProject()));
 	}
 
 	
@@ -34,7 +34,7 @@ public class UpdateReferencesAllMapsAction extends AFreeplaneAction {
 		
 		MindmapUpdateController mindmapUpdateController = new MindmapUpdateController();
 		mindmapUpdateController.addMindmapUpdater(new ReferenceUpdater(TextUtils.getText("update_references_all_mindmaps")));
-		mindmapUpdateController.updateAllMindmapsInProject();
+		mindmapUpdateController.updateAllMindmapsInCurrentMapsProject();
 	}
 
 }

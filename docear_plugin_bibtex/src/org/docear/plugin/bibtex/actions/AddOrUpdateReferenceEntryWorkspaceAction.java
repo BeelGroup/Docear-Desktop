@@ -48,7 +48,7 @@ public class AddOrUpdateReferenceEntryWorkspaceAction extends AWorkspaceAction {
 	
 	@Override
 	public void setEnabled() {
-		setEnabled(WorkspaceController.getCurrentProject() != null);
+		setEnabled(WorkspaceController.getSelectedProject() != null);
 	}
 	
 	public void actionPerformed(ActionEvent e) {

@@ -61,7 +61,7 @@ public class DocearLibraryNewMindmap extends AWorkspaceAction {
 					fileName += ".mm";
 				}
 				try {
-					DocearWorkspaceProject project = (DocearWorkspaceProject) WorkspaceController.getProject(targetNode);
+					DocearWorkspaceProject project = (DocearWorkspaceProject) WorkspaceController.getSelectedProject(targetNode);
 					File parentFolder = URIUtils.getFile(project.getProjectLibraryPath());
 					File file = new File(parentFolder, fileName);
 					try {

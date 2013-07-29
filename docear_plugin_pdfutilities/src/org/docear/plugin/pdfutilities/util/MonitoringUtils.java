@@ -91,7 +91,7 @@ public abstract class MonitoringUtils {
 		Object value = attributeModel.getValue(attributeModel.getAttributePosition(PdfUtilitiesController.MON_MINDMAP_FOLDER));
 		
 		if(value.toString().equals(CoreConfiguration.LIBRARY_PATH)){
-			AWorkspaceProject project = WorkspaceController.getProject(node.getMap());
+			AWorkspaceProject project = WorkspaceController.getMapProject(node.getMap());
 			if(project == null || !(project instanceof DocearWorkspaceProject)) {
 				//WORKSPACE - DOCEAR info: better with an exception? 
 				return result;

@@ -38,9 +38,11 @@ public class WorkspaceModelExtensionWriterReader implements IExtensionAttributeW
 			public void onCreate(MapModel map) {
 				WorkspaceMapModelExtension wmme = WorkspaceController.getMapModelExtension(map);
 				if(wmme.getProject() == null) {
+					System.out
+							.println("WorkspaceModelExtensionWriterReader.WorkspaceModelExtensionWriterReader(...).new IMapLifeCycleListener() {...}.onCreate()");
 					//WORKSPACE - fixme: make sure a project is loaded and selected?
 					try {
-						WorkspaceController.addMapToProject(map, WorkspaceController.getCurrentProject());
+						WorkspaceController.addMapToProject(map, WorkspaceController.getSelectedProject());
 					}
 					catch (Exception e) {
 						LogUtils.warn("Exception in "+this.getClass()+".onCreate(MapModel): no current project was selected");

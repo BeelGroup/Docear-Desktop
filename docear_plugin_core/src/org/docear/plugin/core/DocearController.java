@@ -336,7 +336,6 @@ public class DocearController implements IDocearEventListener {
 		if(mapExt != null) {
 			project = mapExt.getProject();
 		}
-		
 		if(project == null) {
 			WorkspaceModel model = WorkspaceController.getCurrentModel();
 			for (AWorkspaceProject prj : model.getProjects()) {
@@ -351,9 +350,10 @@ public class DocearController implements IDocearEventListener {
 			}
 		}
 		
-		if(project == null) {
-			project = WorkspaceController.getCurrentProject();
-		}
+		//DOCEAR use wizard to ask for project?
+//		if(project == null) {
+//			project = WorkspaceController.getSelectedProject();
+//		}
 		return project;
 	}
 	
