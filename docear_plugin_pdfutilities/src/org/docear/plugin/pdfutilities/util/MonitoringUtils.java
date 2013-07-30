@@ -1,6 +1,7 @@
 package org.docear.plugin.pdfutilities.util;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -13,6 +14,7 @@ import java.util.Stack;
 
 import org.docear.plugin.core.CoreConfiguration;
 import org.docear.plugin.core.DocearController;
+import org.docear.plugin.core.util.MapUtils;
 import org.docear.plugin.core.util.NodeUtilities;
 import org.docear.plugin.core.workspace.AVirtualDirectory;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
@@ -228,7 +230,7 @@ public abstract class MonitoringUtils {
 	}
 	public static Map<AnnotationID, Collection<AnnotationNodeModel>> getOldAnnotationsFromMaps(Collection<URI> mindmaps){
 		Map<AnnotationID, Collection<AnnotationNodeModel>> result = new HashMap<AnnotationID, Collection<AnnotationNodeModel>>();
-		for(MapModel map : NodeUtilities.getMapsFromUris(mindmaps)){
+		for(MapModel map : MapUtils.getMapsFromUris(mindmaps)){
 			
 			Map<AnnotationID, Collection<AnnotationNodeModel>> temp = getOldAnnotationsFrom(map.getRootNode());
 			for(AnnotationID id : temp.keySet()){
@@ -274,13 +276,18 @@ public abstract class MonitoringUtils {
 		return result;
 	}
 	
-	public static Map<AnnotationID, Collection<AnnotationNodeModel>> getOldAnnotationsFromMap(URI mindmap){
-		MapModel map = NodeUtilities.getMapFromUri(mindmap);
-		if(map != null){
-			return getOldAnnotationsFrom(map.getRootNode());
-		}
-		return new HashMap<AnnotationID, Collection<AnnotationNodeModel>>();
-	}
+//	public static Map<AnnotationID, Collection<AnnotationNodeModel>> getOldAnnotationsFromMap(URI mindmap){
+//		try {
+//			MapModel map = MapUtils.getMapFromUri(mindmap);
+//		
+//			if(map != null){
+//				return getOldAnnotationsFrom(map.getRootNode());
+//			}
+//		} 
+//		catch (IOException e) {
+//		}
+//		return new HashMap<AnnotationID, Collection<AnnotationNodeModel>>();
+//	}
 	
 	public static NodeModel insertChildNodesFromPdf(URI pdfFile, List<AnnotationModel> annotations, boolean isLeft, NodeModel target){
 		NodeModel node = insertChildNodeFrom(pdfFile, isLeft, target, AnnotationType.PDF_FILE);

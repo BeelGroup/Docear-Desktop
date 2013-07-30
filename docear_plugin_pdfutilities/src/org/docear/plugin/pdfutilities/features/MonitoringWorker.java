@@ -25,6 +25,7 @@ import org.docear.plugin.core.logger.DocearLogEvent;
 import org.docear.plugin.core.ui.SwingWorkerDialog;
 import org.docear.plugin.core.util.DirectoryFileFilter;
 import org.docear.plugin.core.util.HtmlUtils;
+import org.docear.plugin.core.util.MapUtils;
 import org.docear.plugin.core.util.NodeUtilities;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
@@ -682,9 +683,9 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 
 		fireStatusUpdate(SwingWorkerDialog.PROGRESS_BAR_TEXT, null, TextUtils.getText("AbstractMonitoringAction.33")); //$NON-NLS-1$
 		if (canceled()) return false;
-		monitoredMindmaps = NodeUtilities.getMapsFromUris(mindmapFiles);
+		monitoredMindmaps = MapUtils.getMapsFromUris(mindmapFiles);
 		if (updateMindmaps(monitoredMindmaps)) {
-			monitoredMindmaps = NodeUtilities.getMapsFromUris(mindmapFiles);
+			monitoredMindmaps = MapUtils.getMapsFromUris(mindmapFiles);
 		}
 
 		return true;
