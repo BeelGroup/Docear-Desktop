@@ -50,8 +50,12 @@ public class MindmapUpdateController {
 		return this.updaters;
 	}
 
-	public boolean updateAllMindmapsInProject() {
-		return updateAllMindmapsInProject(WorkspaceController.getCurrentProject());
+	public boolean updateAllMindmapsInCurrentMapsProject() {
+		AWorkspaceProject project = WorkspaceController.getMapProject();
+		if (project != null) {
+			return updateAllMindmapsInProject(project);
+		}
+		return false;
 	}
 	
 	public boolean updateAllMindmapsInProject(AWorkspaceProject project) {
@@ -73,19 +77,23 @@ public class MindmapUpdateController {
 	public boolean updateRegisteredMindmapsInProject(boolean openMindmapsToo) {
 		List<MapItem> maps = new ArrayList<MapItem>(); 
 		
-		AWorkspaceProject project = WorkspaceController.getCurrentProject();
-		if(DocearWorkspaceProject.isCompatible(project)) {
-			for(URI mapUri : ((DocearWorkspaceProject)project).getLibraryMaps()) {
-				maps.add(new MapItem(mapUri));
-			}
-		}
-		if (openMindmapsToo) {
-			for (MapItem item : getAllOpenMaps()) {
-				maps.add(item);
-			}
+		AWorkspaceProject project = WorkspaceController.getMapProject();
+		if (project != null) {
+    		if(DocearWorkspaceProject.isCompatible(project)) {
+    			for(URI mapUri : ((DocearWorkspaceProject)project).getLibraryMaps()) {
+    				maps.add(new MapItem(mapUri));
+    			}
+    		}
+    		if (openMindmapsToo) {
+    			for (MapItem item : getAllOpenMaps()) {
+    				maps.add(item);
+    			}
+    		}
+    		
+    		return updateMindmaps(maps);
 		}
 		
-		return updateMindmaps(maps);
+		return false;
 	}
 
 	public boolean updateOpenMindmaps() {

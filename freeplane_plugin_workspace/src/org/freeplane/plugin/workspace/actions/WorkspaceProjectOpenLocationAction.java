@@ -17,7 +17,7 @@ public class WorkspaceProjectOpenLocationAction extends NodeOpenLocationAction {
 
 	@Override
 	public void setEnabled() {
-		if(WorkspaceController.getCurrentProject() == null) {
+		if(WorkspaceController.getSelectedProject() == null) {
 			setEnabled(false);
 		}
 		else {
@@ -26,7 +26,7 @@ public class WorkspaceProjectOpenLocationAction extends NodeOpenLocationAction {
 	}
 
 	public void actionPerformed(ActionEvent event) {
-		AWorkspaceProject project = WorkspaceController.getCurrentProject();
+		AWorkspaceProject project = WorkspaceController.getSelectedProject();
 		if(project == null) {
 			return;
 		}

@@ -169,7 +169,7 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 					public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
 						rmProjectAction.setEnabled();
 						openLocAction.setEnabled();
-						if(WorkspaceController.getCurrentProject() == null) {
+						if(WorkspaceController.getSelectedProject() == null) {
 							addMenu.setEnabled(false);
 						}
 						else {
@@ -482,7 +482,7 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 	}
 	
 	@Override
-	public AWorkspaceProject getCurrentProject() {
+	public AWorkspaceProject getSelectedProject() {
 		return currentSelectedProject;		
 	}
 

@@ -29,7 +29,7 @@ public class NodeOpenLocationAction extends AWorkspaceAction {
 			openFolder(((IFileSystemRepresentation) targetNode).getFile());
 		}
 		else if(targetNode instanceof ProjectRootNode) {
-			openFolder(URIUtils.getAbsoluteFile(WorkspaceController.getProject(targetNode).getProjectHome()));
+			openFolder(URIUtils.getAbsoluteFile(WorkspaceController.getSelectedProject(targetNode).getProjectHome()));
 		}
 
 		else if(targetNode instanceof WorkspaceRootNode) {

@@ -141,7 +141,7 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 					continue;
 				}
 	
-				DocearEvent event = new DocearEvent(this, (DocearWorkspaceProject) WorkspaceController.getProject(target.getMap()), DocearEventType.MINDMAP_ADD_PDF_TO_NODE, true);
+				DocearEvent event = new DocearEvent(this, (DocearWorkspaceProject) WorkspaceController.getMapProject(target.getMap()), DocearEventType.MINDMAP_ADD_PDF_TO_NODE, true);
 				DocearController.getController().getEventQueue().dispatchEvent(event);
 				if (newAnnotations.size() > 100) {
 					fireStatusUpdate(SwingWorkerDialog.SET_PROGRESS_BAR_INDETERMINATE, null, null);
@@ -264,7 +264,7 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 			}
 			else {
 				if (currentTarget != null) {
-					DocearController.getController().getEventQueue().dispatchEvent(new DocearEvent(this, (DocearWorkspaceProject) WorkspaceController.getProject(currentTarget.getMap()), DocearEventType.UPDATE_MAP, currentTarget.getMap()));
+					DocearController.getController().getEventQueue().dispatchEvent(new DocearEvent(this, (DocearWorkspaceProject) WorkspaceController.getMapProject(currentTarget.getMap()), DocearEventType.UPDATE_MAP, currentTarget.getMap()));
 				}
 				this.firePropertyChange(SwingWorkerDialog.IS_DONE, null, TextUtils.getText("AbstractMonitoringAction.16")); //$NON-NLS-1$					
 			}

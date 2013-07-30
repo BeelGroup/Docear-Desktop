@@ -23,7 +23,7 @@ public class UpdateReferencesInLibrary extends AFreeplaneAction{
 	}
 	
 	public void setEnabled() {
-		setEnabled(DocearWorkspaceProject.isCompatible(WorkspaceController.getCurrentProject()));
+		setEnabled(DocearWorkspaceProject.isCompatible(WorkspaceController.getMapProject()));
 	}
 
 	public void actionPerformed(ActionEvent e) {		

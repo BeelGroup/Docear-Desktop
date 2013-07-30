@@ -199,7 +199,7 @@ public class DocearNodeDropListener extends MNodeDropListener {
 													firePropertyChange(SwingWorkerDialog.DETAILS_LOG_TEXT, null, TextUtils.getText("DocearNodeDropListener.4") + annotation.getTitle() +TextUtils.getText("DocearNodeDropListener.5"));												 //$NON-NLS-1$ //$NON-NLS-2$
 												}	
 								            	
-								            	DocearEvent event = new DocearEvent(newNode, (DocearWorkspaceProject) WorkspaceController.getProject(newNode.getMap()), DocearEventType.MINDMAP_ADD_PDF_TO_NODE, true);
+								            	DocearEvent event = new DocearEvent(newNode, (DocearWorkspaceProject) WorkspaceController.getMapProject(newNode.getMap()), DocearEventType.MINDMAP_ADD_PDF_TO_NODE, true);
 								            	DocearController.getController().getEventQueue().dispatchEvent(event);
 							            	}
 							            	catch (Exception e) {

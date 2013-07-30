@@ -255,18 +255,25 @@ public final class WorkspaceController implements IExtension {
 		File home = new File(Compat.getApplicationUserDirectory());
 		return home.toURI();
 	}
-
-	public static AWorkspaceProject getCurrentProject() {
-		return getCurrentModeExtension().getCurrentProject();
+		
+	public static AWorkspaceProject getMapProject() {
+		return getMapProject(Controller.getCurrentController().getMap());       
 	}
 	
-	public static AWorkspaceProject getProject(AWorkspaceTreeNode node) {
+	public static AWorkspaceProject getMapProject(MapModel map) {
+		if (map != null) {
+			WorkspaceMapModelExtension wmme = getMapModelExtension(map);
+			return wmme.getProject();
+		}
+		return null;
+	}
+	
+	public static AWorkspaceProject getSelectedProject() {
+		return getCurrentModeExtension().getSelectedProject();
+	}
+	
+	public static AWorkspaceProject getSelectedProject(AWorkspaceTreeNode node) {
 		return getCurrentModel().getProject(node.getModel());
-	}
-	
-	public static AWorkspaceProject getProject(MapModel map) {
-		WorkspaceMapModelExtension wmme = getMapModelExtension(map);
-		return wmme.getProject();
 	}
 
 	public static WorkspaceMapModelExtension getMapModelExtension(MapModel map) {

@@ -24,6 +24,7 @@ import org.freeplane.core.util.TextUtils;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -122,7 +123,11 @@ public class WorkspaceNewFolderPanel extends JPanel implements ActionListener {
 				private static final long serialVersionUID = 1L;
 	
 				public void actionPerformed(ActionEvent e) {
-					JFileChooser chooser = new JFileChooser(URIUtils.getAbsoluteFile(WorkspaceController.getCurrentProject().getProjectHome()));
+					AWorkspaceProject project = WorkspaceController.getSelectedProject();
+					if (project == null) {
+						return;
+					}
+					JFileChooser chooser = new JFileChooser(URIUtils.getAbsoluteFile(WorkspaceController.getSelectedProject().getProjectHome()));
 					chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 					chooser.setFileHidingEnabled(true);
 					int result = chooser.showOpenDialog(UITools.getFrame());

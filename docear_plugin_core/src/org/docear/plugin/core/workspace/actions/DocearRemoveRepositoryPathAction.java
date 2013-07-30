@@ -38,7 +38,25 @@ public class DocearRemoveRepositoryPathAction extends AWorkspaceAction {
 	 **********************************************************************************/
 	
 	public void setEnabled() {
-		setEnabled(DocearWorkspaceProject.isCompatible(WorkspaceController.getCurrentProject()));
+		TreePath path = WorkspaceController.getCurrentModeExtension().getView().getSelectionPath();    
+		AWorkspaceTreeNode node = (AWorkspaceTreeNode) path.getLastPathComponent();
+		setEnabled(isEnabled(WorkspaceController.getSelectedProject(), node));
+	}
+	
+	private boolean isEnabled(AWorkspaceProject project, AWorkspaceTreeNode... targetNodes) {
+		try {
+			boolean ret = true;
+			ret = ret && DocearWorkspaceProject.isCompatible(project);
+			
+			for (AWorkspaceTreeNode node : targetNodes) {
+				ret = ret && node != null && node instanceof LiteratureRepositoryPathNode; 
+			}
+			
+    		return ret;    		
+		}
+		catch(Exception e) {
+			return false;
+		}
 	}
 	
 	@Override
@@ -56,7 +74,7 @@ public class DocearRemoveRepositoryPathAction extends AWorkspaceAction {
 	 **********************************************************************************/
 	
 	public void actionPerformed(AWorkspaceProject project, AWorkspaceTreeNode... targetNodes) {
-		if(DocearWorkspaceProject.isCompatible(project)) {
+		if (isEnabled(project, targetNodes)) {		
 			FolderTypeLiteratureRepositoryNode litRepoNode = project.getExtensions(FolderTypeLiteratureRepositoryNode.class);
 			if(litRepoNode == null) {
 				return;
@@ -98,8 +116,8 @@ public class DocearRemoveRepositoryPathAction extends AWorkspaceAction {
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		try {
-    		AWorkspaceProject project = WorkspaceController.getCurrentProject();
+		try {			
+    		AWorkspaceProject project = WorkspaceController.getSelectedProject();
     		AWorkspaceTreeNode[] targetNodes = getSelectedNodes(e);
     		
     		actionPerformed(project, targetNodes);

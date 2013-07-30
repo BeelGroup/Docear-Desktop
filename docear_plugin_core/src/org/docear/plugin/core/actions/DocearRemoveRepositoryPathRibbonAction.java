@@ -7,6 +7,7 @@ import javax.swing.tree.TreePath;
 import org.docear.plugin.core.workspace.actions.DocearRemoveRepositoryPathAction;
 import org.docear.plugin.core.workspace.node.LiteratureRepositoryPathNode;
 import org.freeplane.core.ui.EnabledAction;
+import org.freeplane.core.util.LogUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.actions.AWorkspaceAction;
 import org.freeplane.plugin.workspace.components.menu.CheckEnableOnPopup;
@@ -30,8 +31,8 @@ public class DocearRemoveRepositoryPathRibbonAction extends AWorkspaceAction {
 	public void setEnabled() {
 		try {
     		TreePath path = WorkspaceController.getCurrentModeExtension().getView().getSelectionPath();    
-    		Object o = path.getLastPathComponent();
-    		setEnabled(WorkspaceController.getCurrentProject() != null && path.getLastPathComponent() instanceof LiteratureRepositoryPathNode);    		
+    		AWorkspaceTreeNode node = (AWorkspaceTreeNode) path.getLastPathComponent();
+    		setEnabled(node != null && node instanceof LiteratureRepositoryPathNode);    		
 		}
 		catch(Exception e) {
 			setEnabled(false);
@@ -42,11 +43,17 @@ public class DocearRemoveRepositoryPathRibbonAction extends AWorkspaceAction {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		DocearRemoveRepositoryPathAction action = new DocearRemoveRepositoryPathAction();
-		
-		TreePath path = WorkspaceController.getCurrentModeExtension().getView().getSelectionPath();
-		Object o = path.getLastPathComponent();
-		action.actionPerformed(WorkspaceController.getCurrentProject(), (AWorkspaceTreeNode) path.getLastPathComponent());
-		
+		try {
+    		DocearRemoveRepositoryPathAction action = new DocearRemoveRepositoryPathAction();
+    		
+    		TreePath path = WorkspaceController.getCurrentModeExtension().getView().getSelectionPath();		
+    		AWorkspaceTreeNode node = (AWorkspaceTreeNode) path.getLastPathComponent();
+    		if (node instanceof LiteratureRepositoryPathNode) {
+    			action.actionPerformed(WorkspaceController.getSelectedProject(node), node);
+    		}
+		}
+		catch(NullPointerException ex) {
+			LogUtils.warn("DocearRemoveRepositoryPathRibbonAction.actionPerformed(): " + ex.getMessage());
+		}
 	}
 }

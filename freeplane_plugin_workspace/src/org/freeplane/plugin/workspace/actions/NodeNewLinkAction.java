@@ -45,7 +45,7 @@ public class NodeNewLinkAction extends AWorkspaceAction {
 	public void actionPerformed(ActionEvent e) {
 		AWorkspaceTreeNode targetNode = null;
 		if(e == null || getRootPopupMenu((Component) e.getSource()) == null) {
-			targetNode = WorkspaceController.getCurrentProject().getModel().getRoot();
+			targetNode = WorkspaceController.getSelectedProject().getModel().getRoot();
 		}
 		else {
 			targetNode = getNodeFromActionEvent(e);
@@ -54,9 +54,9 @@ public class NodeNewLinkAction extends AWorkspaceAction {
 		if(targetNode == null) {
 			return;
 		}
-		AWorkspaceProject project = WorkspaceController.getProject(targetNode);
+		AWorkspaceProject project = WorkspaceController.getSelectedProject(targetNode);
 		if(targetNode instanceof AFolderNode) {
-			JFileChooser chooser = new JFileChooser(URIUtils.getAbsoluteFile(((AFolderNode) targetNode).getPath() == null ? WorkspaceController.getCurrentProject().getProjectHome() : ((AFolderNode) targetNode).getPath()));
+			JFileChooser chooser = new JFileChooser(URIUtils.getAbsoluteFile(((AFolderNode) targetNode).getPath() == null ? WorkspaceController.getSelectedProject().getProjectHome() : ((AFolderNode) targetNode).getPath()));
 			chooser.setMultiSelectionEnabled(false);
 			int response = chooser.showOpenDialog(UITools.getFrame());
 			if(response == JFileChooser.APPROVE_OPTION) {

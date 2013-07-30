@@ -47,7 +47,7 @@ public class NodeNewFolderAction extends AWorkspaceAction {
 	public void actionPerformed(ActionEvent e) {
 		AWorkspaceTreeNode targetNode = null;
 		if(e == null || getRootPopupMenu((Component) e.getSource()) == null) {
-			targetNode = WorkspaceController.getCurrentProject().getModel().getRoot();
+			targetNode = WorkspaceController.getSelectedProject().getModel().getRoot();
 		}
 		else {
 			targetNode = getNodeFromActionEvent(e);
@@ -56,7 +56,7 @@ public class NodeNewFolderAction extends AWorkspaceAction {
 		if(targetNode == null) {
 			return;
 		}
-		AWorkspaceProject project = WorkspaceController.getProject(targetNode);
+		AWorkspaceProject project = WorkspaceController.getSelectedProject(targetNode);
 		int mode = WorkspaceNewFolderPanel.MODE_VIRTUAL_PHYSICAL;
 		if(targetNode instanceof IFileSystemRepresentation) {
 			mode = WorkspaceNewFolderPanel.MODE_VIRTUAL_ONLY;
