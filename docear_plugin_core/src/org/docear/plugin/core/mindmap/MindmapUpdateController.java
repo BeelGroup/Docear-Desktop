@@ -206,8 +206,7 @@ public class MindmapUpdateController {
 					fireStatusUpdate(SwingWorkerDialog.SET_PROGRESS_BAR_DETERMINATE, null, null);
 					int count = 0;
 					fireProgressUpdate(100 * count / totalCount);
-					
-					
+					AWorkspaceProject workingProject = WorkspaceController.getMapProject();
 
 					for (AMindmapUpdater updater : getMindmapUpdaters()) {
 						count++;
@@ -222,11 +221,23 @@ public class MindmapUpdateController {
 							 if (map==null || map.isReadOnly()) {								
 								 continue;
 							 }
-							 AWorkspaceProject project = WorkspaceController.getMapProject(map);
-							 if(!project.isLoaded() || !DocearWorkspaceProject.isCompatible(project)) {
-								 fireStatusUpdate(SwingWorkerDialog.DETAILS_LOG_TEXT, null, "ignoring incompatible map: " + mapItem.getIdentifierForDialog());
-								 continue;
-							 }
+							AWorkspaceProject project = WorkspaceController.getMapProject(map);
+							if(!workingProject.equals(project)) {
+								fireStatusUpdate(SwingWorkerDialog.DETAILS_LOG_TEXT, null, "ignore map belonging to another project: " + map.getTitle());
+								continue;
+							}
+							if(project == null) {
+								fireStatusUpdate(SwingWorkerDialog.DETAILS_LOG_TEXT, null, "ignore map with no project: " + map.getTitle());
+								continue;
+							}
+							if(project.isLoaded()) {
+								fireStatusUpdate(SwingWorkerDialog.DETAILS_LOG_TEXT, null, "ignore map with not loaded project: " + map.getTitle());
+								continue;
+							}
+							if(!DocearWorkspaceProject.isCompatible(project)) {
+								fireStatusUpdate(SwingWorkerDialog.DETAILS_LOG_TEXT, null, "ignoring map with a non Docear-Project: " + map.getTitle());
+								continue;
+							}
 							 
 							 map.getExtension(DocearMapModelExtension.class).setMapModificationSession(session);
 							} 
