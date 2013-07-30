@@ -119,5 +119,5 @@ public abstract class AWorkspaceProject {
 				
 			}
 		}
-	}
+	}	
 }
