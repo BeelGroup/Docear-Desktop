@@ -222,6 +222,12 @@ public class MindmapUpdateController {
 							 if (map==null || map.isReadOnly()) {								
 								 continue;
 							 }
+							 AWorkspaceProject project = WorkspaceController.getMapProject(map);
+							 if(!project.isLoaded() || !DocearWorkspaceProject.isCompatible(project)) {
+								 fireStatusUpdate(SwingWorkerDialog.DETAILS_LOG_TEXT, null, "ignoring incompatible map: " + mapItem.getIdentifierForDialog());
+								 continue;
+							 }
+							 
 							 map.getExtension(DocearMapModelExtension.class).setMapModificationSession(session);
 							} 
 							catch (Exception ex) {

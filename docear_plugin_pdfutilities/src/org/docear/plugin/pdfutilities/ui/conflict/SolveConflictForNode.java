@@ -1,6 +1,6 @@
 package org.docear.plugin.pdfutilities.ui.conflict;
 
-import org.docear.plugin.core.util.NodeUtilities;
+import org.docear.plugin.core.util.MapUtils;
 import org.freeplane.features.map.NodeChangeEvent;
 import org.freeplane.features.map.NodeModel;
 
@@ -19,11 +19,11 @@ public class SolveConflictForNode implements ISolveConflictCommand {
 		NodeChangeEvent event = new NodeChangeEvent(this.getTarget(), NodeModel.NODE_TEXT, this.getTarget().getText(), this.getNewTitle());
 		this.getTarget().setText(getNewTitle());
 		this.getTarget().getMap().setSaved(false);
-		if(NodeUtilities.isMapCurrentlyOpened(this.getTarget().getMap())){			
+		if(MapUtils.isMapCurrentlyOpened(this.getTarget().getMap())){			
 			this.getTarget().fireNodeChanged(event);
 		}
 		else{
-			NodeUtilities.saveMap(this.getTarget().getMap());
+			MapUtils.saveMap(this.getTarget().getMap());
 		}
 		
 	}

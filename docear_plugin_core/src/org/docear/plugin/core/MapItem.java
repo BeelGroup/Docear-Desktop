@@ -7,12 +7,11 @@ import java.net.URL;
 import java.util.List;
 
 import org.docear.plugin.core.features.DocearMapModelController;
+import org.docear.plugin.core.util.MapUtils;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.mindmapmode.MMapModel;
-import org.freeplane.features.mapio.MapIO;
-import org.freeplane.features.mapio.mindmapmode.MMapIO;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.plugin.workspace.URIUtils;
@@ -55,9 +54,7 @@ public class MapItem {
 			try {
 				File f = URIUtils.getAbsoluteFile(uri);
 				if (f.exists()) {
-					Controller.getCurrentController().selectMode(MModeController.MODENAME);
-					MMapIO mapIO = (MMapIO) MModeController.getMModeController().getExtension(MapIO.class);
-					mapIO.load(url, map);
+					map = MapUtils.getMapFromUri(f.toURI());
 					// do not work on non-docear-mindmaps
 					if (DocearMapModelController.getModel(map) == null) {
 						throw new Exception("no DocearMapModel");
