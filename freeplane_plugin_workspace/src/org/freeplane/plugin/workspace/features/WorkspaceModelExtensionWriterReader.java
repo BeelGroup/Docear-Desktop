@@ -9,8 +9,6 @@ import org.freeplane.core.io.IAttributeHandler;
 import org.freeplane.core.io.IExtensionAttributeWriter;
 import org.freeplane.core.io.ITreeWriter;
 import org.freeplane.core.io.ReadManager;
-import org.freeplane.core.util.LogUtils;
-import org.freeplane.features.map.IMapLifeCycleListener;
 import org.freeplane.features.map.MapController;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
@@ -29,33 +27,7 @@ public class WorkspaceModelExtensionWriterReader implements IExtensionAttributeW
 	
 	private WorkspaceModelExtensionWriterReader(MapController mapController) {
 		registerAttributeHandlers(mapController.getReadManager());
-		mapController.getWriteManager().addExtensionAttributeWriter(WorkspaceMapModelExtension.class, this);	
-		mapController.addMapLifeCycleListener(new IMapLifeCycleListener() {			
-			public void onRemove(MapModel map) {
-				
-			}
-			
-			public void onCreate(MapModel map) {
-				WorkspaceMapModelExtension wmme = WorkspaceController.getMapModelExtension(map);
-				if(wmme.getProject() == null) {
-					System.out
-							.println("WorkspaceModelExtensionWriterReader.WorkspaceModelExtensionWriterReader(...).new IMapLifeCycleListener() {...}.onCreate()");
-					//WORKSPACE - fixme: make sure a project is loaded and selected?
-					try {
-						WorkspaceController.addMapToProject(map, WorkspaceController.getSelectedProject());
-					}
-					catch (Exception e) {
-						LogUtils.warn("Exception in "+this.getClass()+".onCreate(MapModel): no current project was selected");
-					}
-				}
-			}
-
-			public void onSavedAs(MapModel map) {
-			}
-
-			public void onSaved(MapModel map) {
-			}
-		});		
+		mapController.getWriteManager().addExtensionAttributeWriter(WorkspaceMapModelExtension.class, this);
 	}
 
 	private void registerAttributeHandlers(ReadManager reader) {
@@ -69,7 +41,6 @@ public class WorkspaceModelExtensionWriterReader implements IExtensionAttributeW
 					updateProjectPathIndex(mapModel, value, null);
 					AWorkspaceProject prj = WorkspaceController.getCurrentModel().getProject(value);
 					if(prj == null) {
-						LogUtils.info("project with id="+value+" is not loaded");
 						return;
 					}
 					wmme.setProject(prj);
