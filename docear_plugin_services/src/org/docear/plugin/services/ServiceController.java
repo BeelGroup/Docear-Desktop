@@ -22,6 +22,7 @@ import org.docear.plugin.services.features.upload.UploadController;
 import org.docear.plugin.services.features.user.DocearUser;
 import org.docear.plugin.services.features.user.DocearUserController;
 import org.docear.plugin.services.features.user.UserFileBackupHandler;
+import org.docear.plugin.services.features.user.action.DocearBackupOpenLocation;
 import org.docear.plugin.services.features.user.action.DocearClearUserDataAction;
 import org.docear.plugin.services.features.user.workspace.DocearWorkspaceSettings;
 import org.docear.plugin.services.workspace.DocearWorkspaceModel;
@@ -55,6 +56,7 @@ public class ServiceController {
 		Controller.getCurrentController().addAction(new DocearClearUserDataAction());
 		Controller.getCurrentController().addAction(new DocearCheckForUpdatesAction());
 		Controller.getCurrentController().addAction(new ShowRecommendationsAction());
+		Controller.getCurrentController().addAction(new DocearBackupOpenLocation());
 	}
 
 	protected static void initialize(ModeController modeController) {

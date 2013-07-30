@@ -17,6 +17,9 @@ public class UserFileBackupHandler implements IFileBackupHandler {
 	/***********************************************************************************
 	 * CONSTRUCTORS
 	 **********************************************************************************/
+	public UserFileBackupHandler() {
+		
+	}
 
 	/***********************************************************************************
 	 * METHODS
@@ -34,7 +37,7 @@ public class UserFileBackupHandler implements IFileBackupHandler {
 		}
 		File mapFile = map.getFile();
 		if(mapFile != null) {
-			File backupDir = new File(URIUtils.getAbsoluteFile(ServiceController.getController().getUserSettingsHome()), "backup"+File.separator+label);
+			File backupDir = new File(getFolder(), label);
 			if(!backupDir.exists()) {
 				backupDir.mkdirs();
 			}
@@ -42,7 +45,10 @@ public class UserFileBackupHandler implements IFileBackupHandler {
 			FileUtils.copyFile(mapFile, backupFile);
 			LogUtils.info("created backup "+ backupFile +" of "+ mapFile);
 		}
-
+	}
+	
+	public File getFolder() {
+		return new File(URIUtils.getAbsoluteFile(ServiceController.getController().getUserSettingsHome()), "backup");
 	}
 
 	public void createFileBackup(String label, File file) throws IOException {
@@ -56,7 +62,7 @@ public class UserFileBackupHandler implements IFileBackupHandler {
 			label = "";
 		}
 		
-		File backupDir = new File(URIUtils.getAbsoluteFile(ServiceController.getController().getUserSettingsHome()), "backup"+File.separator+label);
+		File backupDir = new File(getFolder(), label);
 		if(!backupDir.exists()) {
 			backupDir.mkdirs();
 		}

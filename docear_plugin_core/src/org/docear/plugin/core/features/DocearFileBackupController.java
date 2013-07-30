@@ -85,6 +85,10 @@ public final class DocearFileBackupController implements IFileBackupHandler {
 			LogUtils.info("created backup "+ backupFile +" of "+ mapFile);
 		}
 	}
+	
+	public File getBackupDir() {
+		return new File(URIUtils.getAbsoluteFile(URIUtils.createURI(Compat.getDefaultApplicationUserDirectory())), "backup");
+	}
 
 	public void createFileBackup(String label, File file) throws IOException {
 		if(file == null) {
@@ -97,7 +101,7 @@ public final class DocearFileBackupController implements IFileBackupHandler {
 			label = "";
 		}
 		
-		File backupDir = new File(URIUtils.getAbsoluteFile(URIUtils.createURI(Compat.getDefaultApplicationUserDirectory())), "backup"+File.separator+label);
+		File backupDir = new File (getBackupDir(), label);
 		if(!backupDir.exists()) {
 			backupDir.mkdirs();
 		}

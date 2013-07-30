@@ -44,5 +44,11 @@
 				<ribbon_action action="workspace.action.ribbon.remove.repository" priority="TOP" />
 			</ribbon_band>
 		</ribbon_task>
+		
+		<ribbon_task name="help" orderPriority="last">
+            <ribbon_band name="help_misc" resize_policies="Mirror" orderPriority="0">
+                <ribbon_action action="DocearBackupOpenLocation" priority="TOP" />
+			</ribbon_band>
+		</ribbon_task>
 	</menu_category>
 </menu_structure>

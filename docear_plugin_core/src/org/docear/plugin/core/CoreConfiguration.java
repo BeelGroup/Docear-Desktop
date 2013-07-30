@@ -539,7 +539,7 @@ public class CoreConfiguration extends ALanguageController {
 		
 		WorkspaceController.replaceAction(new DocearShowTermsOfUseAction());
 		WorkspaceController.replaceAction(new DocearShowDataPrivacyStatementAction());
-		WorkspaceController.replaceAction(new DocearShowDataProcessingTermsAction());
+		WorkspaceController.replaceAction(new DocearShowDataProcessingTermsAction());		
 	}
 	
 	private void replaceResourceBundleStrings() {
