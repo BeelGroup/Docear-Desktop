@@ -73,7 +73,7 @@ public class FileNodeNewMindmapAction extends AWorkspaceAction {
 	
 	private boolean createNewMindmap(final File f) throws FileNotFoundException, XMLParseException, MalformedURLException, IOException, URISyntaxException {
 //		final MMapIO mapIO = (MMapIO) Controller.getCurrentModeController().getExtension(MapIO.class);
-		WorkspaceNewMapAction.createNewMap(f.toURI(), FilenameUtils.getBaseName(f.getName()), false);
+		WorkspaceNewMapAction.createNewMap(f.toURI(), FilenameUtils.getBaseName(f.getName()), true);
 		
 //		try {
 //			mapIO.newMap(f.toURI().toURL());
