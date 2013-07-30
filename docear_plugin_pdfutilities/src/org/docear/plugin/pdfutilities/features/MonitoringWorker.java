@@ -52,6 +52,7 @@ import org.freeplane.features.map.mindmapmode.MMapController;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.view.swing.map.MapView;
 import org.freeplane.view.swing.map.NodeView;
 import org.jdesktop.swingworker.SwingWorker;
@@ -612,7 +613,25 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 
 	private boolean buildNodeIndex(NodeModel target) throws InterruptedException, InvocationTargetException {
 		fireStatusUpdate(SwingWorkerDialog.PROGRESS_BAR_TEXT, null, TextUtils.getText("AbstractMonitoringAction.27")); //$NON-NLS-1$
+		AWorkspaceProject workingProject = WorkspaceController.getMapProject();
 		for (MapModel map : monitoredMindmaps) {
+			AWorkspaceProject project = WorkspaceController.getMapProject(map);
+			if(project == null) {
+				fireStatusUpdate(SwingWorkerDialog.DETAILS_LOG_TEXT, null, "ignore map with no project: " + map.getTitle());
+				continue;
+			}
+			if(!workingProject.equals(project)) {
+				fireStatusUpdate(SwingWorkerDialog.DETAILS_LOG_TEXT, null, "ignore map belonging to another project: " + map.getTitle());
+				continue;
+			}
+			if(project.isLoaded()) {
+				fireStatusUpdate(SwingWorkerDialog.DETAILS_LOG_TEXT, null, "ignore map with not loaded project: " + map.getTitle());
+				continue;
+			}
+			if(!DocearWorkspaceProject.isCompatible(project)) {
+				fireStatusUpdate(SwingWorkerDialog.DETAILS_LOG_TEXT, null, "ignoring map with a non Docear-Project: " + map.getTitle());
+				continue;
+			}
 			if (canceled()) return false;
 			buildAnnotationNodeIndex(map.getRootNode());
 		}
