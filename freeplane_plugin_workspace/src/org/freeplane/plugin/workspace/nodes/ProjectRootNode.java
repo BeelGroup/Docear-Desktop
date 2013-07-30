@@ -110,7 +110,7 @@ public class ProjectRootNode extends AFolderNode implements IMutableLinkNode, IW
 			WorkspacePopupMenuBuilder.addActions(popupMenu, new String[] {
 					WorkspacePopupMenuBuilder.createSubMenu(TextUtils.getRawText("workspace.action.new.label")),
 					"workspace.action.node.new.folder",
-					"workspace.action.file.new.mindmap",
+					"workspace.action.node.new.link",
 					WorkspacePopupMenuBuilder.endSubMenu(),
 					WorkspacePopupMenuBuilder.SEPARATOR,
 					"workspace.action.node.open.location",
