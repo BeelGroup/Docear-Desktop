@@ -26,7 +26,8 @@
 				</ribbon_action>
 			</ribbon_band>
 			<ribbon_band name="reference_settings" resize_policies="Mirror">
-				<ribbon_action action="ChangeBibtexDatabaseAction" priority="TOP" mandatory="true"/>				
+			    <!-- removed this action until we have the workspace toolbar, then use getMapProject -->
+				<!-- ribbon_action action="ChangeBibtexDatabaseAction" priority="TOP" mandatory="true"/-->				
 				<ribbon_action action="ShowAllAttributesAction" />
 				<ribbon_action action="HideAllAttributesAction" />
 				<ribbon_action action="show_jabref_preferences" mandatory="true"/>

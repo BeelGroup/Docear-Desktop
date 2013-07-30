@@ -173,7 +173,7 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 	}
 
 	public void expandPath(TreePath treePath) {
-		mTree.expandPath(treePath);		
+    		mTree.expandPath(treePath);		
 	}
 
 	public void collapsePath(TreePath treePath) {

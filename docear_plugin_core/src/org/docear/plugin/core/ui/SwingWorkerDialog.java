@@ -24,7 +24,6 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.text.BadLocationException;
 
-import org.docear.plugin.core.util.HtmlUtils;
 import org.jdesktop.swingworker.SwingWorker;
 
 import com.jgoodies.forms.factories.FormFactory;

@@ -1,6 +1,7 @@
 package org.docear.plugin.core.ui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 
 import javax.swing.JLabel;
@@ -9,7 +10,6 @@ import javax.swing.JPanel;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
-import java.awt.Dimension;
 
 public class HeaderPanel extends JPanel {
 
