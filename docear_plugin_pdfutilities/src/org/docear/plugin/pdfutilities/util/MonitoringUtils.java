@@ -1,7 +1,6 @@
 package org.docear.plugin.pdfutilities.util;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -275,19 +274,6 @@ public abstract class MonitoringUtils {
 		
 		return result;
 	}
-	
-//	public static Map<AnnotationID, Collection<AnnotationNodeModel>> getOldAnnotationsFromMap(URI mindmap){
-//		try {
-//			MapModel map = MapUtils.getMapFromUri(mindmap);
-//		
-//			if(map != null){
-//				return getOldAnnotationsFrom(map.getRootNode());
-//			}
-//		} 
-//		catch (IOException e) {
-//		}
-//		return new HashMap<AnnotationID, Collection<AnnotationNodeModel>>();
-//	}
 	
 	public static NodeModel insertChildNodesFromPdf(URI pdfFile, List<AnnotationModel> annotations, boolean isLeft, NodeModel target){
 		NodeModel node = insertChildNodeFrom(pdfFile, isLeft, target, AnnotationType.PDF_FILE);
