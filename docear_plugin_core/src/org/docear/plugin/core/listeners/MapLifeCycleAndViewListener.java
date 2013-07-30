@@ -1,31 +1,22 @@
 package org.docear.plugin.core.listeners;
 
 import java.awt.Component;
-import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
 import org.apache.commons.io.FileUtils;
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.actions.ChooseMapProjectAffiliationAction;
 import org.docear.plugin.core.features.DocearFileBackupController;
-import org.docear.plugin.core.features.DocearInternallyLoadedMap;
 import org.docear.plugin.core.features.DocearMapModelController;
 import org.docear.plugin.core.features.DocearMapModelExtension;
 import org.docear.plugin.core.features.DocearRequiredConversionController;
 import org.docear.plugin.core.features.DocearWorkspaceLinkConverted;
 import org.docear.plugin.core.logger.DocearLogEvent;
-import org.docear.plugin.core.ui.CreateProjectPagePanel;
 import org.docear.plugin.core.ui.MapIdsConflictsPanel;
-import org.docear.plugin.core.ui.SelectProjectPagePanel;
-import org.docear.plugin.core.ui.wizard.Wizard;
-import org.docear.plugin.core.ui.wizard.WizardContext;
-import org.docear.plugin.core.ui.wizard.WizardPageDescriptor;
-import org.docear.plugin.core.workspace.actions.DocearNewProjectAction;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.Compat;
@@ -39,7 +30,6 @@ import org.freeplane.features.mapio.mindmapmode.MMapIO;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.ui.IMapViewChangeListener;
 import org.freeplane.features.url.UrlManager;
-import org.freeplane.features.url.mindmapmode.MFileManager;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.features.WorkspaceMapModelExtension;
