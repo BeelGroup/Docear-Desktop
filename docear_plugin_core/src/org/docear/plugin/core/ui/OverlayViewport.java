@@ -66,7 +66,7 @@ public class OverlayViewport extends JViewport {
 			public void componentAdded(ContainerEvent e) {
 				if(e.getChild() instanceof MapView) {
 					e.getChild().addMouseMotionListener(getMouseAdapter());
-					AWorkspaceProject project = WorkspaceController.getProject(((MapView)e.getChild()).getModel());
+					AWorkspaceProject project = WorkspaceController.getMapProject(((MapView)e.getChild()).getModel());
 					if(project == null || !project.isLoaded()) {
 						enableOverlay(true);
 					}
