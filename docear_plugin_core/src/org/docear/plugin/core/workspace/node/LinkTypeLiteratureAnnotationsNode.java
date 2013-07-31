@@ -31,6 +31,7 @@ import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.io.annotation.ExportAsAttribute;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.IMutableLinkNode;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.nodes.ALinkNode;
 
 /**
@@ -108,13 +109,14 @@ public class LinkTypeLiteratureAnnotationsNode extends ALinkNode implements IWor
 	
 	public void handleAction(WorkspaceActionEvent event) {
 		if (event.getType() == WorkspaceActionEvent.MOUSE_LEFT_DBLCLICK) {
-			try {				
+			try {
+				AWorkspaceProject project = WorkspaceController.getSelectedProject(this);
 				File f = URIUtils.getAbsoluteFile(getLinkURI());
 				if(f == null) {
 					return;
 				}
-				if (!f.exists()) {
-					if(WorkspaceNewMapAction.createNewMap(f.toURI(), getName(), true) == null) {
+				if (!f.exists()) {					
+					if(WorkspaceNewMapAction.createNewMap(project, f.toURI(), getName(), true) == null) {
 						LogUtils.warn("could not create " + getLinkURI());
 					}
 				}
@@ -124,7 +126,7 @@ public class LinkTypeLiteratureAnnotationsNode extends ALinkNode implements IWor
 				
 				try {
 					if(mapIO.newMap(f.toURI().toURL())) {
-						DocearEvent evnt = new DocearEvent(this, (DocearWorkspaceProject) WorkspaceController.getCurrentModel().getProject(getModel()), DocearEventType.NEW_LITERATURE_ANNOTATIONS, Controller.getCurrentController().getMap());
+						DocearEvent evnt = new DocearEvent(this, (DocearWorkspaceProject)project, DocearEventType.NEW_LITERATURE_ANNOTATIONS, Controller.getCurrentController().getMap());
 						DocearController.getController().getEventQueue().dispatchEvent(evnt);
 					}
 				}

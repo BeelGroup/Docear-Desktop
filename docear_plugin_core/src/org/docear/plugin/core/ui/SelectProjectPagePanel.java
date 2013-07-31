@@ -26,8 +26,10 @@ public class SelectProjectPagePanel extends AWizardPage {
 		
 	private static final long serialVersionUID = 1L;	
 	private JComboBox comboBox;
+	private MapModel map;
+	private JLabel lblNewLabel;
 
-	public SelectProjectPagePanel(MapModel map) {
+	public SelectProjectPagePanel() {
 		setLayout(new FormLayout(new ColumnSpec[] {
 				ColumnSpec.decode("190px"),
 				ColumnSpec.decode("328px"),},
@@ -48,7 +50,7 @@ public class SelectProjectPagePanel extends AWizardPage {
 			projectNames.add(project.getProjectName());
 		}
 		
-		JLabel lblNewLabel = new JLabel(TextUtils.format("docear.wizard.select.mindmap.project.mindmapname", map.getTitle()));
+		lblNewLabel = new JLabel();
 		add(lblNewLabel, "1, 2, 2, 1");
 		
 		JLabel label = new JLabel(TextUtils.getText("docear.wizard.select.mindmap.project.help"));
@@ -76,11 +78,14 @@ public class SelectProjectPagePanel extends AWizardPage {
 	
 	@Override
 	public void preparePage(WizardContext context) {
+		context.setWizardTitle(getTitle());
 		context.getBackButton().setText(TextUtils.getText("docear.setup.wizard.second.select.label"));
 		context.getNextButton().setText(TextUtils.getText("docear.setup.wizard.second.create.label"));
 		context.getSkipButton().setText(TextUtils.getText("docear.setup.wizard.second.create.close"));
 		context.getSkipButton().setEnabled(true);
 		context.getSkipButton().setVisible(true);
+		map = context.get(MapModel.class);
+		lblNewLabel.setText(TextUtils.format("docear.wizard.select.mindmap.project.mindmapname", map.getTitle()));
 	}
 
 	@Override

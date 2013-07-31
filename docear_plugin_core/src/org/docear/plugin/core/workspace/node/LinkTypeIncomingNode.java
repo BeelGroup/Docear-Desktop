@@ -111,29 +111,34 @@ public class LinkTypeIncomingNode extends ALinkNode implements IWorkspaceNodeAct
 	
 	public void handleAction(WorkspaceActionEvent event) {
 		if (event.getType() == WorkspaceActionEvent.MOUSE_LEFT_DBLCLICK) {
-			try {				
+			try {
+				Controller.getCurrentController().selectMode(MModeController.MODENAME);
+				final MapIO mapIO = (MapIO) MModeController.getMModeController().getExtension(MapIO.class);
+				
 				File f = URIUtils.getAbsoluteFile(getLinkURI());
 				if(f == null) {
 					return;
 				}
+				boolean newIncoming = false;
+				
 				if (!f.exists()) {
-					MapModel map = WorkspaceNewMapAction.createNewMap(f.toURI(), getName(), true);
+					MapModel map = WorkspaceNewMapAction.createNewMap(WorkspaceController.getSelectedProject(), f.toURI(), getName(), true);
+					
 					if(map == null) {
 						LogUtils.warn("could not create " + getLinkURI());
 					}
 					else {
-						DocearEvent evnt = new DocearEvent(this, (DocearWorkspaceProject) WorkspaceController.getCurrentModel().getProject(getModel()), DocearEventType.NEW_INCOMING, map);
-						DocearController.getController().getEventQueue().dispatchEvent(evnt);
-						//DOCEAR - todo: remove when updating a node attribute is working correctly
-						Controller.getCurrentController().close(true);
+						map.destroy();
+						newIncoming = true;
 					}
 				}
 				
-				Controller.getCurrentController().selectMode(MModeController.MODENAME);
-				final MapIO mapIO = (MapIO) MModeController.getMModeController().getExtension(MapIO.class);
-				
 				try {
 					if(mapIO.newMap(f.toURI().toURL())) {
+						newIncoming = true;
+					}
+					
+					if(newIncoming) {
 						MapModel map = Controller.getCurrentController().getMap();						
 						DocearEvent evnt = new DocearEvent(this, (DocearWorkspaceProject) WorkspaceController.getCurrentModel().getProject(getModel()), DocearEventType.NEW_INCOMING, map);
 						DocearController.getController().getEventQueue().dispatchEvent(evnt);

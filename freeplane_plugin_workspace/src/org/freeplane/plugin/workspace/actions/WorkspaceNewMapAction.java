@@ -6,6 +6,7 @@ package org.freeplane.plugin.workspace.actions;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 
@@ -13,11 +14,14 @@ import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.MapModel;
+import org.freeplane.features.map.mindmapmode.MMapModel;
 import org.freeplane.features.mapio.MapIO;
 import org.freeplane.features.mapio.mindmapmode.MMapIO;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.plugin.workspace.URIUtils;
+import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
 /**
  * FIX for issue that a new mindmap is always set to <code>saved</code> by
@@ -42,11 +46,17 @@ public class WorkspaceNewMapAction extends AFreeplaneAction {
 	/***********************************************************************************
 	 * METHODS
 	 **********************************************************************************/
-	public static MapModel createNewMap() {
-		return createNewMap(null, null, false);
+	
+	
+	public static MapModel createNewMap(AWorkspaceProject project) {
+		return createNewMap(project, null, null, false);
 	}
 	
-	public static MapModel createNewMap(final URI uri, String name, boolean save) {
+	public static MapModel createNewMap(final URI uri, String name, boolean save) {		
+		return createNewMap(null, uri, name, save);
+	}
+	
+	public static MapModel createNewMap(AWorkspaceProject project, URI uri, String name, boolean save) {
 		if (uri == null) {
 			save = false;
 		}
@@ -58,19 +68,18 @@ public class WorkspaceNewMapAction extends AFreeplaneAction {
 			}
 		}
 		final MMapIO mapIO = (MMapIO) MModeController.getMModeController().getExtension(MapIO.class);
-
-		MapModel map = mapIO.newMapFromDefaultTemplate();
-		if (map == null) {
-			return null;
-		}
+		
+		final MapModel map = new MMapModel();
+		map.createNewRoot();
 
 		if (name != null) {
-			//WORKSPACE - fixme: the updates do not show in mapview (ask dimitry)
-			//String oldName = map.getRootNode().getText(); 
 			map.getRootNode().setText(name);
-			Controller.getCurrentController().getMapViewManager().getMapViewComponent().repaint();
 		}
 		
+		if(project != null) {
+			WorkspaceController.getMapModelExtension(map).setProject(project);
+		}
+		 
 		if (save) {
 			mapIO.save(map, f);
 		}
@@ -82,20 +91,21 @@ public class WorkspaceNewMapAction extends AFreeplaneAction {
 					LogUtils.warn(WorkspaceNewMapAction.class + ": " + e.getMessage());
 				}
 			}
-			Controller.getCurrentModeController().getMapController().setSaved(map, false);
 		}
-		
-			
-		//WORKSPACE - todo: remove the following when the "fixme" above has been fixed
-		if(f != null) {
-			Controller.getCurrentController().close(true);
-			try {
-				mapIO.newMap(Compat.fileToUrl(f));
-			} catch (Exception e) {
-				LogUtils.severe(e);
-			}
-		}		
+	
 		return map;
+	}
+	
+	@SuppressWarnings("deprecation")
+	public static void openMap(URI path) throws IOException {
+		try {
+    		File file = URIUtils.getAbsoluteFile(path);
+    		Controller.getCurrentModeController().getMapController().newMap(Compat.fileToUrl(file));
+    		Controller.getCurrentController().getMapViewManager().setTitle();
+		}
+		catch (Exception cause) {
+			throw new IOException(cause);
+		}
 	}
 
 	private static boolean createFolderStructure(final File f) {
@@ -105,6 +115,11 @@ public class WorkspaceNewMapAction extends AFreeplaneAction {
 		}
 		return folder.mkdirs();
 	}
+	
+	public static void openNewMap() {
+		final MMapIO mapIO = (MMapIO) MModeController.getMModeController().getExtension(MapIO.class);
+		mapIO.newMapFromDefaultTemplate();
+	}
 
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
@@ -113,7 +128,6 @@ public class WorkspaceNewMapAction extends AFreeplaneAction {
 	 * 
 	 */
 	public void actionPerformed(ActionEvent e) {
-		createNewMap();
-		
+		openNewMap();
 	}
 }

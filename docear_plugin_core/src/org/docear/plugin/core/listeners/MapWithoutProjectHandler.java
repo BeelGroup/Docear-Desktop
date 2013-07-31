@@ -23,20 +23,16 @@ import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
 public class MapWithoutProjectHandler {
-	private MapModel map;
 	
-	public MapWithoutProjectHandler(MapModel map) {
-		this.map = map;
-	}
-	
-	void showProjectSelectionWizard() {		
+	public static AWorkspaceProject showProjectSelectionWizard(MapModel map) {		
 		final Wizard wizard = new Wizard(UITools.getFrame());		
+		wizard.getContext().set(MapModel.class, map);
 		initWizard(wizard);
 		
 		int ret = wizard.show();
 		if(ret == Wizard.OK_OPTION) {
 			DocearWorkspaceProject project = wizard.getContext().get(DocearWorkspaceProject.class);
-			Boolean contextObject = wizard.getContext().get(Boolean.class);
+			Boolean contextObject = wizard.getContext().get(Boolean.class);			
 			if (wizard.getContext().get(Boolean.class) != null) {
 				if (contextObject) {
 					DocearNewProjectAction.createProject(project);
@@ -51,7 +47,7 @@ public class MapWithoutProjectHandler {
     						}
     					});
 					}
-					return;
+					return null;
 				}
 			}
 			if (project != null) {
@@ -67,11 +63,14 @@ public class MapWithoutProjectHandler {
 				}
 			}
 			
+			return project;
 		}
+		
+		return null;
 	}
 
-	private void initWizard(Wizard wizard) {
-		WizardPageDescriptor desc = new WizardPageDescriptor("page.project.select", new SelectProjectPagePanel(map)) {
+	private static void initWizard(Wizard wizard) {
+		WizardPageDescriptor desc = new WizardPageDescriptor("page.project.select", new SelectProjectPagePanel()) {
 			
     		public WizardPageDescriptor getBackPageDescriptor(WizardContext context) {    			
     			AWorkspaceProject project = ((SelectProjectPagePanel)getPage()).getSelectedProject();
