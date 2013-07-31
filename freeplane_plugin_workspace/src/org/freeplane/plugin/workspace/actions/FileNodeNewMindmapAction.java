@@ -20,6 +20,7 @@ import org.freeplane.n3.nanoxml.XMLParseException;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.io.IFileSystemRepresentation;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 
 public class FileNodeNewMindmapAction extends AWorkspaceAction {
@@ -56,7 +57,8 @@ public class FileNodeNewMindmapAction extends AWorkspaceAction {
 				File file = new File(((IFileSystemRepresentation) targetNode).getFile(), fileName);
 				try {
 					file = WorkspaceController.getFileSystemMgr().createFile(fileName, ((IFileSystemRepresentation) targetNode).getFile());
-					if (createNewMindmap(file)) {
+					AWorkspaceProject project = WorkspaceController.getSelectedProject(targetNode);
+					if (createNewMindmap(project, file)) {
 						targetNode.refresh();
 					}
 				}
@@ -71,9 +73,9 @@ public class FileNodeNewMindmapAction extends AWorkspaceAction {
 		}
     }
 	
-	private boolean createNewMindmap(final File f) throws FileNotFoundException, XMLParseException, MalformedURLException, IOException, URISyntaxException {
+	private boolean createNewMindmap(AWorkspaceProject project, final File f) throws FileNotFoundException, XMLParseException, MalformedURLException, IOException, URISyntaxException {
 //		final MMapIO mapIO = (MMapIO) Controller.getCurrentModeController().getExtension(MapIO.class);
-		WorkspaceNewMapAction.createNewMap(f.toURI(), FilenameUtils.getBaseName(f.getName()), true);
+		WorkspaceNewMapAction.createNewMap(project, f.toURI(), FilenameUtils.getBaseName(f.getName()), true);
 		
 //		try {
 //			mapIO.newMap(f.toURI().toURL());

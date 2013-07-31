@@ -69,7 +69,7 @@ public class DocearLibraryNewMindmap extends AWorkspaceAction {
 							file = WorkspaceController.getFileSystemMgr().createFile(fileName, parentFolder);
 						}
 						
-						if (createNewMindmap(file.toURI()) != null) {
+						if (createNewMindmap(project, file.toURI()) != null) {
 							LinkTypeFileNode newNode = new LinkTypeFileNode();
 							newNode.setLinkURI(project.getRelativeURI(file.toURI()));
 							newNode.setName(FilenameUtils.getBaseName(file.getName()));
@@ -90,9 +90,9 @@ public class DocearLibraryNewMindmap extends AWorkspaceAction {
 		}
 	}
 
-	private MapModel createNewMindmap(final URI uri) {
+	private MapModel createNewMindmap(DocearWorkspaceProject project, final URI uri) {
 		String name = FilenameUtils.getBaseName(URIUtils.getAbsoluteFile(uri).getName());
-		return WorkspaceNewMapAction.createNewMap(uri, name, true);
+		return WorkspaceNewMapAction.createNewMap(project, uri, name, true);
 	}
 
 	/***********************************************************************************

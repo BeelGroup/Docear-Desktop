@@ -33,6 +33,7 @@ import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.io.annotation.ExportAsAttribute;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.IMutableLinkNode;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
 public class LinkTypeFileNode extends ALinkNode implements IWorkspaceNodeActionListener, IWorkspaceTransferableCreator, IMutableLinkNode {
 	
@@ -94,10 +95,10 @@ public class LinkTypeFileNode extends ALinkNode implements IWorkspaceNodeActionL
 				if(file.getName().toLowerCase().endsWith(".mm") || file.getName().toLowerCase().endsWith(".dcr")) {
 				
     				if(!file.exists() && this.isSystem()){
-    					if(WorkspaceNewMapAction.createNewMap(getLinkURI(), getName(), true) == null) {
+    					AWorkspaceProject project = WorkspaceController.getSelectedProject(this);
+    					if(WorkspaceNewMapAction.createNewMap(project, getLinkURI(), getName(), true) == null) {
     						LogUtils.warn("could not create " + getLinkURI());
     					}
-    					return;
     				}
     				if(!file.exists() && !this.isSystem()) {
     					//WORKSPACE - todo: replace with some kind of view extension call
