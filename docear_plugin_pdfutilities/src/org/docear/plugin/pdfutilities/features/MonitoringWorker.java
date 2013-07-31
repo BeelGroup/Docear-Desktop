@@ -624,7 +624,7 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 				fireStatusUpdate(SwingWorkerDialog.DETAILS_LOG_TEXT, null, "ignore map belonging to another project: " + map.getTitle());
 				continue;
 			}
-			if(project.isLoaded()) {
+			if(!project.isLoaded()) {
 				fireStatusUpdate(SwingWorkerDialog.DETAILS_LOG_TEXT, null, "ignore map with not loaded project: " + map.getTitle());
 				continue;
 			}
