@@ -41,9 +41,8 @@ public class MapLifeCycleAndViewListener implements IMapLifeCycleListener, IMapV
 		if (map instanceof MMapModel) {
 			List<AWorkspaceProject> projects = WorkspaceController.getCurrentModel().getProjects();
 			AWorkspaceProject project = WorkspaceController.getMapProject(map);			
-			if (!DocearWorkspaceProject.isCompatible(project)) {
-				MapWithoutProjectHandler handler = new MapWithoutProjectHandler(map);
-				handler.showProjectSelectionWizard();
+			if (!DocearWorkspaceProject.isCompatible(project)) {				
+				MapWithoutProjectHandler.showProjectSelectionWizard(map);
 			}
 			
 			File f = map.getFile();

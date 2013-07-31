@@ -20,6 +20,7 @@ import org.docear.plugin.core.features.DocearLifeCycleObserver;
 import org.docear.plugin.core.features.DocearMapModelExtension;
 import org.docear.plugin.core.features.DocearProgressObserver;
 import org.docear.plugin.core.io.IOTools;
+import org.docear.plugin.core.listeners.MapWithoutProjectHandler;
 import org.docear.plugin.core.logger.DocearEventLogger;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.LogUtils;
@@ -350,10 +351,9 @@ public class DocearController implements IDocearEventListener {
 			}
 		}
 		
-		//DOCEAR use wizard to ask for project?
-//		if(project == null) {
-//			project = WorkspaceController.getSelectedProject();
-//		}
+		if (project == null) {
+			project = MapWithoutProjectHandler.showProjectSelectionWizard(map);
+		}
 		return project;
 	}
 	
