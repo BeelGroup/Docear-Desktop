@@ -13,11 +13,13 @@ import java.net.URI;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.LogUtils;
+import org.freeplane.features.edge.mindmapmode.AutomaticEdgeColorHook;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.mindmapmode.MMapModel;
 import org.freeplane.features.mapio.MapIO;
 import org.freeplane.features.mapio.mindmapmode.MMapIO;
 import org.freeplane.features.mode.Controller;
+import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
@@ -80,6 +82,10 @@ public class WorkspaceNewMapAction extends AFreeplaneAction {
 			WorkspaceController.getMapModelExtension(map).setProject(project);
 		}
 		 
+		final ModeController modeController = Controller.getCurrentModeController();
+		AutomaticEdgeColorHook al = (AutomaticEdgeColorHook) modeController.getExtension(AutomaticEdgeColorHook.class);
+		al.undoableToggleHook(map.getRootNode());		
+		
 		if (save) {
 			mapIO.save(map, f);
 		}
