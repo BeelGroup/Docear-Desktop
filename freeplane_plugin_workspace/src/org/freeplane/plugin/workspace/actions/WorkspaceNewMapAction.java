@@ -6,6 +6,7 @@ package org.freeplane.plugin.workspace.actions;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 
@@ -16,6 +17,7 @@ import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.mindmapmode.MMapModel;
 import org.freeplane.features.mapio.MapIO;
 import org.freeplane.features.mapio.mindmapmode.MMapIO;
+import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
@@ -44,9 +46,7 @@ public class WorkspaceNewMapAction extends AFreeplaneAction {
 	/***********************************************************************************
 	 * METHODS
 	 **********************************************************************************/
-	public static MapModel createNewMap() {
-		return createNewMap(null, null, null, false);
-	}
+	
 	
 	public static MapModel createNewMap(AWorkspaceProject project) {
 		return createNewMap(project, null, null, false);
@@ -91,20 +91,21 @@ public class WorkspaceNewMapAction extends AFreeplaneAction {
 					LogUtils.warn(WorkspaceNewMapAction.class + ": " + e.getMessage());
 				}
 			}
-			//Controller.getCurrentModeController().getMapController().setSaved(map, false);
 		}
-		
-			
-		//WORKSPACE - todo: remove the following when the "fixme" above has been fixed
-//		if(f != null) {
-//			Controller.getCurrentController().close(true);
-//			try {
-//				mapIO.newMap(Compat.fileToUrl(f));
-//			} catch (Exception e) {
-//				LogUtils.severe(e);
-//			}
-//		}		
+	
 		return map;
+	}
+	
+	@SuppressWarnings("deprecation")
+	public static void openMap(URI path) throws IOException {
+		try {
+    		File file = URIUtils.getAbsoluteFile(path);
+    		Controller.getCurrentModeController().getMapController().newMap(Compat.fileToUrl(file));
+    		Controller.getCurrentController().getMapViewManager().setTitle();
+		}
+		catch (Exception cause) {
+			throw new IOException(cause);
+		}
 	}
 
 	private static boolean createFolderStructure(final File f) {
@@ -114,6 +115,11 @@ public class WorkspaceNewMapAction extends AFreeplaneAction {
 		}
 		return folder.mkdirs();
 	}
+	
+	public static void openNewMap() {
+		final MMapIO mapIO = (MMapIO) MModeController.getMModeController().getExtension(MapIO.class);
+		mapIO.newMapFromDefaultTemplate();
+	}
 
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
@@ -122,7 +128,6 @@ public class WorkspaceNewMapAction extends AFreeplaneAction {
 	 * 
 	 */
 	public void actionPerformed(ActionEvent e) {
-		createNewMap();
-		
+		openNewMap();
 	}
 }

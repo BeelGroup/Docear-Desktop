@@ -60,6 +60,7 @@ public class FileNodeNewMindmapAction extends AWorkspaceAction {
 					AWorkspaceProject project = WorkspaceController.getSelectedProject(targetNode);
 					if (createNewMindmap(project, file)) {
 						targetNode.refresh();
+						WorkspaceNewMapAction.openMap(file.toURI());
 					}
 				}
 				catch(Exception ex) {

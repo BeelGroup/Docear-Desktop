@@ -75,6 +75,7 @@ public class DocearLibraryNewMindmap extends AWorkspaceAction {
 							newNode.setName(FilenameUtils.getBaseName(file.getName()));
 							targetNode.getModel().addNodeTo(newNode, targetNode);
 							targetNode.refresh();
+							WorkspaceNewMapAction.openMap(file.toURI());
 						}
 					}
 					catch (Exception ex) {
