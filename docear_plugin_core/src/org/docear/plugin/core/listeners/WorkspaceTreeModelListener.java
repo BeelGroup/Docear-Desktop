@@ -2,7 +2,6 @@ package org.docear.plugin.core.listeners;
 
 import java.awt.Component;
 import java.io.File;
-import java.io.FileFilter;
 import java.util.List;
 
 import javax.swing.event.TreeModelEvent;
@@ -70,46 +69,6 @@ public class WorkspaceTreeModelListener implements TreeModelListener {
 					}					
 				}						
 			}			
-		}
-	}
-
-	private void traversThrough(File dir, File from) {
-		File[] files = dir.listFiles(new FileFilter() {
-			public boolean accept(File pathname) {
-				if(pathname.isDirectory() || pathname.getName().toLowerCase().endsWith(".mm")) {
-					return true;
-				}
-				return false;
-			}
-		});
-		for (File file : files) {
-			if(file.isDirectory()) {
-				traversThrough(file, new File(from, file.getName()));
-			}
-			else {
-				updateFileTracking(new File(from, file.getName()), file);
-			}
-		}
-		
-	}
-	
-	private void updateFileTracking(File from, File to) {
-		if(from != null && from.getName().toLowerCase().endsWith(".mm")) {
-			//doesn't work because the remove clears the url before the renamed event is called
-			try {
-//				Map<String, MapModel> maps = Controller.getCurrentController().getMapViewManager().getMaps();
-//				//if map is open right now, remove url and clean all tracking lists 
-//				if(str != null) {
-//					MapModel map = Controller.getCurrentController().getMapViewManager().getMaps().get(str);
-//					removeFileTracking(map);
-//					final URL urlBefore = map.getURL();
-//					map.setURL(to.toURI().toURL());
-//					final MMapController mapController = (MMapController) Controller.getCurrentModeController().getMapController();
-//					mapController.fireMapChanged(new MapChangeEvent(this, map, UrlManager.MAP_URL, urlBefore, map.getURL()));
-//				}
-			} catch (Throwable e) {
-				LogUtils.warn(e);
-			}					
 		}
 	}
 	

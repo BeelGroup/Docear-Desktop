@@ -63,6 +63,11 @@ public final class DocearFileBackupController implements IFileBackupHandler {
 		getFileBackupHandler().createFileBackup(label, file);
 	}
 	
+	public File getBackupDir() {
+		return new File(URIUtils.getAbsoluteFile(URIUtils.createURI(Compat.getDefaultApplicationUserDirectory())), "backup");
+	}
+
+	
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
 	 **********************************************************************************/
@@ -76,7 +81,7 @@ public final class DocearFileBackupController implements IFileBackupHandler {
 		File mapFile = map.getFile();
 		if(mapFile != null) {
 			
-			File backupDir = new File(URIUtils.getAbsoluteFile(URIUtils.createURI(Compat.getDefaultApplicationUserDirectory())), "backup"+File.separator+label);
+			File backupDir = new File(getBackupDir(), label);
 			if(!backupDir.exists()) {
 				backupDir.mkdirs();
 			}
@@ -86,10 +91,6 @@ public final class DocearFileBackupController implements IFileBackupHandler {
 		}
 	}
 	
-	public File getBackupDir() {
-		return new File(URIUtils.getAbsoluteFile(URIUtils.createURI(Compat.getDefaultApplicationUserDirectory())), "backup");
-	}
-
 	public void createFileBackup(String label, File file) throws IOException {
 		if(file == null) {
 			throw new IllegalArgumentException("NULL");

@@ -3,7 +3,6 @@ package org.docear.plugin.core.listeners;
 import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import javax.swing.JOptionPane;
 
@@ -39,7 +38,6 @@ public class MapLifeCycleAndViewListener implements IMapLifeCycleListener, IMapV
 
 	public void onCreate(MapModel map) {
 		if (map instanceof MMapModel) {
-			List<AWorkspaceProject> projects = WorkspaceController.getCurrentModel().getProjects();
 			AWorkspaceProject project = WorkspaceController.getMapProject(map);			
 			if (!DocearWorkspaceProject.isCompatible(project)) {
 				MapWithoutProjectHandler handler = new MapWithoutProjectHandler(map);
