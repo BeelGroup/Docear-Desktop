@@ -36,6 +36,8 @@ public class OverlayViewport extends JViewport {
 	private final List<Component> overlayComponents = new ArrayList<Component>();
 	private MouseAdapter mouseAdapter;
 	private JDialog d;
+	private final JLabel labelField = new JLabel();
+	private WindowFocusListener focusListener;
 	
 	/***********************************************************************************
 	 * CONSTRUCTORS
@@ -141,57 +143,31 @@ public class OverlayViewport extends JViewport {
 					else {
 						if(d != null && d.isVisible()) {
 							d.setVisible(false);
-							d = null;
 						}
 					}
 				}
 
 				private void handlePopup(JComponent comp, MouseEvent e) {
-					synchronized (this) {
-						if(d == null) {
-							final Frame frame = UITools.getFrame();
-							d = new JDialog(frame, comp.getName());
-							d.setUndecorated(true);
-							d.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-							d.setModal(false);
-							d.add(new JLabel(comp.getToolTipText()));
-							d.pack();
-							d.addWindowFocusListener(new WindowFocusListener() {
-								public void windowLostFocus(WindowEvent e) {
-								}
-		
-								public void windowGainedFocus(WindowEvent e) {
-									frame.addWindowFocusListener(new WindowFocusListener() {
-										public void windowLostFocus(WindowEvent e) {
-											if(d != null) {
-												d.setVisible(false);
-											}
-										}
-		
-										public void windowGainedFocus(WindowEvent e) {
-											if(d != null) {
-												d.setVisible(false);
-											}
-											frame.removeWindowFocusListener(this);
-										}
-									});
-									if(d != null) {
-										d.removeWindowFocusListener(this);
-									}
-								}
-							});
-							
-						}
-						d.setLocation(e.getLocationOnScreen().x, e.getLocationOnScreen().y+24);
-						d.setVisible(true);
+					if(d == null) {
+						final Frame frame = UITools.getFrame();
+						d = new JDialog(frame, comp.getName());
+						d.setUndecorated(true);
+						d.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+						d.setModal(false);
+						d.add(labelField);
 					}
+					labelField.setText(comp.getToolTipText());						
+					d.setLocation(e.getLocationOnScreen().x, e.getLocationOnScreen().y+24);
+					d.removeWindowFocusListener(getWindowFocusListener());
+					d.addWindowFocusListener(getWindowFocusListener());
+					d.pack();
+					d.setVisible(true);
 				}
 
 				@Override
 				public void mouseExited(MouseEvent e) {
 					if(d != null) {
 						d.setVisible(false);
-						d = null;
 					}
 				}
 				
@@ -199,6 +175,38 @@ public class OverlayViewport extends JViewport {
 			};
 		}
 		return mouseAdapter;
+	}
+	
+	private WindowFocusListener getWindowFocusListener() {
+		if (focusListener == null) {
+			final Frame frame = UITools.getFrame();
+			focusListener = new WindowFocusListener() {
+				public void windowLostFocus(WindowEvent e) {
+				}
+
+				public void windowGainedFocus(WindowEvent e) {
+					frame.addWindowFocusListener(new WindowFocusListener() {
+
+						public void windowLostFocus(WindowEvent e) {
+							if (d != null) {
+								d.setVisible(false);
+							}
+						}
+
+						public void windowGainedFocus(WindowEvent e) {
+							if (d != null) {
+								d.setVisible(false);
+							}
+							frame.removeWindowFocusListener(this);
+						}
+					});
+					if (d != null) {
+						d.removeWindowFocusListener(this);
+					}
+				}
+			};
+		}
+		return focusListener;
 	}
 
 	protected JComponent getIntersectingOverlay(Point point) {

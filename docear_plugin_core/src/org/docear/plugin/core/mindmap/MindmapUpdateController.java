@@ -230,7 +230,7 @@ public class MindmapUpdateController {
 								fireStatusUpdate(SwingWorkerDialog.DETAILS_LOG_TEXT, null, "ignore map with no project: " + map.getTitle());
 								continue;
 							}
-							if(project.isLoaded()) {
+							if(!project.isLoaded()) {
 								fireStatusUpdate(SwingWorkerDialog.DETAILS_LOG_TEXT, null, "ignore map with not loaded project: " + map.getTitle());
 								continue;
 							}

@@ -17,6 +17,7 @@ import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
+import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeSelectionEvent;
 
 import org.freeplane.core.resources.ResourceController;
@@ -33,6 +34,7 @@ import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.link.LinkController;
+import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.features.ui.INodeViewLifeCycleListener;
@@ -77,6 +79,8 @@ import org.freeplane.plugin.workspace.io.AFileNodeCreator;
 import org.freeplane.plugin.workspace.io.FileReadManager;
 import org.freeplane.plugin.workspace.io.FileSystemManager;
 import org.freeplane.plugin.workspace.model.WorkspaceModel;
+import org.freeplane.plugin.workspace.model.WorkspaceModelEvent;
+import org.freeplane.plugin.workspace.model.WorkspaceModelListener;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.model.project.IProjectSelectionListener;
 import org.freeplane.plugin.workspace.model.project.ProjectSelectionEvent;
@@ -94,7 +98,7 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 	private TreeView view;
 	private IWorkspaceSettingsHandler settings;
 	private WorkspaceModel wsModel;
-	private AWorkspaceProject currentSelectedProject = null;
+	private AWorkspaceProject selectedProject = null;
 	private IProjectSelectionListener projectSelectionListener;
 	private Runnable viewUpdater;
 
@@ -330,7 +334,7 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 					if(mapChangeAdapter != null) {
 						mapChangeAdapter.selectionChanged(evt.getSelectedProject());
 					}
-					currentSelectedProject = evt.getSelectedProject();
+					selectedProject = evt.getSelectedProject();
 				}
 			};
 		}
@@ -411,12 +415,35 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 	public WorkspaceModel getModel() {
 		if(wsModel == null) {
 			wsModel = WorkspaceModel.createDefaultModel();
+			setModel(wsModel);
 		}
 		return wsModel;
 	}
 	
 	public void setModel(WorkspaceModel model) {
 		wsModel = model;
+		if(wsModel != null) {
+			wsModel.addWorldModelListener(new WorkspaceModelListener() {
+				
+				public void treeStructureChanged(TreeModelEvent arg0) {}
+				
+				public void treeNodesRemoved(TreeModelEvent arg0) {}
+				
+				public void treeNodesInserted(TreeModelEvent arg0) {}
+				
+				public void treeNodesChanged(TreeModelEvent arg0) {}
+				
+				public void projectRemoved(WorkspaceModelEvent event) {
+					if(event.getProject().equals(getSelectedProject())) {
+						selectedProject = null;
+						final RibbonMapChangeAdapter adapter = Controller.getCurrentModeController().getUserInputListenerFactory().getRibbonBuilder().getMapChangeAdapter();
+						adapter.selectionChanged(selectedProject);
+					}
+				}
+				
+				public void projectAdded(WorkspaceModelEvent event) {}
+			});
+		}
 	}
 
 	@Override
@@ -474,7 +501,7 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 		if(this.projectSelectionListener == null) {
 			this.projectSelectionListener = new IProjectSelectionListener() {
 				public void selectionChanged(ProjectSelectionEvent event) {
-					currentSelectedProject = event.getSelectedProject();
+					selectedProject = event.getSelectedProject();
 				}
 			};
 		}
@@ -483,7 +510,7 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 	
 	@Override
 	public AWorkspaceProject getSelectedProject() {
-		return currentSelectedProject;		
+		return selectedProject;		
 	}
 
 	@Override

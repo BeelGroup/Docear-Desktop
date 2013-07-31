@@ -17,6 +17,7 @@ import org.freeplane.features.map.NodeModel;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.features.WorkspaceMapModelExtension;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
 public class MModeWorkspaceLinkController extends MLinkController {
 	
@@ -74,19 +75,22 @@ public class MModeWorkspaceLinkController extends MLinkController {
 		return super.linkType();
 	}
 	
-	public URI createRelativeURI(final File map, final File input, final int linkType) {
+	public URI createRelativeURI(final File base, final File input, final int linkType) {
 		if (linkType == LINK_ABSOLUTE) {
 			return null;
 		}
 		try {
 			if (linkType == LINK_RELATIVE_TO_PROJECT) {
-				return WorkspaceController.getSelectedProject().getRelativeURI(input.getAbsoluteFile().toURI());
+				AWorkspaceProject project = WorkspaceController.getMapProject();
+				if (project != null) {
+					return project.getRelativeURI(input.getAbsoluteFile().toURI());
+				}
 			}
-			if (map == null) {
+			if (base == null) {
 				return input.toURI().normalize();
 			}
 			else {
-				return super.createRelativeURI(map, input, linkType);
+				return super.createRelativeURI(base, input, linkType);
 			}
 		}
 		catch (Exception e) {
