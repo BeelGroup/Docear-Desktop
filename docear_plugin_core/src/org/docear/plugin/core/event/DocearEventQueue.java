@@ -71,6 +71,11 @@ public class DocearEventQueue {
 		}
 	}
 	
+	public void invoke(Runnable task) {
+		DocearEvent event = new DocearRunnableEvent(this, task);
+		invoke(event);
+	}
+	
 	public void addEventListener(IDocearEventListener listener) {
 		synchronized (this.eventListeners) {
 			if(this.eventListeners.contains(listener)) {
@@ -120,4 +125,16 @@ public class DocearEventQueue {
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
 	 **********************************************************************************/
+	
+
+	/***********************************************************************************
+	 * NESTED TYPES
+	 **********************************************************************************/
+	private static class DocearRunnableEvent extends DocearEvent {
+		private static final long serialVersionUID = 1L;
+
+		public DocearRunnableEvent(Object source, Runnable r) {
+			super(source, r);
+		}
+	}
 }

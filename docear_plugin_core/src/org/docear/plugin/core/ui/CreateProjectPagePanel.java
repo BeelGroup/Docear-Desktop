@@ -445,9 +445,9 @@ public class CreateProjectPagePanel extends AWizardPage {
 		//add(rdbtnImportMendeley, "2, 26, 9, 1");
 		
 		chckbxIncludeDemoFiles = new JCheckBox(TextUtils.getText("docear.setup.wizard.create.demo.label"));
-		chckbxIncludeDemoFiles.setSelected(true);
+		chckbxIncludeDemoFiles.setSelected(false);
 		chckbxIncludeDemoFiles.setBackground(Color.WHITE);
-		add(chckbxIncludeDemoFiles, "2, 28, 9, 1");
+		/*add(chckbxIncludeDemoFiles, "2, 28, 9, 1");*/
 		
 		ButtonGroup group = new ButtonGroup();
 		group.add(rdbtnImportMendeley);

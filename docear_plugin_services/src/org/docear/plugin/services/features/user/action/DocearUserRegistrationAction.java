@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
+import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.ui.wizard.Wizard;
 import org.docear.plugin.core.ui.wizard.WizardContext;
 import org.docear.plugin.core.ui.wizard.WizardPageDescriptor;
@@ -42,6 +43,7 @@ public class DocearUserRegistrationAction extends AWorkspaceAction {
 		//registration page
 		WizardPageDescriptor desc = new WizardPageDescriptor("page.registration", new RegistrationPagePanel()) {
 			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
+				((RegistrationPagePanel)getPage()).getUser();
 				return context.getModel().getPage("page.verify.registration");
 			}
 
@@ -174,7 +176,11 @@ public class DocearUserRegistrationAction extends AWorkspaceAction {
 					user.setCollaborationEnabled(clone.isCollaborationEnabled());
 					user.setSynchronizationEnabled(clone.isSynchronizationEnabled());
 					user.setRecommendationsEnabled(clone.isRecommendationsEnabled());
-					WorkspaceController.save();
+					DocearController.getController().getEventQueue().invoke(new Runnable() {
+						public void run() {
+							WorkspaceController.save();
+						}
+					});
 				}
 			}
 		}).start();

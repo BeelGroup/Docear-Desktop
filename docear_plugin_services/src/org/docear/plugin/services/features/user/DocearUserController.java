@@ -169,7 +169,7 @@ public class DocearUserController extends ADocearServiceFeature {
 						WorkspaceController.getAction(DocearUserRegistrationAction.KEY).actionPerformed(null);
 					}
 					else {
-						WorkspaceController.getAction(DocearUserLoginAction.KEY).actionPerformed(null);
+						WorkspaceController.getAction(DocearUserServicesAction.KEY).actionPerformed(null);
 					}
 				}
 			}

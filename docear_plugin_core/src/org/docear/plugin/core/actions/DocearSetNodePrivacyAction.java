@@ -2,7 +2,6 @@ package org.docear.plugin.core.actions;
 
 import java.awt.event.ActionEvent;
 import java.util.Collection;
-import java.util.Date;
 
 import org.docear.plugin.core.features.DocearNodePrivacyExtensionController;
 import org.docear.plugin.core.features.DocearNodePrivacyExtensionController.DocearPrivacyLevel;
@@ -32,7 +31,6 @@ public class DocearSetNodePrivacyAction extends AFreeplaneAction {
 			if(level == null) {
 				return;
 			}
-			Date now = new Date();
 			Collection<NodeModel> nodes = Controller.getCurrentModeController().getMapController().getSelectedNodes();
 			for (NodeModel nodeModel : nodes) {
 				// set the privacy level

@@ -90,11 +90,11 @@ public class OverlayLayoutManager implements LayoutManager {
 				insets = new Insets(5, 5, 5, 5);
 			}
 			int tr = parent.getWidth()-parent.getInsets().right;
-			int tl = parent.getInsets().left;
-			int cr = parent.getWidth()-parent.getInsets().right;
-			int cl = parent.getInsets().left;
-			int br = parent.getWidth()-parent.getInsets().right;
-			int bl = parent.getInsets().left;
+//			int tl = parent.getInsets().left;
+//			int cr = parent.getWidth()-parent.getInsets().right;
+//			int cl = parent.getInsets().left;
+//			int br = parent.getWidth()-parent.getInsets().right;
+//			int bl = parent.getInsets().left;
 			for (Component overlayComp : overlayComponents) {
 				Dimension prefSize = overlayComp.getSize();
 				tr -= prefSize.width - 5; 

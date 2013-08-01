@@ -75,6 +75,7 @@ public class Activator extends WorkspaceDependingService {
 		}
 	}
 	
+	@SuppressWarnings("rawtypes")
 	protected final void startControllerExtensions(BundleContext context, Controller controller) {		
 		try {
 			final ServiceReference[] extensions = context.getServiceReferences(IDocearControllerExtension.class.getName(), "(dependsOn="+DocearService.DEPENDS_ON+")");

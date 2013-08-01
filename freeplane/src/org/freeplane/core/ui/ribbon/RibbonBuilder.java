@@ -153,7 +153,6 @@ public class RibbonBuilder {
 					getAcceleratorManager().loadAcceleratorPresets(new FileInputStream(getAcceleratorManager().getPresetsFile()));
 				}
 				catch (IOException ex) {
-					LogUtils.info("not accelerator presets found: "+ex);
 				}
 			}
 			catch (RuntimeException e){
