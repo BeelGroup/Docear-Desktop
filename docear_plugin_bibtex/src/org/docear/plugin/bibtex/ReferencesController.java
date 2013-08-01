@@ -84,7 +84,6 @@ import org.freeplane.plugin.workspace.features.AWorkspaceModeExtension;
 import org.freeplane.plugin.workspace.features.ProjectURLHandler;
 import org.freeplane.plugin.workspace.model.WorkspaceModelEvent;
 import org.freeplane.plugin.workspace.model.WorkspaceModelListener;
-import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.model.project.IProjectSelectionListener;
 import org.freeplane.plugin.workspace.model.project.ProjectSelectionEvent;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
@@ -142,6 +141,7 @@ public class ReferencesController extends ALanguageController implements IDocear
 	//private AFreeplaneAction ShowJabrefPreferences = new ShowJabrefPreferencesAction("show_jabref_preferences");
 	private IDocearProjectListener projectListener;
 	private IProjectSelectionListener projectSelectionListener;
+	private Runnable runOnce;
 
 	public ReferencesController(ModeController modeController) {
 		super();
@@ -244,6 +244,18 @@ public class ReferencesController extends ALanguageController implements IDocear
 		NodeSelectionListener nodeSelectionListener = new NodeSelectionListener();
 		nodeSelectionListener.init();
 		
+		runOnce = new Runnable() {
+			public void run() {
+				//removeSelf();
+				WorkspacePopupMenu popupMenu = new DefaultFileNode("temp", new File("temp.tmp")).getContextMenu();
+				WorkspacePopupMenuBuilder.insertAction(popupMenu, "workspace.action.addOrUpdateReferenceEntry", 0);
+				WorkspacePopupMenuBuilder.insertAction(popupMenu, WorkspacePopupMenuBuilder.SEPARATOR, 1);
+				popupMenu = new LinkTypeFileNode().getContextMenu();
+				WorkspacePopupMenuBuilder.insertAction(popupMenu, "workspace.action.addOrUpdateReferenceEntry", 0);
+				WorkspacePopupMenuBuilder.insertAction(popupMenu, WorkspacePopupMenuBuilder.SEPARATOR, 1);
+			}
+		};
+		
 		WorkspaceController.getModeExtension(modeController).getModel().addWorldModelListener(new WorkspaceModelListener() {
 			
 			public void treeStructureChanged(TreeModelEvent arg0) {}
@@ -277,36 +289,20 @@ public class ReferencesController extends ALanguageController implements IDocear
 				if(event.getProject() instanceof DocearWorkspaceProject) {
 					((DocearWorkspaceProject) event.getProject()).addProjectListener(getProjectListener());
 				}
+				initContextMenusOnce();
 			}
 		});
 		
-		//insert some extra actions to file nodes
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				//removeSelf();
-				WorkspacePopupMenu popupMenu = new DefaultFileNode("temp", new File("temp.tmp")).getContextMenu();
-				WorkspacePopupMenuBuilder.insertAction(popupMenu, "workspace.action.addOrUpdateReferenceEntry", 0);
-				WorkspacePopupMenuBuilder.insertAction(popupMenu, WorkspacePopupMenuBuilder.SEPARATOR, 1);
-				popupMenu = new LinkTypeFileNode().getContextMenu();
-				WorkspacePopupMenuBuilder.insertAction(popupMenu, "workspace.action.addOrUpdateReferenceEntry", 0);
-				WorkspacePopupMenuBuilder.insertAction(popupMenu, WorkspacePopupMenuBuilder.SEPARATOR, 1);
-			}
-		});
+		
 	}
 	
-	private void setupInitialProjects(ModeController modeController) {
-		for (AWorkspaceProject project : WorkspaceController.getModeExtension(modeController).getModel().getProjects()) {
-			if(project instanceof DocearWorkspaceProject) {
-				try {
-					final File file = URIUtils.getFile(ProjectURLHandler.resolve(project, ((DocearWorkspaceProject)project).getBibtexDatabase().toURL()).toURI());
-					if(file == null) {
-						return;
-					}
-					addOrUpdateProjectExtension((DocearWorkspaceProject) project, null);
-				} catch (Exception e) {
-					LogUtils.warn(e);
-				}
-			}
+	protected void initContextMenusOnce() {
+		//insert some extra actions to file nodes
+		synchronized(this) {
+    		if(runOnce != null) {
+    			SwingUtilities.invokeLater(runOnce);
+    			runOnce = null;
+    		}
 		}
 		
 	}

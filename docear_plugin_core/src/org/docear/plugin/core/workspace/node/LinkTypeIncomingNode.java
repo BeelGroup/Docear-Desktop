@@ -92,9 +92,10 @@ public class LinkTypeIncomingNode extends ALinkNode implements IWorkspaceNodeAct
 					WorkspacePopupMenuBuilder.SEPARATOR,
 					"workspace.action.node.rename",
 					"workspace.action.node.remove",
-					"workspace.action.file.delete",
-					WorkspacePopupMenuBuilder.SEPARATOR,
-					"workspace.action.docear.incoming.reread_monitored"
+					"workspace.action.file.delete"
+					//DOCEAR disabled for now, because the action takes the actual project from the currently open mind map
+//					WorkspacePopupMenuBuilder.SEPARATOR,
+//					"workspace.action.docear.incoming.reread_monitored"
 			});
 		}
 		
