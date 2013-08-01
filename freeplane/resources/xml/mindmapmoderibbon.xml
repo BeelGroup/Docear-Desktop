@@ -64,8 +64,9 @@
 			<primary_entry name="help">
 			    <entry_group name="help">					
 					<ribbon_action action="GettingStartedAction" accelerator="F1" mandatory="true"/>
-					<ribbon_action action="DocumentationAction" mandatory="true"/>	
-					<ribbon_action action="OnlineReference" mandatory="true"/>	
+				    <ribbon_action action="AskForHelp" mandatory="true"/>
+				    <ribbon_action action="RequestFeatureAction" mandatory="true"/>
+				    <ribbon_action action="ReportBugAction" mandatory="true"/>
 					<ribbon_action action="HotKeyInfoAction" mandatory="true"/>  
 				</entry_group>
 			</primary_entry>
@@ -514,7 +515,8 @@
                 <ribbon_action action="OpenUserDirAction" priority="top" mandatory="true"/>
 				<!--ribbon_action name="Open log files" mandatory="true" /-->
 				<ribbon_action action="UpdateCheckAction" priority="top" mandatory="true"/>
-				<ribbon_action action="PropertyAction" accelerator="control COMMA" priority="top" mandatory="true"/>
+			    <ribbon_action action="GettingStartedAction" accelerator="F1" mandatory="true"/>
+			    <ribbon_action action="HotKeyInfoAction" mandatory="true"/>  
 			</ribbon_band>			
 			<ribbon_band name="contact" resize_policies="Mirror" orderPriority="2000">				
 				<ribbon_action action="AskForHelp" mandatory="true"/>
