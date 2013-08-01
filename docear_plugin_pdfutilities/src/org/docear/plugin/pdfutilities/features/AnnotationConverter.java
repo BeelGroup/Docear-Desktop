@@ -3,12 +3,13 @@ package org.docear.plugin.pdfutilities.features;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.docear.pdf.annotation.AnnotationExtractor;
-import org.docear.pdf.bookmark.Bookmark;
 import org.docear.pdf.bookmark.BookmarkExtractor;
 import org.docear.pdf.feature.APDMetaObject;
 import org.docear.plugin.core.features.DocearFileBackupController;
@@ -81,6 +82,7 @@ public class AnnotationConverter implements IMapLifeCycleListener {
 	
 	public static class AnnotationConversionProcess extends Thread {
 
+		private static final int MAX_CACHED_ITEMS = 200;
 		private final MapModel map;
 		private final Map<File, ExtractorAdaptor> documentCache = new HashMap<File, ExtractorAdaptor>();
 
@@ -115,32 +117,25 @@ public class AnnotationConverter implements IMapLifeCycleListener {
 //					File file = URIUtils.getFile(absoluteUri);
 					File file = URIUtils.getFile(extensionModel.getSource());
 					synchronized (documentCache) {
-						ExtractorAdaptor adapter = documentCache.get(file);
-						if(adapter == null) {
-							PDDocument document = getPDDocument(file);
-							if(document != null) {
-								adapter = new ExtractorAdaptor(document);
-								documentCache.put(file, adapter);
-							}
-						}
+						ExtractorAdaptor adapter = getCachedExtractor(file);
 						if(adapter != null) {
 							switch (extensionModel.getAnnotationType()) {
 							case BOOKMARK:
 							case BOOKMARK_WITH_URI:
 							case BOOKMARK_WITHOUT_DESTINATION:
-								APDMetaObject bookmark = findComparableBookmark(extensionModel.getOldObjectNumber(), adapter.getBookmarkExtractor().getMetaObjects());
+								APDMetaObject bookmark = adapter.findMetaForObjectNumber(extensionModel.getOldObjectNumber());
 								if(bookmark != null) {
 									AnnotationController.setModel(node, cloneAnnotation(bookmark, extensionModel));
 								}
 								break;
 							case HIGHLIGHTED_TEXT:
 							case COMMENT:
-								for (APDMetaObject annotation : adapter.getAnnotationExtractor().getMetaObjects()) {
-									if(annotation.getObjectNumber() == extensionModel.getOldObjectNumber()) {
-										AnnotationController.setModel(node, cloneAnnotation(annotation, extensionModel));
-										break;
-									}
+								APDMetaObject annotation = adapter.findMetaForObjectNumber(extensionModel.getOldObjectNumber());
+								if(annotation != null) {
+									AnnotationController.setModel(node, cloneAnnotation(annotation, extensionModel));
+									break;
 								}
+								
 								break;
 							}
 						}
@@ -155,22 +150,42 @@ public class AnnotationConverter implements IMapLifeCycleListener {
 			}
 		}
 
-		private APDMetaObject findComparableBookmark(int objectNumber, List<APDMetaObject> bookmarks) {
-			for (APDMetaObject bookmark : bookmarks) {
-				if(bookmark instanceof Bookmark) {
-					if(bookmark.getObjectNumber() == objectNumber) {
-						return bookmark;
-					}
-					
-					if(bookmark.hasChildren()) {
-						bookmark = findComparableBookmark(objectNumber, bookmark.getChildren());
-						if(bookmark != null) {
-							return bookmark;
-						}
-					}
+		private ExtractorAdaptor getCachedExtractor(File file) throws IOException, COSLoadException {
+			ExtractorAdaptor adapter = documentCache.get(file);
+			if(adapter == null) {
+				PDDocument document = getPDDocument(file);
+				if(document != null) {
+					trimCache();
+					adapter = new ExtractorAdaptor(document);
+					documentCache.put(file, adapter);
+					LogUtils.info("EXTRACTOR-ADDED---("+documentCache.size()+")---"+file);
 				}
 			}
-			return null;
+			return adapter;
+		}
+
+		private void trimCache() { 
+			if(documentCache.size() % 200 == 0 ) {
+				System.gc();
+			}
+//			if(documentCache.size() > MAX_CACHED_ITEMS) {
+//				LogUtils.info("---TRIM-CONVERTER-CACHE---");
+//				int threshold = 50;
+//				Iterator<Entry<File, ExtractorAdaptor>> iter = documentCache.entrySet().iterator();
+//				while(iter.hasNext() && threshold > 0) {
+//					Entry<File, ExtractorAdaptor> entry = iter.next();
+//					try {
+//						long lastModified = entry.getKey().lastModified();
+//						entry.getValue().save();
+//						entry.getValue().close();
+//						entry.getKey().setLastModified(lastModified);
+//					} catch (IOException e) {
+//						LogUtils.warn(e);
+//					}
+//					iter.remove();
+//					threshold--;
+//				}
+//			}
 		}
 		
 		private PDDocument getPDDocument(File file) throws IOException, COSLoadException, COSRuntimeException {
@@ -220,6 +235,7 @@ public class AnnotationConverter implements IMapLifeCycleListener {
 		private PDDocument document;
 		private AnnotationExtractor annotationExt;
 		private BookmarkExtractor bookmarkExt;
+		private Map<Integer, APDMetaObject> objNumberIndex;
 		
 		/***********************************************************************************
 		 * CONSTRUCTORS
@@ -235,20 +251,56 @@ public class AnnotationConverter implements IMapLifeCycleListener {
 		 * METHODS
 		 **********************************************************************************/
 		
-		public AnnotationExtractor getAnnotationExtractor() {
+		private AnnotationExtractor getAnnotationExtractor() {
 			if(annotationExt == null) {
 				annotationExt = new AnnotationExtractor(document);
 			}
 			return annotationExt;
 		}
 		
-		public BookmarkExtractor getBookmarkExtractor() {
+		private BookmarkExtractor getBookmarkExtractor() {
 			if(bookmarkExt == null) {
 				bookmarkExt = new BookmarkExtractor(document);
 			}
 			return bookmarkExt;
 		}
 		
+		private void indexMetaList(List<APDMetaObject> metas) {
+			for (APDMetaObject meta : metas) {
+				if(meta.getObjectNumber() >= 0) {
+					objNumberIndex.put(meta.getObjectNumber(), meta);
+				}
+				if(meta.hasChildren()) {
+					indexMetaList(meta.getChildren());
+				}
+			}
+		}
+		
+		public APDMetaObject findMetaForObjectNumber(Integer objectNumber) {
+			if(objNumberIndex == null) {
+				objNumberIndex = new LinkedHashMap<Integer, APDMetaObject>();
+				try {
+					indexMetaList(getBookmarkExtractor().getMetaObjects());
+				} catch (IOException e) {
+					LogUtils.warn("Exception in org.docear.plugin.pdfutilities.features.AnnotationConverter.ExtractorAdaptor.findMetaForObjectNumber(objectNumber)...bookmarks: "+e.getMessage());
+				}
+				try {
+					indexMetaList(getAnnotationExtractor().getMetaObjects());
+				} catch (IOException e) {
+					LogUtils.warn("Exception in org.docear.plugin.pdfutilities.features.AnnotationConverter.ExtractorAdaptor.findMetaForObjectNumber(objectNumber)...annotations: "+e.getMessage());
+				}
+				try {
+					save();
+				} catch (IOException e) {
+				}
+				try {
+					close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			return objNumberIndex.get(objectNumber);
+		}
 		public void save() throws IOException {
 			if(!document.isReadOnly()) {
 				if((bookmarkExt != null && bookmarkExt.isDocumentModified()) 
