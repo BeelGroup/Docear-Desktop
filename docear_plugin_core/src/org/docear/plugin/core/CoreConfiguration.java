@@ -32,6 +32,7 @@ import org.docear.plugin.core.actions.DocearShowDataProcessingTermsAction;
 import org.docear.plugin.core.actions.DocearShowTermsOfUseAction;
 import org.docear.plugin.core.actions.GPLPanelAction;
 import org.docear.plugin.core.actions.LicencesPanelAction;
+import org.docear.plugin.core.actions.OpenLogsFolderAction;
 import org.docear.plugin.core.actions.SaveAction;
 import org.docear.plugin.core.actions.SaveAsAction;
 import org.docear.plugin.core.features.DocearLifeCycleObserver;
@@ -539,7 +540,8 @@ public class CoreConfiguration extends ALanguageController {
 		
 		WorkspaceController.replaceAction(new DocearShowTermsOfUseAction());
 		WorkspaceController.replaceAction(new DocearShowDataPrivacyStatementAction());
-		WorkspaceController.replaceAction(new DocearShowDataProcessingTermsAction());		
+		WorkspaceController.replaceAction(new DocearShowDataProcessingTermsAction());
+		WorkspaceController.replaceAction(new OpenLogsFolderAction());
 	}
 	
 	private void replaceResourceBundleStrings() {

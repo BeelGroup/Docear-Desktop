@@ -25,6 +25,7 @@ import javax.swing.tree.TreeSelectionModel;
 
 import org.freeplane.core.ui.components.OneTouchCollapseResizer.ComponentCollapseListener;
 import org.freeplane.core.ui.components.ResizeEvent;
+import org.freeplane.core.util.LogUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.dnd.DnDController;
 import org.freeplane.plugin.workspace.dnd.WorkspaceTransferHandler;
@@ -173,7 +174,12 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 	}
 
 	public void expandPath(TreePath treePath) {
-    		mTree.expandPath(treePath);		
+		try {
+			mTree.expandPath(treePath);
+		}
+		catch(Exception e) {
+			LogUtils.warn("TreeView.expandPath(): " + e.getMessage());
+		}
 	}
 
 	public void collapsePath(TreePath treePath) {

@@ -2,6 +2,9 @@
 <menu_structure>
 	<menu_category name="ribbon">
 		<ribbon_task name="help">
+		    <ribbon_band name="help_misc" resize_policies="Mirror">
+		        <ribbon_action action="OpenLogsFolderAction" priority="top" mandatory="true"/>
+		    </ribbon_band>
 		    <ribbon_band name="licences" resize_policies="Mirror" orderPriority="1000">
 				<ribbon_action action="GPLPanelAction" mandatory="true"/>
 				<ribbon_action action="DataPrivacyPanelAction" mandatory="true"/>
