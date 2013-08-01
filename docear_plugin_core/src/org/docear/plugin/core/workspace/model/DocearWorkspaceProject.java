@@ -246,6 +246,13 @@ public class DocearWorkspaceProject extends AWorkspaceProject {
 		
 		return version;
 	}
+	
+	public void unload() {
+		super.unload();
+		literatureRepository = null;
+		library = null;
+		referencesIndex.clear();
+	}
 
 	public static boolean isCompatible(AWorkspaceProject project) {
 		if(project == null || project.getVersion() == null) {

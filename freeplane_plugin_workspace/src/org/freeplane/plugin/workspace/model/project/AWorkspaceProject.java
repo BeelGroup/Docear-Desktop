@@ -75,6 +75,10 @@ public abstract class AWorkspaceProject {
 	public void setLoaded() {
 		isLoaded = true;
 	}
+	
+	public void unload() {
+		isLoaded = false;
+	}
 		
 	public static void setCurrentProjectCreator(IWorkspaceProjectCreater pCreator) {
 		creator = pCreator;

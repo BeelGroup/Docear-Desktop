@@ -153,6 +153,7 @@ public abstract class WorkspaceModel implements TreeModel {
 				WorkspaceModelListener listener = listeners.get(i); 
 				listener.projectRemoved(event);
 			}
+			project.unload();
 		}
 	}
 
