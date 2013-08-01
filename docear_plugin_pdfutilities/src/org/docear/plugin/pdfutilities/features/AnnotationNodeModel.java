@@ -10,6 +10,9 @@ public class AnnotationNodeModel implements IAnnotation {
 	private final IAnnotation wrappedModel;
 
 	public AnnotationNodeModel(NodeModel node, IAnnotation model) {
+		if (node == null || model == null) {
+			throw new IllegalArgumentException("NULL");
+		}
 		this.node = node;
 		this.wrappedModel = model;
 	}
@@ -80,5 +83,9 @@ public class AnnotationNodeModel implements IAnnotation {
 
 	public boolean isConflicted() {
 		return wrappedModel.isConflicted();
+	}
+	
+	public String toString() {
+		return this.getTitle();
 	}
 }
