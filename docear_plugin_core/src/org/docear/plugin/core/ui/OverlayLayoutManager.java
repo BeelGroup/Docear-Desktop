@@ -46,7 +46,7 @@ public class OverlayLayoutManager implements LayoutManager {
 	public void addLayoutComponent(String name, Component comp) {
 		if(name != null) {
 			if(name.contains("overlay_")) {
-				overlayComponents.add(comp);
+				addLayoutComponent(name.split("[|]"), comp);
 			}
 			else {
 				if(wrappedLayout != null) {
@@ -54,6 +54,10 @@ public class OverlayLayoutManager implements LayoutManager {
 				}
 			}
 		}
+	}
+	
+	public void addLayoutComponent(String[] positionConstraints, Component comp) {
+		overlayComponents.add(comp);
 	}
 
 	@Override
@@ -96,9 +100,11 @@ public class OverlayLayoutManager implements LayoutManager {
 //			int br = parent.getWidth()-parent.getInsets().right;
 //			int bl = parent.getInsets().left;
 			for (Component overlayComp : overlayComponents) {
-				Dimension prefSize = overlayComp.getSize();
-				tr -= prefSize.width - 5; 
-				overlayComp.setBounds(tr, parent.getInsets().top+5, 100, 100);
+				if(overlayComp.isVisible()) {
+					Dimension prefSize = overlayComp.getSize();
+					tr -= prefSize.width - 5; 
+					overlayComp.setBounds(tr, parent.getInsets().top+5, 100, 100);
+				}
 			}
 		}
 	}

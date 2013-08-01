@@ -13,7 +13,6 @@ import java.util.Enumeration;
 import java.util.Properties;
 
 import javax.swing.ImageIcon;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
@@ -47,7 +46,6 @@ import org.docear.plugin.core.listeners.PropertyListener;
 import org.docear.plugin.core.listeners.PropertyLoadListener;
 import org.docear.plugin.core.listeners.WorkspaceOpenDocumentListener;
 import org.docear.plugin.core.logger.DocearLogEvent;
-import org.docear.plugin.core.ui.OverlayLayoutManager;
 import org.docear.plugin.core.ui.OverlayViewport;
 import org.docear.plugin.core.workspace.actions.DocearAddRepositoryPathAction;
 import org.docear.plugin.core.workspace.actions.DocearImportProjectAction;
@@ -580,11 +578,6 @@ public class CoreConfiguration extends ALanguageController {
 		JViewport viewport = (JViewport) Controller.getCurrentController().getMapViewManager().getViewport();
 		final OverlayViewport overlayViewport = new OverlayViewport(viewport);
 		Controller.getCurrentController().getMapViewManager().getScrollPane().setViewport(overlayViewport);
-		
-		final JLabel overlay = new JLabel(new ImageIcon(CoreConfiguration.class.getResource("/images/dialog-warning-64x64.png")));
-		overlayViewport.addOverlay(overlay, OverlayLayoutManager.ALIGN_TOP+OverlayLayoutManager.FLOAT_RIGHT);
-		overlay.setToolTipText(TextUtils.getRawText("docear.map.project.missing"));
-		
 	}
 	
 	private void registerListeners(ModeController modeController) {
