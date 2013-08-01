@@ -251,7 +251,6 @@ public class DocearWorkspaceProject extends AWorkspaceProject {
 		super.unload();
 		literatureRepository = null;
 		library = null;
-		referencesIndex.clear();
 	}
 
 	public static boolean isCompatible(AWorkspaceProject project) {

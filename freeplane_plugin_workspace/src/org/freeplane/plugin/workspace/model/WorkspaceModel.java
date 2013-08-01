@@ -148,12 +148,13 @@ public abstract class WorkspaceModel implements TreeModel {
 	
 	protected void fireProjectRemoved(AWorkspaceProject project, int index) {
 		synchronized (listeners) {
+			project.unload();
 			WorkspaceModelEvent event = new WorkspaceModelEvent(project, this, new Object[]{getRoot()}, new int[]{index}, new Object[]{project.getModel().getRoot()});
 			for (int i = listeners.size()-1; i >= 0; i--) {
 				WorkspaceModelListener listener = listeners.get(i); 
 				listener.projectRemoved(event);
 			}
-			project.unload();
+			
 		}
 	}
 

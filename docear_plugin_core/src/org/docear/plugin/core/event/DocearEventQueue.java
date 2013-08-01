@@ -31,7 +31,12 @@ public class DocearEventQueue {
 					DocearEvent event = null;
 					while((event = popEvent()) != null) {
 						try {
-							dispatchEvent(event);
+							if(event instanceof DocearRunnableEvent) {
+								((DocearRunnableEvent) event).exec();
+							}
+							else {
+								dispatchEvent(event);
+							}
 						}
 						catch (Throwable e) {
 							LogUtils.severe(e);
@@ -135,6 +140,10 @@ public class DocearEventQueue {
 
 		public DocearRunnableEvent(Object source, Runnable r) {
 			super(source, r);
+		}
+		
+		public void exec() {
+			((Runnable)getEventObject()).run();
 		}
 	}
 }

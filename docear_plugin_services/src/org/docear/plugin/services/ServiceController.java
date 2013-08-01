@@ -11,6 +11,7 @@ import org.docear.plugin.core.event.DocearEvent;
 import org.docear.plugin.core.event.DocearEventType;
 import org.docear.plugin.core.event.IDocearEventListener;
 import org.docear.plugin.core.features.DocearFileBackupController;
+import org.docear.plugin.core.ui.OverlayViewport;
 import org.docear.plugin.services.features.io.DocearConnectionProvider;
 import org.docear.plugin.services.features.recommendations.RecommendationsController;
 import org.docear.plugin.services.features.recommendations.actions.ShowRecommendationsAction;
@@ -26,6 +27,7 @@ import org.docear.plugin.services.features.user.action.DocearBackupOpenLocation;
 import org.docear.plugin.services.features.user.action.DocearClearUserDataAction;
 import org.docear.plugin.services.features.user.workspace.DocearWorkspaceSettings;
 import org.docear.plugin.services.workspace.DocearWorkspaceModel;
+import org.docear.plugin.services.workspace.MapViewWaringOverlay;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.IMapLifeCycleListener;
@@ -133,6 +135,9 @@ public class ServiceController {
 				}
 			}
 		});
+		
+		final MapViewWaringOverlay mapViewWarning = new MapViewWaringOverlay();
+		((OverlayViewport)Controller.getCurrentController().getMapViewManager().getViewport()).addOverlay(mapViewWarning);
 	}
 	
 	public URI getOnlineServiceUri() {
