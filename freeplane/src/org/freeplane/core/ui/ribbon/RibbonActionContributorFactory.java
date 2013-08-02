@@ -25,6 +25,7 @@ import org.freeplane.core.ui.AccelerateableAction;
 import org.freeplane.core.ui.IAcceleratorChangeListener;
 import org.freeplane.core.ui.ribbon.RibbonSeparatorContributorFactory.RibbonSeparator;
 import org.freeplane.core.ui.ribbon.StructureTree.StructurePath;
+import org.freeplane.core.ui.ribbon.event.AboutToPerformEvent;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
@@ -443,6 +444,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 				builder.getAcceleratorManager().newAccelerator(action, null);
 				return;
 			}
+			builder.getRibbonActionEventHandler().fireAboutToPerformEvent(new AboutToPerformEvent(action));
 			action.actionPerformed(e);
 		}
 

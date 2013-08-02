@@ -40,6 +40,7 @@ import org.docear.plugin.services.xml.DocearXmlBuilder;
 import org.docear.plugin.services.xml.DocearXmlElement;
 import org.docear.plugin.services.xml.DocearXmlRootElement;
 import org.freeplane.core.ui.components.UITools;
+import org.freeplane.core.ui.ribbon.event.IActionEventListener;
 import org.freeplane.core.user.IUserAccountChangeListener;
 import org.freeplane.core.user.UserAccountChangeEvent;
 import org.freeplane.core.user.UserAccountController;
@@ -65,6 +66,8 @@ public class RecommendationsController extends ADocearServiceFeature {
 	private static boolean isRequesting;
 	
 	public static final long RECOMMENDATIONS_AUTOSHOW_INTERVAL = 1000*60*60*24*7; // every 7 days in milliseconds
+	
+	private static IActionEventListener aeListener = new RibbonActionEventListener(); 
 
 	private File downloadsFolder;
 	private FolderLinkNode downloadsNode;
@@ -353,6 +356,7 @@ public class RecommendationsController extends ADocearServiceFeature {
 			public void aboutToDeactivate(UserAccountChangeEvent event) {}
 		});
 		WorkspaceController.getModeExtension(modeController).getView().getTransferHandler().registerNodeDropHandler(DownloadFolderNode.class, new FileFolderDropHandler());
+		modeController.getUserInputListenerFactory().getRibbonBuilder().getRibbonActionEventHandler().addListener(aeListener);
 	}
 
 	private void updateDownloadNode() {
