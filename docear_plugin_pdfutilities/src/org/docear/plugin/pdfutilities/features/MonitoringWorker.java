@@ -16,6 +16,8 @@ import java.util.Stack;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.event.DocearEvent;
@@ -52,6 +54,7 @@ import org.freeplane.features.map.mindmapmode.MMapController;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.features.WorkspaceMapModelExtension;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.view.swing.map.MapView;
 import org.freeplane.view.swing.map.NodeView;
@@ -85,13 +88,27 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 		DocearController.getController().getSemaphoreController().lock("MindmapUpdate");
 		NodeView.setModifyModelWithoutRepaint(true);
 		MapView.setNoRepaint(true);
+		IConversionProcessHandler oldHandler = AnnotationConverter.getConversionProcessHandler();
+		BatchMapConversionHandler batchHandler = new BatchMapConversionHandler(new ChangeListener() {			
+			public void stateChanged(ChangeEvent e) {
+				try {
+					fireStatusUpdate(SwingWorkerDialog.DETAILS_LOG_TEXT, null, String.valueOf(e.getSource()));
+				} catch (Exception e1) {
+				}
+			}
+		});
+		AnnotationConverter.SetConversionProcessHandler(batchHandler);
 		try {
 			// Controller.getCurrentController().getViewController().getMapView().setVisible(false);
 			for (final NodeModel target : targets) {
 				currentTarget = target;
+				WorkspaceMapModelExtension ext = WorkspaceController.getMapModelExtension(target.getMap());
+				if(ext == null || ext.getProject() == null || !ext.getProject().isLoaded()) {
+					fireStatusUpdate(SwingWorkerDialog.DETAILS_LOG_TEXT, null, TextUtils.getText("docear.map.projectnotloaded"));
+					continue;
+				}
 				File file = MonitoringUtils.getPdfDirFromMonitoringNode(target);
 				if(file == null) {
-					fireStatusUpdate(SwingWorkerDialog.DETAILS_LOG_TEXT, null, "corresponding project is not loaded");
 					continue;
 				}
 				URI uri = file.toURI();
@@ -160,6 +177,8 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 		}
 		finally {
 			closeAll();
+			AnnotationConverter.SetConversionProcessHandler(oldHandler);
+			batchHandler.close();
 		}
 	}
 	
@@ -617,19 +636,19 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 		for (MapModel map : monitoredMindmaps) {
 			AWorkspaceProject project = WorkspaceController.getMapProject(map);
 			if(project == null) {
-				fireStatusUpdate(SwingWorkerDialog.DETAILS_LOG_TEXT, null, "ignore map with no project: " + map.getTitle());
+				fireStatusUpdate(SwingWorkerDialog.DETAILS_LOG_TEXT, null,  TextUtils.format("docear.map.ignore.noproject", map.getTitle(), map.getFile()));
 				continue;
 			}
 			if(!workingProject.equals(project)) {
-				fireStatusUpdate(SwingWorkerDialog.DETAILS_LOG_TEXT, null, "ignore map belonging to another project: " + map.getTitle());
+				fireStatusUpdate(SwingWorkerDialog.DETAILS_LOG_TEXT, null,  TextUtils.format("docear.map.ignore.otherproject", map.getTitle(), map.getFile()));
 				continue;
 			}
 			if(!project.isLoaded()) {
-				fireStatusUpdate(SwingWorkerDialog.DETAILS_LOG_TEXT, null, "ignore map with not loaded project: " + map.getTitle());
+				fireStatusUpdate(SwingWorkerDialog.DETAILS_LOG_TEXT, null,  TextUtils.format("docear.map.ignore.projectnotloaded", map.getTitle(), map.getFile()));
 				continue;
 			}
 			if(!DocearWorkspaceProject.isCompatible(project)) {
-				fireStatusUpdate(SwingWorkerDialog.DETAILS_LOG_TEXT, null, "ignoring map with a non Docear-Project: " + map.getTitle());
+				fireStatusUpdate(SwingWorkerDialog.DETAILS_LOG_TEXT, null, TextUtils.format("docear.map.ignore.wrongversion", map.getTitle(), map.getFile()));
 				continue;
 			}
 			if (canceled()) return false;
@@ -780,8 +799,7 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 		return ""; //$NON-NLS-1$
 	}
 
-	private void fireStatusUpdate(final String propertyName, final Object oldValue, final Object newValue) throws InterruptedException,
-			InvocationTargetException {
+	private void fireStatusUpdate(final String propertyName, final Object oldValue, final Object newValue) throws InterruptedException, InvocationTargetException {
 		SwingUtilities.invokeAndWait(new Runnable() {
 			public void run() {
 				firePropertyChange(propertyName, oldValue, newValue);
