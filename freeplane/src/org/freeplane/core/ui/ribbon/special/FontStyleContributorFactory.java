@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.swing.JComponent;
+import javax.swing.event.TreeSelectionEvent;
 
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.ribbon.ARibbonContributor;
@@ -160,7 +161,7 @@ public class FontStyleContributorFactory implements IRibbonContributorFactory {
 				else if(state.allMapsClosed()) {					
 					component.setEnabled(false);
 				}
-				else {					
+				else if (state.get(TreeSelectionEvent.class) == null) {
 					component.setEnabled(true);
 				}
 			}

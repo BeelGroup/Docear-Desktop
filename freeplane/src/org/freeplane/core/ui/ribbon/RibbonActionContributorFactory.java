@@ -17,6 +17,7 @@ import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
+import javax.swing.event.TreeSelectionEvent;
 
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.AFreeplaneAction;
@@ -530,7 +531,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 					button.setEnabled(false);
 				}
 			}
-			else {
+			else if (state.get(TreeSelectionEvent.class) == null) {
 				action.setEnabled(true);
 				button.setEnabled(true);
 			}

@@ -45,6 +45,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
 import javax.swing.KeyStroke;
 import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeSelectionEvent;
 
 import org.apache.commons.io.FilenameUtils;
 import org.docear.plugin.core.ALanguageController;
@@ -1795,7 +1796,7 @@ public class PdfUtilitiesController extends ALanguageController {
 				else if(state.allMapsClosed()) {					
 					component.setEnabled(false);
 				}
-				else {					
+				else if (state.get(TreeSelectionEvent.class) == null) {
 					component.setEnabled(true);
 				}
 			}

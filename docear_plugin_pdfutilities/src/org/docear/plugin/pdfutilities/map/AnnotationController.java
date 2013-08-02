@@ -169,17 +169,18 @@ public class AnnotationController implements IExtension{
 			//model.setSource(uri);
 			return model; 
 		}		
-		if(annotation == null && file != null && file.getName().equals(node.getText()) && isPdfFile(file)){
+		if(annotation == null && file != null && file.getName().equals(node.getText()) && isPdfFile(file)){		
+			annotation = new AnnotationModel(0);
+			((AnnotationModel)annotation).setSource(uri);
+		
 			model = new AnnotationNodeModel(node, annotation);
 			model.setAnnotationType(AnnotationType.PDF_FILE);
 			//model.setSource(uri);
 			return model; 
 		}
 		if(annotation == null && file != null && file.getName().equals(node.getText()) && !isPdfFile(file)){
-			if(annotation == null) {
-				annotation = new AnnotationModel(0);
-				((AnnotationModel)annotation).setSource(uri);
-			}
+			annotation = new AnnotationModel(0);
+			((AnnotationModel)annotation).setSource(uri);
 			model = new AnnotationNodeModel(node, annotation);
 			model.setAnnotationType(AnnotationType.FILE);
 			return model; 
