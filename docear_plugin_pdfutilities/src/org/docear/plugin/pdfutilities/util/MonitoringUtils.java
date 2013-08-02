@@ -65,7 +65,7 @@ public abstract class MonitoringUtils {
 			}
 		}
 		WorkspaceMapModelExtension ext = WorkspaceController.getMapModelExtension(node.getMap());
-		if(ext == null || ext.getProject() == null) {
+		if(ext == null || ext.getProject() == null || !ext.getProject().isLoaded()) {
 			return null;
 		}
 		if(value.toString().equals(CoreConfiguration.DOCUMENT_REPOSITORY_PATH)){
