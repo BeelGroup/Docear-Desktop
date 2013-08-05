@@ -87,7 +87,11 @@ public class WorkspaceNewMapAction extends AFreeplaneAction {
 		al.undoableToggleHook(map.getRootNode());		
 		
 		if (save) {
-			mapIO.save(map, f);
+			try {
+				mapIO.writeToFile(map, f);
+			} catch (Exception e) {
+				LogUtils.warn("Exception in org.freeplane.plugin.workspace.actions.WorkspaceNewMapAction.createNewMap(project, uri, name, save)..writeToFile: "+e.getMessage());
+			}
 		}
 		else {
 			if(f != null) {

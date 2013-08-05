@@ -9,10 +9,13 @@ import org.docear.plugin.bibtex.ReferencesController;
 import org.docear.plugin.bibtex.jabref.JabRefCommons;
 import org.docear.plugin.bibtex.jabref.JabrefWrapper;
 import org.freeplane.core.ui.EnabledAction;
+import org.freeplane.features.map.NodeModel;
+import org.freeplane.features.mode.Controller;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.actions.AWorkspaceAction;
 import org.freeplane.plugin.workspace.components.menu.CheckEnableOnPopup;
+import org.freeplane.plugin.workspace.features.WorkspaceMapModelExtension;
 import org.freeplane.plugin.workspace.io.IFileSystemRepresentation;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
@@ -48,7 +51,14 @@ public class AddOrUpdateReferenceEntryWorkspaceAction extends AWorkspaceAction {
 	
 	@Override
 	public void setEnabled() {
-		setEnabled(WorkspaceController.getSelectedProject() != null);
+		try {	
+    		NodeModel node = Controller.getCurrentModeController().getMapController().getSelectedNode();
+    		WorkspaceMapModelExtension modelExt = WorkspaceController.getMapModelExtension(node.getMap(), false);
+    		setEnabled(modelExt.getProject() != null && modelExt.getProject().isLoaded());
+		}
+		catch (Exception e) {
+			setEnabled(false);
+		}
 	}
 	
 	public void actionPerformed(ActionEvent e) {

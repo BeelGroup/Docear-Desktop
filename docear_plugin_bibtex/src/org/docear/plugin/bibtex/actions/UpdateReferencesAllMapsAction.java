@@ -6,12 +6,17 @@ import org.docear.plugin.bibtex.ReferenceUpdater;
 import org.docear.plugin.core.mindmap.MindmapUpdateController;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.freeplane.core.ui.AFreeplaneAction;
+import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.util.TextUtils;
+import org.freeplane.features.map.NodeModel;
+import org.freeplane.features.mode.Controller;
 import org.freeplane.features.url.mindmapmode.SaveAll;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.components.menu.CheckEnableOnPopup;
+import org.freeplane.plugin.workspace.features.WorkspaceMapModelExtension;
 
 @CheckEnableOnPopup
+@EnabledAction(checkOnNodeChange=true)
 public class UpdateReferencesAllMapsAction extends AFreeplaneAction {
 
 	/**
@@ -25,7 +30,14 @@ public class UpdateReferencesAllMapsAction extends AFreeplaneAction {
 	}
 	
 	public void setEnabled() {
-		setEnabled(DocearWorkspaceProject.isCompatible(WorkspaceController.getMapProject()));
+		try {	
+    		NodeModel node = Controller.getCurrentModeController().getMapController().getSelectedNode();
+    		WorkspaceMapModelExtension modelExt = WorkspaceController.getMapModelExtension(node.getMap(), false);
+    		setEnabled(DocearWorkspaceProject.isCompatible(modelExt.getProject()) && modelExt.getProject().isLoaded());
+		}
+		catch (Exception e) {
+			setEnabled(false);
+		}
 	}
 
 	
@@ -36,5 +48,4 @@ public class UpdateReferencesAllMapsAction extends AFreeplaneAction {
 		mindmapUpdateController.addMindmapUpdater(new ReferenceUpdater(TextUtils.getText("update_references_all_mindmaps")));
 		mindmapUpdateController.updateAllMindmapsInCurrentMapsProject();
 	}
-
 }

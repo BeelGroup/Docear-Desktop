@@ -94,7 +94,7 @@ public class AddExistingReferenceAction extends AFreeplaneAction {
 		try {	
     		NodeModel node = Controller.getCurrentModeController().getMapController().getSelectedNode();
     		WorkspaceMapModelExtension modelExt = WorkspaceController.getMapModelExtension(node.getMap(), false);
-    		setEnabled(modelExt.getProject() != null);
+    		setEnabled(modelExt.getProject() != null && modelExt.getProject().isLoaded());
 		}
 		catch (Exception e) {
 			setEnabled(false);
