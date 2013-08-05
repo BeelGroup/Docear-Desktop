@@ -60,7 +60,6 @@
 			<primary_entry action="PropertyAction" mandatory="true"/>
 			<primary_entry action="show_jabref_preferences" mandatory="true"/>
 			<primary_entry action="AboutAction" mandatory="true"/> 
-			<primary_entry action="UpdateCheckAction" mandatory="true"/> 
 			<primary_entry name="help">
 			    <entry_group name="help">					
 					<ribbon_action action="GettingStartedAction" accelerator="F1" mandatory="true"/>
