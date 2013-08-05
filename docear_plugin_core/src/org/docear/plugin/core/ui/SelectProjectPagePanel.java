@@ -62,7 +62,12 @@ public class SelectProjectPagePanel extends AWizardPage {
 		add(lblNewLabel_1, "1, 8, 1, 1");
 		
 		comboBox = new JComboBox(projectNames.toArray());
+		AWorkspaceProject project = WorkspaceController.getSelectedProject();
+		if(project != null) {
+			comboBox.setSelectedItem(project.getProjectName());
+		}
 		add(comboBox, "2, 8, left, top");
+		
 	}
 	
 	
