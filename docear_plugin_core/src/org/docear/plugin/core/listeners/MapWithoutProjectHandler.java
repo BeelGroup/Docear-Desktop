@@ -17,8 +17,6 @@ import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.mode.Controller;
-import org.freeplane.features.url.UrlManager;
-import org.freeplane.features.url.mindmapmode.MFileManager;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
@@ -54,17 +52,13 @@ public class MapWithoutProjectHandler {
 					return null;
 				}
 			}
-			if (project != null) {
-				WorkspaceController.getMapModelExtension(map).setProject(project);
-				if (map.getFile() != null) {
-					map.setSaved(false);
-					((MFileManager) UrlManager.getController()).save(map, true);
-				}				
-				try {
-					LogUtils.info("set project \""+project+"\" for map: \""+map.getTitle());
-				}
-				catch (Exception e) {					
-				}
+			if(project != null) {
+    			WorkspaceController.getMapModelExtension(map).setProject(project);
+    			try {
+    				LogUtils.info("set project \""+project+"\" for map: \""+map.getTitle());
+    			}
+    			catch (Exception e) {					
+    			}
 			}
 			
 			return project;

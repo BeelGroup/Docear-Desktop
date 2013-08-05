@@ -34,10 +34,14 @@ import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 public class MapLifeCycleAndViewListener implements IMapLifeCycleListener, IMapViewChangeListener {
 
 	public void onCreate(MapModel map) {
+		boolean needsSave = false;
 		if (map instanceof MMapModel) {
 			AWorkspaceProject project = WorkspaceController.getMapProject(map);			
 			if (project == null) {				
 				project = MapWithoutProjectHandler.showProjectSelectionWizard(map);
+				if (project != null) {
+					needsSave = true;
+				}
 			}
 			
 			// map has been closed from within the showProjectSelectionWizard
@@ -67,6 +71,10 @@ public class MapLifeCycleAndViewListener implements IMapLifeCycleListener, IMapV
 				} catch (IOException e) {
 					LogUtils.warn(e);
 				}
+				needsSave = true;
+			}
+			
+			if(needsSave) {
 				final MMapIO mapIO = (MMapIO) Controller.getCurrentModeController().getExtension(MapIO.class);				
 				map.setSaved(false);
 				if(map.getFile() != null) {
