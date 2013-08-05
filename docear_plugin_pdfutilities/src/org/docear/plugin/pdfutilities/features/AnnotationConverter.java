@@ -8,6 +8,7 @@ import org.docear.plugin.core.features.DocearRequiredConversionController;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.IMapLifeCycleListener;
 import org.freeplane.features.map.MapModel;
+import org.freeplane.features.map.mindmapmode.MMapModel;
 import org.freeplane.features.mapio.MapIO;
 import org.freeplane.features.mapio.mindmapmode.MMapIO;
 import org.freeplane.features.mode.Controller;
@@ -60,9 +61,19 @@ public class AnnotationConverter implements IMapLifeCycleListener {
 	public void onCreate(MapModel map) {
 		if(DocearRequiredConversionController.hasRequiredConversion(ConvertAnnotationsExtension.class, map)) {
 			try {
+				if(map instanceof MMapModel) {
+					MMapModel mmap = (MMapModel) map;
+					if (mmap.getTimerForAutomaticSaving() != null) {
+						mmap.getTimerForAutomaticSaving().cancel();
+					}
+				}
 				convertAnnotations(map);
 				MMapIO mio = (MMapIO) Controller.getCurrentModeController().getExtension(MapIO.class);
-				mio.save(map);
+				mio.writeToFile(map, map.getFile());
+				if(map instanceof MMapModel) {
+					MMapModel mmap = (MMapModel) map;
+					mmap.scheduleTimerForAutomaticSaving();
+				}
 			} catch (IOException e) {
 				LogUtils.warn(e);
 			}
