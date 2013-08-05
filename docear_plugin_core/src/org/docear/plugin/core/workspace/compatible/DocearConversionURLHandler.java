@@ -35,7 +35,7 @@ public class DocearConversionURLHandler extends AbstractURLStreamHandlerService 
 		if(getTargetProject() == null) {
 			throw new IOException("no project assignment");
 		}
-		String path = targetProject.getProjectHome().getPath();
+		String path = targetProject.getProjectHome().getRawPath();
 		URL ret = new URL("file", null, path + url.getPath());
 		try {
 			URI uri = ret.toURI();
