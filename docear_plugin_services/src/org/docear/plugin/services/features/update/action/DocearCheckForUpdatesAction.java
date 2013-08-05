@@ -2,6 +2,9 @@ package org.docear.plugin.services.features.update.action;
 
 import java.awt.event.ActionEvent;
 
+import org.docear.plugin.core.DocearController;
+import org.docear.plugin.services.ServiceController;
+import org.docear.plugin.services.features.update.UpdateCheck;
 import org.freeplane.core.ui.AFreeplaneAction;
 
 public class DocearCheckForUpdatesAction extends AFreeplaneAction {
@@ -15,8 +18,12 @@ public class DocearCheckForUpdatesAction extends AFreeplaneAction {
 	
 	
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-
+		DocearController.getController().getEventQueue().invoke(new Runnable() {
+			public void run() {
+				ServiceController.getFeature(UpdateCheck.class).checkForUpdates();
+			}
+		});
+		
 	}
 
 }

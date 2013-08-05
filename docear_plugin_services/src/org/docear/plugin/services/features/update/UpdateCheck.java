@@ -68,6 +68,10 @@ public class UpdateCheck extends ADocearServiceFeature {
 	}
 
 	public void checkForUpdates() {
+		checkForUpdates(false);
+	}
+	
+	public void checkForUpdates(boolean forced) {
 		String xml;
 		try {
 			String choice = DocearController.getPropertiesController().getProperty("docear.update_checker.options");
@@ -117,6 +121,11 @@ public class UpdateCheck extends ADocearServiceFeature {
 						}
 					}
 				});
+			}
+			else {
+				if(forced) {
+					//DOCEAR - ToDo: show message that no updates are available
+				}
 			}
 			
 		} catch (Exception e) {
