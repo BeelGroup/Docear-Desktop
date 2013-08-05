@@ -28,8 +28,9 @@ public class SelectProjectPagePanel extends AWizardPage {
 	private JComboBox comboBox;
 	private MapModel map;
 	private JLabel lblNewLabel;
+	private boolean showCloseButton;
 
-	public SelectProjectPagePanel() {
+	public SelectProjectPagePanel(boolean showCloseButton) {
 		setLayout(new FormLayout(new ColumnSpec[] {
 				ColumnSpec.decode("190px"),
 				ColumnSpec.decode("328px"),},
@@ -44,6 +45,7 @@ public class SelectProjectPagePanel extends AWizardPage {
 				FormFactory.DEFAULT_ROWSPEC,}));
 		setBackground(Color.WHITE);
 		
+		this.showCloseButton = showCloseButton;
 		
 		List<String> projectNames = new ArrayList<String>();		
 		for (AWorkspaceProject project : WorkspaceController.getCurrentModel().getProjects()) {
@@ -81,9 +83,11 @@ public class SelectProjectPagePanel extends AWizardPage {
 		context.setWizardTitle(getTitle());
 		context.getBackButton().setText(TextUtils.getText("docear.setup.wizard.second.select.label"));
 		context.getNextButton().setText(TextUtils.getText("docear.setup.wizard.second.create.label"));
+		
 		context.getSkipButton().setText(TextUtils.getText("docear.setup.wizard.second.create.close"));
-		context.getSkipButton().setEnabled(true);
-		context.getSkipButton().setVisible(true);
+		context.getSkipButton().setEnabled(showCloseButton);
+		context.getSkipButton().setVisible(showCloseButton);
+	
 		map = context.get(MapModel.class);
 		lblNewLabel.setText(TextUtils.format("docear.wizard.select.mindmap.project.mindmapname", map.getTitle()));
 	}

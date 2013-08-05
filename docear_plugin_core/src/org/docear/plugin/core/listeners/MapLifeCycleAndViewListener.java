@@ -8,7 +8,6 @@ import javax.swing.JOptionPane;
 
 import org.apache.commons.io.FileUtils;
 import org.docear.plugin.core.DocearController;
-import org.docear.plugin.core.actions.ChooseMapProjectAffiliationAction;
 import org.docear.plugin.core.features.DocearFileBackupController;
 import org.docear.plugin.core.features.DocearMapModelController;
 import org.docear.plugin.core.features.DocearMapModelExtension;
@@ -16,7 +15,6 @@ import org.docear.plugin.core.features.DocearRequiredConversionController;
 import org.docear.plugin.core.features.DocearWorkspaceLinkConverted;
 import org.docear.plugin.core.logger.DocearLogEvent;
 import org.docear.plugin.core.ui.MapIdsConflictsPanel;
-import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.LogUtils;
@@ -31,7 +29,6 @@ import org.freeplane.features.ui.IMapViewChangeListener;
 import org.freeplane.features.url.UrlManager;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
-import org.freeplane.plugin.workspace.features.WorkspaceMapModelExtension;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
 public class MapLifeCycleAndViewListener implements IMapLifeCycleListener, IMapViewChangeListener {
@@ -39,8 +36,13 @@ public class MapLifeCycleAndViewListener implements IMapLifeCycleListener, IMapV
 	public void onCreate(MapModel map) {
 		if (map instanceof MMapModel) {
 			AWorkspaceProject project = WorkspaceController.getMapProject(map);			
-			if (!DocearWorkspaceProject.isCompatible(project)) {				
-				MapWithoutProjectHandler.showProjectSelectionWizard(map);
+			if (project == null) {				
+				project = MapWithoutProjectHandler.showProjectSelectionWizard(map);
+			}
+			
+			// map has been closed from within the showProjectSelectionWizard
+			if (project == null) {
+				return;
 			}
 			
 			File f = map.getFile();
@@ -65,13 +67,16 @@ public class MapLifeCycleAndViewListener implements IMapLifeCycleListener, IMapV
 				} catch (IOException e) {
 					LogUtils.warn(e);
 				}
-				final MMapIO mapIO = (MMapIO) Controller.getCurrentModeController().getExtension(MapIO.class);
-				WorkspaceMapModelExtension mapExt = WorkspaceController.getMapModelExtension(map, false);
-				if(mapExt == null || mapExt.getProject() == null) {
-					ChooseMapProjectAffiliationAction.showChooser(map);
-				}
+				final MMapIO mapIO = (MMapIO) Controller.getCurrentModeController().getExtension(MapIO.class);				
 				map.setSaved(false);
-				mapIO.save(map);
+				if(map.getFile() != null) {
+					try {
+						mapIO.writeToFile(map, map.getFile());
+					}
+					catch (Exception e) {
+						LogUtils.warn("MapLifeCycleAndViewListener.onCreate(): " + e.getMessage());
+					}
+				}
 			}
 			
 			setMapAttributesIfNeeded(map);

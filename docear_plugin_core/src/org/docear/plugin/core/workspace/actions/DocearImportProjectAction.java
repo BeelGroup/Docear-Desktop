@@ -89,6 +89,7 @@ public class DocearImportProjectAction extends AWorkspaceAction {
 		if(project.getExtensions(DocearConversionDescriptor.class) != null) {
 			try {
 				DocearWorkspaceToProjectConverter.convert(project.getExtensions(DocearConversionDescriptor.class));
+				project.setLoaded();
 			} catch (IOException e) {
 				LogUtils.severe(e);
 			}

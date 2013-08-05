@@ -24,10 +24,14 @@ import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
 public class MapWithoutProjectHandler {
 	
-	public static AWorkspaceProject showProjectSelectionWizard(MapModel map) {		
+	public static AWorkspaceProject showProjectSelectionWizard(MapModel map) {
+		return showProjectSelectionWizard(map, true);
+	}
+	
+	public static AWorkspaceProject showProjectSelectionWizard(MapModel map, boolean showCloseButton) {		
 		final Wizard wizard = new Wizard(UITools.getFrame());		
-		wizard.getContext().set(MapModel.class, map);
-		initWizard(wizard);
+		wizard.getContext().set(MapModel.class, map);		
+		initWizard(wizard, showCloseButton);
 		
 		int ret = wizard.show();
 		if(ret == Wizard.OK_OPTION) {
@@ -69,8 +73,8 @@ public class MapWithoutProjectHandler {
 		return null;
 	}
 
-	private static void initWizard(Wizard wizard) {
-		WizardPageDescriptor desc = new WizardPageDescriptor("page.project.select", new SelectProjectPagePanel()) {
+	private static void initWizard(Wizard wizard, boolean showCloseButton) {
+		WizardPageDescriptor desc = new WizardPageDescriptor("page.project.select", new SelectProjectPagePanel(showCloseButton)) {
 			
     		public WizardPageDescriptor getBackPageDescriptor(WizardContext context) {    			
     			AWorkspaceProject project = ((SelectProjectPagePanel)getPage()).getSelectedProject();

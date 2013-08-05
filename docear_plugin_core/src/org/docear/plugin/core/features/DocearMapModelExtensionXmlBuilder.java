@@ -3,7 +3,6 @@ package org.docear.plugin.core.features;
 import java.net.URI;
 
 import org.docear.plugin.core.DocearController;
-import org.docear.plugin.core.actions.ChooseMapProjectAffiliationAction;
 import org.docear.plugin.core.features.DocearMapModelExtension.DocearMapType;
 import org.docear.plugin.core.workspace.compatible.DocearConversionURLHandler;
 import org.freeplane.core.extension.IExtension;
@@ -134,12 +133,7 @@ public class DocearMapModelExtensionXmlBuilder implements IElementDOMHandler, IE
 					URI hyperlink = URIUtils.createURI(value);
 					if(hyperlink != null && "workspace".equals(hyperlink.getScheme())) {
 						MapModel map = node.getMap();
-						AWorkspaceProject project = DocearController.findProject(map);
-						
-						if(project == null) {
-							//the map needs an affiliation to a project in order to resolve the workspace paths
-							project = ChooseMapProjectAffiliationAction.showChooser(map);
-						}
+						AWorkspaceProject project = DocearController.findProject(map);						
 						
 						if(project != null) {
 							DocearConversionURLHandler.setTargetProject(project);
@@ -148,8 +142,7 @@ public class DocearMapModelExtensionXmlBuilder implements IElementDOMHandler, IE
 								value = uri.toString();
 								DocearRequiredConversionController.setRequiredConversion(new DocearWorkspaceLinkConverted(), map);
 							}
-						}
-					
+						}					
 					}
 					
 				} catch (Exception e) {

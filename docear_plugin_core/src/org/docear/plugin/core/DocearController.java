@@ -342,7 +342,7 @@ public class DocearController implements IDocearEventListener {
 			for (AWorkspaceProject prj : model.getProjects()) {
 				URI relativeUri = prj.getRelativeURI(map.getFile().toURI());
 				//DOCEAR - validate: check whether a path is within the projects home
-				if(relativeUri != null && !relativeUri.getRawPath().startsWith("..") && !"file".equals(relativeUri.getScheme())) {
+				if(relativeUri != null && !relativeUri.getRawPath().startsWith("/..") && !"file".equals(relativeUri.getScheme())) {
 					project = prj;
 					WorkspaceMapModelExtension ext = WorkspaceController.getMapModelExtension(map);
 					ext.setProject(project);
@@ -352,7 +352,7 @@ public class DocearController implements IDocearEventListener {
 		}
 		
 		if (project == null) {
-			project = MapWithoutProjectHandler.showProjectSelectionWizard(map);
+			project = MapWithoutProjectHandler.showProjectSelectionWizard(map, false);
 		}
 		return project;
 	}
