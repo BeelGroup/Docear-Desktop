@@ -103,7 +103,7 @@ public class Reference {
 				try {
 					f = f.getCanonicalFile();
 				} catch (IOException e) {
-					e.printStackTrace();
+					LogUtils.warn("Reference.Reference() exception for file " + f.toString() + ": " + e.getMessage());
 				}
 				uris.add(f.toURI());
 			}
