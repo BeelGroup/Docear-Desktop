@@ -42,17 +42,19 @@ public class AnnotationID {
 	public boolean equals(Object object){
 		if(object instanceof AnnotationID) {
 			boolean firstStepCleared = false;
+			AnnotationID other = (AnnotationID) object;
 			//first compare the UIDs
-			if(this.getObjectID() == ((AnnotationID) object).getObjectID()) {
+			if(this.getObjectID() > -1 && other.getObjectID() > -1 && this.getObjectID() == other.getObjectID()) {
 					firstStepCleared = true;
 			}
 			else {
 				//if the UIDs not match and one of them was fresh generated try to compare the object numbers
-				if(isCreated || ((AnnotationID) object).isCreated) {
-					if(this.internalObjectNumber == ((AnnotationID) object).internalObjectNumber) {
+				//DOCEAR - FIXME: 
+				//if(isCreated || ((AnnotationID) object).isCreated) {
+					if(this.internalObjectNumber == other.internalObjectNumber) {
 						firstStepCleared = true;
 					}
-				}
+				//}
 			}
 			//compare the document affiliation
 			if(firstStepCleared) {

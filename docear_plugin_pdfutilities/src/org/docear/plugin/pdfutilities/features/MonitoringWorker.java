@@ -531,6 +531,7 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 			fireProgressUpdate(100 * count / importedFiles.keySet().size());
 			System.out.println("");
 			if (!nodeIndex.containsKey(id)) {
+				nodeIndex.containsKey(id);
 				importedFiles.get(id).setNew(true);
 				newAnnotations.add(importedFiles.get(id));
 			}
@@ -667,6 +668,9 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 			AnnotationID id = annotation.getAnnotationID();
 			if (!nodeIndex.containsKey(id)) {
 				nodeIndex.put(id, new ArrayList<NodeModel>());
+			}
+			else {
+				nodeIndex.containsKey(id);
 			}
 			nodeIndex.get(id).add(node);
 		}
