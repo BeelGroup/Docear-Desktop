@@ -35,7 +35,7 @@ public class MapChangeListenerAdapter extends AMapChangeListenerAdapter {
 	public void mapChanged(MapChangeEvent event) {
 		try {
 			WorkspaceMapModelExtension wmme = WorkspaceController.getMapModelExtension(event.getMap());
-			wmme.getProject().getExtensions(JabRefProjectExtension.class).selectBasePanel();
+			wmme.getProject().getExtensions(JabRefProjectExtension.class).selectBasePanel();			
 		}
 		catch(Exception e) {
 			LogUtils.warn("MapChangeListenerAdapter.mapChanged(): "+e.getMessage());
