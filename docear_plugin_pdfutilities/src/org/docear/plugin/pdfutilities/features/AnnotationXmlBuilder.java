@@ -154,7 +154,12 @@ public class AnnotationXmlBuilder implements IElementDOMHandler, IExtensionEleme
 			final NodeModel node = (NodeModel) parent;
 			if (userObject instanceof AnnotationModel) {
 				final AnnotationModel annotation = (AnnotationModel) userObject;
-				AnnotationController.setModel(node, annotation);
+				if(AnnotationType.PDF_FILE.equals(annotation.getAnnotationType())) {
+					AnnotationController.setModel(node, AnnotationConverter.cloneAnnotation(0, annotation));
+				}
+				else {
+					AnnotationController.setModel(node, annotation);
+				}
 			}
 		}
 	}

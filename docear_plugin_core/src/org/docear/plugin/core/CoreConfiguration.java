@@ -126,6 +126,7 @@ public class CoreConfiguration extends ALanguageController {
 	}
 	
 	protected void initController(Controller controller) {
+		initIcons(controller);
 		Controller.getCurrentController().addExtension(IControllerExecuteExtension.class, getDocearCommandExecutor());
 		loadAndStoreVersion(controller);
 		adjustProperties(controller);
@@ -144,6 +145,12 @@ public class CoreConfiguration extends ALanguageController {
 		WorkspaceController.replaceAction(new DocearQuitAction());
 		WorkspaceController.replaceAction(new DocearImportProjectAction());
 		copyInfoIfNecessary();		
+	}
+
+	private void initIcons(Controller controller) {
+		ResourceController res = ResourceController.getResourceController();
+//		res.setDefaultProperty(DocearImportProjectAction.KEY+".icon", "/images/Project -- Main -- Import.png");
+//		res.setDefaultProperty(DocearNewProjectAction.KEY+".icon", "/images/Project -- Main -- New Project.png");
 	}
 
 	private IControllerExecuteExtension getDocearCommandExecutor() {
