@@ -11,6 +11,7 @@ import javax.swing.event.ChangeListener;
 
 import org.docear.pdf.feature.APDMetaObject;
 import org.docear.plugin.core.features.DocearMapModelController;
+import org.docear.plugin.pdfutilities.features.IAnnotation.AnnotationType;
 import org.docear.plugin.pdfutilities.features.SingleMapConversionHandler.ExtractorAdaptor;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
 import org.freeplane.core.util.LogUtils;
@@ -43,21 +44,50 @@ public class BatchMapConversionHandler implements IConversionProcessHandler {
 	
 	private void convertAnnotation(NodeModel node) {
 		AnnotationModel extensionModel = AnnotationController.getModel(node, false);
-		if (extensionModel != null && extensionModel.getOldObjectNumber() > 0) {
+//		if (extensionModel != null && extensionModel.getOldObjectNumber() > 0) {
+//			convertCount++;
+//			try {
+//				File file = URIUtils.getFile(extensionModel.getSource());
+//				synchronized (documentCache) {
+//					ExtractorAdaptor adapter = getCachedExtractor(file);
+//					if (adapter != null) {
+//						APDMetaObject annotation = adapter.findMetaForObjectNumber(extensionModel.getOldObjectNumber());
+//						if (annotation != null) {
+//							AnnotationController.setModel(node, AnnotationConverter.cloneAnnotation(annotation, extensionModel));
+//						}
+//						else {
+//							if(AnnotationType.PDF_FILE.equals(extensionModel.getAnnotationType())) {
+//								AnnotationController.setModel(node, AnnotationConverter.cloneAnnotation(0, extensionModel));
+//							}
+//						}
+//					}
+//				}
+//			} catch (Exception e) {
+//				LogUtils.warn(e);
+//			}
+//		}
+		if (extensionModel != null) {
 			convertCount++;
-			try {
-				File file = URIUtils.getFile(extensionModel.getSource());
-				synchronized (documentCache) {
-					ExtractorAdaptor adapter = getCachedExtractor(file);
-					if (adapter != null) {
-						APDMetaObject annotation = adapter.findMetaForObjectNumber(extensionModel.getOldObjectNumber());
-						if (annotation != null) {
-							AnnotationController.setModel(node, AnnotationConverter.cloneAnnotation(annotation, extensionModel));
+			if(extensionModel.getOldObjectNumber() > 0) {
+				try {
+					File file = URIUtils.getFile(extensionModel.getSource());
+					synchronized (documentCache) {
+						ExtractorAdaptor adapter = getCachedExtractor(file);
+						if (adapter != null) {
+							APDMetaObject annotation = adapter.findMetaForObjectNumber(extensionModel.getOldObjectNumber());
+							if (annotation != null) {
+								AnnotationController.setModel(node, AnnotationConverter.cloneAnnotation(annotation, extensionModel));
+							}
 						}
 					}
+				} catch (Exception e) {
+					LogUtils.warn(e);
 				}
-			} catch (Exception e) {
-				LogUtils.warn(e);
+			}
+			else {
+				if(AnnotationType.PDF_FILE.equals(extensionModel.getAnnotationType())) {
+					AnnotationController.setModel(node, AnnotationConverter.cloneAnnotation(0, extensionModel));
+				}
 			}
 		}
 		for (NodeModel child : node.getChildren()) {

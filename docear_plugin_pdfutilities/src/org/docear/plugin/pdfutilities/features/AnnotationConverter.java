@@ -42,6 +42,16 @@ public class AnnotationConverter implements IMapLifeCycleListener {
 		return newModel;
 	}
 	
+	public static IAnnotation cloneAnnotation(int uid, AnnotationModel model) {
+		AnnotationModel newModel = new AnnotationModel(uid, model.getAnnotationType());
+		newModel.setSource(model.getSource());
+		newModel.setDestinationUri(model.getDestinationUri());
+		newModel.setPage(model.getPage());
+		newModel.setOldObjectNumber(model.getOldObjectNumber());
+		newModel.getChildren().addAll(model.getChildren());
+		return newModel;
+	}
+	
 	public static void SetConversionProcessHandler(IConversionProcessHandler handler) {
 		synchronized (currentHandler) {
 			currentHandler = handler;

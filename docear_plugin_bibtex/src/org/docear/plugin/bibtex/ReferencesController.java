@@ -416,7 +416,10 @@ public class ReferencesController extends ALanguageController implements IDocear
 		final URL defaults = this.getClass().getResource(ResourceController.PLUGIN_DEFAULTS_RESOURCE);
 		if (defaults == null)
 			throw new RuntimeException("cannot open " + ResourceController.PLUGIN_DEFAULTS_RESOURCE); //$NON-NLS-1$
-		Controller.getCurrentController().getResourceController().addDefaults(defaults);
+		ResourceController res = ResourceController.getResourceController();
+		res.addDefaults(defaults);
+		//res.setDefaultProperty(ChangeBibtexDatabaseAction.KEY+".icon", "/images/Project -- Main -- Change reference database.png");
+		
 	}
 	
 	private void addMenuEntries() {

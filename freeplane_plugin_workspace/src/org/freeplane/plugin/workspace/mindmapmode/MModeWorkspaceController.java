@@ -299,6 +299,11 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 	}
 		
 	private void setupActions(ModeController modeController) {
+		ResourceController res = ResourceController.getResourceController();
+		res.setDefaultProperty(WorkspaceRemoveProjectAction.KEY+".icon", "/images/Project -- Main -- Remove Project.png");
+		res.setDefaultProperty(ProjectOpenLocationAction.KEY+".icon", "/images/Project -- Main -- Open Location.png");
+		
+		
 		WorkspaceController.addAction(new WorkspaceExpandAction());
 		WorkspaceController.addAction(new WorkspaceCollapseAction());
 		WorkspaceController.addAction(new WorkspaceNewProjectAction());
