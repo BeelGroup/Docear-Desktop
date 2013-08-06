@@ -103,6 +103,9 @@ public class BatchMapConversionHandler implements IConversionProcessHandler {
 				adapter = new ExtractorAdaptor(file);
 				documentCache.put(file, adapter);
 			}
+			else {
+				LogUtils.warn("BatchMapConversionHandler.getCachedExtractor() - File not found: " + file);
+			}
 		}
 		return adapter;
 	}
@@ -146,7 +149,8 @@ public class BatchMapConversionHandler implements IConversionProcessHandler {
 			convertAnnotation(map.getRootNode());
 			DocearMapModelController.getModel(map).setVersion(DocearMapModelController.CURRENT_MAP_VERSION);
 			map.setSaved(false);
-		} finally {
+		} 
+		finally {
 			dispatchChange(TextUtils.format("docear.convert.annotations.start", convertCount, ((System.currentTimeMillis() - time)/1000)+"sec"));
 		}
 	}

@@ -1,5 +1,9 @@
 package org.docear.plugin.bibtex;
 
+import java.awt.KeyboardFocusManager;
+
+import javax.swing.SwingUtilities;
+
 import org.docear.plugin.bibtex.jabref.JabRefBaseHandle;
 import org.freeplane.plugin.workspace.model.project.IWorkspaceProjectExtension;
 
@@ -19,8 +23,16 @@ public class JabRefProjectExtension implements IWorkspaceProjectExtension {
 	}
 
 	public void selectBasePanel() {
-		if(getBaseHandle() != null) {
+		if(getBaseHandle() != null) {			
 			getBaseHandle().showBasePanel();
+			SwingUtilities.invokeLater(new Runnable() {
+				
+				@Override
+				public void run() {
+					KeyboardFocusManager.getCurrentKeyboardFocusManager().focusPreviousComponent();
+				}
+			});
+			
 		}		
 	}
 }

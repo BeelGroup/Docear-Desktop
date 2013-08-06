@@ -1,5 +1,7 @@
 package org.docear.plugin.bibtex.listeners;
 
+import java.awt.Component;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.TreeMap;
@@ -32,8 +34,8 @@ public class MapViewListener implements MouseListener, INodeSelectionListener {
 				AWorkspaceProject project = ext.getProject();
 				if(project != null && project.isLoaded()) {
 					JabRefProjectExtension jpe = (JabRefProjectExtension) project.getExtensions(JabRefProjectExtension.class);
-					if(jpe != null && !jpe.getBaseHandle().getBasePanel().equals(bp)) {
-						jpe.selectBasePanel();
+					if(jpe != null && !jpe.getBaseHandle().getBasePanel().equals(bp)) {						
+						jpe.selectBasePanel();			
 					}
 				}
 			}
