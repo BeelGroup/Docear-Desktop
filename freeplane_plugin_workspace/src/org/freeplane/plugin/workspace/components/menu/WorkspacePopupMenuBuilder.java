@@ -1,7 +1,9 @@
 package org.freeplane.plugin.workspace.components.menu;
 
+import java.awt.Dimension;
 import java.util.Stack;
 
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -19,6 +21,7 @@ import org.freeplane.features.mode.Controller;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.actions.AWorkspaceAction;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
+import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 
 public class WorkspacePopupMenuBuilder {
 
@@ -37,6 +40,12 @@ public class WorkspacePopupMenuBuilder {
 		}
 		else {
 			item = new JFreeplaneMenuItem(action);
+		}
+		if(item.getIcon() != null && item.getIcon() instanceof ImageIcon) {
+			ImageIcon ico = (ImageIcon)item.getIcon();
+			ImageWrapperResizableIcon nuIco = ImageWrapperResizableIcon.getIcon(ico.getImage(), new Dimension(ico.getIconWidth(), ico.getIconHeight()));
+			nuIco.setPreferredSize(new Dimension(16, 16));
+			item.setIcon(nuIco);
 		}
 		popupMenu.add(item);
 		return;
