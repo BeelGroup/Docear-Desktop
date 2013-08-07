@@ -219,12 +219,12 @@ public class DocearProjectLoader extends ProjectLoader {
 		litRepoNode.setSystem(true);		
 		project.getModel().addNodeTo(litRepoNode, root);
 		
-		LiteratureRepositoryPathNode defaultPathNode = new LiteratureRepositoryPathNode();
-		defaultPathNode.setPath(URIUtils.createURI(project.getProjectHome().toString()+"/literature_repository"));
-		defaultPathNode.setName(TextUtils.getText(defaultPathNode.getClass().getName().toLowerCase(Locale.ENGLISH)+".default.label" ));
-		defaultPathNode.setSystem(true);
 		if(settings != null) { 
 			if(settings.useDefaultRepositoryPath()) {
+				LiteratureRepositoryPathNode defaultPathNode = new LiteratureRepositoryPathNode();
+				defaultPathNode.setPath(URIUtils.createURI(project.getProjectHome().toString()+"/literature_repository"));
+				defaultPathNode.setName(TextUtils.getText(defaultPathNode.getClass().getName().toLowerCase(Locale.ENGLISH)+".default.label" ));
+				defaultPathNode.setSystem(true);
 				project.getModel().addNodeTo(defaultPathNode, litRepoNode);
 			}
 			for (URI uri : settings.getRepositoryPathURIs()) {
