@@ -24,6 +24,7 @@ import org.freeplane.view.swing.map.MapViewController;
 import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
 import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
+import org.pushingpixels.flamingo.api.common.JCommandButtonStrip;
 import org.pushingpixels.flamingo.api.ribbon.JFlowRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies;
 import org.pushingpixels.flamingo.api.ribbon.resize.IconRibbonBandResizePolicy;
@@ -58,16 +59,34 @@ public class ZoomContributorFactory implements IRibbonContributorFactory {
 				}				
 				JFlowRibbonBand band = new JFlowRibbonBand(TextUtils.getText("ribbon.band.zoom"), null, null);
 				
-				JComboBox zoomBox = ((MapViewController) Controller.getCurrentController().getMapViewManager()).createZoomBox();
+				JComboBox<?> zoomBox = ((MapViewController) Controller.getCurrentController().getMapViewManager()).createZoomBox();
 				addDefaultToggleHandler(context,zoomBox);
 				band.addFlowComponent(zoomBox);
 				
-				AFreeplaneAction action = context.getBuilder().getMode().getAction("FitToPage");				
+				JCommandButtonStrip strip = new JCommandButtonStrip();
+								
+				AFreeplaneAction action = context.getBuilder().getMode().getAction("ZoomInAction");				
 				JCommandButton button = RibbonActionContributorFactory.createCommandButton(action);				
+				button.setDisplayState(CommandButtonDisplayState.SMALL);
+				getAccelChangeListener().addAction(action.getKey(), button);
+				addDefaultToggleHandler(context, action, button);
+				strip.add(button);
+				
+				action = context.getBuilder().getMode().getAction("ZoomOutAction");				
+				button = RibbonActionContributorFactory.createCommandButton(action);				
+				button.setDisplayState(CommandButtonDisplayState.SMALL);
+				getAccelChangeListener().addAction(action.getKey(), button);
+				addDefaultToggleHandler(context, action, button);
+				strip.add(button);
+				
+				action = context.getBuilder().getMode().getAction("FitToPage");				
+				button = RibbonActionContributorFactory.createCommandButton(action);				
 				button.setDisplayState(CommandButtonDisplayState.MEDIUM);
 				getAccelChangeListener().addAction(action.getKey(), button);
 				addDefaultToggleHandler(context, action, button);
-				band.addFlowComponent(button);
+				strip.add(button);
+				
+				band.addFlowComponent(strip);
 				
 				List<RibbonBandResizePolicy> policies = new ArrayList<RibbonBandResizePolicy>();				
 				policies.add(new CoreRibbonResizePolicies.FlowThreeRows(band.getControlPanel()));
