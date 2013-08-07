@@ -52,7 +52,11 @@ public class MModeWorkspaceUrlManager extends MFileManager {
 	public File getAbsoluteFile(final MapModel map, final URI uri) {
 		if(uri == null) {
 			return null;
+		}		
+		if (uri.getFragment() != null) {
+			return null;
 		}
+		
 		try {
 			URLConnection urlConnection;
 			// windows drive letters are interpreted as uri schemes -> make a file from the scheme-less uri string and use this to resolve the path
