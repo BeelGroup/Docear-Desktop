@@ -3,6 +3,7 @@ package org.docear.plugin.core.util;
 import java.net.URI;
 
 import org.freeplane.core.util.LogUtils;
+import org.freeplane.features.attribute.Attribute;
 import org.freeplane.features.attribute.AttributeController;
 import org.freeplane.features.attribute.NodeAttributeTableModel;
 import org.freeplane.features.link.NodeLinks;
@@ -74,6 +75,26 @@ public class NodeUtilities {
 			LogUtils.warn("org.docear.plugin.pdfutilities.util.NodeUtils.setAttributeValue(1): " + e.getMessage());
 		}
 		return false;
+	}
+	
+	public static void setAttribute(NodeModel node, String key, Object value) {
+		AttributeController ctrl = AttributeController.getController();
+		NodeAttributeTableModel attributes = ctrl.createAttributeTableModel(node);		
+		if (attributes != null) {
+			if (attributes.getAttributeKeyList().contains(key)) {
+				//ctrl.performSetValueAt(attributes, value, attributes.getAttributePosition(key), 1);
+				attributes.setValue(attributes.getAttributePosition(key),value);
+				// attributes.fireTableRowsUpdated(pos, pos);
+			}
+			else {
+				//ctrl.performInsertRow(attributes, attributes.getRowCount(), key, value);
+				attributes.addRowNoUndo(new Attribute(key, value));
+			}
+			if(!node.areViewsEmpty()) {
+				Controller.getCurrentModeController().getMapController().nodeRefresh(node, NodeModel.UNKNOWN_PROPERTY, null, null);
+			}
+		}
+		
 	}
 
 	public static void removeAttribute(NodeModel target, String attributeKey) {

@@ -56,6 +56,7 @@ import org.docear.plugin.core.event.DocearEventType;
 import org.docear.plugin.core.event.IDocearEventListener;
 import org.docear.plugin.core.util.CompareVersion;
 import org.docear.plugin.core.util.DirectoryFileFilter;
+import org.docear.plugin.core.util.MapUtils;
 import org.docear.plugin.core.util.NodeUtilities;
 import org.docear.plugin.core.util.WinRegistry;
 import org.docear.plugin.pdfutilities.actions.AbstractMonitoringAction;
@@ -129,8 +130,6 @@ import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.features.ui.INodeViewLifeCycleListener;
 import org.freeplane.features.url.MapVersionInterpreter;
-import org.freeplane.features.url.UrlManager;
-import org.freeplane.features.url.mindmapmode.MFileManager;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.mindmapmode.MModeWorkspaceUrlManager;
@@ -1082,33 +1081,27 @@ public class PdfUtilitiesController extends ALanguageController {
 				if (DocearEventType.NEW_INCOMING.equals(event.getType())) {
 					MapModel map = (MapModel) event.getEventObject();
 					boolean isMonitoringNode = MonitoringUtils.isMonitoringNode(map.getRootNode());
-					NodeUtilities.setAttributeValue(map.getRootNode(), PdfUtilitiesController.MON_INCOMING_FOLDER, CoreConfiguration.DOCUMENT_REPOSITORY_PATH);
-					NodeUtilities.setAttributeValue(map.getRootNode(), PdfUtilitiesController.MON_MINDMAP_FOLDER, CoreConfiguration.LIBRARY_PATH);
-					NodeUtilities.setAttributeValue(map.getRootNode(), PdfUtilitiesController.MON_AUTO, 2);
-					NodeUtilities.setAttributeValue(map.getRootNode(), PdfUtilitiesController.MON_SUBDIRS, 2);
+					NodeUtilities.setAttribute(map.getRootNode(), PdfUtilitiesController.MON_INCOMING_FOLDER, CoreConfiguration.DOCUMENT_REPOSITORY_PATH);
+					NodeUtilities.setAttribute(map.getRootNode(), PdfUtilitiesController.MON_MINDMAP_FOLDER, CoreConfiguration.LIBRARY_PATH);
+					NodeUtilities.setAttribute(map.getRootNode(), PdfUtilitiesController.MON_AUTO, 2);
+					NodeUtilities.setAttribute(map.getRootNode(), PdfUtilitiesController.MON_SUBDIRS, 2);
 					if (DocearController.getPropertiesController().getBooleanProperty("docear_flatten_subdir")) {
-						NodeUtilities.setAttributeValue(map.getRootNode(), PdfUtilitiesController.MON_FLATTEN_DIRS, 1);
+						NodeUtilities.setAttribute(map.getRootNode(), PdfUtilitiesController.MON_FLATTEN_DIRS, 1);
 					}
 					else {
-						NodeUtilities.setAttributeValue(map.getRootNode(), PdfUtilitiesController.MON_FLATTEN_DIRS, 0);
+						NodeUtilities.setAttribute(map.getRootNode(), PdfUtilitiesController.MON_FLATTEN_DIRS, 0);
 					}
-//					DocearMapModelController.getModel(map).setType(DocearMapType.incoming);
 					if (!isMonitoringNode) {
 //						List<NodeModel> list = new ArrayList<NodeModel>();
 //						list.add(map.getRootNode());
 //						AddMonitoringFolderAction.updateNodesAgainstMonitoringDir(list, true);
 					}
 					map.setSaved(false);
-					((MFileManager) UrlManager.getController()).save(map, false);
+					MapUtils.saveMap(map, map.getFile());
+					
+					if(!map.getRootNode().areViewsEmpty()) {
+					}
 				}
-//				if (DocearEventType.NEW_MY_PUBLICATIONS.equals(event.getType())) {
-//					MapModel map = (MapModel) event.getEventObject();
-//					DocearMapModelController.getModel(map).setType(DocearMapType.my_publications);
-//				}
-//				if (DocearEventType.NEW_LITERATURE_ANNOTATIONS.equals(event.getType())) {
-//					MapModel map = (MapModel) event.getEventObject();
-//					DocearMapModelController.getModel(map).setType(DocearMapType.literature_annotations);
-//				}
 			}
 		});
 		showViewerSelectionIfNecessary();

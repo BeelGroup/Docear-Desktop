@@ -146,7 +146,11 @@ public class DocearCoreOmniListenerAdapter implements IMapLifeCycleListener, INo
 	public void handleEvent(DocearEvent event) {
 		if (DocearEventType.NEW_INCOMING.equals(event.getType())) {
 			MapModel map = (MapModel) event.getEventObject();
-			DocearMapModelController.getModel(map).setType(DocearMapType.incoming);
+			DocearMapModelExtension dmme = DocearMapModelController.getModel(map);
+			if(dmme == null) {
+				dmme = DocearMapModelController.setModelWithCurrentVersion(map);
+			}
+			dmme.setType(DocearMapType.incoming);
 			DocearNodePrivacyExtension ext = DocearNodePrivacyExtensionController.getExtension(map.getRootNode());
 			if(ext == null) {
 				DocearNodePrivacyExtensionController.getController().setPrivacyLevel(map.getRootNode(), DocearPrivacyLevel.DEMO);
