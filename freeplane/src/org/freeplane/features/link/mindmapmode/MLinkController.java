@@ -385,13 +385,17 @@ public class MLinkController extends LinkController {
 		super();		
 	}
 	
-	protected void init() {
-		super.init();
-		modeController = Controller.getCurrentModeController();
+	protected void init(ModeController modeController) {
+		super.init(modeController);
+		setModeController(modeController);
 		createActions();
 		anchorID = null;
 		modeController.registerExtensionCopier(new StyleCopier());
 		(modeController.getMapController()).addMapChangeListener(new NodeDeletionListener());
+	}
+	
+	protected void setModeController(ModeController modeController) {
+		this.modeController = modeController;
 	}
 
 	public ConnectorModel addConnector(final NodeModel source, final NodeModel target) {

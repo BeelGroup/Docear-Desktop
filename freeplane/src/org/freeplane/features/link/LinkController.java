@@ -109,7 +109,7 @@ public class LinkController extends SelectionController implements IExtension {
 	public static void install(final LinkController linkController) {
 		final ModeController modeController = Controller.getCurrentModeController();
 		modeController.addExtension(LinkController.class, linkController);
-		linkController.init();
+		linkController.init(modeController);
 	}
 
 	public static final String LINK_ICON = ResourceController.getResourceController().getProperty("link_icon");
@@ -119,9 +119,8 @@ public class LinkController extends SelectionController implements IExtension {
 	public LinkController() {
 	}
 	
-	protected void init() {
+	protected void init(ModeController modeController) {
 		createActions();
-		final ModeController modeController = Controller.getCurrentModeController();
 		final MapController mapController = modeController.getMapController();
 		final ReadManager readManager = mapController.getReadManager();
 		final WriteManager writeManager = mapController.getWriteManager();
