@@ -86,7 +86,7 @@ public abstract class URIUtils {
 
 	public static File getFile(URI absoluteURI) {
 		if(absoluteURI != null) {
-			if(!"file".equals(absoluteURI.getScheme())) {
+			if(!"file".equals(absoluteURI.getScheme()) || absoluteURI.getFragment() != null) {
 				return null;
 			}
 			try {
