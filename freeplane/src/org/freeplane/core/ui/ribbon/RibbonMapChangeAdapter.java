@@ -45,7 +45,10 @@ public class RibbonMapChangeAdapter implements INodeSelectionListener, INodeChan
 	
 
 	public void mapChanged(MapChangeEvent event) {
-		CurrentState state = new CurrentState();
+		if (event == null || event.getMap() == null) {
+			return;
+		}
+		CurrentState state = new CurrentState();		
 		state.set(NodeModel.class, event.getMap().getRootNode());
 		fireStateChanged(state);		
 	}

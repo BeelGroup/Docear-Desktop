@@ -10,24 +10,25 @@ import org.freeplane.core.util.TextUtils;
 public class PropertyListener implements IFreeplanePropertyListener {
 
 	public void propertyChanged(String propertyName, String newValue, String oldValue) {
-		if (propertyName.equals("links") && (!newValue.equals(oldValue))) {
-			if(SwingUtilities.isEventDispatchThread()) {
-				SwingUtilities.invokeLater(new Runnable() {					
-					public void run() {
-						doUpdateLinks();						
-					}
-				});								
-			}
-			else {
-				doUpdateLinks();
-			}
-		}
+		// we should not update any links as long as we can't update maps over all projects (currently maps of other projects are ignored)
+//		if (propertyName.equals("links") && (!newValue.equals(oldValue))) {
+//			if(SwingUtilities.isEventDispatchThread()) {
+//				SwingUtilities.invokeLater(new Runnable() {					
+//					public void run() {
+//						doUpdateLinks();						
+//					}
+//				});								
+//			}
+//			else {
+//				doUpdateLinks();
+//			}
+//		}
 	}
 	
 	private final void doUpdateLinks() {
 		MindmapUpdateController mindmapUpdateController = new MindmapUpdateController();
 		mindmapUpdateController.addMindmapUpdater(new MindmapLinkTypeUpdater(TextUtils.getText("updating_link_types")));
-		mindmapUpdateController.updateRegisteredMindmapsInProject(true);
+		mindmapUpdateController.updateRegisteredMindmapsInWorkspace(true);
 	}
 
 }

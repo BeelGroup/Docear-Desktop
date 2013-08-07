@@ -58,42 +58,60 @@ public class MindmapUpdateController {
 		return false;
 	}
 	
-	public boolean updateAllMindmapsInProject(AWorkspaceProject project) {
-		if(!DocearWorkspaceProject.isCompatible(project)) {
+	public boolean updateAllMindmapsInWorkspace() {
+		return updateAllMindmapsInProject(WorkspaceController.getCurrentModel().getProjects().toArray(new AWorkspaceProject[0]));		
+	}
+	
+	public boolean updateAllMindmapsInProject(AWorkspaceProject... projects) {
+		List<MapItem> maps = new ArrayList<MapItem>();
+		
+		for (AWorkspaceProject project : projects) {
+    		if(!DocearWorkspaceProject.isCompatible(project)) {
+    			return false;
+    		}    		
+    		for (URI uri : project.getModel().getAllNodesFiltered(".mm")) {
+    			maps.add(new MapItem(uri));
+    		}
+		}
+		
+		return updateMindmaps(maps);
+	}
+		
+	public boolean updateRegisteredMindmapsInProject() {
+		return updateRegisteredMindmapsInProject(false);
+	}
+	
+	public boolean updateRegisteredMindmapsInProject(boolean openMindmapsToo, AWorkspaceProject... projects) {
+		List<MapItem> maps = new ArrayList<MapItem>(); 
+		
+		if (projects==null || projects.length==0) {
+			projects = new AWorkspaceProject[] {WorkspaceController.getMapProject()};
+		}
+		
+		if (projects.length == 0) {
 			return false;
 		}
-		List<MapItem> maps = new ArrayList<MapItem>();
-		for (URI uri : project.getModel().getAllNodesFiltered(".mm")) {
-			maps.add(new MapItem(uri));
+		
+		for (AWorkspaceProject project : projects) {
+    		if (project != null) {
+        		if(DocearWorkspaceProject.isCompatible(project)) {
+        			for(URI mapUri : ((DocearWorkspaceProject)project).getLibraryMaps()) {
+        				maps.add(new MapItem(mapUri));
+        			}
+        		}
+        		if (openMindmapsToo) {
+        			for (MapItem item : getAllOpenMaps()) {
+        				maps.add(item);
+        			}
+        		}
+    		}
 		}
 		
 		return updateMindmaps(maps);
 	}
 	
-	public boolean updateRegisteredMindmapsInProject() {
-		return updateRegisteredMindmapsInProject(false);
-	}
-
-	public boolean updateRegisteredMindmapsInProject(boolean openMindmapsToo) {
-		List<MapItem> maps = new ArrayList<MapItem>(); 
-		
-		AWorkspaceProject project = WorkspaceController.getMapProject();
-		if (project != null) {
-    		if(DocearWorkspaceProject.isCompatible(project)) {
-    			for(URI mapUri : ((DocearWorkspaceProject)project).getLibraryMaps()) {
-    				maps.add(new MapItem(mapUri));
-    			}
-    		}
-    		if (openMindmapsToo) {
-    			for (MapItem item : getAllOpenMaps()) {
-    				maps.add(item);
-    			}
-    		}
-    		
-    		return updateMindmaps(maps);
-		}
-		
-		return false;
+	public boolean updateRegisteredMindmapsInWorkspace(boolean openMindmapsToo) {
+		return updateRegisteredMindmapsInProject(openMindmapsToo, WorkspaceController.getCurrentModel().getProjects().toArray(new AWorkspaceProject[0]));		
 	}
 
 	public boolean updateOpenMindmaps() {

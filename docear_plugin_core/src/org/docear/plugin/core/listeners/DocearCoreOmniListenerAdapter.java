@@ -92,11 +92,6 @@ public class DocearCoreOmniListenerAdapter implements IMapLifeCycleListener, INo
 	 * 
 	 */
 	public void mapChanged(MapChangeEvent event) {
-//		LogUtils.info("mapChanged: "+event.getProperty());
-		DocearMapModelExtension dmme = event.getMap().getExtension(DocearMapModelExtension.class);
-		if (dmme != null && dmme.getType() != null) {
-			
-		}
 	}
 	
 	public void onCreate(MapModel map) {

@@ -78,7 +78,7 @@
 				</entry_group>			    
 			</primary_entry>					
 			<footer_entry action="CloseAction" accelerator="control W" mandatory="true"/>
-			<footer_entry action="QuitAction" mandatory="true"/>			
+			<footer_entry action="QuitAction" mandatory="true" accelerator="alt F4"/>			
 		</ribbon_menu>		
 		
 		<!-- HOME -->

@@ -25,8 +25,8 @@ public class MindmapLinkTypeUpdater extends AMindmapUpdater {
     
     		if (links == null || links.getHyperLink() == null) {
     			return false;
-    		}
-    
+    		}    
+    		
     		File file = UrlManager.getController().getAbsoluteFile(node.getMap(), links.getHyperLink());
     		if (file != null) {
     			links.setHyperLink(LinkController.toLinkTypeDependantURI(node.getMap().getFile(), file));
