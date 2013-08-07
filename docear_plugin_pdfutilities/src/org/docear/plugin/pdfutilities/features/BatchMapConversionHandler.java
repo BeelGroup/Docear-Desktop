@@ -151,7 +151,7 @@ public class BatchMapConversionHandler implements IConversionProcessHandler {
 			map.setSaved(false);
 		} 
 		finally {
-			dispatchChange(TextUtils.format("docear.convert.annotations.start", convertCount, ((System.currentTimeMillis() - time)/1000)+"sec"));
+			dispatchChange(TextUtils.format("docear.convert.annotations.final", convertCount, ((System.currentTimeMillis() - time)/1000)+"sec"));
 		}
 	}
 }

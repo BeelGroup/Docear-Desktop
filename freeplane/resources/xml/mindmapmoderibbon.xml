@@ -94,19 +94,20 @@
                     <ribbon_action action="SaveAsAction" accelerator="control shift S" />
                     <ribbon_action action="SaveAll" />
                 </ribbon_action>
-				<ribbon_action action="UndoAction" accelerator="control Z" priority="Top" >
-					<ribbon_action action="RedoAction" accelerator="control Y" />			
-				</ribbon_action>
+			    <ribbon_action action="CloseAction" accelerator="control W" />
 				<ribbon_action action="CutAction" accelerator="control X" priority="medium" />
 				<ribbon_action action="CopyAction" accelerator="control C" priority="medium">
 					<ribbon_action action="CopySingleAction" accelerator="control shift C" />
 					<ribbon_action action="CopyIDAction" />
 					<ribbon_action action="CopyNodeURIAction" />
-					<ribbon_action action="CopyBibtexKeyToClipboardAction" priority="Medium" />
-					<ribbon_action action="CopyCiteKeyToClipboardAction" priority="Medium" />
+					<ribbon_action action="CopyBibtexKeyToClipboardAction" priority="medium" />
+					<ribbon_action action="CopyCiteKeyToClipboardAction" priority="medium" />
 				</ribbon_action>
 				<ribbon_action action="PasteAction" accelerator="control V"	priority="medium">
 					<ribbon_action action="SelectedPasteAction"/>
+				</ribbon_action>
+				<ribbon_action action="UndoAction" accelerator="control Z" priority="medium" >
+					<ribbon_action action="RedoAction" accelerator="control Y" />			
 				</ribbon_action>
 			</ribbon_band>
 		   <ribbon_band name="nodes" resize_policies="Mirror">
