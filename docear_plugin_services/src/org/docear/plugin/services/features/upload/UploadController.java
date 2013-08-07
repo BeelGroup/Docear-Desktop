@@ -85,7 +85,7 @@ public class UploadController extends ADocearServiceFeature {
 
 	public boolean isUploadEnabled() {
 		DocearUser user = ServiceController.getCurrentUser();
-		boolean needUser = user.getEnabledServicesCode() > 0 && user.isTransmissionEnabled() && user.isOnline();
+		boolean needUser = (user.isBackupEnabled() || user.isRecommendationsEnabled()) && user.isTransmissionEnabled() && user.isOnline();
 
 		return needUser && user.isValid();
 	}

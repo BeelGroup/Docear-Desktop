@@ -29,6 +29,7 @@ import org.docear.plugin.core.util.DirectoryFileFilter;
 import org.docear.plugin.core.util.HtmlUtils;
 import org.docear.plugin.core.util.MapUtils;
 import org.docear.plugin.core.util.NodeUtilities;
+import org.docear.plugin.core.workspace.AVirtualDirectory;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
 import org.docear.plugin.pdfutilities.actions.AbstractMonitoringAction;
@@ -236,7 +237,18 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 					}
 					else if (file != null) {
 						File monitoringDirectory = MonitoringUtils.getPdfDirFromMonitoringNode(target);
-						if (file.getPath().startsWith(monitoringDirectory.getPath())) {
+						boolean ok = false;
+						if(monitoringDirectory instanceof AVirtualDirectory) {
+							for(File repo : monitoringDirectory.listFiles()) {
+								if (file.getPath().startsWith(repo.getPath())) {
+									ok = true;
+								}
+							}
+						}
+						else if (file.getPath().startsWith(monitoringDirectory.getPath())) {
+							ok = true;
+						}
+						if(ok) {
 							AnnotationModel annoation = new PdfAnnotationImporter().searchAnnotation(URIUtils.getAbsoluteURI(node), node);
 							if (annoation == null) {
 								orphanedNodes.add(node);
