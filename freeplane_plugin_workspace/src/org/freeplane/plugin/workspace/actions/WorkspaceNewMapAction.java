@@ -7,7 +7,6 @@ package org.freeplane.plugin.workspace.actions;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 
 import org.freeplane.core.ui.AFreeplaneAction;
@@ -89,20 +88,12 @@ public class WorkspaceNewMapAction extends AFreeplaneAction {
 		if (save) {
 			try {
 				mapIO.writeToFile(map, f);
+				map.setURL(Compat.fileToUrl(f));
 			} catch (Exception e) {
 				LogUtils.warn("Exception in org.freeplane.plugin.workspace.actions.WorkspaceNewMapAction.createNewMap(project, uri, name, save)..writeToFile: "+e.getMessage());
 			}
 		}
-		else {
-			if(f != null) {
-				try {
-					map.setURL(Compat.fileToUrl(f));
-				} catch (MalformedURLException e) {
-					LogUtils.warn(WorkspaceNewMapAction.class + ": " + e.getMessage());
-				}
-			}
-		}
-	
+		
 		return map;
 	}
 	

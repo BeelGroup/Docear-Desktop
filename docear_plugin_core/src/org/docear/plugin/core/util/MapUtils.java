@@ -1,5 +1,6 @@
 package org.docear.plugin.core.util;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
@@ -23,6 +24,9 @@ import org.freeplane.features.mapio.mindmapmode.MMapIO;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.mode.mindmapmode.MModeController;
+import org.freeplane.features.ui.IMapViewManager;
+import org.freeplane.features.url.UrlManager;
+import org.freeplane.main.addons.AddOnsController;
 import org.freeplane.plugin.workspace.mindmapmode.MModeWorkspaceUrlManager;
 
 public class MapUtils {
@@ -64,11 +68,12 @@ public class MapUtils {
 		}
 	}
 	
-	public static boolean saveMap(MapModel map) {
+	public static boolean saveMap(MapModel map, File file) {
 		try {
 			Controller.getCurrentController().selectMode(MModeController.MODENAME);
 			MMapIO mapIO = (MMapIO) MModeController.getMModeController().getExtension(MapIO.class);
-			mapIO.writeToFile(map, map.getFile());
+			mapIO.writeToFile(map, file);
+			map.setSaved(true);
 		}
 		catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -111,6 +116,36 @@ public class MapUtils {
 			}
 		}
 		return false;
+	}
+	
+	@SuppressWarnings("deprecation")
+	public static MapModel openMapNoShow(URL url) throws IOException {
+		final IMapViewManager mapViewManager = Controller.getCurrentController().getMapViewManager();
+		if (mapViewManager.tryToChangeToMapView(url)) {
+			return null;
+		}
+		try {
+			if (AddOnsController.getController().installIfAppropriate(url)) {
+				return null;
+			}
+			Controller.getCurrentController().getViewController().setWaitingCursor(true);
+			final MapModel map = new MapModel();
+			UrlManager.getController().loadCatchExceptions(url, map);
+			//map.setReadOnly(true);
+			map.setSaved(true);
+			return map;
+		} 
+		finally {
+			Controller.getCurrentController().getViewController().setWaitingCursor(false);
+		}
+	}
+
+	public static void showMap(MapModel map) {
+		if(map == null) {
+			throw new IllegalArgumentException("NULL");
+		}
+		Controller.getCurrentModeController().getMapController().newMapView(map);
+		
 	}
 	
 	/***********************************************************************************

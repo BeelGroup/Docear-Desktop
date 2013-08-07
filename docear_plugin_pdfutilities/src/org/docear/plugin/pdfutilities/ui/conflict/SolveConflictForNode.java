@@ -23,7 +23,7 @@ public class SolveConflictForNode implements ISolveConflictCommand {
 			this.getTarget().fireNodeChanged(event);
 		}
 		else{
-			MapUtils.saveMap(this.getTarget().getMap());
+			MapUtils.saveMap(this.getTarget().getMap(), this.getTarget().getMap().getFile());
 		}
 		
 	}
