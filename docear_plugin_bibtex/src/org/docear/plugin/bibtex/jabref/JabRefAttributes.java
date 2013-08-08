@@ -298,7 +298,7 @@ public class JabRefAttributes {
 					}
 					}
 					catch (Exception e) {
-						LogUtils.warn("Exception in org.docear.plugin.bibtex.jabref.JabRefAttributes.updateReferenceToNode(): ", e);
+						LogUtils.warn("Exception in org.docear.plugin.bibtex.jabref.JabRefAttributes.updateReferenceToNode(): "+ e.getMessage());
 					}
 				}
 				if (!found && item.getValue() != null) {

@@ -96,6 +96,22 @@ public class NodeUtilities {
 		}
 		
 	}
+	
+	public static void removeNodeAttribute(NodeModel node, String key) {
+		AttributeController ctrl = AttributeController.getController();
+		NodeAttributeTableModel model = ctrl.createAttributeTableModel(node);		
+		if (model != null) {
+			if (model.getAttributeKeyList().contains(key)) {
+				int row = model.getAttributePosition(key);
+				model.getAttributes().remove(row);
+				model.fireTableRowsDeleted(row, row);
+			}
+			if(!node.areViewsEmpty()) {
+				Controller.getCurrentModeController().getMapController().nodeRefresh(node, NodeModel.UNKNOWN_PROPERTY, null, null);
+			}
+		}
+		
+	}
 
 	public static void removeAttribute(NodeModel target, String attributeKey) {
 		if (target == null || attributeKey == null) {
