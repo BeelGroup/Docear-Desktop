@@ -61,7 +61,7 @@ public class AboutAction extends AFreeplaneAction {
 		addMessage(box, FreeplaneVersion.getVersion().getRevision());
 		addFormattedMessage(box, "java_version", Compat.JAVA_VERSION);
 		addFormattedMessage(box, "main_resource_directory", ResourceController.getResourceController().getResourceBaseDir());
-		addUri(box, "license_url", TextUtils.getText("license"));
+		addUri(box, "license_url", TextUtils.getText("license"));		
 		addMessage(box, TextUtils.getText("license_text"));
 		
 		JOptionPane.showMessageDialog(Controller.getCurrentController().getMapViewManager().getViewport(), box, TextUtils

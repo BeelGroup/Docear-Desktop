@@ -81,7 +81,9 @@ public class DocearAboutAction extends AboutAction {
 		addFormattedMessage(box, "docear.main_resource_directory", installDir);
 		
 		addMessage(box, " "); //separator gap
-		addUri(box, resourceController.getProperty("license_url"), TextUtils.getText("license"));
+		addUri(box, "icons_url", TextUtils.getText("docear_icons"));
+		addMessage(box, " "); //separator gap
+		addUri(box, resourceController.getProperty("license_url"), TextUtils.getText("license"));		
 		addMessage(box, TextUtils.removeTranslateComment(TextUtils.getText("license_text")));
 		
 		JOptionPane.showMessageDialog(UITools.getFrame(), box, TextUtils.getText("AboutAction.text"), JOptionPane.INFORMATION_MESSAGE);

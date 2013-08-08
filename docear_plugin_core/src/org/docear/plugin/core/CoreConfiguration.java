@@ -268,6 +268,7 @@ public class CoreConfiguration extends ALanguageController {
 		if (resController.getProperty("ApplicationName").equals("Docear")) {
 			String mapPath = _welcomeFile.toURI().getPath();
 			resController.setProperty("first_start_map", mapPath);
+			resController.setProperty("icons_url", "http://findicons.com/");
 			resController.setProperty("tutorial_map", mapPath);
 		}
 	}

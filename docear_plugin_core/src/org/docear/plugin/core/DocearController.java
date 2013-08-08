@@ -140,8 +140,7 @@ public class DocearController implements IDocearEventListener {
 		}
 		catch (final IOException e) {
 			
-		}
-		
+		}		
 		setApplicationName("Docear");
 		setApplicationVersion(versionProperties.getProperty("docear_version"));
 		setApplicationStatus(versionProperties.getProperty("docear_version_status"));		
