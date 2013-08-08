@@ -129,7 +129,7 @@ public class MapUtils {
 				return null;
 			}
 			Controller.getCurrentController().getViewController().setWaitingCursor(true);
-			final MapModel map = new MapModel();
+			final MapModel map = new MMapModel();
 			UrlManager.getController().loadCatchExceptions(url, map);
 			//map.setReadOnly(true);
 			map.setSaved(true);
@@ -145,7 +145,6 @@ public class MapUtils {
 			throw new IllegalArgumentException("NULL");
 		}
 		Controller.getCurrentModeController().getMapController().newMapView(map);
-		
 	}
 	
 	/***********************************************************************************

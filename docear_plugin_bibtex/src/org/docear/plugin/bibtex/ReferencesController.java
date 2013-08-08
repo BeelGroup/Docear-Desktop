@@ -418,7 +418,19 @@ public class ReferencesController extends ALanguageController implements IDocear
 			throw new RuntimeException("cannot open " + ResourceController.PLUGIN_DEFAULTS_RESOURCE); //$NON-NLS-1$
 		ResourceController res = ResourceController.getResourceController();
 		res.addDefaults(defaults);
-		//res.setDefaultProperty(ChangeBibtexDatabaseAction.KEY+".icon", "/images/Project -- Main -- Change reference database.png");
+		res.setDefaultProperty(ChangeBibtexDatabaseAction.KEY+".icon", "/images/docear/project/Project-ChangeReferenceDB.png");
+		
+		res.setDefaultProperty(AddExistingReferenceAction.KEY+".icon", "/images/docear/references/References-AddExisting.png");
+		res.setDefaultProperty(RemoveReferenceAction.KEY+".icon", "/images/docear/references/References-Remove.png");
+		res.setDefaultProperty(CopyBibtexToClipboard.KEY+".icon", "/images/docear/references/References-CopyReferenceKeys.png");
+		res.setDefaultProperty(CopyCiteKeyToClipboard.KEY+".icon", "/images/docear/references/References-CopyReferenceKeysLaTeX.png");
+		res.setDefaultProperty(AddOrUpdateReferenceEntryWorkspaceAction.KEY+".icon", "/images/docear/references/References-CreateOrUpdate.png");
+		res.setDefaultProperty(AddNewReferenceAction.KEY+".icon", "/images/docear/references/References-CreateOrUpdate.png");
+		res.setDefaultProperty(UpdateReferencesCurrentMapAction.KEY+".icon", "/images/docear/references/References-RefreshInCurrentMap.png");
+		res.setDefaultProperty(ShowInReferenceManagerAction.KEY+".icon", "/images/docear/references/References-ShowInReferenceManager.png");
+		
+		res.setDefaultProperty("ShowAllAttributesAction.icon", "/images/docear/references/ReferencesSettings-ShowAllAttributes.png");
+		res.setDefaultProperty("HideAllAttributesAction.icon", "/images/docear/references/ReferencesSettings-HideAllAttributes.png");
 		
 	}
 	
@@ -435,13 +447,10 @@ public class ReferencesController extends ALanguageController implements IDocear
 		WorkspaceController.addAction(updateReferencesAllMaps);
 		WorkspaceController.addAction(updateReferencesAllOpenMaps);
 		WorkspaceController.addAction(updateReferencesCurrentMap);
-//		WorkspaceController.addAction(updateReferencesInLibrary);
+//		WorkspaceController.addAction(updateReferencesInLibrary);		
+		WorkspaceController.addAction(new AddOrUpdateReferenceEntryWorkspaceAction());
 		
-		Controller.getCurrentController().addAction(new AddOrUpdateReferenceEntryWorkspaceAction());
-		WorkspaceController.addAction(changeBibtexDatabase);
-        WorkspaceController.addAction(addExistingReference);
-        WorkspaceController.addAction(removeReference);
-        WorkspaceController.addAction(copyBibtex);
+		
 		this.modeController.addMenuContributor(new IMenuContributor() {
 
 			public void updateMenus(ModeController modeController, MenuBuilder builder) {

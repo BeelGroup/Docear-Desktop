@@ -149,8 +149,23 @@ public class CoreConfiguration extends ALanguageController {
 
 	private void initIcons(Controller controller) {
 		ResourceController res = ResourceController.getResourceController();
-//		res.setDefaultProperty(DocearImportProjectAction.KEY+".icon", "/images/Project -- Main -- Import.png");
-//		res.setDefaultProperty(DocearNewProjectAction.KEY+".icon", "/images/Project -- Main -- New Project.png");
+		res.setDefaultProperty(DocearImportProjectAction.KEY+".icon", "/images/docear/project/Project-Import.png");
+		res.setDefaultProperty(DocearNewProjectAction.KEY+".icon", "/images/docear/project/Project-NewProject.png");
+		
+		res.setDefaultProperty(DocearAddRepositoryPathAction.KEY+".icon", "/images/docear/project/Project-AddLiteratureRepository.png");
+		res.setDefaultProperty(DocearRemoveRepositoryPathAction.KEY+".icon", "/images/docear/project/Project-RemoveLiteratureRepository.png");
+		res.setDefaultProperty(DocearRemoveRepositoryPathRibbonAction.KEY+".icon", "/images/docear/project/Project-RemoveLiteratureRepository.png");
+		
+		res.setDefaultProperty("ResetNodeLocationAction.icon", "/images/docear/nodes/NodesSettings-ResetPosition.png");
+		res.setDefaultProperty("SetBooleanPropertyAction.edit_on_double_click.icon", "/images/docear/nodes/Nodes-EditOnDblClick.png");
+		
+		res.setDefaultProperty("LatexEditLatexAction.icon", "/images/docear/resources/Resources-LaTeXFormulaEdit.png");
+		res.setDefaultProperty("LatexDeleteLatexAction.icon", "/images/docear/resources/Resources-LaTeXFormulaRemove.png");
+		
+		res.setDefaultProperty("docear4WordLocationAction.icon", "/images/docear/tools/ToolsAndSettings-Docear4Word.png");
+		res.setDefaultProperty("docearPdfInspectorLocationAction.icon", "/images/docear/tools/ToolsAndSettings-PDFInspector.png");
+		res.setDefaultProperty("freeplaneAddOnLocationAction.icon", "/images/docear/tools/ToolsAndSettings-DocearAddOns.png");
+		res.setDefaultProperty("jabrefAddOnLocationAction.icon", "/images/docear/tools/ToolsAndSettings-JabRefAddOns.png");
 	}
 
 	private IControllerExecuteExtension getDocearCommandExecutor() {
