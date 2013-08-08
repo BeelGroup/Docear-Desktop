@@ -41,14 +41,18 @@ public class WorkspacePopupMenuBuilder {
 		else {
 			item = new JFreeplaneMenuItem(action);
 		}
+		calibrateIcon(item);
+		popupMenu.add(item);
+		return;
+	}
+
+	private static void calibrateIcon(final JMenuItem item) {
 		if(item.getIcon() != null && item.getIcon() instanceof ImageIcon) {
 			ImageIcon ico = (ImageIcon)item.getIcon();
 			ImageWrapperResizableIcon nuIco = ImageWrapperResizableIcon.getIcon(ico.getImage(), new Dimension(ico.getIconWidth(), ico.getIconHeight()));
 			nuIco.setPreferredSize(new Dimension(16, 16));
 			item.setIcon(nuIco);
 		}
-		popupMenu.add(item);
-		return;
 	}
 	
 	public static void insertAction(final WorkspacePopupMenu popupMenu, AFreeplaneAction action, int index) {
@@ -62,6 +66,7 @@ public class WorkspacePopupMenuBuilder {
 		else {
 			item = new JFreeplaneMenuItem(action);
 		}
+		calibrateIcon(item);
 		popupMenu.add(item, index);
 		addListeners(popupMenu, action);
 		return;
@@ -87,6 +92,7 @@ public class WorkspacePopupMenuBuilder {
 			else {
 				item = new JFreeplaneMenuItem(action);
 			}
+			calibrateIcon(item);
 			popupMenu.add(item, index);
 			addListeners(popupMenu, action);
 		}
