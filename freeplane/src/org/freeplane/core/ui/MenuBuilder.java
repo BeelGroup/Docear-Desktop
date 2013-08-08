@@ -21,6 +21,7 @@ package org.freeplane.core.ui;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
@@ -79,6 +80,7 @@ import org.freeplane.features.map.MapModel;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.n3.nanoxml.XMLElement;
+import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 
 public class MenuBuilder extends UIBuilder implements IKeyStrokeProcessor {
 	
@@ -635,6 +637,13 @@ public class MenuBuilder extends UIBuilder implements IKeyStrokeProcessor {
 	public void addMenuItem(final String relativeKey, final JMenuItem item, final String key, final int position) {
 		final String shortcutKey = getShortcutKey(key);
 		final String keyStrokeString = ResourceController.getResourceController().getProperty(shortcutKey);
+		//RIBBONS - to set the right icon size
+		if(item.getIcon() != null && item.getIcon() instanceof ImageIcon) {
+			ImageIcon ico = (ImageIcon)item.getIcon();
+			ImageWrapperResizableIcon nuIco = ImageWrapperResizableIcon.getIcon(ico.getImage(), new Dimension(ico.getIconWidth(), ico.getIconHeight()));
+			nuIco.setPreferredSize(new Dimension(16, 16));
+			item.setIcon(nuIco);
+		}
 		final Node element = (Node) addElement(relativeKey, item, key, position);
 		if (null == getMenuBar(element)) {
 			return;
