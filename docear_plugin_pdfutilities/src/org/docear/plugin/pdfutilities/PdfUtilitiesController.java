@@ -135,7 +135,6 @@ import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.mindmapmode.MModeWorkspaceUrlManager;
 import org.freeplane.plugin.workspace.model.WorkspaceModelEvent;
 import org.freeplane.plugin.workspace.model.WorkspaceModelListener;
-import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.model.project.IProjectModelListener;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
@@ -723,40 +722,41 @@ public class PdfUtilitiesController extends ALanguageController {
 	}
 
 	private void registerActions(ModeController modeController) {
+		ResourceController res = ResourceController.getResourceController();
+		res.setDefaultProperty(ImportAllAnnotationsAction.KEY+".icon", "/images/docear/monitoring/PDF-ImportAllAnnotations.png");
+		res.setDefaultProperty(ImportNewAnnotationsAction.KEY+".icon", "/images/docear/monitoring/PDF-ImportNewAnnotations.png");
+		
+		res.setDefaultProperty(AddMonitoringFolderAction.KEY+".icon", "/images/docear/monitoring/Monitoring-add.png");
+		res.setDefaultProperty(UpdateMonitoringFolderAction.KEY+".icon", "/images/docear/monitoring/Monitoring-Re-read.png");
+		res.setDefaultProperty(DeleteMonitoringFolderAction.KEY+".icon", "/images/docear/monitoring/Monitoring-remove.png");
+		//res.setDefaultProperty(EditMonitoringFolderAction.KEY+".icon", "/images/docear/monitoring/Project -- Main -- Import.png");
+		
+		res.setDefaultProperty(MonitoringFlattenSubfoldersAction.KEY+".icon", "/images/docear/monitoring/MonitoringSettings-FlattenDirectory.png");
+		res.setDefaultProperty("auto_monitoring.icon", "/images/docear/monitoring/MonitoringSettings-AutoupdateOnOpeningMaps.png");
+		res.setDefaultProperty("subfolders.icon", "/images/docear/monitoring/MonitoringSettings-ReadSubfolders.png");
 		this.importAllAnnotationsAction = new ImportAllAnnotationsAction();
 		modeController.addAction(importAllAnnotationsAction);
-		//modeController.getMapController().addListenerForAction(importAllAnnotationsAction);
 		this.importNewAnnotationsAction = new ImportNewAnnotationsAction();
 		modeController.addAction(importNewAnnotationsAction);
-		//modeController.getMapController().addListenerForAction(importNewAnnotationsAction);
 		this.deleteFileAction = new DeleteFileAction();
 		modeController.addAction(deleteFileAction);
-		//modeController.getMapController().addListenerForAction(deleteFileAction);
 		
 		this.addMonitoringFolderAction = new AddMonitoringFolderAction();
 		modeController.addAction(addMonitoringFolderAction);
-//		modeController.getMapController().addListenerForAction(addMonitoringFolderAction);
 		this.updateMonitoringFolderAction = new UpdateMonitoringFolderAction();
 		modeController.addAction(updateMonitoringFolderAction);
-//		modeController.getMapController().addListenerForAction(updateMonitoringFolderAction);
 		this.importAllChildAnnotationsAction = new ImportAllChildAnnotationsAction();
 		modeController.addAction(importAllChildAnnotationsAction);
-//		modeController.getMapController().addListenerForAction(importAllChildAnnotationsAction);
 		this.importNewChildAnnotationsAction = new ImportNewChildAnnotationsAction();
 		modeController.addAction(importNewChildAnnotationsAction);
-//		modeController.getMapController().addListenerForAction(importNewChildAnnotationsAction);
 		this.removeLinebreaksAction = new RemoveLinebreaksAction();
 		modeController.addAction(removeLinebreaksAction);
-//		modeController.getMapController().addListenerForAction(removeLinebreaksAction);
 		this.deleteMonitoringFolderAction = new DeleteMonitoringFolderAction();
 		modeController.addAction(deleteMonitoringFolderAction);
-//		modeController.getMapController().addListenerForAction(deleteMonitoringFolderAction);
 		this.editMonitoringFolderAction = new EditMonitoringFolderAction();
 		modeController.addAction(editMonitoringFolderAction);
-//		modeController.getMapController().addListenerForAction(editMonitoringFolderAction);
 		this.monitoringFlattenSubfoldersAction = new MonitoringFlattenSubfoldersAction();
 		modeController.addAction(monitoringFlattenSubfoldersAction);
-		//modeController.getMapController().addListenerForAction(monitoringFlattenSubfoldersAction);
 		
 		autoOnAction = new MonitoringGroupRadioButtonAction("mon_auto_on", MON_AUTO, 1, modeController);
 		autoOffAction = new MonitoringGroupRadioButtonAction("mon_auto_off", MON_AUTO, 0, modeController);
@@ -1113,14 +1113,6 @@ public class PdfUtilitiesController extends ALanguageController {
 		DocearAutoMonitoringListener autoMonitoringListener = new DocearAutoMonitoringListener();
 		DocearController.getController().getLifeCycleObserver().addMapLifeCycleListener(autoMonitoringListener);
 		Controller.getCurrentController().getViewController().getJFrame().addWindowFocusListener(autoMonitoringListener);
-	}
-
-	private void setupInitialProjects(ModeController modeController) {
-		for (AWorkspaceProject project : WorkspaceController.getModeExtension(modeController).getModel().getProjects()) {
-			project.getModel().removeProjectModelListener(getProjectModelListener());
-			project.getModel().addProjectModelListener(getProjectModelListener());
-		}
-		
 	}
 
 	private IProjectModelListener getProjectModelListener() {
