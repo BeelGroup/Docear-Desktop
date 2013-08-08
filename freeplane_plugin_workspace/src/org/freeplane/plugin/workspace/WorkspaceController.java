@@ -241,7 +241,7 @@ public final class WorkspaceController implements IExtension {
 		indexProject(project);
 	}
 
-	public static URI getDefaultProjectHome() {
+	public static URI getDefaultProjectHome() {		
 		return getCurrentModeExtension().getDefaultProjectHome();
 	}
 

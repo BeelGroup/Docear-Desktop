@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 
@@ -87,6 +88,7 @@ public class SelectProjectPagePanel extends AWizardPage {
 	public void preparePage(WizardContext context) {
 		context.setWizardTitle(getTitle());
 		context.getBackButton().setText(TextUtils.getText("docear.setup.wizard.second.select.label"));
+		getRootPane().setDefaultButton((JButton) context.getBackButton());
 		context.getNextButton().setText(TextUtils.getText("docear.setup.wizard.second.create.label"));
 		
 		context.getSkipButton().setText(TextUtils.getText("docear.setup.wizard.second.create.close"));

@@ -76,6 +76,7 @@ public class CreateProjectPagePanel extends AWizardPage {
 	private List<RepositoryListItem> repositoryItems = new ArrayList<RepositoryListItem>();
 	private List<URI> parsedList;
 	private JCheckBox chckbxIncludeDemoFiles;
+	private File defaultPath;
 
 	/***********************************************************************************
 	 * CONSTRUCTORS
@@ -153,18 +154,20 @@ public class CreateProjectPagePanel extends AWizardPage {
 		JLabel lblProjectName = new JLabel(TextUtils.getText("docear.setup.wizard.create.name.label"));
 		add(lblProjectName, "4, 6, right, default");
 		
+		computeDefaultProjectPath(null);
 		txtProjectName = new JTextField();
-		txtProjectName.setText(TextUtils.getText("docear.setup.wizard.create.name.default"));
+		txtProjectName.setText(defaultPath.getName());
 		txtProjectName.setColumns(10);
 		txtProjectName.addKeyListener(getProjectNameListener());
 		add(txtProjectName, "6, 6, fill, default");
 		
 		
-		JLabel lblProjectHome = new JLabel(TextUtils.getText("docear.setup.wizard.create.home.label"));
+//		JLabel lblProjectHome = new JLabel(TextUtils.getText("docear.setup.wizard.create.home.label"));		
+		JLabel lblProjectHome = new JLabel(defaultPath.getName());
 		add(lblProjectHome, "4, 8, right, default");
 		
 		txtProjectHome = new JTextField();
-		txtProjectHome.setText(getDefaultProjectPath(null));
+		txtProjectHome.setText(defaultPath.getAbsolutePath());
 		txtProjectHome.setColumns(10);
 		txtProjectHome.addKeyListener(getProjectHomeListener());
 		add(txtProjectHome, "6, 8, fill, default");
@@ -247,17 +250,19 @@ public class CreateProjectPagePanel extends AWizardPage {
 		final JLabel lblProjectName_1 = new JLabel(TextUtils.getText("docear.setup.wizard.create.name.label"));
 		add(lblProjectName_1, "4, 14, right, top");
 		
+		computeDefaultProjectPath(null);
+		
 		txtProjectName_1 = new JTextField();
-		txtProjectName_1.setText(TextUtils.getText("docear.setup.wizard.create.name.default"));
+		txtProjectName_1.setText(defaultPath.getName());
 		txtProjectName_1.setColumns(10);
 		txtProjectName_1.addKeyListener(getProjectNameListener());
 		add(txtProjectName_1, "6, 14, fill, default");
-		
-		final JLabel lblProjectHome_1 = new JLabel(TextUtils.getText("docear.setup.wizard.create.home.label"));
+				
+		final JLabel lblProjectHome_1 = new JLabel(defaultPath.getName());
 		add(lblProjectHome_1, "4, 16, right, top");
 		
 		txtProjectHome_1 = new JTextField();
-		txtProjectHome_1.setText(getDefaultProjectPath(null));
+		txtProjectHome_1.setText(defaultPath.getAbsolutePath());
 		txtProjectHome_1.setColumns(10);
 		txtProjectHome_1.addKeyListener(getProjectHomeListener());
 		add(txtProjectHome_1, "6, 16, fill, default");
@@ -323,7 +328,8 @@ public class CreateProjectPagePanel extends AWizardPage {
 				while(home != null && !home.exists()) {
 					home = home.getParentFile();
 				}
-				JFileChooser chooser = new JFileChooser(home == null ? getDefaultProjectPath(getProjectName()) : home.getAbsolutePath());
+				computeDefaultProjectPath(getProjectName());				
+				JFileChooser chooser = new JFileChooser(home == null ? defaultPath.getAbsolutePath() : home.getAbsolutePath());
 				chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 				chooser.setMultiSelectionEnabled(false);
 				chooser.setFileHidingEnabled(true);
@@ -366,7 +372,8 @@ public class CreateProjectPagePanel extends AWizardPage {
 				while(home != null && !home.exists()) {
 					home = home.getParentFile();
 				}
-				JFileChooser chooser = new JFileChooser(home == null ? getDefaultProjectPath(getProjectName()) : home.getAbsolutePath());
+				computeDefaultProjectPath(getProjectName());
+				JFileChooser chooser = new JFileChooser(home == null ? defaultPath.getAbsolutePath() : home.getAbsolutePath());
 				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 				chooser.setMultiSelectionEnabled(false);
 				chooser.setFileHidingEnabled(true);
@@ -461,7 +468,7 @@ public class CreateProjectPagePanel extends AWizardPage {
 	 * METHODS
 	 **********************************************************************************/
 
-	private String getDefaultProjectPath(String projectName) {
+	private void computeDefaultProjectPath(String projectName) {
 		File base = URIUtils.getAbsoluteFile(WorkspaceController.getDefaultProjectHome());
 		if(projectName == null) {
 			projectName = TextUtils.getText("docear.setup.wizard.create.name.default");
@@ -471,8 +478,10 @@ public class CreateProjectPagePanel extends AWizardPage {
 		while(path.exists() && projectName.trim().length() > 0) {
 			path = new File(base, projectName.trim()+" "+(counter++));
 		}		
-		return path.getAbsolutePath();
+		this.defaultPath = path;
 	}
+	
+	
 	
 	private void updateFields() {
 		if(isStartFromScratch()) {
@@ -533,7 +542,9 @@ public class CreateProjectPagePanel extends AWizardPage {
 					if(!byHandPath) {
 						SwingUtilities.invokeLater(new Runnable() {
 							public void run() {
-								setProjectHome(getDefaultProjectPath(getProjectName()));
+								computeDefaultProjectPath(getProjectName());
+								setProjectName(defaultPath.getName());
+								setProjectHome(defaultPath.getAbsolutePath());
 							}
 						});
 					}
@@ -596,7 +607,8 @@ public class CreateProjectPagePanel extends AWizardPage {
 		while(home != null && !home.exists()) {
 			home = home.getParentFile();
 		}
-		JFileChooser chooser = new JFileChooser(home == null ? getDefaultProjectPath(getProjectName()) : home.getAbsolutePath());
+		computeDefaultProjectPath(getProjectName());
+		JFileChooser chooser = new JFileChooser(home == null ? defaultPath.getAbsolutePath() : home.getAbsolutePath());
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		chooser.setMultiSelectionEnabled(false);
 		chooser.setFileHidingEnabled(true);
