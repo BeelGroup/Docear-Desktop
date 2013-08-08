@@ -10,10 +10,12 @@ import javax.swing.SwingUtilities;
 import net.sf.jabref.DatabaseChangeEvent;
 import net.sf.jabref.DatabaseChangeListener;
 import net.sf.jabref.export.DocearReferenceUpdateController;
+import net.sf.jabref.gui.MainTable;
 
 import org.docear.plugin.bibtex.ReferenceUpdater;
 import org.docear.plugin.bibtex.ReferencesController;
 import org.docear.plugin.core.mindmap.MindmapUpdateController;
+import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.mode.Controller;
@@ -71,6 +73,14 @@ public class JabRefChangeListener implements DatabaseChangeListener, PropertyCha
 						previousFocus.requestFocus();
 						memorize = true;
 					}
+					
+                    try {
+                        final MainTable table = ReferencesController.getController().getJabrefWrapper().getBasePanel().getMainTable();
+                        table.setFocusable(true);
+                    }
+                    catch(Exception ex) {
+                        LogUtils.info("JabRefChangeListener.databaseChanged(): "+ex.getMessage());
+                    }
 				}
 			}
 
