@@ -167,10 +167,16 @@ public class MapChangeListenerAdapter extends AMapChangeListenerAdapter {
 	public void onSaved(MapModel map) {
 		ReferencesController.getController().getJabrefWrapper().getJabrefFrame();
 		try {
+			try {
+				ReferencesController.getController().getJabrefWrapper().getBasePanel().getMainTable().setFocusable(false);
+			}
+			catch(Exception e) {
+				LogUtils.info("MapChangeListenerAdapter.onSaved(): "+e.getMessage());
+			}
 			saveJabrefDatabase();
 		}
 		catch (Throwable ex) {
-			ex.printStackTrace();
+			LogUtils.warn("MapChangeListenerAdapter.onSaved(): "+ex.getMessage());
 		}
 	}
 
@@ -179,6 +185,7 @@ public class MapChangeListenerAdapter extends AMapChangeListenerAdapter {
 		if(basePanel != null && basePanel.isBaseChanged()) {
 			basePanel.runCommand("save");
 		}
-
+		
+		ReferencesController.getController().getJabrefWrapper().getBasePanel().getMainTable().setFocusable(true);
 	}
 }

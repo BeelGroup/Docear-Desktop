@@ -138,12 +138,11 @@ public class MindmapUpdateController {
 		
 		try {
 			maps.add(new MapItem(Controller.getCurrentController().getMap()));
+			Controller.getCurrentController().getMap().setSaved(false);
 		}
 		catch (NullPointerException e) {			
 		}
-
-		Controller.getCurrentController().getMap().setSaved(false);
-
+		
 		return updateMindmaps(maps, closeWhenDone);
 	}
 

@@ -4,6 +4,8 @@ import java.awt.KeyboardFocusManager;
 
 import javax.swing.SwingUtilities;
 
+import net.sf.jabref.gui.MainTable;
+
 import org.docear.plugin.bibtex.jabref.JabRefBaseHandle;
 import org.freeplane.plugin.workspace.model.project.IWorkspaceProjectExtension;
 
@@ -23,16 +25,15 @@ public class JabRefProjectExtension implements IWorkspaceProjectExtension {
 	}
 
 	public void selectBasePanel() {
-		if(getBaseHandle() != null) {			
-			getBaseHandle().showBasePanel();
-			SwingUtilities.invokeLater(new Runnable() {
-				
-				@Override
-				public void run() {
-					KeyboardFocusManager.getCurrentKeyboardFocusManager().focusPreviousComponent();
-				}
-			});
-			
-		}		
+        if (getBaseHandle() != null) {
+            try {               
+                final MainTable table = getBaseHandle().getBasePanel().getMainTable();
+                table.setFocusable(false);
+                getBaseHandle().showBasePanel();
+            }
+            catch(Exception ex) {
+                
+            }
+        }		
 	}
 }
