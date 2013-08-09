@@ -469,13 +469,13 @@ abstract public class FrameController implements ViewController {
 			frame.setUndecorated(true);
 			frame.setResizable(false);
 			setUIComponentsVisible(controller.getMapViewManager());
-			for (int j = 0; j < 4; j++) {
-				final Iterable<JComponent> toolBars = controller.getModeController().getUserInputListenerFactory()
-				    .getToolBars(j);
-				for (final JComponent toolBar : toolBars) {
-					toolBar.setVisible(isToolbarVisible(toolBar));
-				}
-			}
+//			for (int j = 0; j < 4; j++) {
+//				final Iterable<JComponent> toolBars = controller.getModeController().getUserInputListenerFactory()
+//				    .getToolBars(j);
+//				for (final JComponent toolBar : toolBars) {
+//					toolBar.setVisible(isToolbarVisible(toolBar));
+//				}
+//			}
 			frame.setVisible(true);
 		}
 		else {
