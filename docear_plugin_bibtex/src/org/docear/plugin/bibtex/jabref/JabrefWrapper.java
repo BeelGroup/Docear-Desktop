@@ -50,7 +50,6 @@ import org.docear.plugin.core.event.DocearEvent;
 import org.docear.plugin.core.event.DocearEventType;
 import org.docear.plugin.core.logger.DocearLogEvent;
 import org.docear.plugin.core.logging.DocearLogger;
-import org.docear.plugin.core.util.CoreUtils;
 import org.docear.plugin.core.util.WinRegistry;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.components.OneTouchCollapseResizer;
@@ -537,7 +536,7 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 
 	public OneTouchCollapseResizer getResizer() {
 		if(this.resizer == null) {
-			this.resizer = CoreUtils.findResizerFor(getJabrefFrame());
+			this.resizer = OneTouchCollapseResizer.findResizerFor(getJabrefFrame());
 		}
 		return this.resizer;
 	}

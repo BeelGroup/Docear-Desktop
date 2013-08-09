@@ -241,6 +241,7 @@ abstract public class FrameController implements ViewController {
 			Box resizableTabs = Box.createVerticalBox();
 			resizableTabs.add(comp);
 			OneTouchCollapseResizer otcr = new OneTouchCollapseResizer(Direction.UP, CollapseDirection.COLLAPSE_UP);
+			otcr.setSliderLocked(true);
 			resizableTabs.add(otcr);
 			otcr.addResizerListener(new ResizerListener() {
 				
