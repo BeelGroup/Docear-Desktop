@@ -50,8 +50,10 @@ import org.docear.plugin.core.event.DocearEvent;
 import org.docear.plugin.core.event.DocearEventType;
 import org.docear.plugin.core.logger.DocearLogEvent;
 import org.docear.plugin.core.logging.DocearLogger;
+import org.docear.plugin.core.util.CoreUtils;
 import org.docear.plugin.core.util.WinRegistry;
 import org.freeplane.core.resources.ResourceController;
+import org.freeplane.core.ui.components.OneTouchCollapseResizer;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.LogUtils;
@@ -96,6 +98,8 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 	private static final MapViewListener mapViewListener = new MapViewListener();
 	
 	private Map<File, JabRefBaseHandle> baseHandles = new HashMap<File, JabRefBaseHandle>();
+
+	private OneTouchCollapseResizer resizer;
 
 	public JabrefWrapper(JFrame frame) {
 		super(frame);		
@@ -258,12 +262,6 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 					//firePanelRemoved(panel, i);
 				}
 			}
-		}
-	}
-	
-	private void closeAll() {
-		for(; 0 < getJabrefFrame().baseCount();) {
-			getJabrefFrame().closeCurrentTab();
 		}
 	}
 	
@@ -535,6 +533,13 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 				LogUtils.warn(t);
 			}
 		}		
+	}
+
+	public OneTouchCollapseResizer getResizer() {
+		if(this.resizer == null) {
+			this.resizer = CoreUtils.findResizerFor(getJabrefFrame());
+		}
+		return this.resizer;
 	}
 
 //	public void addBaseHandleForFile(File baseFile, IJabrefChangeListener listener) {

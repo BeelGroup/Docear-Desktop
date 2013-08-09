@@ -95,7 +95,6 @@ public class OneTouchCollapseResizer extends JResizer {
 			}
 
 			public void mouseClicked(MouseEvent e) {
-				final JComponent parent = (JComponent) getParent();
 				final Component resizedComponent = getResizedParent();
 				if(e.getComponent() == getHotSpot()) {					
 					final Dimension size = new Dimension(resizedComponent.getPreferredSize());
@@ -107,15 +106,11 @@ public class OneTouchCollapseResizer extends JResizer {
 					}
 					else {						
 						setExpanded(true);
-					}				
-					parent.revalidate();
-					parent.repaint();
+					}
 				} 
 				else {
 					if (!isExpanded()) {	
 						setExpanded(true);
-						parent.revalidate();
-						parent.repaint();
 					}
 				}
 			}
@@ -183,9 +178,15 @@ public class OneTouchCollapseResizer extends JResizer {
 				}
 				
 				fireCollapseStateChanged(resizedComponent, enabled);
+				
+				if(getClientProperty(ALREADY_IN_PAINT) == null) {
+					final JComponent parent = (JComponent) getParent();
+					parent.revalidate();
+					parent.repaint();
+				}
 			}
 			catch (Exception e) {
-				// just ignore
+				LogUtils.warn(e);
 			}
 		}
 		
