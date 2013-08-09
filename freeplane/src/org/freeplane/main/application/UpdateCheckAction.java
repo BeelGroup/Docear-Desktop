@@ -2,7 +2,6 @@ package org.freeplane.main.application;
 
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -88,17 +87,7 @@ class UpdateCheckAction extends AFreeplaneAction {
 				controller.getMapViewManager().removeMapViewChangeListener(this);
 			}
 		});
-		//FIXME DOCEAR
-		setEnabled(false);
 		ResourceController.getResourceController().setProperty(CHECK_UPDATES_AUTOMATICALLY, false);
-	}
-	
-	//FIXME: DOCEAR
-	public void setEnabled() {
-		this.setEnabled(false);
-	}
-	public void setEnabled(boolean enabled) {
-		super.setEnabled(false);
 	}
 
 	public void actionPerformed(final ActionEvent e) {
