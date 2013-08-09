@@ -89,7 +89,7 @@ public class ZoomContributorFactory implements IRibbonContributorFactory {
 				band.addFlowComponent(strip);
 				
 				List<RibbonBandResizePolicy> policies = new ArrayList<RibbonBandResizePolicy>();				
-				policies.add(new CoreRibbonResizePolicies.FlowThreeRows(band.getControlPanel()));
+				policies.add(new CoreRibbonResizePolicies.FlowTwoRows(band.getControlPanel()));
 				policies.add(new IconRibbonBandResizePolicy(band.getControlPanel()));
 				band.setResizePolicies(policies);			
 				
