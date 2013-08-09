@@ -113,8 +113,12 @@ public class FolderTypeLibraryNode extends AFolderNode implements ILibraryReposi
 		LogUtils.info("DOCEAR: adding mindmap to library: "+ uri);
 		mindmapIndex.add(uri);
 	}
-			
 	
+	@Override
+	public boolean isSystem() {
+		return true;
+	}
+
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
 	 **********************************************************************************/
