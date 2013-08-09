@@ -61,7 +61,8 @@
 			<primary_entry action="show_jabref_preferences" mandatory="true"/>
 			<primary_entry action="AboutAction" mandatory="true"/> 
 			<primary_entry name="help">
-			    <entry_group name="help">					
+			    <entry_group name="help">
+			        <ribbon_action action="OpenFreeplaneSiteAction" mandatory="true"/>					
 					<ribbon_action action="GettingStartedAction" accelerator="F1" mandatory="true"/>
 				    <ribbon_action action="AskForHelp" mandatory="true"/>
 				    <ribbon_action action="RequestFeatureAction" mandatory="true"/>
@@ -69,14 +70,14 @@
 					<ribbon_action action="HotKeyInfoAction" mandatory="true"/>  
 				</entry_group>
 			</primary_entry>
-			<primary_entry name="web_resources">
+			<!-- primary_entry name="web_resources">
 				<entry_group name="web_resources">				    
 					<ribbon_action action="OpenFreeplaneSiteAction" mandatory="true"/>
 					<ribbon_action action="AskForHelp" mandatory="true"/>
 					<ribbon_action action="ReportBugAction" mandatory="true"/>
 					<ribbon_action action="RequestFeatureAction" mandatory="true"/>
 				</entry_group>			    
-			</primary_entry>					
+			</primary_entry -->					
 			<footer_entry action="CloseAction" accelerator="control W" mandatory="true"/>
 			<footer_entry action="QuitAction" mandatory="true" accelerator="alt F4"/>			
 		</ribbon_menu>		
