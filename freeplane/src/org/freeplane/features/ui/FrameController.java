@@ -241,6 +241,7 @@ abstract public class FrameController implements ViewController {
 			Box resizableTabs = Box.createVerticalBox();
 			resizableTabs.add(comp);
 			OneTouchCollapseResizer otcr = new OneTouchCollapseResizer(Direction.UP, CollapseDirection.COLLAPSE_UP);
+			otcr.setSliderLocked(true);
 			resizableTabs.add(otcr);
 			otcr.addResizerListener(new ResizerListener() {
 				
@@ -468,13 +469,13 @@ abstract public class FrameController implements ViewController {
 			frame.setUndecorated(true);
 			frame.setResizable(false);
 			setUIComponentsVisible(controller.getMapViewManager());
-			for (int j = 0; j < 4; j++) {
-				final Iterable<JComponent> toolBars = controller.getModeController().getUserInputListenerFactory()
-				    .getToolBars(j);
-				for (final JComponent toolBar : toolBars) {
-					toolBar.setVisible(isToolbarVisible(toolBar));
-				}
-			}
+//			for (int j = 0; j < 4; j++) {
+//				final Iterable<JComponent> toolBars = controller.getModeController().getUserInputListenerFactory()
+//				    .getToolBars(j);
+//				for (final JComponent toolBar : toolBars) {
+//					toolBar.setVisible(isToolbarVisible(toolBar));
+//				}
+//			}
 			frame.setVisible(true);
 		}
 		else {

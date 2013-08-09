@@ -624,9 +624,9 @@ public class JabRefFrame extends JPanel implements OutputPrinter {
 				if (prefsDialog == null) {
 					prefsDialog = new PrefsDialog3(JabRefFrame.this);
 					//DOCEAR
-					if (!isTopLevel) {
-					    prefsDialog.setModal(true);
-					}
+//					if (!isTopLevel) {
+//					    prefsDialog.setModal(true);
+//					}
 					Util.placeDialog(prefsDialog, JabRefFrame.this);
 				}
 				else

@@ -11,6 +11,7 @@ import org.docear.plugin.core.Version;
 import org.docear.plugin.services.ADocearServiceFeature;
 import org.docear.plugin.services.ServiceController;
 import org.docear.plugin.services.features.io.DocearServiceResponse;
+import org.docear.plugin.services.features.update.action.DocearUpdateCheckAction;
 import org.docear.plugin.services.features.update.view.UpdateCheckerDialogPanel;
 import org.docear.plugin.services.xml.creators.ApplicationCreator;
 import org.docear.plugin.services.xml.creators.BuildNumberCreator;
@@ -32,6 +33,7 @@ import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.ModeController;
+import org.freeplane.plugin.workspace.WorkspaceController;
 
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
@@ -113,7 +115,7 @@ public class UpdateCheck extends ADocearServiceFeature {
 					public void run() {
 						try {
 							UpdateCheckerDialogPanel dialogPanel = new UpdateCheckerDialogPanel("", runningVersion.toString(), latestVersionString, latestVersion.getStatus());				
-							JOptionPane.showMessageDialog(UITools.getFrame(), dialogPanel, TextUtils.getText("docear.new_version_available.title"), JOptionPane.INFORMATION_MESSAGE);
+							JOptionPane.showMessageDialog(UITools.getFrame(), dialogPanel, TextUtils.getText("docear.version.check.title"), JOptionPane.INFORMATION_MESSAGE);
 							DocearController.getPropertiesController().setProperty("docear.update_checker.options", dialogPanel.getChoice());
 						}
 						catch (Exception e) {
@@ -124,7 +126,7 @@ public class UpdateCheck extends ADocearServiceFeature {
 			}
 			else {
 				if(forced) {
-					//DOCEAR - ToDo: show message that no updates are available
+					JOptionPane.showMessageDialog(UITools.getFrame(), TextUtils.getText("docear.version.uptodate.text"), TextUtils.getText("docear.version.check.title"), JOptionPane.INFORMATION_MESSAGE);
 				}
 			}
 			
@@ -300,6 +302,7 @@ public class UpdateCheck extends ADocearServiceFeature {
 
 	@Override
 	protected void installDefaults(ModeController modeController) {
+		WorkspaceController.replaceAction(new DocearUpdateCheckAction());
 		new Thread() {
 			public void run() {
 				checkForUpdates();

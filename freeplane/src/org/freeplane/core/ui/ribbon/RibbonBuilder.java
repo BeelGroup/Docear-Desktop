@@ -15,6 +15,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.freeplane.core.resources.ResourceController;
+import org.freeplane.core.ui.components.OneTouchCollapseResizer;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.ui.ribbon.StructureTree.StructurePath;
 import org.freeplane.core.ui.ribbon.event.AboutToPerformEvent;
@@ -143,6 +144,10 @@ public class RibbonBuilder {
 	
 	public void setMinimized(boolean b) {
 		ribbon.setMinimized(b);
+		OneTouchCollapseResizer otcr = OneTouchCollapseResizer.findResizerFor(ribbon);
+		if(otcr != null) {
+			otcr.recalibrate();
+		}
 	}
 	
 	public boolean isMinimized() {

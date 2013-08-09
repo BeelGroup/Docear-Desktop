@@ -89,15 +89,14 @@ public class OneTouchCollapseResizer extends JResizer {
 				if(e.getComponent() == getHotSpot()) {
 					getHotSpot().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 				}
-				if(!isExpanded()) {
+				if(!isExpanded() || sliderLock) {
 					e.getComponent().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 				}
 			}
 
 			public void mouseClicked(MouseEvent e) {
-				final JComponent parent = (JComponent) getParent();
 				final Component resizedComponent = getResizedParent();
-				if(e.getComponent() == getHotSpot()) {					
+				if((e.getComponent() == getHotSpot()) || sliderLock) {					
 					final Dimension size = new Dimension(resizedComponent.getPreferredSize());
 					
 					if (isExpanded()) {
@@ -107,15 +106,11 @@ public class OneTouchCollapseResizer extends JResizer {
 					}
 					else {						
 						setExpanded(true);
-					}				
-					parent.revalidate();
-					parent.repaint();
+					}
 				} 
 				else {
 					if (!isExpanded()) {	
 						setExpanded(true);
-						parent.revalidate();
-						parent.repaint();
 					}
 				}
 			}
@@ -183,9 +178,11 @@ public class OneTouchCollapseResizer extends JResizer {
 				}
 				
 				fireCollapseStateChanged(resizedComponent, enabled);
+				
+				recalibrate();
 			}
 			catch (Exception e) {
-				// just ignore
+				LogUtils.warn(e);
 			}
 		}
 		
@@ -442,8 +439,34 @@ public class OneTouchCollapseResizer extends JResizer {
 		
 	}
 	
+	public static OneTouchCollapseResizer findResizerFor(Component component) {
+		if(component != null) {
+			Component parent = component.getParent();
+			if(parent != null) {
+				if(parent instanceof Container) {
+					Component[] children = ((Container) parent).getComponents();
+					for (Component child : children) {
+						if(child instanceof OneTouchCollapseResizer) {
+							return (OneTouchCollapseResizer) child;
+						}
+					}
+				}
+				return findResizerFor(parent);
+			}
+		}
+		return null;
+	}
+	
 	public interface ComponentCollapseListener {
 		public void componentCollapsed(ResizeEvent event);
 		public void componentExpanded(ResizeEvent event);
+	}
+
+	public void recalibrate() {
+		if(getClientProperty(ALREADY_IN_PAINT) == null) {
+			final JComponent parent = (JComponent) getParent();
+			parent.revalidate();
+			parent.repaint();
+		}
 	}
 }

@@ -5,7 +5,9 @@ import java.awt.event.ActionEvent;
 import org.docear.plugin.bibtex.JabRefProjectExtension;
 import org.docear.plugin.bibtex.ReferencesController;
 import org.docear.plugin.bibtex.jabref.JabRefCommons;
+import org.docear.plugin.bibtex.jabref.JabrefWrapper;
 import org.freeplane.core.ui.EnabledAction;
+import org.freeplane.core.ui.components.OneTouchCollapseResizer;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.plugin.workspace.WorkspaceController;
@@ -62,7 +64,12 @@ public class ShowInReferenceManagerAction extends AWorkspaceAction {
 			ext.selectBasePanel();
 		}
 		if(ReferencesController.getController().getJabrefWrapper().getBasePanel().getSelectedEntries().length <= 1) {
-			final String bibtexKey = ReferencesController.getController().getJabRefAttributes().getBibtexKey(node);			
+			final String bibtexKey = ReferencesController.getController().getJabRefAttributes().getBibtexKey(node);
+			JabrefWrapper wrapper = ReferencesController.getController().getJabrefWrapper();
+			OneTouchCollapseResizer resizer = wrapper.getResizer();
+			if(resizer != null && !resizer.isExpanded()) {
+				resizer.setExpanded(true);
+			}
 			JabRefCommons.showInReferenceManager(bibtexKey);		
 		}
 		

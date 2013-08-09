@@ -104,7 +104,7 @@ public class NodeUtilities {
 			if (model.getAttributeKeyList().contains(key)) {
 				int row = model.getAttributePosition(key);
 				model.getAttributes().remove(row);
-				model.fireTableRowsDeleted(row, row);
+				//model.fireTableRowsDeleted(row, row);
 			}
 			if(!node.areViewsEmpty()) {
 				Controller.getCurrentModeController().getMapController().nodeRefresh(node, NodeModel.UNKNOWN_PROPERTY, null, null);

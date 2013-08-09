@@ -41,7 +41,8 @@ import javax.swing.SwingUtilities;
 @SuppressWarnings("serial")
 public class JResizer extends JComponent {
 	private static final int CONTROL_SIZE = 5;
-	private Point point;
+	protected boolean sliderLock = false;
+	protected Point point;
 	private int index;
 	public enum Direction {RIGHT, LEFT, UP, DOWN}
 	private Set<ResizerListener> resizeListener = new LinkedHashSet<ResizerListener>();
@@ -112,6 +113,9 @@ public class JResizer extends JComponent {
 
 
             public void mouseDragged(MouseEvent e) {
+            	if(sliderLock) {
+            		return;
+            	}
 				final Point point2 = e.getPoint();
 				SwingUtilities.convertPointToScreen(point2, e.getComponent());
 				if(point != null){
@@ -158,6 +162,14 @@ public class JResizer extends JComponent {
 		synchronized (resizeListener) {
 			resizeListener.remove(listener);
 		}		
+	}
+	
+	public void setSliderLocked(boolean enabled) {
+		this.sliderLock = enabled;
+	}
+	
+	public boolean isSliderLocked() {
+		return this.sliderLock;
 	}
 	
 	private void fireSizeChanged(Component resizedComponent) {

@@ -263,7 +263,10 @@ public class ImportProjectPagePanel extends AWizardPage {
 				if(item == null) {
 					continue;
 				}
-				getModel().addItem(new VersionItem(project, item, new Date(settings.lastModified())));
+				//see issue #113
+				if(WorkspaceController.getCurrentModel().getProject(project.getProjectID()) == null) {
+					getModel().addItem(new VersionItem(project, item, new Date(settings.lastModified())));
+				}
 			}
 		}
 	}
