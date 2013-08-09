@@ -19,6 +19,7 @@ import org.freeplane.core.ui.FreeplaneActionCascade;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.MapModel;
+import org.freeplane.features.mode.AController;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.mode.mindmapmode.MModeController;
@@ -50,11 +51,15 @@ public final class WorkspaceController implements IExtension {
 	}
 	
 	public static void addAction(final AFreeplaneAction action) {
+		addAction(Controller.getCurrentController(), action);
+	}
+	
+	public static void addAction(AController controller, final AFreeplaneAction action) {
 		if(action == null) {
 			return;
 		}
 		try {
-			Controller.getCurrentController().addAction(action);
+			controller.addAction(action);
 		} catch (Exception e) {
 			LogUtils.info(WorkspaceController.class + ".addAction(): action "+ action.getKey() +" not added! ("+e.getMessage()+")");
 		}	
@@ -71,26 +76,34 @@ public final class WorkspaceController implements IExtension {
 		}	
 	}
 
-	public static void replaceAction(final AFreeplaneAction action) {
-		AFreeplaneAction previousAction = getAction(action.getKey());
+	public static void replaceAction(final AController controller, final AFreeplaneAction action) {
+		AFreeplaneAction previousAction = getAction(controller, action.getKey());
 		if(previousAction != null) {
-			removeAction(action.getKey());
+			removeAction(controller, action.getKey());
 		}
-		addAction(action);		
+		addAction(controller, action);		
+	}
+	
+	public static void replaceAction(final AFreeplaneAction action) {
+		replaceAction(Controller.getCurrentController(), action);
 	}
 	
 	public static AFreeplaneAction getAction(final String key) {
+		return getAction(Controller.getCurrentController(), key);
+	}
+	
+	public static AFreeplaneAction getAction(final AController controller, final String key) {
 		try {
-			return Controller.getCurrentController().getAction(key);
+			return controller.getAction(key);
 		} catch (Exception e) {
 			LogUtils.info(WorkspaceController.class + ".getAction(): action "+ key +" not found!");
 		}		
 		return null;
 	}
 
-	public static AFreeplaneAction removeAction(final String key) {
+	public static AFreeplaneAction removeAction(final AController controller, final String key) {
 		try {
-			return Controller.getCurrentController().removeAction(key);
+			return controller.removeAction(key);
 		} catch (Exception e) {
 			LogUtils.info(WorkspaceController.class + "removeAction(): action "+ key +" not found!");
 		}		

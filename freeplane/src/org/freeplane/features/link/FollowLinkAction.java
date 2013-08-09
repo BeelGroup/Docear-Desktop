@@ -29,7 +29,7 @@ import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 
 @EnabledAction(checkOnNodeChange = true)
-class FollowLinkAction extends AFreeplaneAction {
+public class FollowLinkAction extends AFreeplaneAction {
 	private static final long serialVersionUID = 1L;
 
 	public FollowLinkAction() {
