@@ -3,6 +3,7 @@ package org.docear.plugin.services.features.recommendations.view;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Insets;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,10 +21,13 @@ import javax.swing.border.BevelBorder;
 import org.docear.plugin.services.features.io.DocearProxyAuthenticator;
 import org.docear.plugin.services.features.recommendations.model.RecommendationEntry;
 import org.freeplane.core.util.TextUtils;
+import org.pushingpixels.flamingo.api.common.AsynchronousLoadListener;
+import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
+import com.jgoodies.forms.layout.Sizes;
 
 public class RecommendationEntryComponent extends JPanel {
 
@@ -33,13 +37,15 @@ public class RecommendationEntryComponent extends JPanel {
 	private Set<ActionListener> actionListeners = new HashSet<ActionListener>();
 	private Color background;
 	private Color selectionBackground;
+	private ImageWrapperResizableIcon openIcon;
+	private ImageWrapperResizableIcon dlIcon;
 
 	public RecommendationEntryComponent(final RecommendationEntry recommendation) {
 		setLayout(new FormLayout(new ColumnSpec[] {
 				ColumnSpec.decode("default:grow"),
 				ColumnSpec.decode("50px"),},
 			new RowSpec[] {
-				RowSpec.decode("50px"),}));
+				new RowSpec(RowSpec.CENTER, Sizes.bounded(Sizes.DEFAULT, Sizes.constant("20px", false), Sizes.constant("50px", false)), 0),}));
 		
 		final JLabel lblOpenButton = new JLabel();
 		StringBuilder sb = new StringBuilder();
@@ -51,7 +57,14 @@ public class RecommendationEntryComponent extends JPanel {
 		}		
 		sb.append(recommendation.getTitle());
 		sb.append("</html>");
-		lblOpenButton.setIcon(new ImageIcon(RecommendationEntryComponent.class.getResource("/icons/document-open-remote_32x32.png")));
+		ImageIcon image = new ImageIcon(RecommendationEntryComponent.class.getResource("/icons/document-open-remote_32x32.png"));
+		openIcon = ImageWrapperResizableIcon.getIcon(image.getImage(), new Dimension(image.getIconWidth(), image.getIconHeight()));
+		openIcon.addAsynchronousLoadListener(new AsynchronousLoadListener() {
+			public void completed(boolean success) {
+				repaint();
+			}
+		});
+		lblOpenButton.setIcon(openIcon);
 		background = lblOpenButton.getBackground();
 		selectionBackground = new Color(140, 180, 240);		
 		lblOpenButton.setText(sb.toString());		
@@ -69,7 +82,7 @@ public class RecommendationEntryComponent extends JPanel {
 		
 		lblOpenButton.setToolTipText(TextUtils.getText("recommendation.preview.tooltip"));		
 		lblOpenButton.setBorder(new BevelBorder(BevelBorder.RAISED, SystemColor.control, null, null, null));		
-		lblOpenButton.setMinimumSize(new Dimension(200, 50));
+		lblOpenButton.setMinimumSize(new Dimension(200, 20));
 		lblOpenButton.setPreferredSize(new Dimension(200, 50));		
 		
 		lblOpenButton.addMouseListener(new MouseListener() {
@@ -100,10 +113,17 @@ public class RecommendationEntryComponent extends JPanel {
 		JLabel lblImportButton = new JLabel("");
 		lblImportButton.setToolTipText(TextUtils.getText("recommendation.import.tooltip"));
 		lblImportButton.setHorizontalAlignment(SwingConstants.CENTER);
-		lblImportButton.setIcon(new ImageIcon(RecommendationEntryComponent.class.getResource("/icons/document-import_32x32.png")));
+		image = new ImageIcon(RecommendationEntryComponent.class.getResource("/icons/document-import_32x32.png"));
+		dlIcon = ImageWrapperResizableIcon.getIcon(image.getImage(), new Dimension(image.getIconWidth(), image.getIconHeight()));
+		dlIcon.addAsynchronousLoadListener(new AsynchronousLoadListener() {
+			public void completed(boolean success) {
+				repaint();
+			}
+		});
+		lblImportButton.setIcon(dlIcon);
 		lblImportButton.setBorder(new BevelBorder(BevelBorder.RAISED, SystemColor.control, null, null, null));		
 				
-		lblImportButton.setMinimumSize(new Dimension(50, 50));
+		lblImportButton.setMinimumSize(new Dimension(50, 20));
 		lblImportButton.setPreferredSize(new Dimension(50, 50));
 		MouseListener downloadMouseListener = new MouseListener() {
 			
@@ -153,5 +173,41 @@ public class RecommendationEntryComponent extends JPanel {
 		}
 		
 	}
+	
+	public void setBounds(int x, int y, int width, int height) {
+		Insets insets = getInsets(null);
+		int maxHeight = (height-insets.top-insets.bottom);
+		//adjust openIcon
+		if(openIcon.getIconHeight() > maxHeight) {
+			while(openIcon.getIconHeight() > maxHeight) {
+				openIcon.setDimension(new Dimension(openIcon.getIconWidth()-8, openIcon.getIconHeight()-8));
+			}
+			openIcon.paintIcon(this, getGraphics(), 0, 0);
+		}
+		else if(openIcon.getIconHeight()+8 < maxHeight) {
+			while(openIcon.getIconHeight()+8 < maxHeight) {
+				openIcon.setDimension(new Dimension(openIcon.getIconWidth()+8, openIcon.getIconHeight()+8));
+			}
+			openIcon.paintIcon(this, getGraphics(), 0, 0);
+		}
+		
+		//adjust dlIcon
+		if(dlIcon.getIconHeight() > maxHeight) {
+			while(dlIcon.getIconHeight() > (height-insets.top-insets.bottom)) {
+				dlIcon.setDimension(new Dimension(dlIcon.getIconWidth()-8, dlIcon.getIconHeight()-8));
+			}
+			dlIcon.paintIcon(this, getGraphics(), 0, 0);
+		}
+		else if(dlIcon.getIconHeight()+8 < maxHeight) {
+			while(dlIcon.getIconHeight()+8 < maxHeight) {
+				dlIcon.setDimension(new Dimension(dlIcon.getIconWidth()+8, dlIcon.getIconHeight()+8));
+			}
+			dlIcon.paintIcon(this, getGraphics(), 0, 0);
+		}
+		
+		invalidate();
+		super.setBounds(x, y, width, height);
+		repaint();
+    }
 
 }

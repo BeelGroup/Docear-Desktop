@@ -521,9 +521,16 @@ public class RecommendationsView extends JPanel {
 			int width = parent.getWidth()-insets.left-insets.right;
 			int height = parent.getComponent(0).getPreferredSize().height;
 			int x = insets.left;
+			if(parent.getHeight() < ((height*(i+1)) + insets.top)) {
+				height = (parent.getHeight()-insets.top-insets.bottom)/(i+1);
+			}
+			if(height < 20) {
+				height = 20;
+			}
 			for(; i >= 0; i-- ) {
 				Component comp = parent.getComponent(i);	
-				int y = i*height + insets.top;	
+				int y = i*height + insets.top;
+				setPreferredSize(new Dimension(width, height));
 				comp.setBounds(x, y, width, height);
 			}
 		}
