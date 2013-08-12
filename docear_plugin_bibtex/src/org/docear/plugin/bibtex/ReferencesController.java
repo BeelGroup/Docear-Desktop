@@ -130,7 +130,6 @@ public class ReferencesController extends ALanguageController implements IDocear
 	private AFreeplaneAction updateReferencesAllOpenMaps = new UpdateReferencesAllOpenMapsAction();
 	private AFreeplaneAction updateReferencesInLibrary = new UpdateReferencesInLibrary();
 	private AFreeplaneAction updateReferencesAllMaps = new UpdateReferencesAllMapsAction();
-//	private AFreeplaneAction ConvertSplmmReferences = new ConvertSplmmReferencesAction(CONVERT_SPLMM_REFERENCES_LANG_KEY);
 	private AFreeplaneAction addExistingReference = new AddExistingReferenceAction();
 	private AFreeplaneAction changeBibtexDatabase = new ChangeBibtexDatabaseAction();
 	private AFreeplaneAction removeReference = new RemoveReferenceAction();
@@ -139,7 +138,6 @@ public class ReferencesController extends ALanguageController implements IDocear
 	private AFreeplaneAction copyBibtex = new CopyBibtexToClipboard();
 	private AFreeplaneAction copyCiteKey = new CopyCiteKeyToClipboard();
 	
-	//private AFreeplaneAction ShowJabrefPreferences = new ShowJabrefPreferencesAction("show_jabref_preferences");
 	private IDocearProjectListener projectListener;
 	private IProjectSelectionListener projectSelectionListener;
 	private Runnable runOnce;
@@ -240,7 +238,7 @@ public class ReferencesController extends ALanguageController implements IDocear
 		catch (Exception e) {
 			LogUtils.severe(e);
 		}
-		Controller.getCurrentController().addAction(new ShowJabrefPreferencesAction("show_jabref_preferences"));
+		Controller.getCurrentController().addAction(new ShowJabrefPreferencesAction());
 		
 		NodeSelectionListener nodeSelectionListener = new NodeSelectionListener();
 		nodeSelectionListener.init();
@@ -437,6 +435,8 @@ public class ReferencesController extends ALanguageController implements IDocear
 		
 		res.setDefaultProperty("ShowAllAttributesAction.icon", "/images/docear/references/ReferencesSettings-ShowAllAttributes.png");
 		res.setDefaultProperty("HideAllAttributesAction.icon", "/images/docear/references/ReferencesSettings-HideAllAttributes.png");
+		
+		res.setDefaultProperty("show_jabref_preferences.icon", "/images/docear/tools/tools-PreferencesReferences.png");
 		
 	}
 	

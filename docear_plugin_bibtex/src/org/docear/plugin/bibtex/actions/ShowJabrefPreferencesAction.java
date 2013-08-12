@@ -7,14 +7,14 @@ import org.docear.plugin.bibtex.ReferencesController;
 import org.freeplane.core.ui.AFreeplaneAction;
 
 public class ShowJabrefPreferencesAction extends AFreeplaneAction{
-
+	public static final String KEY = "show_jabref_preferences";
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public ShowJabrefPreferencesAction(String key) {
-		super(key);	
+	public ShowJabrefPreferencesAction() {
+		super(KEY);	
 	}
 	
 	

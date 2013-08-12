@@ -731,10 +731,14 @@ public class PdfUtilitiesController extends ALanguageController {
 		res.setDefaultProperty(UpdateMonitoringFolderAction.KEY+".icon", "/images/docear/monitoring/Monitoring-Re-read.png");
 		res.setDefaultProperty(DeleteMonitoringFolderAction.KEY+".icon", "/images/docear/monitoring/Monitoring-remove.png");
 		//res.setDefaultProperty(EditMonitoringFolderAction.KEY+".icon", "/images/docear/monitoring/Project -- Main -- Import.png");
-		
+
 		res.setDefaultProperty(MonitoringFlattenSubfoldersAction.KEY+".icon", "/images/docear/monitoring/MonitoringSettings-FlattenDirectory.png");
 		res.setDefaultProperty("auto_monitoring.icon", "/images/docear/monitoring/MonitoringSettings-AutoupdateOnOpeningMaps.png");
 		res.setDefaultProperty("subfolders.icon", "/images/docear/monitoring/MonitoringSettings-ReadSubfolders.png");
+		
+		res.setDefaultProperty("DocearBackupOpenLocation.icon", "/images/docear/help/help-openBackupFolder.png");
+		
+		
 		this.importAllAnnotationsAction = new ImportAllAnnotationsAction();
 		modeController.addAction(importAllAnnotationsAction);
 		this.importNewAnnotationsAction = new ImportNewAnnotationsAction();

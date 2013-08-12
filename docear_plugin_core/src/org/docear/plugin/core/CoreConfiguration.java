@@ -161,11 +161,56 @@ public class CoreConfiguration extends ALanguageController {
 		
 		res.setDefaultProperty("LatexEditLatexAction.icon", "/images/docear/resources/Resources-LaTeXFormulaEdit.png");
 		res.setDefaultProperty("LatexDeleteLatexAction.icon", "/images/docear/resources/Resources-LaTeXFormulaRemove.png");
+		res.setDefaultProperty("ExternalImageAddAction.icon", "/images/docear/resources/Resources-AddImage.png");
 		
 		res.setDefaultProperty("docear4WordLocationAction.icon", "/images/docear/tools/ToolsAndSettings-Docear4Word.png");
 		res.setDefaultProperty("docearPdfInspectorLocationAction.icon", "/images/docear/tools/ToolsAndSettings-PDFInspector.png");
 		res.setDefaultProperty("freeplaneAddOnLocationAction.icon", "/images/docear/tools/ToolsAndSettings-DocearAddOns.png");
 		res.setDefaultProperty("jabrefAddOnLocationAction.icon", "/images/docear/tools/ToolsAndSettings-JabRefAddOns.png");
+		res.setDefaultProperty("SetAcceleratorOnNextClickAction.icon", "/images/docear/tools/Tools-AssignHotkey.png");
+		res.setDefaultProperty("OpenMapsAddLocation.icon", "/images/docear/tools/tools-AddOpenMaps.png");
+		res.setDefaultProperty("OpenMapsRemoveLocation.icon", "/images/docear/tools/tools-RemoveOpenMaps.png");
+		res.setDefaultProperty("OpenMapsViewLocation.icon", "/images/docear/tools/tools-ViewOpenMaps.png");
+		res.setDefaultProperty("formula.menuname.icon", "/images/docear/tools/tools-formulas.png");
+		res.setDefaultProperty("menu_encryption.icon", "/images/docear/tools/tools-PasswordProtection.png");
+		res.setDefaultProperty("menu_time.icon", "/images/docear/tools/tools-TimeManagement.png");
+		res.setDefaultProperty("scripting.icon", "/images/docear/tools/tools-Scripting.png");
+		res.setDefaultProperty("PropertyAction.icon", "/images/docear/tools/tools-Preferences.png");
+		
+		res.setDefaultProperty("attribute_options.icon", "/images/docear/view/view-AttributeOptions.png");
+		res.setDefaultProperty("ShowHideNoteAction.icon", "/images/docear/view/view-showNotePanel.png");
+		res.setDefaultProperty("ToggleDetailsAction.icon", "/images/docear/view/view-hideNoteDetails.png");
+		res.setDefaultProperty("note_window_location.icon", "/images/docear/view/view-NotePanelPosition.png");
+		res.setDefaultProperty("menu_noteView.icon", "/images/docear/view/view-NotesSettings.png");
+		res.setDefaultProperty("SetBooleanPropertyAction.highlight_formulas.icon", "/images/docear/view/view-HighlightFormulas.png");
+		res.setDefaultProperty("SetBooleanPropertyAction.show_node_tooltips.icon", "/images/docear/view/view-DisplayTooltips.png");
+		res.setDefaultProperty("SetBooleanPropertyAction.show_styles_in_tooltip.icon", "/images/docear/view/view-displayNodeStylesTooltips.png");
+		res.setDefaultProperty("ToggleFBarAction.icon", "/images/docear/view/view-FBar.png");
+		res.setDefaultProperty("ToggleStatusAction.icon", "/images/docear/view/view-Statusline.png");
+		res.setDefaultProperty("ToggleScrollbarsAction.icon", "/images/docear/view/view-Scrollbars.png");
+		res.setDefaultProperty("ToggleLeftToolbarAction.icon", "/images/docear/view/view-IconToolbar.png");
+		res.setDefaultProperty("ToggleFullScreenAction.icon", "/images/docear/view/view-FullScreen.png");
+		res.setDefaultProperty("ToggleRibbonAction.icon", "/images/docear/view/view-MinimizeRibbon.png");
+		res.setDefaultProperty("SetBooleanPropertyAction.presentation_mode.icon", "/images/docear/view/view-PresentationMode.png");
+				
+		res.setDefaultProperty("AboutAction.icon", "/images/docear/help/help-about.png");
+		res.setDefaultProperty("AskForHelp.icon", "/images/docear/help/help-ask4help.png");
+		res.setDefaultProperty("RequestFeatureAction.icon", "/images/docear/help/help-requestFeature.png");
+		res.setDefaultProperty("ReportBugAction.icon", "/images/docear/help/help-bugReport.png");
+		res.setDefaultProperty("HotKeyInfoAction.icon", "/images/docear/help/help-keyReference.png");
+		res.setDefaultProperty("UpdateCheckAction.icon", "/images/docear/help/help-check4updates.png");
+		res.setDefaultProperty("OpenUserDirAction.icon", "/images/docear/help/help-openUserDirectory.png");
+		res.setDefaultProperty("GettingStartedAction.icon", "/images/docear/help/help-tutorial.png");
+		
+		res.setDefaultProperty("OpenLogsFolderAction.icon", "/images/docear/help/help-showSystemLog.png");
+		res.setDefaultProperty("ManualAction.icon", "/images/docear/help/help-Manual.png");
+		res.setDefaultProperty("GPLPanelAction.icon", "/images/docear/help/help-gnuGPL.png");
+		res.setDefaultProperty("DataPrivacyPanelAction.icon", "/images/docear/help/help-dataPrivacy.png");
+		res.setDefaultProperty("TOSPanelAction.icon", "/images/docear/help/help-termsOfService.png");
+		res.setDefaultProperty("DataProcessingPanelAction.icon", "/images/docear/help/help-dataProcessing.png");
+		res.setDefaultProperty("ContactAction.icon", "/images/docear/help/help-contact.png");
+		res.setDefaultProperty("FAQAction.icon", "/images/docear/help/help-faq.png");
+		
 	}
 
 	private IControllerExecuteExtension getDocearCommandExecutor() {

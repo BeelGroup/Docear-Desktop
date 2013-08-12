@@ -514,7 +514,6 @@
 		<ribbon_task name="help" orderPriority="last">
 			<ribbon_band name="help_misc" resize_policies="Mirror" orderPriority="0">
                 <ribbon_action action="OpenUserDirAction" priority="top" mandatory="true"/>
-				<!--ribbon_action name="Open log files" mandatory="true" /-->
 				<ribbon_action action="UpdateCheckAction" priority="top" mandatory="true"/>
 			    <ribbon_action action="GettingStartedAction" accelerator="F1" mandatory="true"/>
 			    <ribbon_action action="HotKeyInfoAction" mandatory="true"/>  
