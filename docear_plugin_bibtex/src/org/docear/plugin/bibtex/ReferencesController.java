@@ -372,11 +372,18 @@ public class ReferencesController extends ALanguageController implements IDocear
 			return;
 		}
 		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {								
-				ReferencesController contr = ReferencesController.getController();
-				JabrefWrapper wrapper = contr.getJabrefWrapper();								
-				JabRefBaseHandle handle = wrapper.openDatabase(file, true);
-				addOrUpdateProjectExtension(project, handle);
+			public void run() {
+				ClassLoader old = Thread.currentThread().getContextClassLoader();
+				Thread.currentThread().setContextClassLoader(JabrefWrapper.class.getClassLoader());
+				try {
+					ReferencesController contr = ReferencesController.getController();
+					JabrefWrapper wrapper = contr.getJabrefWrapper();								
+					JabRefBaseHandle handle = wrapper.openDatabase(file, true);
+					addOrUpdateProjectExtension(project, handle);
+				}
+				finally {
+					Thread.currentThread().setContextClassLoader(old);
+				}
 			}
 		});
 	}
