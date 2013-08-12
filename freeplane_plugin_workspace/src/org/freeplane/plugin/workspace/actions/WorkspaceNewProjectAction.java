@@ -88,6 +88,12 @@ public class WorkspaceNewProjectAction extends AWorkspaceAction {
 			} catch (WorkspaceModelException e) {
 				LogUtils.severe(e);
 			}
+
+			try {
+				WorkspaceController.save();
+			}
+			catch (Exception e) {
+			}
 		}
 	}
 

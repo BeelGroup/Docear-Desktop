@@ -101,6 +101,12 @@ public class DocearNewProjectAction extends AWorkspaceAction {
 		} catch (IOException e) {
 			LogUtils.severe(e);
 		}
+
+		try {
+			WorkspaceController.save();
+		}
+		catch (Exception e) {
+		}
 	}
 
 }
