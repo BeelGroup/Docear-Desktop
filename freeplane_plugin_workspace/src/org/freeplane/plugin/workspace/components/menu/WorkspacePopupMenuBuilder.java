@@ -21,6 +21,7 @@ import org.freeplane.features.mode.Controller;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.actions.AWorkspaceAction;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
+import org.pushingpixels.flamingo.api.common.AsynchronousLoadListener;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 
 public class WorkspacePopupMenuBuilder {
@@ -50,6 +51,11 @@ public class WorkspacePopupMenuBuilder {
 		if(item.getIcon() != null && item.getIcon() instanceof ImageIcon) {
 			ImageIcon ico = (ImageIcon)item.getIcon();
 			ImageWrapperResizableIcon nuIco = ImageWrapperResizableIcon.getIcon(ico.getImage(), new Dimension(ico.getIconWidth(), ico.getIconHeight()));
+			nuIco.addAsynchronousLoadListener(new AsynchronousLoadListener() {
+				public void completed(boolean success) {
+					item.repaint();
+				}
+			});
 			nuIco.setPreferredSize(new Dimension(16, 16));
 			item.setIcon(nuIco);
 		}
