@@ -552,7 +552,7 @@ public class CoreConfiguration extends ALanguageController {
 		WorkspaceController.replaceAction(new DocearOpenUrlAction("docear4WordLocationAction",  resourceController.getProperty("docear4WordLocation")));
 		WorkspaceController.replaceAction(new DocearOpenUrlAction("docearPdfInspectorLocationAction",  resourceController.getProperty("docearPdfInspectorLocation")));
 		WorkspaceController.replaceAction(new DocearOpenUrlAction("freeplaneAddOnLocationAction",  resourceController.getProperty("freeplaneAddOnLocation")));
-		WorkspaceController.replaceAction(new DocearOpenUrlAction("jabrefAddOnLocationAction",  resourceController.getProperty("jabrefAddOnLocation")));
+		WorkspaceController.replaceAction(new DocearOpenUrlAction("jabrefAddOnLocationAction",  resourceController.getProperty("jabrefAddOnLocation")));		
 		
 		WorkspaceController.replaceAction(new GPLPanelAction());
 		WorkspaceController.replaceAction(new LicencesPanelAction("TOSPanelAction", TextUtils.getText("docear.license.terms_of_use.title"), DocearController.getController().getTermsOfService()));

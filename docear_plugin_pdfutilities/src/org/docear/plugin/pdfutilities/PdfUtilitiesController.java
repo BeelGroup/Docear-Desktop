@@ -82,6 +82,7 @@ import org.docear.plugin.pdfutilities.features.IAnnotation;
 import org.docear.plugin.pdfutilities.features.PDFReaderHandle;
 import org.docear.plugin.pdfutilities.features.PDFReaderHandle.RegistryBranch;
 import org.docear.plugin.pdfutilities.listener.DocearAutoMonitoringListener;
+import org.docear.plugin.pdfutilities.listener.DocearFollowLinkAction;
 import org.docear.plugin.pdfutilities.listener.DocearNodeDropListener;
 import org.docear.plugin.pdfutilities.listener.DocearNodeMouseMotionListener;
 import org.docear.plugin.pdfutilities.listener.DocearNodeSelectionListener;
@@ -777,6 +778,8 @@ public class PdfUtilitiesController extends ALanguageController {
 		WorkspaceController.addAction(new ShowPdfReaderDefinitionDialogAction());
 		WorkspaceController.addAction(new IncomingReReadMonitoringAction());
 		WorkspaceController.addAction(new DocearSendPdfxcRegistryAction());
+				
+		WorkspaceController.replaceAction(Controller.getCurrentModeController(), new DocearFollowLinkAction());
 
 		modeController.removeAction("PasteAction"); //$NON-NLS-1$
 		modeController.addAction(new DocearPasteAction());
@@ -785,8 +788,8 @@ public class PdfUtilitiesController extends ALanguageController {
 				new WorkspaceNodeOpenDocumentListener());
 		WorkspaceController.getCurrentModeExtension().getIOController().registerNodeActionListener(LinkTypeFileNode.class, WorkspaceActionEvent.WSNODE_OPEN_DOCUMENT,
 				new WorkspaceNodeOpenDocumentListener());
-	}
-
+	}	
+	
 	private void addMenuEntries(ModeController modeController) {
 		modeController.addMenuContributor(new IMenuContributor() {
 
