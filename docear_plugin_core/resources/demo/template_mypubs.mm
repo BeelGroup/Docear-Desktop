@@ -1,4 +1,4 @@
-<map version="docear 1.0">
+<map version="docear 1.0" project="@PROJECT_ID@" project_last_home="@PROJECT_HOME@">
 <!--To view this file, download Docear - The Academic Literature Suite from http://www.docear.org -->
 <attribute_registry SHOW_ATTRIBUTES="hide"/>
 <node TEXT="My Publications" FOLDED="false" ID="ID_1723255651" CREATED="1283093380553" MODIFIED="1358858527638" DCR_PRIVACY_LEVEL="DEMO"><hook NAME="MapStyle" zoom="1.21">

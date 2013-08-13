@@ -280,6 +280,9 @@ public class DocearProjectLoader extends ProjectLoader {
 		
 		//prepare replace map
 		Map<String, String> replaceMapping = new HashMap<String, String>();
+		replaceMapping.put("@PROJECT_ID@", project.getProjectID());
+		replaceMapping.put("@PROJECT_HOME@", project.getProjectHome().toString());
+		
 		replaceMapping.put("@LITERATURE_REPO_DEMO@", relativeRepoPath.toString());
 		
 		URI relativeBibURI = LinkController.toLinkTypeDependantURI(bibPath, repoPath, LinkController.LINK_RELATIVE_TO_MINDMAP);
