@@ -13,11 +13,11 @@ Require-Bundle: org.freeplane.core;bundle-version="1.0.1",
  org.docear.plugin.core;bundle-version="1.0.0",
  org.docear.plugin.services;bundle-version="1.0.0"
 Bundle-ClassPath: .,
+ lib/plugin.jar,
  lib/jpod/jPod.jar,
  lib/jpod/iscwt.jar,
  lib/jpod/isrt.jar,
  lib/jpod/jbig2.jar,
- lib/plugin.jar,
  lib/guava-14.0.1.jar,
  lib/docear-pdf-inspector.jar
 Export-Package: org.docear.plugin.pdfutilities,

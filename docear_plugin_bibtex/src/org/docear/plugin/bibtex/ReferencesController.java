@@ -21,6 +21,7 @@ import javax.swing.event.PopupMenuListener;
 import javax.swing.event.TreeModelEvent;
 
 import net.sf.jabref.BibtexEntry;
+import net.sf.jabref.JabRefFrame;
 import net.sf.jabref.JabRefPreferences;
 
 import org.docear.plugin.bibtex.actions.AddExistingReferenceAction;
@@ -370,14 +371,31 @@ public class ReferencesController extends ALanguageController implements IDocear
 			return;
 		}
 		SwingUtilities.invokeLater(new Runnable() {
+			private int count = 0;
 			public void run() {
 				ClassLoader old = Thread.currentThread().getContextClassLoader();
-				Thread.currentThread().setContextClassLoader(JabrefWrapper.class.getClassLoader());
+				Thread.currentThread().setContextClassLoader(ResourceController.class.getClassLoader());
 				try {
 					ReferencesController contr = ReferencesController.getController();
-					JabrefWrapper wrapper = contr.getJabrefWrapper();								
+					JabrefWrapper wrapper = contr.getJabrefWrapper();
 					JabRefBaseHandle handle = wrapper.openDatabase(file, true);
 					addOrUpdateProjectExtension(project, handle);
+				}
+				catch (Throwable e) {
+					if(count < 5) {
+						count++;
+						try {
+							Thread.sleep(200);
+						}
+						catch (InterruptedException e1) {
+						}
+						SwingUtilities.invokeLater(this);
+						System.out.println(count+": "+file);
+						LogUtils.warn(e.getClass()+": "+e.getMessage());
+					}
+					else {
+						throw new RuntimeException(e);
+					}
 				}
 				finally {
 					Thread.currentThread().setContextClassLoader(old);

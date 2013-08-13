@@ -14,9 +14,8 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: org.apache.commons.io,
  org.osgi.framework;version="1.3.0",
  org.swingplus
-Bundle-ClassPath: .,
- lib/JabRef-2.7.1.jar,
- lib/plugin.jar,
- lib/resources.jar
+Bundle-ClassPath: lib/plugin.jar,
+ lib/resources.jar,
+ lib/JabRef-2.7.1.jar
 Export-Package: org.docear.plugin.bibtex,
  org.docear.plugin.bibtex.jabref
