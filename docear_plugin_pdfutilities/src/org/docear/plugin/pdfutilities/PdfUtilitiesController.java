@@ -1087,27 +1087,24 @@ public class PdfUtilitiesController extends ALanguageController {
 			public void handleEvent(DocearEvent event) {
 				if (DocearEventType.NEW_INCOMING.equals(event.getType())) {
 					MapModel map = (MapModel) event.getEventObject();
-					boolean isMonitoringNode = MonitoringUtils.isMonitoringNode(map.getRootNode());
-					NodeUtilities.setAttribute(map.getRootNode(), PdfUtilitiesController.MON_INCOMING_FOLDER, CoreConfiguration.DOCUMENT_REPOSITORY_PATH);
-					NodeUtilities.setAttribute(map.getRootNode(), PdfUtilitiesController.MON_MINDMAP_FOLDER, CoreConfiguration.LIBRARY_PATH);
-					NodeUtilities.setAttribute(map.getRootNode(), PdfUtilitiesController.MON_AUTO, 2);
-					NodeUtilities.setAttribute(map.getRootNode(), PdfUtilitiesController.MON_SUBDIRS, 2);
+					boolean dirtyMap = false;
+					
+					dirtyMap |= NodeUtilities.setAttributeIfNotExists(map.getRootNode(), PdfUtilitiesController.MON_INCOMING_FOLDER, CoreConfiguration.DOCUMENT_REPOSITORY_PATH);
+					dirtyMap |= NodeUtilities.setAttributeIfNotExists(map.getRootNode(), PdfUtilitiesController.MON_MINDMAP_FOLDER, CoreConfiguration.LIBRARY_PATH);
+					dirtyMap |= NodeUtilities.setAttributeIfNotExists(map.getRootNode(), PdfUtilitiesController.MON_AUTO, 0);
+					dirtyMap |= NodeUtilities.setAttributeIfNotExists(map.getRootNode(), PdfUtilitiesController.MON_SUBDIRS, 2);
 					if (DocearController.getPropertiesController().getBooleanProperty("docear_flatten_subdir")) {
-						NodeUtilities.setAttribute(map.getRootNode(), PdfUtilitiesController.MON_FLATTEN_DIRS, 1);
+						dirtyMap |= NodeUtilities.setAttributeIfNotExists(map.getRootNode(), PdfUtilitiesController.MON_FLATTEN_DIRS, 1);
 					}
 					else {
-						NodeUtilities.setAttribute(map.getRootNode(), PdfUtilitiesController.MON_FLATTEN_DIRS, 0);
+						dirtyMap |= NodeUtilities.setAttributeIfNotExists(map.getRootNode(), PdfUtilitiesController.MON_FLATTEN_DIRS, 0);
 					}
-					if (!isMonitoringNode) {
-//						List<NodeModel> list = new ArrayList<NodeModel>();
-//						list.add(map.getRootNode());
-//						AddMonitoringFolderAction.updateNodesAgainstMonitoringDir(list, true);
-					}
-					map.setSaved(false);
-					MapUtils.saveMap(map, map.getFile());
 					
-					if(!map.getRootNode().areViewsEmpty()) {
+					if(dirtyMap) { 
+						map.setSaved(false);
+						MapUtils.saveMap(map, map.getFile());
 					}
+					
 				}
 			}
 		});
@@ -1589,9 +1586,12 @@ public class PdfUtilitiesController extends ALanguageController {
 						public JPopupPanel getPopupPanel(JCommandButton commandButton) {
 							JCommandPopupMenu popupmenu = new JCommandPopupMenu();
 							JCommandToggleMenuButton defaultButton = RibbonActionContributorFactory.createCommandToggleMenuButton(autoDefaultAction);	
+							autoDefaultAction.setSelected();
 							defaultButton.getActionModel().setSelected(autoDefaultAction.isSelected());
+							autoOnAction.setSelected();
 							JCommandToggleMenuButton onButton = RibbonActionContributorFactory.createCommandToggleMenuButton(autoOnAction);
 							onButton.getActionModel().setSelected(autoOnAction.isSelected());
+							autoOffAction.setSelected();
 							JCommandToggleMenuButton offButton = RibbonActionContributorFactory.createCommandToggleMenuButton(autoOffAction);
 							offButton.getActionModel().setSelected(autoOffAction.isSelected());
 							

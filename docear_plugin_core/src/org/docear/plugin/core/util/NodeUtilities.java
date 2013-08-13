@@ -97,6 +97,31 @@ public class NodeUtilities {
 		
 	}
 	
+	public static boolean setAttributeIfNotExists(NodeModel node, String key, Object value) {
+		if(node == null || key == null) {
+			return false;
+		}
+		NodeAttributeTableModel model = AttributeController.getController().createAttributeTableModel(node);
+		boolean modified = false;
+		if (model != null) {
+			if (!model.getAttributeKeyList().contains(key)) {
+				if(value == null) {
+					int row = model.getAttributePosition(key);
+					model.getAttributes().remove(row);
+				}
+				else {
+					model.addRowNoUndo(new Attribute(key, value));
+				}
+				if(!node.areViewsEmpty()) {
+					Controller.getCurrentModeController().getMapController().nodeRefresh(node, NodeModel.UNKNOWN_PROPERTY, null, null);
+				}
+				modified = true;
+			}
+			
+		}
+		return modified;
+	}
+	
 	public static void removeNodeAttribute(NodeModel node, String key) {
 		AttributeController ctrl = AttributeController.getController();
 		NodeAttributeTableModel model = ctrl.createAttributeTableModel(node);		
@@ -185,6 +210,10 @@ public class NodeUtilities {
 			}
 		}
 		return value;
+	}
+
+	public static boolean attributeExists(NodeModel target, String attributeKey) {
+		return getAttributeValue(target, attributeKey) != null;
 	}
 
 }

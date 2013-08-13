@@ -17,6 +17,8 @@ import javax.swing.SwingUtilities;
 
 import name.pachler.nio.file.WatchKey;
 
+import org.docear.plugin.core.features.DocearInternallyLoadedMap;
+import org.docear.plugin.pdfutilities.actions.UpdateMonitoringFolderAction;
 import org.docear.plugin.pdfutilities.map.MapConverter;
 import org.docear.plugin.pdfutilities.util.MonitoringUtils;
 import org.freeplane.core.util.LogUtils;
@@ -103,21 +105,24 @@ public class DocearAutoMonitoringListener implements IMapLifeCycleListener,  Win
 	
 	
 	public void onCreate(final MapModel map) {
-		if(map == null || map.getFile() == null) return;
+		if(map == null || map.getFile() == null || DocearInternallyLoadedMap.isInternallyLoaded(map)) { 
+			return;
+		}
 		List<? extends NodeModel> monitoringNodes = (List<? extends NodeModel>) getAutoMonitorNodes(map.getRootNode());
 		if(monitoringNodes == null || monitoringNodes.size() <= 0) {
 			return;
 		}
 		autoMonitorNodes.addAll(monitoringNodes);
+		
 		//TODO: enable automatic file monitoring
-//		registerMonitoredDirectories(map, monitoringNodes);
+		//registerMonitoredDirectories(map, monitoringNodes);
 		
 		if(!startup){
 			SwingUtilities.invokeLater(new Thread() {
 				public void run() {
 					
 					LogUtils.info("Monitoring started"); //$NON-NLS-1$
-					//startMonitoring();
+					startMonitoring();
 			
 				} //run()
 			}); // Thread
@@ -137,7 +142,7 @@ public class DocearAutoMonitoringListener implements IMapLifeCycleListener,  Win
 	public void windowGainedFocus(WindowEvent e) {
 		if(startup && !MapConverter.currentlyConverting){
 			startup = false;
-			//startMonitoring();			
+			startMonitoring();			
 		}
 	}
 
@@ -164,12 +169,12 @@ public class DocearAutoMonitoringListener implements IMapLifeCycleListener,  Win
 		
 	}
 
-//	private synchronized void startMonitoring() {
-//		if(autoMonitorNodes.size() > 0){
-//			UpdateMonitoringFolderAction.updateNodesAgainstMonitoringDir(autoMonitorNodes, !startup);
-//			autoMonitorNodes.clear();
-//		}		
-//	}
+	private synchronized void startMonitoring() {
+		if(autoMonitorNodes.size() > 0){
+			UpdateMonitoringFolderAction.updateNodesAgainstMonitoringDir(autoMonitorNodes, !startup);
+			autoMonitorNodes.clear();
+		}		
+	}
 //	
 //	private void registerMonitoredDirectories(MapModel map, List<? extends NodeModel> monitoringNodes) {
 //		List<WatchKey> keys = mapKeysMap.get(map);

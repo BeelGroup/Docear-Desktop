@@ -55,7 +55,7 @@ public class MapUtils {
 				URL url = MModeWorkspaceUrlManager.getController().getAbsoluteUrl(map, uri);
 				final MapIO mapIO = (MapIO) Controller.getCurrentModeController().getExtension(MapIO.class);
 				mapIO.load(url, map);
-				map.addExtension(new DocearInternallyLoadedMap());
+				DocearInternallyLoadedMap.markInternallyLoaded(map);
 				DocearController.getController().getLifeCycleObserver().fireMapEvent(MapEventType.CREATED, map);
 				return map;
 			}

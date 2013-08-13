@@ -31,14 +31,15 @@ public class MonitoringGroupRadioButtonAction extends GroupRadioButtonAction imp
 		super.actionPerformed(e);
 		NodeModel selected = Controller.getCurrentController().getSelection().getSelected();
 		if(MonitoringUtils.isMonitoringNode(selected)){
-			NodeUtilities.setAttributeValue(selected, this.attributeKey, this.value);
+			NodeUtilities.setAttribute(selected, this.attributeKey, this.value);
 		}
 	}
 
-	public void onDeselect(NodeModel node) {		
+	public void onDeselect(NodeModel node) {
 	}
 
 	public void onSelect(NodeModel node) {
+		this.setSelected(false);
 		if(MonitoringUtils.isMonitoringNode(node)){
 			Object value = NodeUtilities.getAttributeValue(node, this.attributeKey);
 			if(value != null && value.equals(this.value)){
