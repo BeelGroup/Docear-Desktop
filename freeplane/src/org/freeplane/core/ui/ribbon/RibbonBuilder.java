@@ -118,6 +118,13 @@ public class RibbonBuilder {
 		if(!isEnabled()) {
 			return;
 		}
+		
+		try {
+			getAcceleratorManager().loadAcceleratorPresets(new FileInputStream(getAcceleratorManager().getPresetsFile()));
+		}
+		catch (IOException ex) {
+		}
+		
 		getMapChangeAdapter().clear();
 		synchronized (structure) {
 			final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
@@ -160,11 +167,6 @@ public class RibbonBuilder {
 			final boolean isUserDefined = xmlResource.getProtocol().equalsIgnoreCase("file");
 			try{
 				reader.loadStructure(xmlResource);
-				try {
-					getAcceleratorManager().loadAcceleratorPresets(new FileInputStream(getAcceleratorManager().getPresetsFile()));
-				}
-				catch (IOException ex) {
-				}
 			}
 			catch (RuntimeException e){
 				if(isUserDefined){
