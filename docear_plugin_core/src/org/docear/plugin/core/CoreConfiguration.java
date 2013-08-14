@@ -175,7 +175,7 @@ public class CoreConfiguration extends ALanguageController {
 		res.setDefaultProperty("menu_encryption.icon", "/images/docear/tools/tools-PasswordProtection.png");
 		res.setDefaultProperty("menu_time.icon", "/images/docear/tools/tools-TimeManagement.png");
 		res.setDefaultProperty("scripting.icon", "/images/docear/tools/tools-Scripting.png");
-		res.setDefaultProperty("PropertyAction.icon", "/images/docear/tools/tools-Preferences.png");
+		res.setProperty("PropertyAction.icon", "/images/docear/tools/tools-Preferences.png");
 		
 		res.setDefaultProperty("attribute_options.icon", "/images/docear/view/view-AttributeOptions.png");
 		res.setDefaultProperty("ShowHideNoteAction.icon", "/images/docear/view/view-showNotePanel.png");

@@ -8,9 +8,11 @@ import org.docear.plugin.core.features.DocearFileBackupController;
 import org.docear.plugin.core.features.IFileBackupHandler;
 import org.docear.plugin.services.features.user.UserFileBackupHandler;
 import org.freeplane.core.ui.AFreeplaneAction;
+import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.mode.Controller;
 
+@EnabledAction(checkOnNodeChange=true)
 public class DocearBackupOpenLocation extends AFreeplaneAction {
 	final static String KEY = "DocearBackupOpenLocation";
 
@@ -37,5 +39,19 @@ public class DocearBackupOpenLocation extends AFreeplaneAction {
 			}
 		}
 	}
+
+	@Override
+	public void setEnabled() {
+		setEnabled(false);
+		IFileBackupHandler handler = DocearFileBackupController.getFileBackupHandler();
+		if (handler instanceof UserFileBackupHandler) {
+			File file = ((UserFileBackupHandler) handler).getFolder();
+			if (file != null && file.exists()) {
+				setEnabled(true);
+			}
+		}
+	}
+	
+	
 
 }

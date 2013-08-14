@@ -1,13 +1,12 @@
 package org.docear.plugin.core.listeners;
 
-import org.docear.plugin.core.mindmap.MindmapLinkTypeUpdater;
-import org.docear.plugin.core.mindmap.MindmapUpdateController;
+import javax.swing.SwingUtilities;
+
+import org.docear.plugin.core.ui.LinkTypeChangedPage;
 import org.docear.plugin.core.ui.wizard.Wizard;
 import org.docear.plugin.core.ui.wizard.WizardPageDescriptor;
 import org.freeplane.core.resources.IFreeplanePropertyListener;
 import org.freeplane.core.ui.components.UITools;
-import org.freeplane.core.util.TextUtils;
-import org.docear.plugin.core.ui.LinkTypeChangedPage;
 
 public class PropertyListener implements IFreeplanePropertyListener {
 
@@ -20,18 +19,18 @@ public class PropertyListener implements IFreeplanePropertyListener {
 			
 			wizard.show();			
 		}
-//		if (propertyName.equals("links") && (!newValue.equals(oldValue))) {
-//			if(SwingUtilities.isEventDispatchThread()) {
-//				SwingUtilities.invokeLater(new Runnable() {					
-//					public void run() {
-//						doUpdateLinks();						
-//					}
-//				});								
-//			}
-//			else {
-//				doUpdateLinks();
-//			}
-//		}
+		if (propertyName.equals("links") && (!newValue.equals(oldValue))) {
+			if(SwingUtilities.isEventDispatchThread()) {
+				SwingUtilities.invokeLater(new Runnable() {					
+					public void run() {
+						doUpdateLinks();						
+					}
+				});								
+			}
+			else {
+				doUpdateLinks();
+			}
+		}
 	}
 	
 	private void initWizard(Wizard wizard) {
@@ -44,9 +43,9 @@ public class PropertyListener implements IFreeplanePropertyListener {
 	}
 
 	private final void doUpdateLinks() {
-		MindmapUpdateController mindmapUpdateController = new MindmapUpdateController();
-		mindmapUpdateController.addMindmapUpdater(new MindmapLinkTypeUpdater(TextUtils.getText("updating_link_types")));
-		mindmapUpdateController.updateRegisteredMindmapsInWorkspace(true);
+//		MindmapUpdateController mindmapUpdateController = new MindmapUpdateController();
+//		mindmapUpdateController.addMindmapUpdater(new MindmapLinkTypeUpdater(TextUtils.getText("updating_link_types")));
+//		mindmapUpdateController.updateRegisteredMindmapsInWorkspace(true);
 	}
 
 }

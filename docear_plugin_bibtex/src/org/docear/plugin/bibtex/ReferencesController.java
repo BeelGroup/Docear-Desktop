@@ -454,7 +454,7 @@ public class ReferencesController extends ALanguageController implements IDocear
 		res.setDefaultProperty("ShowAllAttributesAction.icon", "/images/docear/references/ReferencesSettings-ShowAllAttributes.png");
 		res.setDefaultProperty("HideAllAttributesAction.icon", "/images/docear/references/ReferencesSettings-HideAllAttributes.png");
 		
-		res.setDefaultProperty("show_jabref_preferences.icon", "/images/docear/tools/tools-PreferencesReferences.png");
+		res.setProperty("show_jabref_preferences.icon", "/images/docear/tools/tools-PreferencesReferences.png");
 		
 	}
 	
