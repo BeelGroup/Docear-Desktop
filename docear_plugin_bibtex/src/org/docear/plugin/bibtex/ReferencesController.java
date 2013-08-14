@@ -21,7 +21,6 @@ import javax.swing.event.PopupMenuListener;
 import javax.swing.event.TreeModelEvent;
 
 import net.sf.jabref.BibtexEntry;
-import net.sf.jabref.JabRefFrame;
 import net.sf.jabref.JabRefPreferences;
 
 import org.docear.plugin.bibtex.actions.AddExistingReferenceAction;
@@ -150,14 +149,13 @@ public class ReferencesController extends ALanguageController implements IDocear
 		setReferencesController(this);
 		setPreferencesForDocear();
 		this.modeController = modeController;
-		LogUtils.info("starting DocearReferencesController(ModeController)"); //$NON-NLS-1$
+		LogUtils.info("starting DocearReferencesController(ModeController)");
 
 		this.addPluginDefaults();
 		this.addMenuEntries();
 		this.registerListeners();
 
 		this.initJabref();
-		//setupInitialProjects(modeController);
 	}
 
 	private void setPreferencesForDocear() {
@@ -225,14 +223,20 @@ public class ReferencesController extends ALanguageController implements IDocear
 		try {
 			SwingUtilities.invokeAndWait( new Runnable() {
 				public void run() {
-					Thread.currentThread().setContextClassLoader(classLoader);
-					
-					jabrefWrapper = new JabrefWrapper(Controller.getCurrentController().getViewController().getJFrame());
-					 
-					modeController.getExtension(KeyBindingProcessor.class).addKeyStrokeProcessor(new KeyBindInterceptor());
-					createOptionPanel(jabrefWrapper.getJabrefFrame());
-					
-					WorkspaceController.getModeExtension(modeController).getView().addProjectSelectionListener(getProjectSelectionListener());
+					ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();
+					try {
+						Thread.currentThread().setContextClassLoader(classLoader);
+						
+						jabrefWrapper = new JabrefWrapper(Controller.getCurrentController().getViewController().getJFrame());
+						 
+						modeController.getExtension(KeyBindingProcessor.class).addKeyStrokeProcessor(new KeyBindInterceptor());
+						createOptionPanel(jabrefWrapper.getJabrefFrame());
+						
+						WorkspaceController.getModeExtension(modeController).getView().addProjectSelectionListener(getProjectSelectionListener());
+					}
+					finally {
+						Thread.currentThread().setContextClassLoader(oldLoader);
+					}
 				}
 			});
 		}
@@ -391,7 +395,7 @@ public class ReferencesController extends ALanguageController implements IDocear
 						}
 						SwingUtilities.invokeLater(this);
 						System.out.println(count+": "+file);
-						LogUtils.warn(e.getClass()+": "+e.getMessage());
+						LogUtils.warn(e.getClass()+": "+e.getCause());
 					}
 					else {
 						throw new RuntimeException(e);
