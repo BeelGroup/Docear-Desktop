@@ -20,8 +20,7 @@
 		</ribbon_task>
 		<ribbon_task name="view">
 		<ribbon_band name="view_mode" resize_policies="Mirror">
-	       <ribbon_action action="ToggleMapMaximizedAction"
-		priority="medium" />
+	       <ribbon_action action="ToggleMapMaximizedAction" priority="medium" accelerator="Tab"/>
 		</ribbon_band>
 		</ribbon_task>
 	</menu_category>

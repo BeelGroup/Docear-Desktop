@@ -166,6 +166,16 @@ public class CoreConfiguration extends ALanguageController {
 		
 		res.setDefaultProperty("ResetNodeLocationAction.icon", "/images/docear/nodes/NodesSettings-ResetPosition.png");
 		res.setDefaultProperty("SetBooleanPropertyAction.edit_on_double_click.icon", "/images/docear/nodes/Nodes-EditOnDblClick.png");
+		res.setDefaultProperty("NewFreeNodeAction.icon", "/images/docear/nodes/Nodes-NewFreenode.png");
+		res.setDefaultProperty("FreeNodeAction.icon", "/images/docear/nodes/NodesSettings-Freenode.png");
+		res.setDefaultProperty("NewSummaryAction.icon", "/images/docear/nodes/Nodes-NewSummaryNode.png");
+		res.setDefaultProperty("ChangeNodeLevelLeftsAction.icon", "/images/docear/nodes/Nodes-MoveLeft.png");
+		res.setDefaultProperty("ChangeNodeLevelRightsAction.icon", "/images/docear/nodes/nodes-MoveRight.png");
+		res.setDefaultProperty("NodeUpAction.icon", "/images/docear/nodes/nodes-MoveUp.png");
+		res.setDefaultProperty("NodeDownAction.icon", "/images/docear/nodes/nodes-MoveDown.png");
+		res.setDefaultProperty("AlwaysUnfoldedNodeAction.icon", "/images/docear/nodes/nodes-AlwaysUnfolded.png");
+		
+		res.setDefaultProperty("ToggleFoldedAction.icon", "/images/docear/navigate/navigate-NodesUn-fold.png");
 		
 		res.setDefaultProperty("LatexEditLatexAction.icon", "/images/docear/resources/Resources-LaTeXFormulaEdit.png");
 		res.setDefaultProperty("LatexDeleteLatexAction.icon", "/images/docear/resources/Resources-LaTeXFormulaRemove.png");
@@ -201,6 +211,8 @@ public class CoreConfiguration extends ALanguageController {
 		res.setDefaultProperty("ToggleRibbonAction.icon", "/images/docear/view/view-MinimizeRibbon.png");
 		res.setDefaultProperty("SetBooleanPropertyAction.presentation_mode.icon", "/images/docear/view/view-PresentationMode.png");
 				
+		
+		res.setDefaultProperty("OpenFreeplaneSiteAction.icon", "/images/docear/help/help-Homepage.png");
 		res.setDefaultProperty("AboutAction.icon", "/images/docear/help/help-about.png");
 		res.setDefaultProperty("AskForHelp.icon", "/images/docear/help/help-ask4help.png");
 		res.setDefaultProperty("RequestFeatureAction.icon", "/images/docear/help/help-requestFeature.png");
