@@ -56,7 +56,7 @@ public class AnnotationID {
 					}
 				//}
 			}
-			//compare the document affiliation
+			//compare the document association
 			if(firstStepCleared) {
 				return this.getUri().getPath().toLowerCase(Locale.ENGLISH).equals(((AnnotationID) object).getUri().getPath().toLowerCase(Locale.ENGLISH));
 			}
@@ -69,7 +69,6 @@ public class AnnotationID {
 	
 	public int hashCode() {		
 		return this.getUri().toString().hashCode();//this.getId().hashCode();
-		
 	}
 	
 	public String toString() {

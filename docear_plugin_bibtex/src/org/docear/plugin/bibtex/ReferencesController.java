@@ -236,7 +236,7 @@ public class ReferencesController extends ALanguageController implements IDocear
 				}
 			});
 		}
-		catch (Exception e) {
+		catch (Throwable e) {
 			LogUtils.severe(e);
 		}
 		Controller.getCurrentController().addAction(new ShowJabrefPreferencesAction());

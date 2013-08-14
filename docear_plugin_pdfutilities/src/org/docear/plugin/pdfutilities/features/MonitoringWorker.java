@@ -418,8 +418,9 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 	}
 
 	private NodeModel getEqualChild(NodeModel insertNode) {
-		if (equalChildIndex.containsKey(insertNode.getText())) {
-			for (NodeModel equalChild : equalChildIndex.get(insertNode.getText())) {
+		List<NodeModel> nodes = equalChildIndex.get(normalizeWhitespaces(insertNode.getText()));
+		if (nodes != null) {
+			for (NodeModel equalChild : nodes) {
 				if (isEqualNode(equalChild, insertNode)) {
 					return equalChild;
 				}
@@ -438,7 +439,7 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 	}
 
 	private boolean isEqualNode(NodeModel node1, NodeModel node2) {
-		if (!node1.getText().equals(node2.getText())) {
+		if (!normalizeWhitespaces(node1.getText()).equals(normalizeWhitespaces(node2.getText()))) {
 			return false;
 		}
 		URI uri1 = getAbsoluteURIFromNode(node1, node1.getMap());
@@ -695,12 +696,18 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 	private void buildEqualChildIndex(List<NodeModel> children) throws InterruptedException {
 		if (canceled()) return;
 		for (NodeModel child : children) {
-			if (!equalChildIndex.containsKey(child.getText())) {
-				equalChildIndex.put(child.getText(), new ArrayList<NodeModel>());
+			String key = normalizeWhitespaces(child.getText());
+			if (!equalChildIndex.containsKey(key)) {
+				equalChildIndex.put(key, new ArrayList<NodeModel>());
 			}
-			equalChildIndex.get(child.getText()).add(child);
+			equalChildIndex.get(key).add(child);
 			buildEqualChildIndex(child.getChildren());
 		}
+	}
+	
+	private String normalizeWhitespaces(String text) {
+		String temp = text.replaceAll("[\\s]+", " ");
+		return temp;
 	}
 
 	private boolean setupPreconditions(NodeModel target) throws InterruptedException, InvocationTargetException {

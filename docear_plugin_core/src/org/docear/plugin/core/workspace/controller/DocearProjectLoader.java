@@ -200,6 +200,11 @@ public class DocearProjectLoader extends ProjectLoader {
 //		pubNode.setName(TextUtils.getText(pubNode.getClass().getName().toLowerCase(Locale.ENGLISH)+".label" ));
 //		project.getModel().addNodeTo(pubNode, libNode);
 		
+		LinkTypeFileNode newPaperNode = new LinkTypeFileNode();
+		newPaperNode.setLinkURI(URIUtils.createURI(libPath.toString()+"/My%20New%20Paper.mm"));
+		newPaperNode.setName(TextUtils.getText(newPaperNode.getClass().getName().toLowerCase(Locale.ENGLISH)+".newpaper.label" ));
+		project.getModel().addNodeTo(newPaperNode, libNode);
+		
 		LinkTypeFileNode tempNode = new LinkTypeFileNode();
 		tempNode.setLinkURI(URIUtils.createURI(libPath.toString()+"/temp.mm"));
 		tempNode.setName(TextUtils.getText(tempNode.getClass().getName().toLowerCase(Locale.ENGLISH)+".temp.label" ));
@@ -283,14 +288,14 @@ public class DocearProjectLoader extends ProjectLoader {
 		replaceMapping.put("@PROJECT_ID@", project.getProjectID());
 		replaceMapping.put("@PROJECT_HOME@", project.getProjectHome().toString());
 		
-		replaceMapping.put("@LITERATURE_REPO_DEMO@", relativeRepoPath.toString());
+		replaceMapping.put("@LITERATURE_REPO_DEMO@", cutLastSlash(relativeRepoPath.toString()));
 		
 		URI relativeBibURI = LinkController.toLinkTypeDependantURI(bibPath, repoPath, LinkController.LINK_RELATIVE_TO_MINDMAP);
 		if(Compat.isWindowsOS() && relativeBibURI.getPath().startsWith("//")) {
 			replaceMapping.put("@LITERATURE_BIB_DEMO@", (new File(relativeBibURI).getPath().replace(File.separator, File.separator+File.separator)/*+File.separator+File.separator+"Example PDFs"*/));
 		}
 		else {
-			replaceMapping.put("@LITERATURE_BIB_DEMO@", relativeBibURI.getPath().replace(":", "\\:")/*+"/Example PDFs"*/);
+			replaceMapping.put("@LITERATURE_BIB_DEMO@", cutLastSlash(relativeBibURI.getPath().replace(":", "\\:")/*+"/Example PDFs"*/));
 		}
 		
 		boolean created = createAndCopy(new File(defaultFilesPath,"incoming.mm"), "/demo/template_incoming.mm", replaceMapping);
@@ -313,8 +318,13 @@ public class DocearProjectLoader extends ProjectLoader {
 		createAndCopy(new File(repoPath, "Information Retrieval on Mind Maps -- What could it be good for.pdf"), "/demo/docear_example_pdfs/Information Retrieval on Mind Maps -- What could it be good for.pdf");
 		createAndCopy(new File(repoPath, "Mr. DLib -- A Machine Readable Digital Library.pdf"), "/demo/docear_example_pdfs/Mr. DLib -- A Machine Readable Digital Library.pdf");
 	}
-	
-	
+
+	private String cutLastSlash(String path) {
+		while(path.endsWith("/")) {
+			path = path.substring(0, path.length()-1);
+		}
+		return path;
+	}
 	
 	private boolean createAndCopy(File file, String resourcePath) {
 		return createAndCopy(file, resourcePath, false, null);
