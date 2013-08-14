@@ -1,5 +1,6 @@
 package org.docear.plugin.core;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -22,10 +23,12 @@ import org.docear.plugin.core.features.DocearProgressObserver;
 import org.docear.plugin.core.io.IOTools;
 import org.docear.plugin.core.listeners.MapWithoutProjectHandler;
 import org.docear.plugin.core.logger.DocearEventLogger;
+import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.mode.Controller;
+import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.features.WorkspaceMapModelExtension;
 import org.freeplane.plugin.workspace.model.WorkspaceModel;
@@ -359,32 +362,37 @@ public class DocearController implements IDocearEventListener {
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
 	 **********************************************************************************/
-
 	public void handleEvent(DocearEvent event) {		
 		if(event.getType() == DocearEventType.APPLICATION_CLOSING_ABORTED){
 			this.applicationShutdownAborted = true;
-		}			
+		}
 	}
 	
 	public SemaphoreController getSemaphoreController() {
 		return semaphoreController;
 	}
 	public boolean isLibraryMap(MapModel map) {
+		if(map == null) {
+			return false;
+		}
 		DocearMapModelExtension dmme = map.getExtension(DocearMapModelExtension.class);
 		if (dmme == null) {
 			return false;
 		}
-		//WORKSPACE - DOCEAR todo: implement 
-//		for (URI uri : DocearController.getController().getLibrary().getMindmaps()) { 
-//			if (uri != null && map != null) {
-//				String path = map.getFile().getAbsolutePath(); 
-//				File f = URIUtils.getAbsoluteFile(uri);
-//				
-//				if (f != null && f.getAbsolutePath().equals(path)) {
-//					return true;
-//				}
-//			}
-//		}
+		AWorkspaceProject project = WorkspaceController.getMapProject(map);
+		if(DocearWorkspaceProject.isCompatible(project)) {
+			((DocearWorkspaceProject)project).getLibraryMaps();
+			for (URI uri : ((DocearWorkspaceProject)project).getLibraryMaps()) { 
+				if (uri != null) {
+					String path = map.getFile().getAbsolutePath(); 
+					File f = URIUtils.getAbsoluteFile(uri);
+					
+					if (f != null && f.getAbsolutePath().equals(path)) {
+						return true;
+					}
+				}
+			}
+		}
 		return false;
 	}
 	

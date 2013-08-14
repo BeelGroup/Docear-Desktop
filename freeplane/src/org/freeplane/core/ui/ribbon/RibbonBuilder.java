@@ -238,6 +238,10 @@ public class RibbonBuilder {
 
 	}
 
+	public JRibbon getRibbonRootComponent() {
+		return ribbon;
+	}
+
 	
 
 }

@@ -1,5 +1,6 @@
 package org.docear.plugin.core;
 
+import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -38,6 +39,7 @@ import org.docear.plugin.core.features.DocearLifeCycleObserver;
 import org.docear.plugin.core.features.DocearMapModelController;
 import org.docear.plugin.core.features.DocearMapModelExtension;
 import org.docear.plugin.core.features.DocearMapWriter;
+import org.docear.plugin.core.features.DocearMaximizeMapHandler;
 import org.docear.plugin.core.features.DocearNodeModifiedExtensionController;
 import org.docear.plugin.core.features.DocearNodePrivacyExtensionController;
 import org.docear.plugin.core.listeners.DocearCoreOmniListenerAdapter;
@@ -65,6 +67,7 @@ import org.freeplane.core.resources.components.IPropertyControl;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.IMenuContributor;
 import org.freeplane.core.ui.MenuBuilder;
+import org.freeplane.core.ui.components.OneTouchCollapseResizer;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.ConfigurationUtils;
 import org.freeplane.core.util.LogUtils;
@@ -339,7 +342,7 @@ public class CoreConfiguration extends ALanguageController {
 		file.createNewFile();
 	}
 	
-	protected void initMode(ModeController modeController) {
+	protected void initMode(final ModeController modeController) {
 		WorkspaceController.replaceAction(new DocearAddRepositoryPathAction());
 		WorkspaceController.replaceAction(new DocearRemoveRepositoryPathAction());
 		WorkspaceController.replaceAction(new DocearRemoveRepositoryPathRibbonAction());
@@ -347,14 +350,38 @@ public class CoreConfiguration extends ALanguageController {
 		WorkspaceController.replaceAction(new DocearNewProjectAction());
 		WorkspaceController.replaceAction(new DocearLibraryNewMindmap());
 		
+		final DocearMaximizeMapHandler maximizeMapHandler = DocearMaximizeMapHandler.installMode(modeController);
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				OneTouchCollapseResizer resizer = OneTouchCollapseResizer.findResizerFor(modeController.getUserInputListenerFactory().getRibbonBuilder().getRibbonRootComponent());
+				if(resizer == null) {
+					EventQueue.invokeLater(this);
+					return;
+				}
+				maximizeMapHandler.addCollapsableResizer(resizer);
+			}
+		});
+		
 		DocearProjectLoader docearProjectLoader = new DocearProjectLoader();
 		WorkspaceController.getModeExtension(modeController).setProjectLoader(docearProjectLoader);
 		AWorkspaceModeExtension modeExt = WorkspaceController.getModeExtension(modeController);
-		IWorkspaceView view = modeExt.getView();
+		final IWorkspaceView view = modeExt.getView();
 		if(view != null) {
 			view.getTransferHandler().registerNodeDropHandler(FolderTypeLibraryNode.class, new VirtualFolderDropHandler());
 			view.getTransferHandler().registerNodeDropHandler(LiteratureRepositoryPathNode.class, new FileFolderDropHandler());
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					OneTouchCollapseResizer resizer = OneTouchCollapseResizer.findResizerFor(view.getComponent());
+					if(resizer == null) {
+						EventQueue.invokeLater(this);
+						return;
+					}
+					maximizeMapHandler.addCollapsableResizer(resizer);
+				}
+			});
+			
 		}
+		
 		
 		DocearController.getController().getDocearEventLogger().appendToLog(this, DocearLogEvent.APPLICATION_STARTED);
 		Toolkit.getDefaultToolkit();		

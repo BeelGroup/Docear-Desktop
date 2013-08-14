@@ -3,6 +3,7 @@ package org.docear.plugin.bibtex;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.dnd.DropTarget;
 import java.awt.event.KeyEvent;
 import java.io.File;
@@ -54,6 +55,7 @@ import org.docear.plugin.core.IBibtexDatabase;
 import org.docear.plugin.core.event.DocearEvent;
 import org.docear.plugin.core.event.DocearEventType;
 import org.docear.plugin.core.event.IDocearEventListener;
+import org.docear.plugin.core.features.DocearMaximizeMapHandler;
 import org.docear.plugin.core.workspace.model.DocearProjectChangedEvent;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.docear.plugin.core.workspace.model.IDocearProjectListener;
@@ -65,6 +67,7 @@ import org.freeplane.core.ui.IKeyStrokeProcessor;
 import org.freeplane.core.ui.IMenuContributor;
 import org.freeplane.core.ui.KeyBindingProcessor;
 import org.freeplane.core.ui.MenuBuilder;
+import org.freeplane.core.ui.components.OneTouchCollapseResizer;
 import org.freeplane.core.ui.ribbon.ARibbonContributor;
 import org.freeplane.core.ui.ribbon.IRibbonContributorFactory;
 import org.freeplane.core.ui.ribbon.RibbonActionContributorFactory;
@@ -202,12 +205,21 @@ public class ReferencesController extends ALanguageController implements IDocear
 
 	private void createOptionPanel(JPanel comp) {
 		try {
-			final JTabbedPane tabs = (JTabbedPane) modeController.getUserInputListenerFactory().getToolBar("/format")
-					.getComponent(1);
+			final JTabbedPane tabs = (JTabbedPane) modeController.getUserInputListenerFactory().getToolBar("/format").getComponent(1);
 			Dimension fixSize =  new Dimension(tabs.getComponent(0).getWidth(), 32000);
 			comp.setPreferredSize(fixSize);
 			tabs.add(TextUtils.getText("jabref"), comp);
 			tabs.setSelectedComponent(comp);
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					OneTouchCollapseResizer resizer = jabrefWrapper.getResizer();
+					if(resizer == null) {
+						EventQueue.invokeLater(this);
+						return;
+					}
+					DocearMaximizeMapHandler.getModeHandler(modeController).addCollapsableResizer(resizer);
+				}
+			});
 		}
 		catch (Exception e) {
 			LogUtils.severe(e);

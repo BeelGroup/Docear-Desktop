@@ -182,7 +182,7 @@ public class OneTouchCollapseResizer extends JResizer {
 				recalibrate();
 			}
 			catch (Exception e) {
-				LogUtils.warn(e);
+				LogUtils.warn("Exception in org.freeplane.core.ui.components.OneTouchCollapseResizer.setExpanded(enabled): "+e);
 			}
 		}
 		
@@ -420,7 +420,7 @@ public class OneTouchCollapseResizer extends JResizer {
 	}
 	
 	private void fireCollapseStateChanged(Component resizedComponent, boolean expanded) {
-		ResizeEvent event = new ResizeEvent(resizedComponent);
+		ResizeEvent event = new ResizeEvent(this, resizedComponent);
 		synchronized (this.collapseListener) {
 			for(ComponentCollapseListener listener : collapseListener) {
 				try {

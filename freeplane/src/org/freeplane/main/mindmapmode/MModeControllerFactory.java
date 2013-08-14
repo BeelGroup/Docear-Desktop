@@ -271,20 +271,20 @@ public class MModeControllerFactory {
 		resisableTabs.add(tabs);
 		otcr.addResizerListener(new ResizerListener() {			
 			public void componentResized(ResizeEvent event) {
-				if(event.getSource().equals(tabs)) {
-					ResourceController.getResourceController().setProperty(TABBEDPANE_VIEW_WIDTH, String.valueOf(((JComponent) event.getSource()).getPreferredSize().width));
+				if(event.getComponent().equals(tabs)) {
+					ResourceController.getResourceController().setProperty(TABBEDPANE_VIEW_WIDTH, String.valueOf(((JComponent) event.getComponent()).getPreferredSize().width));
 				}
 			}
 		});
 		otcr.addCollapseListener(new ComponentCollapseListener() {			
 			public void componentCollapsed(ResizeEvent event) {
-				if(event.getSource().equals(tabs)) {
+				if(event.getComponent().equals(tabs)) {
 					ResourceController.getResourceController().setProperty(TABBEDPANE_VIEW_COLLAPSED, "true");
 				}
 			}
 
 			public void componentExpanded(ResizeEvent event) {
-				if(event.getSource().equals(tabs)) {
+				if(event.getComponent().equals(tabs)) {
 					ResourceController.getResourceController().setProperty(TABBEDPANE_VIEW_COLLAPSED, "false");
 				}
 			}

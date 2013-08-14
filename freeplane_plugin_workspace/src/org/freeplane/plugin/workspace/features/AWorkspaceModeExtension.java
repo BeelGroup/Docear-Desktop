@@ -120,6 +120,10 @@ public abstract class AWorkspaceModeExtension implements IExtension {
 			public WorkspaceNodeSelectionHandler getNodeSelectionHandler() {
 				return new WorkspaceNodeSelectionHandler();
 			}
+
+			public Component getComponent() {
+				return null;
+			}
 		};
 	}
 	

@@ -173,7 +173,7 @@ public class JResizer extends JComponent {
 	}
 	
 	private void fireSizeChanged(Component resizedComponent) {
-		ResizeEvent event = new ResizeEvent(resizedComponent);
+		ResizeEvent event = new ResizeEvent(this, resizedComponent);
 		synchronized (this.resizeListener) {
 			for(ResizerListener listener : resizeListener) {
 				listener.componentResized(event);

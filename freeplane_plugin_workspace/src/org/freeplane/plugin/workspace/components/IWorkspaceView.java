@@ -38,4 +38,6 @@ public interface IWorkspaceView {
 	public void setPaintingEnabled(boolean enabled);
 	
 	public WorkspaceNodeSelectionHandler getNodeSelectionHandler();
+	
+	public Component getComponent();
 }

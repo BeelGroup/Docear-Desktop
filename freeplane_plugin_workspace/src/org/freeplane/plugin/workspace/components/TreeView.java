@@ -294,13 +294,13 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 	}
 
 	public void componentCollapsed(ResizeEvent event) {
-		if(this.equals(event.getSource())) {
+		if(this.equals(event.getComponent())) {
 			super.setPreferredSize(new Dimension(0, getPreferredSize().height));
 		}
 	}
 
 	public void componentExpanded(ResizeEvent event) {
-		if(this.equals(event.getSource())) {
+		if(this.equals(event.getComponent())) {
 			// nothing
 		}
 	}
@@ -353,5 +353,9 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 			nodeSelectionHandler = new WorkspaceNodeSelectionHandler();
 		}
 		return nodeSelectionHandler;
+	}
+
+	public Component getComponent() {
+		return this;
 	}
 }

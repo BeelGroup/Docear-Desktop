@@ -241,19 +241,19 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 		ResizerEventAdapter adapter = new ResizerEventAdapter() {
 			
 			public void componentResized(ResizeEvent event) {
-				if(event.getSource().equals(getView())) {
-					getWorkspaceSettings().setProperty(WorkspaceSettings.WORKSPACE_VIEW_WIDTH, String.valueOf(((JComponent) event.getSource()).getPreferredSize().width));
+				if(event.getComponent().equals(getView())) {
+					getWorkspaceSettings().setProperty(WorkspaceSettings.WORKSPACE_VIEW_WIDTH, String.valueOf(((JComponent) event.getComponent()).getPreferredSize().width));
 				}
 			}
 
 			public void componentCollapsed(ResizeEvent event) {
-				if(event.getSource().equals(getView())) {
+				if(event.getComponent().equals(getView())) {
 					getWorkspaceSettings().setProperty(WorkspaceSettings.WORKSPACE_VIEW_COLLAPSED, "true");
 				}
 			}
 
 			public void componentExpanded(ResizeEvent event) {
-				if(event.getSource().equals(getView())) {
+				if(event.getComponent().equals(getView())) {
 					getWorkspaceSettings().setProperty(WorkspaceSettings.WORKSPACE_VIEW_COLLAPSED, "false");
 				}
 			}			
@@ -268,25 +268,26 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 			public void run() {
 				boolean expanded = true;
 				try {
-					expanded = !Boolean.parseBoolean(getWorkspaceSettings().getProperty(WorkspaceSettings.WORKSPACE_VIEW_COLLAPSED, "false"));
-				}
-				catch (Exception e) {
-					// ignore -> default is true
-				}
-				otcr.setExpanded(expanded);
-				try {
 					int width = Integer.parseInt(getWorkspaceSettings().getProperty(WorkspaceSettings.WORKSPACE_VIEW_WIDTH, "250"));
 					getWorkspaceView().setPreferredSize(new Dimension(width, 100));
 				}
 				catch (Exception e) {
 					// blindly accept
 				}
+				try {
+					expanded = !Boolean.parseBoolean(getWorkspaceSettings().getProperty(WorkspaceSettings.WORKSPACE_VIEW_COLLAPSED, "false"));
+				}
+				catch (Exception e) {
+					// ignore -> default is true
+				}
+				otcr.setExpanded(expanded);
 			}
 		};
-		this.viewUpdater.run();
 		resizableTools.add(otcr);
 		
 		modeController.getUserInputListenerFactory().addToolBar("workspace", ViewController.LEFT, resizableTools);
+		this.viewUpdater.run();
+		
 		getWorkspaceView().setModel(getModel());
 		getView().expandPath(getModel().getRoot().getTreePath());
 		for(AWorkspaceProject project : getModel().getProjects()) {
