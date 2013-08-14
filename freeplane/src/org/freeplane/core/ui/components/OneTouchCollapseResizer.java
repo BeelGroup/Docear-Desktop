@@ -119,8 +119,14 @@ public class OneTouchCollapseResizer extends JResizer {
 		addMouseListener(listener);
 		
 		add(getHotSpot());
+		initDefaults();
 	}
 	
+	protected void initDefaults() {
+		// TODO Auto-generated method stub
+		
+	}
+
 	/***********************************************************************************
 	 * METHODS
 	 **********************************************************************************/
@@ -419,7 +425,7 @@ public class OneTouchCollapseResizer extends JResizer {
 		}		
 	}
 	
-	private void fireCollapseStateChanged(Component resizedComponent, boolean expanded) {
+	protected void fireCollapseStateChanged(Component resizedComponent, boolean expanded) {
 		ResizeEvent event = new ResizeEvent(this, resizedComponent);
 		synchronized (this.collapseListener) {
 			for(ComponentCollapseListener listener : collapseListener) {

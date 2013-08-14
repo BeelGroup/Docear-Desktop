@@ -60,6 +60,7 @@ import org.docear.plugin.core.workspace.controller.DocearProjectLoader;
 import org.docear.plugin.core.workspace.model.DocearWorspaceProjectCreator;
 import org.docear.plugin.core.workspace.node.FolderTypeLibraryNode;
 import org.docear.plugin.core.workspace.node.LiteratureRepositoryPathNode;
+import org.freeplane.core.resources.IFreeplanePropertyListener;
 import org.freeplane.core.resources.OptionPanelController;
 import org.freeplane.core.resources.ResourceBundles;
 import org.freeplane.core.resources.ResourceController;
@@ -67,12 +68,15 @@ import org.freeplane.core.resources.components.IPropertyControl;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.IMenuContributor;
 import org.freeplane.core.ui.MenuBuilder;
+import org.freeplane.core.ui.components.JResizer.Direction;
 import org.freeplane.core.ui.components.OneTouchCollapseResizer;
+import org.freeplane.core.ui.components.OneTouchCollapseResizer.CollapseDirection;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.ConfigurationUtils;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.help.OnlineDocumentationAction;
+import org.freeplane.features.map.IMapSelection;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mapio.MapIO;
@@ -81,6 +85,7 @@ import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.IControllerExecuteExtension;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.mode.mindmapmode.MModeController;
+import org.freeplane.features.ui.ToggleToolbarAction;
 import org.freeplane.features.url.MapConversionException;
 import org.freeplane.features.url.MapVersionInterpreter;
 import org.freeplane.features.url.UrlManager;
@@ -359,6 +364,10 @@ public class CoreConfiguration extends ALanguageController {
 					return;
 				}
 				maximizeMapHandler.addCollapsableResizer(resizer);
+				maximizeMapHandler.addCollapsableResizer(getNotePanelResizer());
+				maximizeMapHandler.addCollapsableResizer(getFBarResizer());
+				maximizeMapHandler.addCollapsableResizer(getIconBarResizer());
+				maximizeMapHandler.addCollapsableResizer(getStatusLineResizer());
 			}
 		});
 		
@@ -696,7 +705,151 @@ public class CoreConfiguration extends ALanguageController {
 //		Controller.getCurrentController().getMapViewManager().addMapViewChangeListener(adapter);
 //		Controller.getCurrentController().getMapViewManager().addMapViewChangeListener(new MapLifeCycleAndViewListener());
 		WorkspaceController.getModeExtension(modeController).getIOController().registerNodeActionListener(AWorkspaceTreeNode.class, WorkspaceActionEvent.WSNODE_OPEN_DOCUMENT, new WorkspaceOpenDocumentListener());
-	}	
+	}
+	
+	private OneTouchCollapseResizer getStatusLineResizer() {
+		return new OneTouchCollapseResizer(Direction.DOWN, CollapseDirection.COLLAPSE_DOWN) {
+			private static final long serialVersionUID = 1L;
+			ToggleToolbarAction action = (ToggleToolbarAction) WorkspaceController.getAction(Controller.getCurrentModeController(), "ToggleStatusAction");
+			@Override
+			public boolean isExpanded() {
+				return action.isVisible();
+			}
+
+			@Override
+			public void setExpanded(boolean enabled) {
+				if(enabled != isExpanded()) {
+					action.actionPerformed(null);
+				}
+			}
+
+			@Override
+			protected void initDefaults() {
+				super.initDefaults();
+				ResourceController.getResourceController().addPropertyChangeListener(new IFreeplanePropertyListener() {
+					
+					@Override
+					public void propertyChanged(String propertyName, String newValue, String oldValue) {
+						if(action.getPropertyName().equals(propertyName)) {
+							fireCollapseStateChanged(null, !Boolean.parseBoolean(newValue));
+						}
+					}
+				});
+			}
+		};
+	}
+
+	private OneTouchCollapseResizer getIconBarResizer() {
+		return new OneTouchCollapseResizer(Direction.DOWN, CollapseDirection.COLLAPSE_DOWN) {
+			private static final long serialVersionUID = 1L;
+			ToggleToolbarAction action = (ToggleToolbarAction) WorkspaceController.getAction(Controller.getCurrentModeController(), "ToggleLeftToolbarAction");
+			@Override
+			public boolean isExpanded() {
+				return action.isVisible();
+			}
+
+			@Override
+			public void setExpanded(boolean enabled) {
+				if(enabled != isExpanded()) {
+					action.actionPerformed(null);
+				}
+			}
+
+			@Override
+			protected void initDefaults() {
+				super.initDefaults();
+				ResourceController.getResourceController().addPropertyChangeListener(new IFreeplanePropertyListener() {
+					
+					@Override
+					public void propertyChanged(String propertyName, String newValue, String oldValue) {
+						if(action.getPropertyName().equals(propertyName)) {
+							fireCollapseStateChanged(null, !Boolean.parseBoolean(newValue));
+						}
+					}
+				});
+			}
+		};
+	}
+
+	private OneTouchCollapseResizer getFBarResizer() {
+		return new OneTouchCollapseResizer(Direction.DOWN, CollapseDirection.COLLAPSE_DOWN) {
+			private static final long serialVersionUID = 1L;
+			ToggleToolbarAction action = (ToggleToolbarAction) WorkspaceController.getAction(Controller.getCurrentModeController(), "ToggleFBarAction");
+			@Override
+			public boolean isExpanded() {
+				return action.isVisible();
+			}
+
+			@Override
+			public void setExpanded(boolean enabled) {
+				if(enabled != isExpanded()) {
+					action.actionPerformed(null);
+				}
+			}
+
+			@Override
+			protected void initDefaults() {
+				super.initDefaults();
+				ResourceController.getResourceController().addPropertyChangeListener(new IFreeplanePropertyListener() {
+					
+					@Override
+					public void propertyChanged(String propertyName, String newValue, String oldValue) {
+						if(action.getPropertyName().equals(propertyName)) {
+							fireCollapseStateChanged(null, !Boolean.parseBoolean(newValue));
+						}
+					}
+				});
+			}
+		};
+	}
+
+	private OneTouchCollapseResizer getNotePanelResizer() {
+		
+		return new OneTouchCollapseResizer(Direction.DOWN, CollapseDirection.COLLAPSE_DOWN) {
+			private static final long serialVersionUID = 1L;
+			AFreeplaneAction action = WorkspaceController.getAction(Controller.getCurrentModeController(), "ShowHideNoteAction");
+			@Override
+			
+			public boolean isExpanded() {
+				return action.isSelected();
+			}
+
+			@Override
+			public void setExpanded(boolean enabled) {
+				if(enabled != isExpanded()) {
+					action.actionPerformed(null);
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							Controller controller = Controller.getCurrentController();
+							IMapSelection selection = controller.getSelection();
+							if(selection != null) {
+								if(selection.getSelected() != null) {
+									controller.getMapViewManager().getComponent(selection.getSelected()).requestFocusInWindow();
+								}
+							}
+						}
+					});
+				}
+				
+			}
+
+			@Override
+			protected void initDefaults() {
+				super.initDefaults();
+				ResourceController.getResourceController().addPropertyChangeListener(new IFreeplanePropertyListener() {
+					
+					@Override
+					public void propertyChanged(String propertyName, String newValue, String oldValue) {
+						if("use_split_pane".equals(propertyName)) {
+							fireCollapseStateChanged(null, !Boolean.parseBoolean(newValue));
+						}
+					}
+				});
+			}
+			
+			
+		};
+	}
 	
 	class GettingStartedAction extends AFreeplaneAction {
 		

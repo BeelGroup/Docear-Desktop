@@ -20,12 +20,15 @@ import org.freeplane.features.mode.ModeController;
 import org.freeplane.plugin.workspace.WorkspaceController;
 
 public class DocearMaximizeMapHandler implements IExtension, IDocearEventListener, ComponentCollapseListener {
+	private static final String MAPVIEW_MAXIMIZED_PROPERTY = "mapview_maximized";
+	
 	private volatile boolean IS_IN_TOGGLE = false;
 	private final Map<OneTouchCollapseResizer, Boolean> lastStateMap = new LinkedHashMap<OneTouchCollapseResizer, Boolean>();
 	/***********************************************************************************
 	 * CONSTRUCTORS
 	 **********************************************************************************/
 	private DocearMaximizeMapHandler(ModeController modeController) {
+		ResourceController.getResourceController().setProperty(MAPVIEW_MAXIMIZED_PROPERTY, "false");
 		WorkspaceController.replaceAction(modeController, new ToggleMapMaximizedAction());
 	}
 
@@ -74,13 +77,13 @@ public class DocearMaximizeMapHandler implements IExtension, IDocearEventListene
 	}
 	
 	public boolean isMapMaximizeEnabled() {
-		return Boolean.parseBoolean(ResourceController.getResourceController().getProperty("toggle_map_maximized", "false"));
+		return Boolean.parseBoolean(ResourceController.getResourceController().getProperty(MAPVIEW_MAXIMIZED_PROPERTY, "false"));
 	}
 
 	public void toggleMaximized() {
 		Boolean max = !isMapMaximizeEnabled();
 		setMapMaximized(max);
-		ResourceController.getResourceController().setProperty("toggle_map_maximized", Boolean.toString(max));
+		ResourceController.getResourceController().setProperty(MAPVIEW_MAXIMIZED_PROPERTY, Boolean.toString(max));
 	}
 
 	private void setMapMaximized(boolean maximized) {
@@ -141,7 +144,7 @@ public class DocearMaximizeMapHandler implements IExtension, IDocearEventListene
 		}
 	}
 	
-	@SelectableAction(checkOnPropertyChange="toggle_map_maximized")
+	@SelectableAction(checkOnPropertyChange = MAPVIEW_MAXIMIZED_PROPERTY)
 	public class ToggleMapMaximizedAction extends AFreeplaneAction {
 		
 		private static final long serialVersionUID = -2014522604202908914L;
@@ -159,8 +162,8 @@ public class DocearMaximizeMapHandler implements IExtension, IDocearEventListene
 		 **********************************************************************************/
 
 		@Override
-		public void setSelected() {
-			setSelected(Boolean.parseBoolean(ResourceController.getResourceController().getProperty("toggle_map_maximized", "false")));
+		public boolean isSelected() {
+			return isMapMaximizeEnabled();
 		}
 		
 		/***********************************************************************************
