@@ -1,16 +1,17 @@
 package org.docear.plugin.services.features.update.view;
 
+import java.awt.Color;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.TreeMap;
 
-import javax.swing.JComboBox;
+import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.Version;
+import org.docear.plugin.core.ui.wizard.AWizardPage;
+import org.docear.plugin.core.ui.wizard.WizardContext;
 import org.docear.plugin.services.features.update.UpdateCheck;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
@@ -21,7 +22,7 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
-public class UpdateCheckerDialogPanel extends JPanel {
+public class UpdateCheckerDialogPanel extends AWizardPage {
 	class Option {
 		public String key;
 		public String text;
@@ -43,7 +44,6 @@ public class UpdateCheckerDialogPanel extends JPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private JComboBox optionsComboBox;
 	
 	private TreeMap<String, Option> optionsMap = new TreeMap<String, Option>();
 	
@@ -51,6 +51,7 @@ public class UpdateCheckerDialogPanel extends JPanel {
 	 * Create the dialog.
 	 */
 	public UpdateCheckerDialogPanel(String selectedOption, String runningVersionString, String latestVersionString, String status) {
+		setBackground(Color.WHITE);
 		setBounds(100, 100, 620, 266);
 		setLayout(new FormLayout(new ColumnSpec[] {
 				FormFactory.DEFAULT_COLSPEC,
@@ -65,27 +66,13 @@ public class UpdateCheckerDialogPanel extends JPanel {
 				RowSpec.decode("1dlu"),
 				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
+				FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,}));
 		
 		JLabel lblMessage = new JLabel(TextUtils.getText("docear.update_checker.message"));
 		add(lblMessage, "1, 1, 3, 1, fill, top");
 		lblMessage.setVerticalAlignment(SwingConstants.TOP);
-		
-		try {
-			JLabel lblYouCanDownload = new JLabel(TextUtils.getText("docear.update_checker.you_can_download"));
-			add(lblYouCanDownload, "1, 3");
-			String uri = null;
-			if (status.equals(Version.StatusName.devel.name())) {
-				uri = "http://www.docear.org/support/forums/docear-support-forums-group3/experimental-releases-forum8/";
-			}
-			else {
-				uri = "http://www.docear.org/software/download/";
-			}
-			JHyperlink hyperlink = new JHyperlink(uri, new URI(uri));
-			add(hyperlink, "3, 3");
-		} catch (URISyntaxException e) {
-			LogUtils.warn(e);
-		}
 		
 		JLabel lblYourVersion = new JLabel(TextUtils.getText("docear.update_checker.active_version"));
 		add(lblYourVersion, "1, 5");
@@ -98,9 +85,23 @@ public class UpdateCheckerDialogPanel extends JPanel {
 		
 		JLabel lblLinkNew = new JLabel(latestVersionString);
 		add(lblLinkNew, "3, 7");
-		
-		JLabel lblNotify = new JLabel(TextUtils.getText("docear.update_checker.notify"));
-		add(lblNotify, "1, 9");
+		JLabel lblYouCanDownload = new JLabel(TextUtils.getText("docear.update_checker.you_can_download"));
+		add(lblYouCanDownload, "1, 11");
+		try {
+			String uri = null;
+			if (status.equals(Version.StatusName.devel.name())) {
+				uri = "http://www.docear.org/support/forums/docear-support-forums-group3/experimental-releases-forum8/";
+			}
+			else {
+				uri = "http://www.docear.org/software/download/";
+			}
+			
+			JHyperlink hyperlink = new JHyperlink(uri, new URI(uri));
+			hyperlink.setBackground(Color.WHITE);
+			add(hyperlink, "3, 11");
+		} catch (URISyntaxException e) {
+			LogUtils.warn(e);
+		}
 		
 		optionsMap.put(UpdateCheck.DOCEAR_UPDATE_CHECKER_MAJOR, new Option(UpdateCheck.DOCEAR_UPDATE_CHECKER_MAJOR, TextUtils.getText("OptionPanel.docear.update_checker.major")));
 		optionsMap.put(UpdateCheck.DOCEAR_UPDATE_CHECKER_MIDDLE, new Option(UpdateCheck.DOCEAR_UPDATE_CHECKER_MIDDLE, TextUtils.getText("OptionPanel.docear.update_checker.middle")));
@@ -108,31 +109,27 @@ public class UpdateCheckerDialogPanel extends JPanel {
 		optionsMap.put(UpdateCheck.DOCEAR_UPDATE_CHECKER_BETA, new Option(UpdateCheck.DOCEAR_UPDATE_CHECKER_BETA, TextUtils.getText("OptionPanel.docear.update_checker.beta")));
 		optionsMap.put(UpdateCheck.DOCEAR_UPDATE_CHECKER_ALL, new Option(UpdateCheck.DOCEAR_UPDATE_CHECKER_ALL, TextUtils.getText("OptionPanel.docear.update_checker.all")));
 		optionsMap.put(UpdateCheck.DOCEAR_UPDATE_CHECKER_DISABLE, new Option(UpdateCheck.DOCEAR_UPDATE_CHECKER_DISABLE, TextUtils.getText("OptionPanel.docear.update_checker.disable")));
-		
-		optionsComboBox = new JComboBox(new Option[] {				
-				optionsMap.get(UpdateCheck.DOCEAR_UPDATE_CHECKER_MAJOR),
-				optionsMap.get(UpdateCheck.DOCEAR_UPDATE_CHECKER_MIDDLE),
-				optionsMap.get(UpdateCheck.DOCEAR_UPDATE_CHECKER_MINOR),
-				optionsMap.get(UpdateCheck.DOCEAR_UPDATE_CHECKER_BETA),
-				optionsMap.get(UpdateCheck.DOCEAR_UPDATE_CHECKER_ALL),
-				optionsMap.get(UpdateCheck.DOCEAR_UPDATE_CHECKER_DISABLE)
-		});
-		optionsComboBox.setEditable(false);
-		
-		String choice = DocearController.getPropertiesController().getProperty("docear.update_checker.options");
-		try {
-			optionsComboBox.setSelectedItem(optionsMap.get(choice));
-		}
-		catch (Exception e) {
-			LogUtils.warn(e);
-		}
-		
-		add(optionsComboBox, "3, 9, fill, default");		
+
 	}
-	
-	public String getChoice() {
-		Option o = (Option) optionsComboBox.getSelectedItem(); 
-		return o.getKey();		
+
+	@Override
+	public String getTitle() {
+		return TextUtils.getText("docear.version.check.title");
+	}
+
+	@Override
+	public void preparePage(WizardContext context) {
+		context.getNextButton().setText(TextUtils.getText("docear.version.check.download"));
+		context.getNextButton().setEnabled(true);
+		context.getNextButton().setVisible(true);
+		getRootPane().setDefaultButton((JButton) context.getNextButton());
+		context.getBackButton().setText(TextUtils.getText("docear.update_checker.ignore"));
+		context.getBackButton().setEnabled(true);
+		context.getBackButton().setVisible(true);
+		context.getSkipButton().setText(TextUtils.getText("docear.setup.wizard.controls.cancel"));
+		context.getSkipButton().setEnabled(true);
+		context.getSkipButton().setVisible(true);
+		context.setWizardTitle(getTitle());
 	}
 	
 

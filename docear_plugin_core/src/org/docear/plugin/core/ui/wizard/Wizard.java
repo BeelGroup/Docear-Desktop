@@ -262,6 +262,13 @@ public class Wizard {
 		}
 	}
 	
+	public void skipAll() {
+		if(NOT_DEFINED == returnCode) {
+			returnCode = SKIP_OPTION;
+			wizard.dispatchEvent(new WindowEvent(wizard, WindowEvent.WINDOW_CLOSING));
+		}
+	}
+	
 	private void initComponents() {
 		JPanel mainPanel = new JPanel(true);
 		JPanel contentPanel = new JPanel();

@@ -3,7 +3,6 @@ package org.docear.plugin.services.features.update;
 import java.io.StringReader;
 
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.docear.plugin.core.DocearController;
@@ -12,7 +11,6 @@ import org.docear.plugin.services.ADocearServiceFeature;
 import org.docear.plugin.services.ServiceController;
 import org.docear.plugin.services.features.io.DocearServiceResponse;
 import org.docear.plugin.services.features.update.action.DocearUpdateCheckAction;
-import org.docear.plugin.services.features.update.view.UpdateCheckerDialogPanel;
 import org.docear.plugin.services.xml.creators.ApplicationCreator;
 import org.docear.plugin.services.xml.creators.BuildNumberCreator;
 import org.docear.plugin.services.xml.creators.IXMLNodeProcessor;
@@ -104,25 +102,7 @@ public class UpdateCheck extends ADocearServiceFeature {
 			int compCode = latestVersion.compareTo(runningVersion);
 			
 			if (showUpdateCheckerDialog(compCode, choice)) {
-				// don't show Dialog again if latestVersionFromServer was already announced to the user
-				String lastLatestVersionString = DocearController.getPropertiesController().getProperty("docer.update_checker.savedLatestVersion", "");
-				final String latestVersionString = latestVersion.toString();
-				if (lastLatestVersionString.equals(latestVersionString)) {
-					return;
-				}
-				DocearController.getPropertiesController().setProperty("docer.update_checker.savedLatestVersion", latestVersionString);
-				SwingUtilities.invokeLater(new Runnable() {					
-					public void run() {
-						try {
-							UpdateCheckerDialogPanel dialogPanel = new UpdateCheckerDialogPanel("", runningVersion.toString(), latestVersionString, latestVersion.getStatus());				
-							JOptionPane.showMessageDialog(UITools.getFrame(), dialogPanel, TextUtils.getText("docear.version.check.title"), JOptionPane.INFORMATION_MESSAGE);
-							DocearController.getPropertiesController().setProperty("docear.update_checker.options", dialogPanel.getChoice());
-						}
-						catch (Exception e) {
-							LogUtils.warn("org.docear.plugin.services.features.update.UpdateCheck.checkForUpdates(): "+e.getMessage());
-						}
-					}
-				});
+				DocearUpdateCheckAction.showDialog(runningVersion, latestVersion);
 			}
 			else {
 				if(forced) {

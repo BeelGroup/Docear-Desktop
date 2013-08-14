@@ -1,11 +1,20 @@
 package org.docear.plugin.services.features.update.action;
 
 import java.awt.event.ActionEvent;
+import java.net.URI;
 
 import org.docear.plugin.core.DocearController;
+import org.docear.plugin.core.Version;
+import org.docear.plugin.core.ui.wizard.Wizard;
+import org.docear.plugin.core.ui.wizard.WizardContext;
+import org.docear.plugin.core.ui.wizard.WizardPageDescriptor;
 import org.docear.plugin.services.ServiceController;
 import org.docear.plugin.services.features.update.UpdateCheck;
+import org.docear.plugin.services.features.update.view.UpdateCheckerDialogPanel;
 import org.freeplane.core.ui.AFreeplaneAction;
+import org.freeplane.core.ui.components.UITools;
+import org.freeplane.core.util.LogUtils;
+import org.freeplane.features.mode.Controller;
 
 public class DocearUpdateCheckAction extends AFreeplaneAction {
 	
@@ -22,8 +31,75 @@ public class DocearUpdateCheckAction extends AFreeplaneAction {
 	}
 	/***********************************************************************************
 	 * METHODS
+	 * @param latestVersionString 
 	 **********************************************************************************/
+	
+	public static void showDialog(final Version runningVersion, final Version latestVersion) {
+		// don't show Dialog again if latestVersionFromServer was already announced to the user
+		String lastLatestVersionString = DocearController.getPropertiesController().getProperty("docer.update_checker.savedLatestVersion", "");
+		final String latestVersionString = latestVersion.toString();
+		if (lastLatestVersionString.equals(latestVersionString)) {
+			return;
+		}
+		new Thread(new Runnable() {
+			public void run() {
+				try {
+					UpdateCheckerDialogPanel updateAvailablePage = new UpdateCheckerDialogPanel("", runningVersion.toString(), latestVersionString, latestVersion.getStatus());
+					Wizard wizard = initWizard(updateAvailablePage);
+					//JOptionPane.showMessageDialog(UITools.getFrame(), dialogPanel, TextUtils.getText("docear.version.check.title"), JOptionPane.INFORMATION_MESSAGE);
+					//DocearController.getPropertiesController().setProperty("docear.update_checker.options", dialogPanel.getChoice());
+					int choice = wizard.show();
+					if(choice == Wizard.OK_OPTION) {
+						String uri = null;
+						if (latestVersion.getStatus().equals(Version.StatusName.devel.name())) {
+							uri = "http://www.docear.org/support/forums/docear-support-forums-group3/experimental-releases-forum8/";
+						}
+						else {
+							uri = "http://www.docear.org/software/download/";
+						}
+						Controller.getCurrentController().getViewController().openDocument(new URI(uri));
+					}
+					
+					if(choice != Wizard.CANCEL_OPTION) {
+						//don't show the same version again
+						DocearController.getPropertiesController().setProperty("docer.update_checker.savedLatestVersion", latestVersionString);
+					}
+				}
+				catch (Exception e) {
+					LogUtils.warn("org.docear.plugin.services.features.update.action.DocearUpdateCheckAction.showDialog(...).new Runnable() {...}.run(): "+e.getMessage());
+				}
+			}
+		}).start();
+	}
+	
+	private static Wizard initWizard(UpdateCheckerDialogPanel page) {
+		final Wizard wizard = new Wizard(UITools.getFrame());
+		
+		WizardPageDescriptor desc = new WizardPageDescriptor("page", page) {
 
+			@Override
+			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
+				return Wizard.FINISH_PAGE;
+			}
+
+			@Override
+			public WizardPageDescriptor getBackPageDescriptor(WizardContext context) {
+				wizard.skipAll();
+				return null;
+			}
+
+			@Override
+			public WizardPageDescriptor getSkipPageDescriptor(WizardContext context) {
+				wizard.cancel();
+				return null;
+			}
+			
+		};
+		wizard.registerWizardPanel(desc);
+		wizard.setStartPage(desc.getIdentifier());
+		
+		return wizard;
+	}
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
 	 **********************************************************************************/
@@ -33,5 +109,5 @@ public class DocearUpdateCheckAction extends AFreeplaneAction {
 				ServiceController.getFeature(UpdateCheck.class).checkForUpdates(true);
 			}
 		});
-	}
+	}	
 }
