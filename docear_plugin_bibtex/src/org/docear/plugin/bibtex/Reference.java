@@ -17,7 +17,6 @@ import net.sf.jabref.gui.FileListTableModel;
 
 import org.docear.plugin.bibtex.jabref.JabRefAttributes;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
-import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.link.LinkController;
 import org.freeplane.plugin.workspace.URIUtils;
@@ -47,38 +46,6 @@ public class Reference {
 	private URL url = null;
 
 	public Reference(BasePanel basePanel, BibtexEntry entry) {
-		// JabRefAttributes jabRefAttributes = ReferencesController.getController().getJabRefAttributes();
-		//
-		// attributes = new ArrayList<Reference.Item>();
-		//
-		// if (entry.getCiteKey() == null || entry.getCiteKey().trim().length() == 0) {
-		// jabRefAttributes.generateBibtexEntry(entry);
-		// }
-		//
-		// this.key = new Item(jabRefAttributes.getKeyAttribute(), entry.getCiteKey());
-		// for (Entry<String, String> valueAttributes : jabRefAttributes.getValueAttributes().entrySet()) {
-		// attributes.add(new Item(valueAttributes.getKey(), entry.getField(valueAttributes.getValue())));
-		// }
-		//
-		// String fileField = entry.getField(GUIGlobals.FILE_FIELD);
-		// if (fileField != null) {
-		// FileListTableModel model = new FileListTableModel();
-		// model.setContent(fileField);
-		//
-		// for (int i=0; i<model.getRowCount(); i++) {
-		// uris.add(new File(model.getEntry(i).getLink()).toURI());
-		// }
-		// }
-		//
-		// try {
-		// String url = entry.getField("url");
-		// if(url != null && url.trim().length() > 0) {
-		// this.url = new URL(url);
-		// }
-		// }
-		// catch (MalformedURLException e) {
-		// //LogUtils.info("org.docear.plugin.bibtex.Reference(): "+e.getMessage());
-		// }
 		JabRefAttributes jabRefAttributes = ReferencesController.getController().getJabRefAttributes();
 
 		attributes = new ArrayList<Reference.Item>();
