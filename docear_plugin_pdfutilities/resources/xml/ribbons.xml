@@ -35,6 +35,10 @@
 			<ribbon_band name="pdf" resize_policies="Mirror">				
 				<ribbon_action action="ImportNewAnnotationsAction" priority="TOP" />
 				<ribbon_action action="ImportAllAnnotationsAction" priority="TOP" />
+				<ribbon_action action="LinkDeleteFileFromDiskAction" priority="TOP" />
+				<ribbon_action action="ImportNewChildAnnotationsAction" priority="MEDIUM" />
+				<ribbon_action action="ImportAllChildAnnotationsAction" priority="MEDIUM" />
+				<ribbon_action action="RemoveLinebreaksAction" priority="MEDIUM" />
 			</ribbon_band>
 		</ribbon_task>
 		

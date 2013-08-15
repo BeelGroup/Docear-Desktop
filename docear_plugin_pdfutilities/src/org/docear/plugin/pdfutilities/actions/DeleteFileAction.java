@@ -27,7 +27,7 @@ public class DeleteFileAction extends DocearAction {
 	private static final long serialVersionUID = 1L;
 
 	public DeleteFileAction() {
-		super("menu_delete_file");
+		super("LinkDeleteFileFromDiskAction");
 	}
 
 	public void actionPerformed(ActionEvent event) {
