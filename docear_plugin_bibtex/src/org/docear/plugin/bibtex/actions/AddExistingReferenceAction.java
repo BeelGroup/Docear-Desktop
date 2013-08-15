@@ -8,7 +8,9 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 import org.docear.plugin.bibtex.JabRefProjectExtension;
+import org.docear.plugin.bibtex.Reference;
 import org.docear.plugin.bibtex.dialogs.ExistingReferencesDialog;
+import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.ui.components.UITools;
@@ -57,7 +59,7 @@ public class AddExistingReferenceAction extends AFreeplaneAction {
 				return;
 			}
 			try {				
-				URI tempLink = NodeLinks.getLink(node);
+				URI tempLink = Reference.getBibTeXRelativeURI(NodeLinks.getLink(node), (DocearWorkspaceProject) project);
 				String tempName = UrlManager.getController().getAbsoluteFile(node.getMap(), tempLink).getName();
 
 				if (link == null) {

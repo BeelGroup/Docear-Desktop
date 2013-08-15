@@ -16,7 +16,10 @@ import net.sf.jabref.GUIGlobals;
 import net.sf.jabref.gui.FileListTableModel;
 
 import org.docear.plugin.bibtex.jabref.JabRefAttributes;
+import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
+import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.LogUtils;
+import org.freeplane.features.link.LinkController;
 import org.freeplane.plugin.workspace.URIUtils;
 
 public class Reference {
@@ -172,5 +175,17 @@ public class Reference {
 			}
 		}
 		return false;
+	}
+	
+	public static URI getBibTeXRelativeURI(URI uri, DocearWorkspaceProject project) {
+		File bibPath = URIUtils.getAbsoluteFile(project.getBibtexDatabase());
+		URI relativeBibURI = LinkController.toLinkTypeDependantURI(bibPath, URIUtils.getAbsoluteFile(uri), LinkController.LINK_RELATIVE_TO_MINDMAP);
+//		if(Compat.isWindowsOS() && relativeBibURI.getPath().startsWith("//")) {
+//			new File(relativeBibURI).getPath().replace(File.separator, File.separator+File.separator)/*+File.separator+File.separator+"Example PDFs"*/));
+//		}
+//		else {
+//			replaceMapping.put("@LITERATURE_BIB_DEMO@", cutLastSlash(relativeBibURI.getPath().replace(":", "\\:")/*+"/Example PDFs"*/));
+//		}
+		return relativeBibURI;
 	}
 }
