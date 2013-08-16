@@ -202,6 +202,10 @@ public class DocearConnectionProvider extends ADocearServiceFeature {
 					return new DocearServiceResponse(org.docear.plugin.services.features.io.DocearServiceResponse.Status.NO_CONTENT,
 							response.getEntityInputStream());
 				}
+				else if (status != null && status.equals(Status.UNAUTHORIZED)) {
+					return new DocearServiceResponse(org.docear.plugin.services.features.io.DocearServiceResponse.Status.UNAUTHORIZED,
+							getErrorMessageInputStream(response));
+				}
 				else {
 					return new DocearServiceResponse(org.docear.plugin.services.features.io.DocearServiceResponse.Status.FAILURE,
 							getErrorMessageInputStream(response));
@@ -315,6 +319,10 @@ public class DocearConnectionProvider extends ADocearServiceFeature {
 				else if (status != null && status.equals(Status.NO_CONTENT)) {
 					return new DocearServiceResponse(org.docear.plugin.services.features.io.DocearServiceResponse.Status.NO_CONTENT,
 							response.getEntityInputStream());
+				}
+				else if (status != null && status.equals(Status.UNAUTHORIZED)) {
+					return new DocearServiceResponse(org.docear.plugin.services.features.io.DocearServiceResponse.Status.UNAUTHORIZED,
+							getErrorMessageInputStream(response));
 				}
 				else {
 					return new DocearServiceResponse(org.docear.plugin.services.features.io.DocearServiceResponse.Status.FAILURE,

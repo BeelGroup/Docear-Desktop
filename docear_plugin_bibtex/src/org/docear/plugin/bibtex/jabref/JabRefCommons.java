@@ -452,7 +452,12 @@ public abstract class JabRefCommons {
 					params.add("commit", "false");
 					DocearServiceResponse serviceResponse = ServiceController.getConnectionController().put("/internal/documents/" + hash + "/metadata", params);
 					if (serviceResponse.getStatus() != DocearServiceResponse.Status.OK) {
-						LogUtils.info("org.docear.plugin.bibtex.actions.ImportMetadateForNodeLink.rejectAll().TASK: " + serviceResponse.getContentAsString());
+						if(serviceResponse.getStatus() == DocearServiceResponse.Status.UNAUTHORIZED) {
+							//DOCEAR - TODO: show wizard with registration button
+						}
+						else {
+							LogUtils.info("org.docear.plugin.bibtex.actions.ImportMetadateForNodeLink.rejectAll().TASK: " + serviceResponse.getContentAsString());
+						}
 					}
 				} catch (Throwable e) {
 					// JOptionPane.showMessageDialog(UITools.getFrame(),
@@ -479,7 +484,7 @@ public abstract class JabRefCommons {
 				try {
 					StringBuilder sb = new StringBuilder();
 					DocearServiceResponse serviceResponse = ServiceController.getConnectionController().get("/internal/documents/" + hash + "/metadata", params);
-					if (serviceResponse.getStatus() == DocearServiceResponse.Status.FAILURE) {
+					if (serviceResponse.getStatus() == DocearServiceResponse.Status.FAILURE || serviceResponse.getStatus() == DocearServiceResponse.Status.UNAUTHORIZED) {
 						// JOptionPane.showMessageDialog(UITools.getFrame(),
 						// serviceResponse.getContentAsString(),
 						// TextUtils.getText("docear.metadata.import.error"),
