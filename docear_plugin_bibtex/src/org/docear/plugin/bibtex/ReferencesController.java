@@ -287,7 +287,7 @@ public class ReferencesController extends ALanguageController implements IDocear
 			
 			@Override
 			public void projectRemoved(WorkspaceModelEvent event) {
-				if(event.getProject() instanceof DocearWorkspaceProject) {
+				if(DocearWorkspaceProject.isCompatible(event.getProject())) {
 					try {
 						final File file = URIUtils.getFile(ProjectURLHandler.resolve(event.getProject(), ((DocearWorkspaceProject)event.getProject()).getBibtexDatabase().toURL()).toURI());
 						if(file == null) {
