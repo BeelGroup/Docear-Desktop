@@ -23,7 +23,6 @@ import javax.swing.table.AbstractTableModel;
 import net.sf.jabref.BibtexEntry;
 import net.sf.jabref.GUIGlobals;
 
-import org.apache.commons.io.IOUtils;
 import org.docear.plugin.bibtex.ReferencesController;
 import org.docear.plugin.bibtex.jabref.JabrefWrapper;
 import org.docear.plugin.core.ui.MultiLineActionLabel;

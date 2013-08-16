@@ -390,7 +390,10 @@ public class JabRefAttributes {
 	}
 
 	public void removeUrlFromBibtexEntry(URL url, BibtexEntry entry) {
-		entry.setField("url", null);
+		String field = entry.getField("url");
+		if (url != null && field != null && field.equals(url.toString())) {
+			entry.setField("url", null);
+		}
 	}
 
 	public List<String> retrieveFileLinksFromEntry(BibtexEntry entry) {
