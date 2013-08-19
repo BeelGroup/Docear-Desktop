@@ -159,7 +159,7 @@ public class UploadController extends ADocearServiceFeature {
 					uploadFiles.add(file);
 				}
 				catch(Exception e) {
-					LogUtils.warn("org.docear.plugin.services.upload.UploadThread.fileCreated -> corrupted ZipFile: "+file.getAbsolutePath());
+					LogUtils.warn("org.docear.plugin.services.features.upload.UploadController.refreshUploadBuffer() -> corrupted ZipFile: "+file.getAbsolutePath());
 					file.delete();				
 				}
 			}
