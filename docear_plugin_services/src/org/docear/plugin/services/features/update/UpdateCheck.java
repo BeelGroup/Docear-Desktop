@@ -101,7 +101,10 @@ public class UpdateCheck extends ADocearServiceFeature {
 
 			int compCode = latestVersion.compareTo(runningVersion);
 			
-			if (showUpdateCheckerDialog(compCode, choice)) {
+			String lastLatestVersionString = DocearController.getPropertiesController().getProperty("docer.update_checker.savedLatestVersion", "");
+			// don't show Dialog again if latestVersionFromServer was already announced to the user
+			if (!latestVersion.toString().equals(lastLatestVersionString) 
+					&& showUpdateCheckerDialog(compCode, choice)) {
 				DocearUpdateCheckAction.showDialog(runningVersion, latestVersion);
 			}
 			else {

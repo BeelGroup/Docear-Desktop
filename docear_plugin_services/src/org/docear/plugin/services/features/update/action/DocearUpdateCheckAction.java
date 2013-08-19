@@ -35,12 +35,7 @@ public class DocearUpdateCheckAction extends AFreeplaneAction {
 	 **********************************************************************************/
 	
 	public static void showDialog(final Version runningVersion, final Version latestVersion) {
-		// don't show Dialog again if latestVersionFromServer was already announced to the user
-		String lastLatestVersionString = DocearController.getPropertiesController().getProperty("docer.update_checker.savedLatestVersion", "");
 		final String latestVersionString = latestVersion.toString();
-		if (lastLatestVersionString.equals(latestVersionString)) {
-			return;
-		}
 		new Thread(new Runnable() {
 			public void run() {
 				try {
