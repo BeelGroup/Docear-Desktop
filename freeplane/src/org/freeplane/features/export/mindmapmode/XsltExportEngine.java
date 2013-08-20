@@ -67,7 +67,47 @@ public class XsltExportEngine implements IExportEngine {
 		catch (final IOException e) {
 			e.printStackTrace();
 		}
-		final StringReader stringReader = new StringReader(writer.getBuffer().toString());
+		
+		String string = clean(writer.getBuffer().toString());		
+		
+		final StringReader stringReader = new StringReader(string);
 		return new StreamSource(stringReader);
+	}
+	
+	private String clean(String string) {
+		StringBuilder sb = new StringBuilder();
+		int startingPos = 0;
+		
+		while (string.indexOf("&#", startingPos) >= 0) {			
+			int specialCharPos1 = string.indexOf("&#", startingPos);
+				sb.append(string.substring(startingPos, specialCharPos1));
+				int specialCharPos2 = string.indexOf(";", specialCharPos1);
+				
+				String specialChar = string.substring(specialCharPos1+2, specialCharPos2);
+				
+				Integer specialCharValue = null;
+				if (specialChar.startsWith("x")) {
+					specialCharValue = Integer.decode("0"+specialChar);
+				}
+				else {
+					specialCharValue = Integer.parseInt(specialChar);
+				}
+				
+				if ((specialCharValue == 0x9) ||
+		                (specialCharValue == 0xA) ||
+		                (specialCharValue == 0xD) ||
+		                ((specialCharValue >= 0x20) && (specialCharValue <= 0xD7FF)) ||
+		                ((specialCharValue >= 0xE000) && (specialCharValue <= 0xFFFD)) ||
+		                ((specialCharValue >= 0x10000) && (specialCharValue <= 0x10FFFF))) {
+					sb.append(string.substring(specialCharPos1, specialCharPos2+1));
+				}
+				else {
+					LogUtils.info("filtered specialChar: &#"+specialChar);					
+				}
+			startingPos = specialCharPos2+1;			
+		}		
+		sb.append(string.substring(startingPos));
+		
+		return sb.toString();
 	}
 }
