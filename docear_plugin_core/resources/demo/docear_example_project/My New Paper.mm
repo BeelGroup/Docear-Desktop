@@ -136,7 +136,7 @@
 <attribute NAME="journal" VALUE="Journal of Electronic Publishing"/>
 <attribute NAME="key" VALUE="Beel2010"/>
 </node>
-<node TEXT="&#x201c;[This] paper seems to encourage scientific paper &#xd;&#xa;authors to learn Google scholar&#x2019;s ranking method and &#xd;&#xa;write papers accordingly to boost ranking [which is not] &#xd;&#xa;acceptable to scientific communities which are supposed &#xd;&#xa;to advocate true technical quality/impact instead of &#xd;&#xa;ranking.&#x201d; " ID="ID_40512105" CREATED="1344508032022" MODIFIED="1358868622891" LINK="@LITERATURE_REPO_DEMO@/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf" DCR_PRIVACY_LEVEL="DEMO">
+<node TEXT="Motivation why researchers might do academic search engine spam" ID="ID_40512105" CREATED="1344508032022" MODIFIED="1358868622891" LINK="@LITERATURE_REPO_DEMO@/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf" DCR_PRIVACY_LEVEL="DEMO">
 <pdf_annotation type="HIGHLIGHTED_TEXT" page="3" object_number="666" generation_number="0"/>
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="title" VALUE="{A}cademic search engine spam and {G}oogle {S}cholar&apos;s resilience against it"/>
@@ -144,7 +144,7 @@
 <attribute NAME="journal" VALUE="Journal of Electronic Publishing"/>
 <attribute NAME="key" VALUE="Beel2010"/>
 </node>
-<node TEXT="&#x201c;[&#x2026;] on first impressions [Academic Search Engine &#xd;&#xa;Optimization] sounds like the stupidest idea I&#x2019;ve ever &#xd;&#xa;heard.&#x201d;" ID="ID_1773171427" CREATED="1344508032030" MODIFIED="1358868622930" LINK="@LITERATURE_REPO_DEMO@/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf" DCR_PRIVACY_LEVEL="DEMO">
+<node TEXT="&#x201c;In my opinion, being interested in how (academic) &#xd;&#xa;search engines function and how scientific papers are &#xd;&#xa;indexed and, of course, responding to these&#x2026; well&#x2026; &#xd;&#xa;circumstances of the scientific citing business is just &#xd;&#xa;natural.&#x201d;" ID="ID_1773171427" CREATED="1344508032030" MODIFIED="1358868622930" LINK="@LITERATURE_REPO_DEMO@/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf" DCR_PRIVACY_LEVEL="DEMO">
 <pdf_annotation type="HIGHLIGHTED_TEXT" page="4" object_number="670" generation_number="0"/>
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="title" VALUE="{A}cademic search engine spam and {G}oogle {S}cholar&apos;s resilience against it"/>
