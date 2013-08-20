@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Properties;
 
+import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JViewport;
@@ -193,7 +194,6 @@ public class CoreConfiguration extends ALanguageController {
 		res.setDefaultProperty("menu_encryption.icon", "/images/docear/tools/tools-PasswordProtection.png");
 		res.setDefaultProperty("menu_time.icon", "/images/docear/tools/tools-TimeManagement.png");
 		res.setDefaultProperty("scripting.icon", "/images/docear/tools/tools-Scripting.png");
-		res.setProperty("PropertyAction.icon", "/images/docear/tools/tools-Preferences.png");
 		
 		res.setDefaultProperty("attribute_options.icon", "/images/docear/view/view-AttributeOptions.png");
 		res.setDefaultProperty("ShowHideNoteAction.icon", "/images/docear/view/view-showNotePanel.png");
@@ -606,6 +606,13 @@ public class CoreConfiguration extends ALanguageController {
 
 		//replace if application name is docear
 		replaceResourceBundleStrings();
+		
+		AFreeplaneAction action = modeController.getAction("PropertyAction");
+		final URL url = DocearController.getPropertiesController().getResource("/images/docear/tools/tools-Preferences.png");
+		if (url != null && action != null) {
+			final ImageIcon icon = new ImageIcon(url);
+			action.putValue(AbstractAction.SMALL_ICON, icon);
+		}
 
 		replaceActions();
 	}
@@ -630,22 +637,22 @@ public class CoreConfiguration extends ALanguageController {
 	}
 
 	private void replaceActions() {
-		ResourceController resourceController = DocearController.getPropertiesController();		
+		ResourceController res = DocearController.getPropertiesController();		
 		
-		WorkspaceController.replaceAction(new DocearOpenUrlAction(REQUEST_FEATURE_ACTION, resourceController.getProperty(FEATURE_TRACKER_LOCATION)));
-		WorkspaceController.replaceAction(new DocearOpenUrlAction(ASK_FOR_HELP, resourceController.getProperty(HELP_FORUM_LOCATION)));
-		WorkspaceController.replaceAction(new DocearOpenUrlAction(REPORT_BUG_ACTION, resourceController.getProperty(BUG_TRACKER_LOCATION)));
-		WorkspaceController.replaceAction(new DocearOpenUrlAction(OPEN_FREEPLANE_SITE_ACTION, resourceController.getProperty(WEB_FREEPLANE_LOCATION)));
-		WorkspaceController.replaceAction(new DocearOpenUrlAction(DOCUMENTATION_ACTION, resourceController.getProperty(WEB_DOCU_LOCATION)));		
+		WorkspaceController.replaceAction(new DocearOpenUrlAction(REQUEST_FEATURE_ACTION, res.getProperty(FEATURE_TRACKER_LOCATION)));
+		WorkspaceController.replaceAction(new DocearOpenUrlAction(ASK_FOR_HELP, res.getProperty(HELP_FORUM_LOCATION)));
+		WorkspaceController.replaceAction(new DocearOpenUrlAction(REPORT_BUG_ACTION, res.getProperty(BUG_TRACKER_LOCATION)));
+		WorkspaceController.replaceAction(new DocearOpenUrlAction(OPEN_FREEPLANE_SITE_ACTION, res.getProperty(WEB_FREEPLANE_LOCATION)));
+		WorkspaceController.replaceAction(new DocearOpenUrlAction(DOCUMENTATION_ACTION, res.getProperty(WEB_DOCU_LOCATION)));		
 		WorkspaceController.replaceAction(new GettingStartedAction());
 		WorkspaceController.replaceAction(new OnlineDocumentationAction("OnlineReference", "docu-online"));		
-		WorkspaceController.replaceAction(new DocearOpenUrlAction("ManualAction",  resourceController.getProperty("manualLocation")));
-		WorkspaceController.replaceAction(new DocearOpenUrlAction("FAQAction",  resourceController.getProperty("faqLocation")));
-		WorkspaceController.replaceAction(new DocearOpenUrlAction("ContactAction",  resourceController.getProperty("contactLocation")));
-		WorkspaceController.replaceAction(new DocearOpenUrlAction("docear4WordLocationAction",  resourceController.getProperty("docear4WordLocation")));
-		WorkspaceController.replaceAction(new DocearOpenUrlAction("docearPdfInspectorLocationAction",  resourceController.getProperty("docearPdfInspectorLocation")));
-		WorkspaceController.replaceAction(new DocearOpenUrlAction("freeplaneAddOnLocationAction",  resourceController.getProperty("freeplaneAddOnLocation")));
-		WorkspaceController.replaceAction(new DocearOpenUrlAction("jabrefAddOnLocationAction",  resourceController.getProperty("jabrefAddOnLocation")));		
+		WorkspaceController.replaceAction(new DocearOpenUrlAction("ManualAction",  res.getProperty("manualLocation")));
+		WorkspaceController.replaceAction(new DocearOpenUrlAction("FAQAction",  res.getProperty("faqLocation")));
+		WorkspaceController.replaceAction(new DocearOpenUrlAction("ContactAction",  res.getProperty("contactLocation")));
+		WorkspaceController.replaceAction(new DocearOpenUrlAction("docear4WordLocationAction",  res.getProperty("docear4WordLocation")));
+		WorkspaceController.replaceAction(new DocearOpenUrlAction("docearPdfInspectorLocationAction",  res.getProperty("docearPdfInspectorLocation")));
+		WorkspaceController.replaceAction(new DocearOpenUrlAction("freeplaneAddOnLocationAction",  res.getProperty("freeplaneAddOnLocation")));
+		WorkspaceController.replaceAction(new DocearOpenUrlAction("jabrefAddOnLocationAction",  res.getProperty("jabrefAddOnLocation")));		
 		
 		WorkspaceController.replaceAction(new GPLPanelAction());
 		WorkspaceController.replaceAction(new LicencesPanelAction("TOSPanelAction", TextUtils.getText("docear.license.terms_of_use.title"), DocearController.getController().getTermsOfService()));

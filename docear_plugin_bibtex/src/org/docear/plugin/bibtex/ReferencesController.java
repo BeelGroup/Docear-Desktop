@@ -11,6 +11,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 
+import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JPanel;
@@ -137,6 +139,7 @@ public class ReferencesController extends ALanguageController implements IDocear
 	private AFreeplaneAction changeBibtexDatabase = new ChangeBibtexDatabaseAction();
 	private AFreeplaneAction removeReference = new RemoveReferenceAction();
 	private AFreeplaneAction addNewReference = new AddNewReferenceAction();
+	private AFreeplaneAction showJabrefPreferences = new ShowJabrefPreferencesAction();
 
 	private AFreeplaneAction copyBibtex = new CopyBibtexToClipboard();
 	private AFreeplaneAction copyCiteKey = new CopyCiteKeyToClipboard();
@@ -255,7 +258,7 @@ public class ReferencesController extends ALanguageController implements IDocear
 		catch (Throwable e) {
 			LogUtils.severe(e);
 		}
-		Controller.getCurrentController().addAction(new ShowJabrefPreferencesAction());
+		Controller.getCurrentController().addAction(showJabrefPreferences);
 		
 		NodeSelectionListener nodeSelectionListener = new NodeSelectionListener();
 		nodeSelectionListener.init();
@@ -470,8 +473,11 @@ public class ReferencesController extends ALanguageController implements IDocear
 		res.setDefaultProperty("ShowAllAttributesAction.icon", "/images/docear/references/ReferencesSettings-ShowAllAttributes.png");
 		res.setDefaultProperty("HideAllAttributesAction.icon", "/images/docear/references/ReferencesSettings-HideAllAttributes.png");
 		
-		res.setProperty("show_jabref_preferences.icon", "/images/docear/tools/tools-PreferencesReferences.png");
-		
+		final URL url = res.getResource("/images/docear/tools/tools-PreferencesReferences.png");
+		if (url != null) {
+			final ImageIcon icon = new ImageIcon(url);
+			showJabrefPreferences.putValue(AbstractAction.SMALL_ICON, icon);
+		}
 	}
 	
 	private void addMenuEntries() {
