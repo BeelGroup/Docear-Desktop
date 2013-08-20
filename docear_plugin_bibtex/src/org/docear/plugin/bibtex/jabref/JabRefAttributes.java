@@ -461,7 +461,7 @@ public class JabRefAttributes {
 
 				if (jabrefFile != null && jabrefFile.getName().equals(file.getName())) {
 					entries.add(entry);
-					break;
+					break;					
 				}
 			}
 		}

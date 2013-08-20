@@ -229,7 +229,7 @@ public abstract class JabRefCommons {
 						try {
 							showMetadataDialog(fileUri);
 						} catch (Exception e) {
-							LogUtils.warn("Exception in org.docear.plugin.bibtex.jabref.JabrefChangeEventListener.processEvent(0): " + e.getMessage());
+							LogUtils.warn("exception in JabRefCommons.addOrUpdateRefenceEntry() 1 : " + e.getMessage());
 						}
 						continue;						
 					} 
@@ -256,8 +256,7 @@ public abstract class JabRefCommons {
 							try {
 								showMetadataDialog(fileUri);
 							} catch (Exception e) {
-								LogUtils.warn("Exception in org.docear.plugin.bibtex.jabref.JabrefChangeEventListener.processEvent(1): "
-										+ e.getMessage());
+								LogUtils.warn("exception in JabRefCommons.addOrUpdateRefenceEntry() 2 : " + e.getMessage());
 							}
 						} else {
 							
@@ -273,8 +272,7 @@ public abstract class JabRefCommons {
 								try {
 									showMetadataUpdateDialog(fileUri, entryTable.getEntryAt(dropRow));
 								} catch (Exception e) {
-									LogUtils.warn("Exception in org.docear.plugin.bibtex.jabref.JabrefChangeEventListener.processEvent(2): "
-											+ e.getMessage());
+									LogUtils.warn("exception in JabRefCommons.addOrUpdateRefenceEntry() 3: " + e.getMessage());
 								}
 							}
 							// attach file only was selected
@@ -297,8 +295,8 @@ public abstract class JabRefCommons {
 		List<BibtexEntry> xmpEntriesInFile = null;
 		try {
 			xmpEntriesInFile = XMPUtil.readXMP(fileName);
-		} catch (Exception e) {
-			LogUtils.info("Exception in org.docear.plugin.bibtex.jabref.JabrefChangeEventListener.readXmpEntries(): " + e.getMessage());
+		} catch (Throwable e) {
+			LogUtils.warn("exception in JabRefCommons.readXmpEntries(): " + e.getMessage());
 		}
 		return xmpEntriesInFile;
 	}
@@ -423,7 +421,7 @@ public abstract class JabRefCommons {
 					params.add("id", bibtexID);
 					DocearServiceResponse serviceResponse = ServiceController.getConnectionController().put("/internal/documents/" + hash + "/metadata", params);
 					if (serviceResponse.getStatus() != DocearServiceResponse.Status.OK) {
-						LogUtils.info("org.docear.plugin.bibtex.actions.ImportMetadateForNodeLink.commit().TASK: " + serviceResponse.getContentAsString());
+						LogUtils.info("JabRefCommons.commit(...).new Runnable() {...}.run(): " + serviceResponse.getContentAsString());
 					}
 				} catch (Throwable e) {
 					// JOptionPane.showMessageDialog(UITools.getFrame(),
@@ -437,7 +435,7 @@ public abstract class JabRefCommons {
 		try {
 			executeTask(MetadataRequestTask.create(task, result));
 		} catch (Exception e) {
-			LogUtils.info("org.docear.plugin.bibtex.actions.ImportMetadateForNodeLink.commit(): " + e.getLocalizedMessage());
+			LogUtils.info("JabRefCommons.commit(...).new Runnable() {...}.run(): " + e.getLocalizedMessage());
 			LogUtils.warn(e);
 		}
 	}
@@ -455,8 +453,8 @@ public abstract class JabRefCommons {
 						if(serviceResponse.getStatus() == DocearServiceResponse.Status.UNAUTHORIZED) {
 							//DOCEAR - TODO: show wizard with registration button
 						}
-						else {
-							LogUtils.info("org.docear.plugin.bibtex.actions.ImportMetadateForNodeLink.rejectAll().TASK: " + serviceResponse.getContentAsString());
+						else {							
+							LogUtils.info("JabRefCommons.rejectAll(...).new Runnable() {...}.run(): " + serviceResponse.getContentAsString());
 						}
 					}
 				} catch (Throwable e) {
@@ -470,8 +468,8 @@ public abstract class JabRefCommons {
 		};
 		try {
 			executeTask(MetadataRequestTask.create(task, result));
-		} catch (Exception e) {
-			LogUtils.info("org.docear.plugin.bibtex.actions.ImportMetadateForNodeLink.rejectAll(): " + e.getLocalizedMessage());
+		} catch (Exception e) {			
+			LogUtils.info("exception in JabRefCommons.rejectAll(): " + e.getLocalizedMessage());
 			LogUtils.warn(e);
 		}
 
@@ -648,8 +646,9 @@ public abstract class JabRefCommons {
 	            panel.markBaseChanged(); // The database just changed.
 	            new FocusRequester(panel.getEntryEditor(be));
 	            return be;
-	        } catch (KeyCollisionException ex) {
-	            LogUtils.warn("Exception in org.docear.plugin.bibtex.jabref.JabrefWrapper.createNewEntry(): "+ex.getMessage());
+	        } 
+	        catch (KeyCollisionException ex) {
+	        	LogUtils.warn("exception in JabRefCommons.createNewEntry(): " + ex.getMessage());	            
 	        }
 	    }
 	    return null;
