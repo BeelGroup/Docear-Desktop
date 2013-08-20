@@ -69,6 +69,7 @@ import org.freeplane.core.ui.components.ResizerListener;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.ui.components.JResizer.Direction;
 import org.freeplane.core.ui.components.OneTouchCollapseResizer.CollapseDirection;
+import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.format.FormattedDate;
 import org.freeplane.features.format.FormattedObject;
@@ -532,7 +533,7 @@ abstract public class FrameController implements ViewController {
 
 	public static void setLookAndFeel(final String lookAndFeel) {
 		try {
-			if (lookAndFeel.equals("default")) {
+			if (Compat.isMacOsX() || lookAndFeel.equals("default")) {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 			}
 			else {
