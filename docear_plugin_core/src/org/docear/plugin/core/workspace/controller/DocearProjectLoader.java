@@ -199,11 +199,12 @@ public class DocearProjectLoader extends ProjectLoader {
 //		pubNode.setLinkPath(URIUtils.createURI(libPath.toString()+"/my_publications.mm"));
 //		pubNode.setName(TextUtils.getText(pubNode.getClass().getName().toLowerCase(Locale.ENGLISH)+".label" ));
 //		project.getModel().addNodeTo(pubNode, libNode);
-		
-		LinkTypeFileNode newPaperNode = new LinkTypeFileNode();
-		newPaperNode.setLinkURI(URIUtils.createURI(libPath.toString()+"/My%20New%20Paper.mm"));
-		newPaperNode.setName(TextUtils.getText(newPaperNode.getClass().getName().toLowerCase(Locale.ENGLISH)+".newpaper.label" ));
-		project.getModel().addNodeTo(newPaperNode, libNode);
+		if(settings != null && settings.includeDemoFiles()) {
+			LinkTypeFileNode newPaperNode = new LinkTypeFileNode();
+			newPaperNode.setLinkURI(URIUtils.createURI(libPath.toString()+"/My%20New%20Paper.mm"));
+			newPaperNode.setName(TextUtils.getText(newPaperNode.getClass().getName().toLowerCase(Locale.ENGLISH)+".newpaper.label" ));
+			project.getModel().addNodeTo(newPaperNode, libNode);
+		}
 		
 		LinkTypeFileNode tempNode = new LinkTypeFileNode();
 		tempNode.setLinkURI(URIUtils.createURI(libPath.toString()+"/temp.mm"));
