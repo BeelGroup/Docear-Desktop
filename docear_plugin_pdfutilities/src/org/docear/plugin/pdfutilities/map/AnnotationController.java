@@ -33,8 +33,6 @@ import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.plugin.workspace.URIUtils;
-import org.freeplane.plugin.workspace.model.WorkspaceModelEvent;
-import org.freeplane.plugin.workspace.model.WorkspaceModelEvent.WorkspaceModelEventType;
 
 public class AnnotationController implements IExtension{
 	
@@ -377,29 +375,26 @@ public class AnnotationController implements IExtension{
 		return hashCode;
 	}
 
-	public void updateIndex(WorkspaceModelEvent event) {
-		if(event.getType() == WorkspaceModelEventType.RENAMED || event.getType() == WorkspaceModelEventType.MOVED) {
-			Map<File, File> fileMap = new HashMap<File, File>();
-			if(!((File)event.getNewValue()).isDirectory()){				
-				File oldFile = (File) event.getOldValue();
-				File newFile = (File) event.getNewValue();			
-				fileMap.put(oldFile, newFile);			
-			}
-			else{
-				File oldFile = (File) event.getOldValue();
-				File newFile = (File) event.getNewValue();
-				Collection<File> files = FileUtils.listFiles(newFile, null, true);			
-				for(File file : files){
-					String oldPath = file.getPath().replace(newFile.getPath(), oldFile.getPath());
-					fileMap.put(new File(oldPath), file);				
-				}			
-			}
-			synchronized (documentHashMap) {
-				for(Entry<File, File> entry : fileMap.entrySet()) {
-					if(documentHashMap.containsKey(entry.getKey().toString())) {
-						CachedHashItem hashItem = documentHashMap.remove(entry.getKey().toString());
-						documentHashMap.put(entry.getValue().toString(), hashItem);
-					}
+	public void updateIndex(File nuFile, File oldFile) {
+		if(nuFile == null || oldFile == null) {
+			return;
+		}
+		Map<File, File> fileMap = new HashMap<File, File>();
+		if(!nuFile.isDirectory()) {				
+			fileMap.put(oldFile, nuFile);			
+		}
+		else{
+			Collection<File> files = FileUtils.listFiles(nuFile, null, true);			
+			for(File file : files){
+				String oldPath = file.getPath().replace(nuFile.getPath(), oldFile.getPath());
+				fileMap.put(new File(oldPath), file);				
+			}			
+		}
+		synchronized (documentHashMap) {
+			for(Entry<File, File> entry : fileMap.entrySet()) {
+				if(documentHashMap.containsKey(entry.getKey().toString())) {
+					CachedHashItem hashItem = documentHashMap.remove(entry.getKey().toString());
+					documentHashMap.put(entry.getValue().toString(), hashItem);
 				}
 			}
 		}

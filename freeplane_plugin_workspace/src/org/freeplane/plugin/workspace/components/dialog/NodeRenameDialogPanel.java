@@ -5,10 +5,12 @@
 package org.freeplane.plugin.workspace.components.dialog;
 
 import java.awt.Dimension;
+import java.awt.Graphics;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -24,6 +26,7 @@ public class NodeRenameDialogPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private JTextField txtNodeName;
 	private JCheckBox chckbxRenameLinkToo;
+	private boolean first = true;
 	
 	/***********************************************************************************
 	 * CONSTRUCTORS
@@ -66,6 +69,18 @@ public class NodeRenameDialogPanel extends JPanel {
 	/***********************************************************************************
 	 * METHODS
 	 **********************************************************************************/
+	
+	public void paint(Graphics g) {
+		super.paint(g);
+		if(first ) {
+			first = false;
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					requestFocusInWindow();
+				}
+			});
+		}
+	}
 	
 	public String getText() {
 		return txtNodeName.getText();

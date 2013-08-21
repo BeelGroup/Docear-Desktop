@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.docear.plugin.core.logging.DocearLogger;
 import org.docear.plugin.core.mindmap.MindmapUpdateController;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
 import org.docear.plugin.pdfutilities.map.MindmapFileLinkUpdater;
@@ -45,9 +46,19 @@ public class DocearProjectModelListener implements IProjectModelListener {
 
 	public void treeNodesChanged(WorkspaceModelEvent event) {
 		if(event.getType() == WorkspaceModelEventType.RENAMED){
-			if(event.getTreePath().getLastPathComponent() instanceof DefaultFileNode){
-				AnnotationController.getController().updateIndex(event);
-				updateMaps(event);
+			if(event.getTreePath().getLastPathComponent() instanceof DefaultFileNode) { 
+				try { 
+					DefaultFileNode target = (DefaultFileNode) event.getTreePath().getLastPathComponent();
+					File parent = target.getFile().getParentFile();
+					File oldFile = new File(parent, (String) event.getOldValue());
+					File newFile = new File(parent, (String) event.getNewValue());
+					 
+					AnnotationController.getController().updateIndex(newFile, oldFile);
+					updateMaps(event);
+				}
+				catch (Exception e) {
+					DocearLogger.warn(e);
+				}
 			}
 		}
 	}
@@ -63,8 +74,25 @@ public class DocearProjectModelListener implements IProjectModelListener {
 	public void treeStructureChanged(WorkspaceModelEvent event) {
 		if(event.getType() == WorkspaceModelEventType.MOVED){
 			if(event.getTreePath().getLastPathComponent() instanceof DefaultFileNode || event.getTreePath().getLastPathComponent() instanceof LinkTypeFileNode){
-				AnnotationController.getController().updateIndex(event);
-				updateMaps(event);
+				try {
+					File oldFile = null;
+					File newFile = null;
+					if(event.getType() == WorkspaceModelEventType.RENAMED) {
+						DefaultFileNode target = (DefaultFileNode) event.getTreePath().getLastPathComponent();
+						File parent = target.getFile().getParentFile();
+						oldFile = new File(parent, (String) event.getOldValue());
+						newFile = new File(parent, (String) event.getNewValue());
+					} 
+					else if(event.getType() == WorkspaceModelEventType.MOVED) {
+						newFile = (File) event.getNewValue();
+						oldFile = (File) event.getOldValue();
+					}
+					AnnotationController.getController().updateIndex(newFile, oldFile);
+					updateMaps(event);
+				}
+				catch (Exception e) {
+					DocearLogger.warn(e);
+				}
 			}
 		}
 	}
