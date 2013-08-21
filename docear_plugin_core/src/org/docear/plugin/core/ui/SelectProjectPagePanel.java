@@ -6,7 +6,9 @@ import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JEditorPane;
 import javax.swing.JLabel;
+import javax.swing.text.EditorKit;
 
 import org.docear.plugin.core.ui.wizard.AWizardPage;
 import org.docear.plugin.core.ui.wizard.WizardContext;
@@ -28,7 +30,7 @@ public class SelectProjectPagePanel extends AWizardPage {
 	private static final long serialVersionUID = 1L;	
 	private JComboBox comboBox;
 	private MapModel map;
-	private JLabel lblNewLabel;
+	private JEditorPane lblNewLabel;
 	private boolean showCloseButton;
 
 	public SelectProjectPagePanel(boolean showCloseButton) {
@@ -53,13 +55,15 @@ public class SelectProjectPagePanel extends AWizardPage {
 			projectNames.add(project.getProjectName());
 		}
 		
-		lblNewLabel = new JLabel();
+		lblNewLabel = new JEditorPane();
+		lblNewLabel.setEditable(false);
+		lblNewLabel.setContentType("text/html");
 		add(lblNewLabel, "1, 2, 2, 1");
 		
-		JLabel label = new JLabel(TextUtils.getText("docear.wizard.select.mindmap.project.help"));
-		add(label, "1, 4, 2, 1");
-		
-		JLabel lblNewLabel_1 = new JLabel(TextUtils.getText("docear.wizard.select.mindmap.project.select"));
+		JEditorPane lblNewLabel_1 = new JEditorPane();
+		lblNewLabel_1.setEditable(false);
+		lblNewLabel_1.setContentType("text/html");
+		lblNewLabel_1.setText(TextUtils.getText("docear.wizard.select.mindmap.project.select"));
 		add(lblNewLabel_1, "1, 8, 1, 1");
 		
 		comboBox = new JComboBox(projectNames.toArray());

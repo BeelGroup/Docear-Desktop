@@ -109,7 +109,7 @@
 				</ribbon_action>
 				<ribbon_action action="UndoAction" accelerator="control Z" priority="medium" >
 					<ribbon_action action="RedoAction" accelerator="control Y" />			
-				</ribbon_action>
+				</ribbon_action>				
 			</ribbon_band>
 		   <ribbon_band name="nodes" resize_policies="Mirror">
                 <ribbon_action action="ToggleFoldedAction" accelerator="SPACE" priority="top" >
@@ -441,7 +441,21 @@
 				</ribbon_action>
 				<ribbon_action name="formula.menuname" plugin="org.freeplane.plugin.formula">
 					<ribbon_action action="formula.EvaluateAllAction" plugin="org.freeplane.plugin.formula"/>
-				</ribbon_action>				
+				</ribbon_action>
+				
+				<ribbon_action name="export">
+					<ribbon_action action="ExportAction"/>
+					<ribbon_action action="ExportBranchAction" accelerator="alt shift A" />
+				</ribbon_action>
+				<ribbon_action name="import">
+					<ribbon_action action="ImportBranchAction" />
+					<ribbon_action action="ImportLinkedBranchAction"/>
+					<ribbon_action action="ImportLinkedBranchWithoutRootAction"/>
+						
+					<ribbon_action action="ImportExplorerFavoritesAction"/>
+					<ribbon_action action="ImportFolderStructureAction"/>
+					<ribbon_action action="ImportMindmanagerFiles"/>
+				</ribbon_action>								
 			</ribbon_band>
 
 			<ribbon_band name="maps" resize_policies="Mirror">
