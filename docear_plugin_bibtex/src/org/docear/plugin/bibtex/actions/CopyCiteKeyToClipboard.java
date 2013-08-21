@@ -30,16 +30,7 @@ public class CopyCiteKeyToClipboard extends AFreeplaneAction{
 
 	public void actionPerformed(ActionEvent e) {
 		Collection<NodeModel> nodes = Controller.getCurrentModeController().getMapController().getSelectedNodes();
-		String strBuffer = "";
-		for(NodeModel node : nodes) {
-			String bibKey = ReferencesController.getController().getJabRefAttributes().getBibtexKey(node);			
-			if(bibKey != null && strBuffer.indexOf(bibKey) == -1) {
-				if(!"".equals(strBuffer)) {
-					strBuffer += ",";
-				}
-				strBuffer += bibKey;
-			}
-		}
+		String strBuffer = CopyBibtexToClipboard.serializeStringSet(CopyBibtexToClipboard.getKeySet(nodes));
 		final String citeKeys = "\\cite{"+strBuffer+"}";
 		Transferable content = new Transferable() {
 			public boolean isDataFlavorSupported(DataFlavor flavor) {

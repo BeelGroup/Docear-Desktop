@@ -7,6 +7,8 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 
 import org.docear.plugin.bibtex.ReferencesController;
@@ -29,17 +31,9 @@ public class CopyBibtexToClipboard extends AFreeplaneAction{
 
 	public void actionPerformed(ActionEvent e) {
 		Collection<NodeModel> nodes = Controller.getCurrentModeController().getMapController().getSelectedNodes();
-		String strBuffer = "";
-		for(NodeModel node : nodes) {
-			String bibKey = ReferencesController.getController().getJabRefAttributes().getBibtexKey(node);
-			if(bibKey != null && strBuffer.indexOf(bibKey) == -1) {
-				if(!"".equals(strBuffer)) {
-					strBuffer += ",";
-				}
-				strBuffer += bibKey;
-			}
-		}
-		final String bibtexKeys = strBuffer;
+		Collection<String> keySet = getKeySet(nodes);
+		final String bibtexKeys = serializeStringSet(keySet);
+		System.out.println(bibtexKeys.split(",").length);
 		Transferable content = new Transferable() {
 			public boolean isDataFlavorSupported(DataFlavor flavor) {
 				return DataFlavor.stringFlavor.equals(flavor);
@@ -58,6 +52,28 @@ public class CopyBibtexToClipboard extends AFreeplaneAction{
 		};
 		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(content, null);
 		
+	}
+
+	public static Collection<String> getKeySet(Collection<NodeModel> nodes) {
+		Set<String> keys = new HashSet<String>();
+		for(NodeModel node : nodes) {
+			String bibKey = ReferencesController.getController().getJabRefAttributes().getBibtexKey(node);
+			if(bibKey != null) {
+				keys.add(bibKey);
+			}
+		}
+		return keys;
+	}
+	
+	public static String serializeStringSet(Collection<String> strSet) {
+		StringBuffer strBuffer = new StringBuffer();
+		for (String string : strSet) {
+			if(strBuffer.length() > 0) {
+				strBuffer.append(",");
+			}
+			strBuffer.append(string);
+		}
+		return strBuffer.toString();
 	}
 	
 	public void setEnabled() {
