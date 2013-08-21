@@ -33,7 +33,6 @@ public class CopyBibtexToClipboard extends AFreeplaneAction{
 		Collection<NodeModel> nodes = Controller.getCurrentModeController().getMapController().getSelectedNodes();
 		Collection<String> keySet = getKeySet(nodes);
 		final String bibtexKeys = serializeStringSet(keySet);
-		System.out.println(bibtexKeys.split(",").length);
 		Transferable content = new Transferable() {
 			public boolean isDataFlavorSupported(DataFlavor flavor) {
 				return DataFlavor.stringFlavor.equals(flavor);
