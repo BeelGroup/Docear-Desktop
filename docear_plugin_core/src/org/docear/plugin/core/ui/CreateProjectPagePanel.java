@@ -162,8 +162,7 @@ public class CreateProjectPagePanel extends AWizardPage {
 		add(txtProjectName, "6, 6, fill, default");
 		
 		
-//		JLabel lblProjectHome = new JLabel(TextUtils.getText("docear.setup.wizard.create.home.label"));		
-		JLabel lblProjectHome = new JLabel(defaultPath.getName());
+		JLabel lblProjectHome = new JLabel(TextUtils.getText("docear.setup.wizard.create.home.label"));
 		add(lblProjectHome, "4, 8, right, default");
 		
 		txtProjectHome = new JTextField();
@@ -258,7 +257,7 @@ public class CreateProjectPagePanel extends AWizardPage {
 		txtProjectName_1.addKeyListener(getProjectNameListener());
 		add(txtProjectName_1, "6, 14, fill, default");
 				
-		final JLabel lblProjectHome_1 = new JLabel(defaultPath.getName());
+		final JLabel lblProjectHome_1 = new JLabel(TextUtils.getText("docear.setup.wizard.create.home.label"));
 		add(lblProjectHome_1, "4, 16, right, top");
 		
 		txtProjectHome_1 = new JTextField();
