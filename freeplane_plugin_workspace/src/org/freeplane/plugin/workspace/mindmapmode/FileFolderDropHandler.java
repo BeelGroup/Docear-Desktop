@@ -57,10 +57,11 @@ public class FileFolderDropHandler extends DefaultFileDropHandler {
 					} 
 					else if (node instanceof LinkTypeFileNode) {
 						File srcFile = URIUtils.getAbsoluteFile(((LinkTypeFileNode) node).getLinkURI());
-						if (srcFile.equals(targetDir)) {
+						File destFile = new File(targetDir, srcFile.getName());
+						if (srcFile.equals(destFile) || srcFile.equals(targetDir)) {
 							continue;
 						}
-						File destFile = new File(targetDir, srcFile.getName());						
+												
 
 						FileSystemManager.buildCopyOperationList(srcFile, destFile, opList);
 						if (dropAction == DnDConstants.ACTION_MOVE) {
@@ -69,10 +70,11 @@ public class FileFolderDropHandler extends DefaultFileDropHandler {
 					} 
 					else if (node instanceof FolderLinkNode) {
 						File srcFile = URIUtils.getAbsoluteFile(((FolderLinkNode) node).getPath());
-						if (srcFile.equals(targetDir)) {
+						File destFile = new File(targetDir, srcFile.getName());	
+						if (srcFile.equals(destFile) || srcFile.equals(targetDir)) {
 							continue;
 						}
-						File destFile = new File(targetDir, srcFile.getName());						
+											
 
 						FileSystemManager.buildCopyOperationList(srcFile, destFile, opList);
 						if (dropAction == DnDConstants.ACTION_MOVE) {
