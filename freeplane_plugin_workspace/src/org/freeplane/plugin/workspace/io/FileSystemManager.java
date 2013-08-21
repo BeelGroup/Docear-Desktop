@@ -329,17 +329,21 @@ public class FileSystemManager {
 					if(onSkipList(destFile.getParentFile(), properties)) {
 						throw new SkipTaskException();
 					}
-					
-					if(destFile.exists()) {
-						properties.setProperty("opType", "2");
-						if(!Boolean.parseBoolean(properties.getProperty("overwriteAll", "false"))) {
-							getFileConflictHandler().resolveConflict(destFile, properties);
+					try {
+						if(destFile.exists()) {
+							properties.setProperty("opType", "2");
+							if(!Boolean.parseBoolean(properties.getProperty("overwriteAll", "false"))) {
+								getFileConflictHandler().resolveConflict(destFile, properties);
+							}
+							if(!FileUtils.deleteQuietly(destFile)) {
+								throw new SkipTaskException();
+							}
 						}
-						if(!FileUtils.deleteQuietly(destFile)) {
-							throw new SkipTaskException();
-						}
+						FileUtils.moveFile(srcFile, destFile);
 					}
-					FileUtils.moveFile(srcFile, destFile);
+					catch (Exception e) {
+						throw new SkipTaskException();
+					}
 				}
 			});
 		}
@@ -413,16 +417,20 @@ public class FileSystemManager {
 			properties = new Properties();
 		}
 		Iterator<ITask> iter = ops.iterator();
-		while (iter.hasNext()) {
-			ITask op = iter.next();
-			try {
-				op.exec(properties);
-				iter.remove();
-			} 
-			catch (SkipTaskException e) {
-				iter.remove();
-				continue;
+		try {
+			while (iter.hasNext()) {
+				ITask op = iter.next();
+				try {
+					op.exec(properties);
+					iter.remove();
+				} 
+				catch (SkipTaskException e) {
+					iter.remove();
+					continue;
+				}
 			}
+		}
+		catch (CancelExecutionException e) {
 		}
 	}
 	

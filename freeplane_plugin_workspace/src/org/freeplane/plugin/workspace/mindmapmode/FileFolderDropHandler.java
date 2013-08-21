@@ -43,10 +43,11 @@ public class FileFolderDropHandler extends DefaultFileDropHandler {
 				for (AWorkspaceTreeNode node : nodes) {
 					if (node instanceof DefaultFileNode) {
 						File srcFile = ((DefaultFileNode) node).getFile();
-						if (srcFile.equals(targetDir)) {
+						File destFile = new File(targetDir, srcFile.getName());
+						if (srcFile.equals(destFile) || srcFile.equals(targetDir)) {
 							continue;
 						}
-						File destFile = new File(targetDir, srcFile.getName());						
+												
 						if (dropAction == DnDConstants.ACTION_COPY) {
 							FileSystemManager.buildCopyOperationList(srcFile, destFile, opList);
 						} else if (dropAction == DnDConstants.ACTION_MOVE) {
