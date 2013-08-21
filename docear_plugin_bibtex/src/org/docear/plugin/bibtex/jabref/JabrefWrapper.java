@@ -531,7 +531,9 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 			catch (Throwable t) {
 				LogUtils.warn(t);
 			}
-		}		
+		}
+		
+		getJabrefFrame().quit();
 	}
 
 	public OneTouchCollapseResizer getResizer() {
