@@ -760,8 +760,9 @@ public class JabRefFrame extends JPanel implements OutputPrinter {
 			}
 
 			prefs.flush();
-
-			System.exit(0); // End program.
+			if(isTopLevel) {
+				System.exit(0); // End program.
+			}
 		}
 	}
 
