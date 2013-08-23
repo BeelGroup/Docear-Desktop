@@ -1,7 +1,7 @@
-<map version="docear 1.0" project="@PROJECT_ID@" project_last_home="@PROJECT_HOME@" type="trash">
+<map version="docear 1.0" project="@PROJECT_ID@" project_last_home="file:/C:/Users/admin/Docear/projects/Demo%20files" type="trash" dcr_id="1377255079355_8mkgvh9a8l9nwiiml8bl7nure">
 <!--To view this file, download Docear - The Academic Literature Suite from http://www.docear.org -->
 <attribute_registry SHOW_ATTRIBUTES="hide"/>
-<node TEXT="Trash" FOLDED="false" ID="ID_1723255651" CREATED="1283093380553" MODIFIED="1358858420665" DCR_PRIVACY_LEVEL="DEMO"><hook NAME="MapStyle">
+<node TEXT="Trash" FOLDED="false" ID="ID_1723255651" CREATED="1283093380553" MODIFIED="1377255079343" DCR_PRIVACY_LEVEL="DEMO"><hook NAME="MapStyle">
     <properties show_icon_for_attributes="true" show_note_icons="true"/>
 
 <map_styles>
@@ -52,7 +52,7 @@
 </map_styles>
 </hook>
 <hook NAME="AutomaticEdgeColor" COUNTER="4"/>
-<node LOCALIZED_STYLE_REF="defaultstyle.floating" POSITION="right" ID="ID_989309610" CREATED="1344498811808" MODIFIED="1358858428884" HGAP="-284" VSHIFT="-160" DCR_PRIVACY_LEVEL="DEMO"><richcontent TYPE="NODE">
+<node LOCALIZED_STYLE_REF="defaultstyle.floating" POSITION="right" ID="ID_989309610" CREATED="1344498811808" MODIFIED="1377255122938" HGAP="-284" VSHIFT="-160" DCR_PRIVACY_LEVEL="DEMO"><richcontent TYPE="NODE">
 
 <html>
   <head>
@@ -60,7 +60,7 @@
   </head>
   <body>
     <p>
-      Sometimes, you might have a PDF or an annotation that you do not want to delete permanentely but you also don't want it to show up in your normal mind maps. Move these PDFs and annotations to this Trash Map and they won't annoy you in your other mind maps (and won't show up in your Incoming Map). In addition, PDFs and annotations in the Trash Map are not used for generating recommendations.
+      Sometimes, you might have a PDF or an annotation that you do not want to delete permanentely but you also don't want it to show up in your normal mind maps. Move these PDFs and annotations to this Trash Map and they won't annoy you in your other mind maps (and won't show up in your Incoming Node). In addition, PDFs and annotations in the Trash Map are ignored&#160;when generating recommendations for your.
     </p>
     <p>
       
@@ -70,6 +70,7 @@
     </p>
   </body>
 </html>
+
 </richcontent>
 <hook NAME="FreeNode"/>
 </node>
