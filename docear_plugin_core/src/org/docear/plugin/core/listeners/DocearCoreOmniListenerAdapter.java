@@ -158,7 +158,11 @@ public class DocearCoreOmniListenerAdapter implements IMapLifeCycleListener, INo
 		}
 		if (DocearEventType.NEW_MY_PUBLICATIONS.equals(event.getType())) {
 			MapModel map = (MapModel) event.getEventObject();
-			DocearMapModelController.getModel(map).setType(DocearMapType.my_publications);
+			DocearMapModelExtension dmme = DocearMapModelController.getModel(map);
+			if(dmme == null) {
+				dmme = DocearMapModelController.setModelWithCurrentVersion(map);
+			}
+			dmme.setType(DocearMapType.my_publications);
 			DocearNodePrivacyExtension ext = DocearNodePrivacyExtensionController.getExtension(map.getRootNode());
 			if(ext == null) {
 				DocearNodePrivacyExtensionController.getController().setPrivacyLevel(map.getRootNode(), DocearPrivacyLevel.DEMO);
@@ -166,7 +170,11 @@ public class DocearCoreOmniListenerAdapter implements IMapLifeCycleListener, INo
 		}
 		if (DocearEventType.NEW_LITERATURE_ANNOTATIONS.equals(event.getType())) {
 			MapModel map = (MapModel) event.getEventObject();
-			DocearMapModelController.getModel(map).setType(DocearMapType.literature_annotations);
+			DocearMapModelExtension dmme = DocearMapModelController.getModel(map);
+			if(dmme == null) {
+				dmme = DocearMapModelController.setModelWithCurrentVersion(map);
+			}
+			dmme.setType(DocearMapType.literature_annotations);
 			DocearNodePrivacyExtension ext = DocearNodePrivacyExtensionController.getExtension(map.getRootNode());
 			if(ext == null) {
 				DocearNodePrivacyExtensionController.getController().setPrivacyLevel(map.getRootNode(), DocearPrivacyLevel.DEMO);
