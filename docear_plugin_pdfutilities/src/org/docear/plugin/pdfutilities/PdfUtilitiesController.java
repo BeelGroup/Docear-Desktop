@@ -1086,7 +1086,17 @@ public class PdfUtilitiesController extends ALanguageController {
 		DocearController.getController().getEventQueue().addEventListener(new IDocearEventListener() {
 
 			public void handleEvent(DocearEvent event) {
-				if (DocearEventType.NEW_INCOMING.equals(event.getType())) {
+				//DOCEAR - old
+//				if (DocearEventType.NEW_INCOMING.equals(event.getType())) {
+//					MapModel map = (MapModel) event.getEventObject();
+//					
+//					if(MonitoringUtils.setupMonitoringNode(map.getRootNode(), CoreConfiguration.DOCUMENT_REPOSITORY_PATH)) { 
+//						map.setSaved(false);
+//						MapUtils.saveMap(map, map.getFile());
+//					}
+//					
+//				}
+				if (DocearEventType.NEW_LITERATURE_ANNOTATIONS.equals(event.getType())) {
 					MapModel map = (MapModel) event.getEventObject();
 					
 					if(MonitoringUtils.setupMonitoringNode(map.getRootNode(), CoreConfiguration.DOCUMENT_REPOSITORY_PATH)) { 

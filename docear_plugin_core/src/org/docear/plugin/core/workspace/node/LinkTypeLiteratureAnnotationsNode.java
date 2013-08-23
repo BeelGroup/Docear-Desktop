@@ -7,6 +7,7 @@ package org.docear.plugin.core.workspace.node;
 import java.awt.Component;
 import java.io.File;
 import java.net.URI;
+import java.net.URL;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -15,9 +16,11 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.event.DocearEvent;
 import org.docear.plugin.core.event.DocearEventType;
+import org.docear.plugin.core.util.MapUtils;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.LogUtils;
+import org.freeplane.features.map.MapModel;
 import org.freeplane.features.mapio.MapIO;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.mindmapmode.MModeController;
@@ -112,27 +115,61 @@ public class LinkTypeLiteratureAnnotationsNode extends ALinkNode implements IWor
 			try {
 				AWorkspaceProject project = WorkspaceController.getSelectedProject(this);
 				File f = URIUtils.getAbsoluteFile(getLinkURI());
-				if(f == null) {
-					return;
-				}
-				if (!f.exists()) {					
-					if(WorkspaceNewMapAction.createNewMap(project, f.toURI(), getName(), true) == null) {
+//				if(f == null) {
+//					return;
+//				}
+//				if (!f.exists()) {					
+//					if(WorkspaceNewMapAction.createNewMap(project, f.toURI(), getName(), true) == null) {
+//						LogUtils.warn("could not create " + getLinkURI());
+//					}
+//				}
+//				
+//				Controller.getCurrentController().selectMode(MModeController.MODENAME);
+//				final MapIO mapIO = (MapIO) MModeController.getMModeController().getExtension(MapIO.class);
+//				
+//				try {
+//					if(mapIO.newMap(f.toURI().toURL())) {
+//						DocearEvent evnt = new DocearEvent(this, (DocearWorkspaceProject)project, DocearEventType.NEW_LITERATURE_ANNOTATIONS, Controller.getCurrentController().getMap());
+//						DocearController.getController().getEventQueue().dispatchEvent(evnt);
+//					}
+//				}
+//				catch (Exception e) {
+//					LogUtils.severe(e);
+//					return;
+//				}
+				boolean nuMap = false;
+				MapModel map = null;
+				if (!f.exists()) {
+					map = WorkspaceNewMapAction.createNewMap(WorkspaceController.getSelectedProject(), f.toURI(), getName(), true);
+					
+					if(map == null) {
 						LogUtils.warn("could not create " + getLinkURI());
 					}
+					else {
+						//map.destroy();
+						nuMap = true;
+					}
 				}
 				
-				Controller.getCurrentController().selectMode(MModeController.MODENAME);
-				final MapIO mapIO = (MapIO) MModeController.getMModeController().getExtension(MapIO.class);
 				
 				try {
-					if(mapIO.newMap(f.toURI().toURL())) {
-						DocearEvent evnt = new DocearEvent(this, (DocearWorkspaceProject)project, DocearEventType.NEW_LITERATURE_ANNOTATIONS, Controller.getCurrentController().getMap());
-						DocearController.getController().getEventQueue().dispatchEvent(evnt);
+					URL url = f.toURI().toURL();
+					if(map == null) {
+						map = MapUtils.openMapNoShow(url);
+						nuMap = true;
 					}
+					
+					if(map != null && nuMap) {
+						
+						DocearEvent evnt = new DocearEvent(this, (DocearWorkspaceProject) WorkspaceController.getCurrentModel().getProject(getModel()), DocearEventType.NEW_LITERATURE_ANNOTATIONS, map);
+						DocearController.getController().getEventQueue().dispatchEvent(evnt);
+						Controller.getCurrentModeController().getMapController().fireMapCreated(map);
+						MapUtils.showMap(map);
+					}
+					
 				}
 				catch (Exception e) {
 					LogUtils.severe(e);
-					return;
 				}
 				
 			}

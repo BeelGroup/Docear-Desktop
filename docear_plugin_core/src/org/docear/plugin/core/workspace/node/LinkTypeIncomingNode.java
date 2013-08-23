@@ -134,7 +134,7 @@ public class LinkTypeIncomingNode extends ALinkNode implements IWorkspaceNodeAct
 				if(f == null) {
 					return;
 				}
-				boolean newIncoming = false;
+				boolean nuMap = false;
 				MapModel map = null;
 				if (!f.exists()) {
 					map = WorkspaceNewMapAction.createNewMap(WorkspaceController.getSelectedProject(), f.toURI(), getName(), true);
@@ -144,7 +144,7 @@ public class LinkTypeIncomingNode extends ALinkNode implements IWorkspaceNodeAct
 					}
 					else {
 						//map.destroy();
-						newIncoming = true;
+						nuMap = true;
 					}
 				}
 				
@@ -153,10 +153,10 @@ public class LinkTypeIncomingNode extends ALinkNode implements IWorkspaceNodeAct
 					URL url = f.toURI().toURL();
 					if(map == null) {
 						map = MapUtils.openMapNoShow(url);
-						newIncoming = true;
+						nuMap = true;
 					}
 					
-					if(map != null && newIncoming) {
+					if(map != null && nuMap) {
 						
 						DocearEvent evnt = new DocearEvent(this, (DocearWorkspaceProject) WorkspaceController.getCurrentModel().getProject(getModel()), DocearEventType.NEW_INCOMING, map);
 						DocearController.getController().getEventQueue().dispatchEvent(evnt);
