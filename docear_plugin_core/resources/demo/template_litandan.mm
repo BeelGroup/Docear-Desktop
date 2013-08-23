@@ -71,9 +71,9 @@
 <hook NAME="AutomaticEdgeColor" COUNTER="1"/>
 <attribute NAME="mon_incoming_folder" VALUE="@@literature_repository@@"/>
 <attribute NAME="mon_mindmap_folder" VALUE="@@library_mindmaps@@"/>
-<attribute NAME="mon_auto" VALUE="0" OBJECT="java.lang.Integer|0"/>
+<attribute NAME="mon_auto" VALUE="2" OBJECT="java.lang.Integer|0"/>
 <attribute NAME="mon_subdirs" VALUE="2" OBJECT="java.lang.Integer|2"/>
-<attribute NAME="mon_flatten_dirs" VALUE="0" OBJECT="java.lang.Integer|0"/>
+<attribute NAME="mon_flatten_dirs" VALUE="2" OBJECT="java.lang.Integer|0"/>
 <node TEXT="Incoming" POSITION="right" ID="ID_684370683" CREATED="1377252712955" MODIFIED="1377252831375" MOVED="1377252717488" COLOR="#ffffff" BACKGROUND_COLOR="#006699">
 <font NAME="Courier New" BOLD="true"/>
 <edge COLOR="#006699"/>
