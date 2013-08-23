@@ -185,10 +185,10 @@ public class DocearProjectLoader extends ProjectLoader {
 		
 		URI libPath = project.getRelativeURI(project.getProjectLibraryPath());
 		
-		LinkTypeIncomingNode incomNode = new LinkTypeIncomingNode();
-		incomNode.setLinkPath(URIUtils.createURI(libPath.toString()+"/incoming.mm"));
-		incomNode.setName(TextUtils.getText(incomNode.getClass().getName().toLowerCase(Locale.ENGLISH)+".label" ));
-		project.getModel().addNodeTo(incomNode, libNode);
+//		LinkTypeIncomingNode incomNode = new LinkTypeIncomingNode();
+//		incomNode.setLinkPath(URIUtils.createURI(libPath.toString()+"/incoming.mm"));
+//		incomNode.setName(TextUtils.getText(incomNode.getClass().getName().toLowerCase(Locale.ENGLISH)+".label" ));
+//		project.getModel().addNodeTo(incomNode, libNode);
 		
 		LinkTypeLiteratureAnnotationsNode litNode = new LinkTypeLiteratureAnnotationsNode();
 		litNode.setLinkPath(URIUtils.createURI(libPath.toString()+"/literature_and_annotations.mm"));
@@ -199,6 +199,7 @@ public class DocearProjectLoader extends ProjectLoader {
 //		pubNode.setLinkPath(URIUtils.createURI(libPath.toString()+"/my_publications.mm"));
 //		pubNode.setName(TextUtils.getText(pubNode.getClass().getName().toLowerCase(Locale.ENGLISH)+".label" ));
 //		project.getModel().addNodeTo(pubNode, libNode);
+		
 		if(settings != null && settings.includeDemoFiles()) {
 			LinkTypeFileNode newPaperNode = new LinkTypeFileNode();
 			newPaperNode.setLinkURI(URIUtils.createURI(libPath.toString()+"/My%20New%20Paper.mm"));
@@ -299,7 +300,8 @@ public class DocearProjectLoader extends ProjectLoader {
 			replaceMapping.put("@LITERATURE_BIB_DEMO@", cutLastSlash(relativeBibURI.getPath().replace(":", "\\:")/*+"/Example PDFs"*/));
 		}
 		
-		boolean created = createAndCopy(new File(defaultFilesPath,"incoming.mm"), "/demo/template_incoming.mm", replaceMapping);
+		boolean created = 
+			/*createAndCopy(new File(defaultFilesPath,"incoming.mm"), "/demo/template_incoming.mm", replaceMapping);//*/
 		createAndCopy(new File(defaultFilesPath,"literature_and_annotations.mm"), "/demo/template_litandan.mm", replaceMapping);
 		//createAndCopy(new File(defaultFilesPath,"my_publications.mm"), "/demo/template_mypubs.mm", replaceMapping);
 		createAndCopy(new File(defaultFilesPath,"temp.mm"), "/demo/template_temp.mm", created, replaceMapping);

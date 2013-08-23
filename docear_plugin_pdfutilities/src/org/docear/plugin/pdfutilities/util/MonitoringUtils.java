@@ -405,17 +405,77 @@ public abstract class MonitoringUtils {
 		}
 		
 		if(isMonitoringNode(monitoringNode)) {
-			for (NodeModel node : monitoringNode.getChildren()) {
-				if(isIncomingNode(node)) {
-					return node;
-				}
+			if(!isExtraIncomingNodeEnabled(monitoringNode)) {
+				markAsIncomingNode(monitoringNode);
+				return monitoringNode;
 			}
-			NodeModel nuIncoming = ((MMapController) Controller.getCurrentModeController().getMapController()).newNode(TextUtils.getRawText("docear.monitoring.incoming.text"), monitoringNode.getMap());
-			markAsIncomingNode(nuIncoming);
-			return nuIncoming;
+			else {
+				for (NodeModel node : monitoringNode.getChildren()) {
+					if(isIncomingNode(node)) {
+						return node;
+					}
+				}
+				MMapController mapCtrl = (MMapController) Controller.getCurrentModeController().getMapController();
+				NodeModel nuIncoming = mapCtrl.newNode(TextUtils.getRawText("docear.monitoring.incoming.text"), monitoringNode.getMap());
+				markAsIncomingNode(nuIncoming);
+				mapCtrl.addNewNode(nuIncoming, monitoringNode, monitoringNode.getChildCount(), monitoringNode.isNewChildLeft());
+				return nuIncoming;
+			}
 		}
 		else {
 			return getIncomingNode(monitoringNode.getParentNode());
+		}
+	}
+	
+	public static void setExtraIncomingNodeEnable(NodeModel monitoringNode, boolean enabled) {
+		NodeUtilities.setAttribute(monitoringNode, PdfUtilitiesController.MON_EXTRA_INCOMING , enabled ? "1" : "0");
+	}
+
+	public static boolean setupMonitoringNode(NodeModel node, Object incomingFolderValue) {
+		boolean dirtyMap = false;
+		dirtyMap |= NodeUtilities.setAttributeIfNotExists(node, PdfUtilitiesController.MON_INCOMING_FOLDER, incomingFolderValue);
+		dirtyMap |= NodeUtilities.setAttributeIfNotExists(node, PdfUtilitiesController.MON_MINDMAP_FOLDER, CoreConfiguration.LIBRARY_PATH);
+		dirtyMap |= NodeUtilities.setAttributeIfNotExists(node, PdfUtilitiesController.MON_AUTO, 2);
+		dirtyMap |= NodeUtilities.setAttributeIfNotExists(node, PdfUtilitiesController.MON_SUBDIRS, 2);
+		dirtyMap |= NodeUtilities.setAttributeIfNotExists(node, PdfUtilitiesController.MON_EXTRA_INCOMING, 2);
+		dirtyMap |= NodeUtilities.setAttributeIfNotExists(node, PdfUtilitiesController.MON_FLATTEN_DIRS, 2);
+		
+		return dirtyMap;
+	}
+	
+	public static boolean isExtraIncomingNodeEnabled(NodeModel monitoringNode) {
+		int value = NodeUtilities.getAttributeIntValue(monitoringNode, PdfUtilitiesController.MON_EXTRA_INCOMING);
+		switch (value) {
+			case 1:
+				return true;
+			case 2:
+				return DocearController.getPropertiesController().getBooleanProperty("docear_extra_incoming_node"); //$NON-NLS-1$
+			default:
+				return false;
+		}
+	}
+	
+	public static boolean isFlattenSubfolders(NodeModel monitoringNode) {
+		int value = NodeUtilities.getAttributeIntValue(monitoringNode, PdfUtilitiesController.MON_FLATTEN_DIRS);
+		switch (value) {
+			case 1:
+				return true;
+			case 2:
+				return DocearController.getPropertiesController().getBooleanProperty("docear_flatten_subdir"); //$NON-NLS-1$
+			default:
+				return false;
+		}
+	}
+
+	public static boolean isMonitorSubDirectories(NodeModel target) {
+		int value = NodeUtilities.getAttributeIntValue(target, PdfUtilitiesController.MON_SUBDIRS);
+		switch (value) {
+			case 1:
+				return true;
+			case 2:
+				return DocearController.getPropertiesController().getBooleanProperty("docear_subdir_monitoring"); //$NON-NLS-1$
+			default:
+				return false;
 		}
 	}
 

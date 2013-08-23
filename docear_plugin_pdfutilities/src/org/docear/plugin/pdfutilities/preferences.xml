@@ -37,6 +37,7 @@
                 <boolean name="docear_flatten_subdir" />
                 <string name="docear_files_to_import"/>   
                 <string name="docear_subdirs_to_ignore"/>   
+                <string name="docear_extra_incoming_node"/>
 			</separator>
 		</tab>
 	</tabbed_pane>

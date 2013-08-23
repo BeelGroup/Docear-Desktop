@@ -9,12 +9,9 @@ import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-import org.docear.plugin.core.CoreConfiguration;
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.actions.SaveAsAction;
 import org.docear.plugin.core.logger.DocearLogEvent;
-import org.docear.plugin.core.util.NodeUtilities;
-import org.docear.plugin.pdfutilities.PdfUtilitiesController;
 import org.docear.plugin.pdfutilities.util.MonitoringUtils;
 import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.ui.components.UITools;
@@ -58,32 +55,18 @@ public class AddMonitoringFolderAction extends AbstractMonitoringAction {
 		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		fileChooser.setDialogTitle(TextUtils.getText("AddMonitoringFolderAction_dialog_title")); //$NON-NLS-1$
 		int result = fileChooser.showOpenDialog(Controller.getCurrentController().getViewController().getJFrame());
-        if(result == JFileChooser.APPROVE_OPTION){
-        	File f = fileChooser.getSelectedFile();
-        	URI pdfDir = MLinkController.toLinkTypeDependantURI(Controller.getCurrentController().getMap().getFile(), f);
-        	//fileChooser.setDialogTitle(TextUtils.getText("AddMonitoringFolderAction_dialog_title_mindmaps")); //$NON-NLS-1$
-        	//result = fileChooser.showOpenDialog(Controller.getCurrentController().getViewController().getJFrame());
-        	//if(result == JFileChooser.APPROVE_OPTION){
-        		//URI mindmapDir = MLinkController.toLinkTypeDependantURI(Controller.getCurrentController().getMap().getFile(), fileChooser.getSelectedFile());
-        		
-        		NodeUtilities.setAttributeValue(selected, PdfUtilitiesController.MON_INCOMING_FOLDER, pdfDir);
-        		NodeUtilities.setAttributeValue(selected, PdfUtilitiesController.MON_MINDMAP_FOLDER, CoreConfiguration.LIBRARY_PATH);
-        		NodeUtilities.setAttributeValue(selected, PdfUtilitiesController.MON_AUTO, 2);
-        		NodeUtilities.setAttributeValue(selected, PdfUtilitiesController.MON_SUBDIRS, 2);
-        		if(DocearController.getPropertiesController().getBooleanProperty("docear_flatten_subdir")){
-        			NodeUtilities.setAttributeValue(selected, PdfUtilitiesController.MON_FLATTEN_DIRS, 1);
-        		}
-        		else{
-        			NodeUtilities.setAttributeValue(selected, PdfUtilitiesController.MON_FLATTEN_DIRS, 0);
-        		}
-        		List<NodeModel> list = new ArrayList<NodeModel>();
-        		list.add(Controller.getCurrentController().getSelection().getSelected());	
-        		AddMonitoringFolderAction.updateNodesAgainstMonitoringDir(list, true);
-        	//}
-        	DocearController.getController().getDocearEventLogger().appendToLog(this, DocearLogEvent.MONITORING_FOLDER_ADD, f);
-        }
-		
-	}	
+		if (result == JFileChooser.APPROVE_OPTION) {
+			File f = fileChooser.getSelectedFile();
+			URI pdfDir = MLinkController.toLinkTypeDependantURI(Controller.getCurrentController().getMap().getFile(), f);
+			MonitoringUtils.setupMonitoringNode(selected, pdfDir);
+
+			List<NodeModel> list = new ArrayList<NodeModel>();
+			list.add(selected);
+			AddMonitoringFolderAction.updateNodesAgainstMonitoringDir(list, true);
+
+			DocearController.getController().getDocearEventLogger().appendToLog(this, DocearLogEvent.MONITORING_FOLDER_ADD, f);
+		}
+	}
 
 	@Override
 	public void setEnabled(){

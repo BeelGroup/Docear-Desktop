@@ -159,6 +159,7 @@ public class PdfUtilitiesController extends ALanguageController {
 	public static final String MON_FLATTEN_DIRS = "mon_flatten_dirs"; //$NON-NLS-1$
 	public static final String MON_MINDMAP_FOLDER = "mon_mindmap_folder"; //$NON-NLS-1$
 	public static final String MON_INCOMING_FOLDER = "mon_incoming_folder"; //$NON-NLS-1$
+	public static final String MON_EXTRA_INCOMING = "mon_add_extra_incoming_node";
 	public static final String SETTINGS_MENU = "/Settings"; //$NON-NLS-1$	
 	public static final String OPEN_ON_PAGE_READER_COMMAND_KEY = "docear_open_on_page_reader_command";
 	public static final String OPEN_PDF_VIEWER_ON_PAGE_KEY = "docear_open_on_page"; //$NON-NLS-1$	
@@ -1087,20 +1088,8 @@ public class PdfUtilitiesController extends ALanguageController {
 			public void handleEvent(DocearEvent event) {
 				if (DocearEventType.NEW_INCOMING.equals(event.getType())) {
 					MapModel map = (MapModel) event.getEventObject();
-					boolean dirtyMap = false;
 					
-					dirtyMap |= NodeUtilities.setAttributeIfNotExists(map.getRootNode(), PdfUtilitiesController.MON_INCOMING_FOLDER, CoreConfiguration.DOCUMENT_REPOSITORY_PATH);
-					dirtyMap |= NodeUtilities.setAttributeIfNotExists(map.getRootNode(), PdfUtilitiesController.MON_MINDMAP_FOLDER, CoreConfiguration.LIBRARY_PATH);
-					dirtyMap |= NodeUtilities.setAttributeIfNotExists(map.getRootNode(), PdfUtilitiesController.MON_AUTO, 0);
-					dirtyMap |= NodeUtilities.setAttributeIfNotExists(map.getRootNode(), PdfUtilitiesController.MON_SUBDIRS, 2);
-					if (DocearController.getPropertiesController().getBooleanProperty("docear_flatten_subdir")) {
-						dirtyMap |= NodeUtilities.setAttributeIfNotExists(map.getRootNode(), PdfUtilitiesController.MON_FLATTEN_DIRS, 1);
-					}
-					else {
-						dirtyMap |= NodeUtilities.setAttributeIfNotExists(map.getRootNode(), PdfUtilitiesController.MON_FLATTEN_DIRS, 0);
-					}
-					
-					if(dirtyMap) { 
+					if(MonitoringUtils.setupMonitoringNode(map.getRootNode(), CoreConfiguration.DOCUMENT_REPOSITORY_PATH)) { 
 						map.setSaved(false);
 						MapUtils.saveMap(map, map.getFile());
 					}

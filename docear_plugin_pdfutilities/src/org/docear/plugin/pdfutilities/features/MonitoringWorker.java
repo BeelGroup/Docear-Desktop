@@ -31,7 +31,6 @@ import org.docear.plugin.core.util.MapUtils;
 import org.docear.plugin.core.util.NodeUtilities;
 import org.docear.plugin.core.workspace.AVirtualDirectory;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
-import org.docear.plugin.pdfutilities.PdfUtilitiesController;
 import org.docear.plugin.pdfutilities.actions.AbstractMonitoringAction;
 import org.docear.plugin.pdfutilities.features.DocearNodeMonitoringExtension.DocearExtensionKey;
 import org.docear.plugin.pdfutilities.features.IAnnotation.AnnotationType;
@@ -328,7 +327,7 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 	private boolean pasteNewNodesAndRemoveOrphanedNodes(NodeModel target) throws InterruptedException, InvocationTargetException {
 		fireStatusUpdate(SwingWorkerDialog.SET_PROGRESS_BAR_DETERMINATE, null, null);
 		fireStatusUpdate(SwingWorkerDialog.PROGRESS_BAR_TEXT, null, TextUtils.getText("AbstractMonitoringAction.17")); //$NON-NLS-1$
-
+		NodeModel monitoringNode = target;
 		if (MonitoringUtils.isMonitoringNode(target) || !MonitoringUtils.isIncomingNode(target)) {
 			target = MonitoringUtils.getIncomingNode(target);
 		}
@@ -347,7 +346,10 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 				// see Ticket #283
 				if (annotation.getAnnotationType().equals(AnnotationType.PDF_FILE) && annotation.getChildren().size() > 0
 						&& !annotation.hasNewChildren()) continue;
-				Stack<NodeModel> treePathStack = getTreePathStack(annotation, target);
+				Stack<NodeModel> treePathStack = getTreePathStack(annotation
+																	, monitoringNode.getMap()
+																	, MonitoringUtils.getPdfDirFromMonitoringNode(monitoringNode)
+																	, MonitoringUtils.isFlattenSubfolders(monitoringNode));
 				if (canceled()) return false;
 				NodeModel tempTarget = target;
 				while (!treePathStack.isEmpty()) {
@@ -379,10 +381,11 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 							}
 						});
 						tempTarget = insertNode;
-						if (!equalChildIndex.containsKey(insertNode.getText())) {
-							equalChildIndex.put(insertNode.getText(), new ArrayList<NodeModel>());
+						String key = normalizeWhitespaces(insertNode.getText());
+						if (!equalChildIndex.containsKey(key)) {
+							equalChildIndex.put(key, new ArrayList<NodeModel>());
 						}
-						equalChildIndex.get(insertNode.getText()).add(insertNode);
+						equalChildIndex.get(key).add(insertNode);
 					}
 					else {
 						tempTarget = equalChild;
@@ -508,7 +511,7 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 		return true;
 	}
 
-	private Stack<NodeModel> getTreePathStack(AnnotationModel annotation, NodeModel target) throws InterruptedException {
+	private Stack<NodeModel> getTreePathStack(AnnotationModel annotation, MapModel map, File pdfRepository, boolean flattenSubFolders) throws InterruptedException {
 		Stack<NodeModel> result = new Stack<NodeModel>();
 		AnnotationModel tempAnnotation = annotation;
 		do {
@@ -517,23 +520,20 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 			if (tempAnnotation.getTitle() != null && tempAnnotation.getTitle().length() > 1 && tempAnnotation.getTitle().charAt(0) == '=') {
 				tempAnnotation.setTitle(" " + tempAnnotation.getTitle()); //$NON-NLS-1$
 			}
-			NodeModel node = ((MMapController) Controller.getCurrentModeController().getMapController()).newNode(tempAnnotation.getTitle(),
-					target.getMap());
+			NodeModel node = ((MMapController) Controller.getCurrentModeController().getMapController()).newNode(tempAnnotation.getTitle(), map);
 			AnnotationController.setModel(node, tempAnnotation);
 			NodeUtilities.setLinkFrom(tempAnnotation.getSource(), node);
 			result.push(node);
 			tempAnnotation.setInserted(true);
 			tempAnnotation = tempAnnotation.getParent();
 		} while (tempAnnotation != null);
-		if (!isFlattenSubfolders(target)) {
-			File pdfDirFile = MonitoringUtils.getPdfDirFromMonitoringNode(target);
+		if (!flattenSubFolders) {
 			File annoFile = URIUtils.getAbsoluteFile(annotation.getSource());
 			if (annoFile != null) {
 				File parent = annoFile.getParentFile();
-				while (parent != null && !MonitoringUtils.isParent(pdfDirFile, parent)/*parent.equals(pdfDirFile)*/) {
+				while (parent != null && !MonitoringUtils.isParent(pdfRepository, parent)) {
 					if (canceled()) return result;
-					NodeModel node = ((MMapController) Controller.getCurrentModeController().getMapController()).newNode(parent.getName(),
-							target.getMap());
+					NodeModel node = ((MMapController) Controller.getCurrentModeController().getMapController()).newNode(parent.getName(), map);
 					DocearNodeMonitoringExtensionController.setEntry(node, DocearExtensionKey.MONITOR_PATH, null);
 					NodeUtilities.setLinkFrom(LinkController.normalizeURI(parent.toURI()), node);
 					result.push(node);
@@ -730,7 +730,7 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 		}
 		CustomFileListFilter monitorFileFilter = new CustomFileListFilter(DocearController.getPropertiesController().getProperty(
 				TextUtils.getText("AbstractMonitoringAction.30"))); //$NON-NLS-1$
-		monitorFiles = getFilteredFileList(monitoringDirectory, monitorFileFilter, isMonitorSubDirectories(target));
+		monitorFiles = getFilteredFileList(monitoringDirectory, monitorFileFilter, MonitoringUtils.isMonitorSubDirectories(target));
 
 		fireStatusUpdate(SwingWorkerDialog.PROGRESS_BAR_TEXT, null, TextUtils.getText("AbstractMonitoringAction.31")); //$NON-NLS-1$
 		if (canceled()) return false;
@@ -741,7 +741,7 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 			File dirFile = URIUtils.getFile(uri);
 			if (dirFile == null || !dirFile.exists()) continue;
 			if (dirFile.isDirectory()) {
-				mindmapFiles.addAll(getFilteredFileList(dirFile, new CustomFileFilter(".*[.][mM][mM]"), isMonitorSubDirectories(target))); //$NON-NLS-1$
+				mindmapFiles.addAll(getFilteredFileList(dirFile, new CustomFileFilter(".*[.][mM][mM]"), MonitoringUtils.isMonitorSubDirectories(target))); //$NON-NLS-1$
 			}
 			else {
 				mindmapFiles.add(uri);
@@ -784,29 +784,6 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 		}
 		else {
 			return false;
-		}
-	}
-
-	private boolean isFlattenSubfolders(NodeModel target) {
-		int value = NodeUtilities.getAttributeIntValue(target, PdfUtilitiesController.MON_FLATTEN_DIRS);
-		switch (value) {
-		default:
-			return false;
-		case 1:
-			return true;
-		}
-	}
-
-	private boolean isMonitorSubDirectories(NodeModel target) {
-		int value = NodeUtilities.getAttributeIntValue(target, PdfUtilitiesController.MON_SUBDIRS);
-		switch (value) {
-
-		default:
-			return false;
-		case 1:
-			return true;
-		case 2:
-			return DocearController.getPropertiesController().getBooleanProperty("docear_subdir_monitoring"); //$NON-NLS-1$
 		}
 	}
 
