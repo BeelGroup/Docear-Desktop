@@ -1,4 +1,4 @@
-<map version="doceare 1.0" project="DOCEAR_VIRTUAL_PROJECT" project_last_home="file:/.">
+<map version="docear 1.0" project="DOCEAR_VIRTUAL_PROJECT" project_last_home="file:/.">
 <!--To view this file, download Docear - The Academic Literature Suite from http://www.docear.org -->
 <node TEXT="Welcome" FOLDED="false" ID="ID_1723255651" CREATED="1283093380553" MODIFIED="1322910607046" COLOR="#ffffff" BACKGROUND_COLOR="#0099cc">
 <font SIZE="16" BOLD="true" ITALIC="false"/>

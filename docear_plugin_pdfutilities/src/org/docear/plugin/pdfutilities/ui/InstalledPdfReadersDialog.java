@@ -4,9 +4,10 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.IOException;
 import java.net.URI;
-import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -34,7 +35,7 @@ public class InstalledPdfReadersDialog extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private JComboBox readerChoice;
 	private final PDFReaderHandle[] readerHandles;
-	private JLabel readerSettingsWarning;
+	private MultiLineActionLabel readerSettingsWarning;
 
 	public InstalledPdfReadersDialog(PDFReaderHandle[] handles, Boolean newReader) {
 		readerHandles = handles;
@@ -113,7 +114,27 @@ public class InstalledPdfReadersDialog extends JPanel {
 				}
 			}
 		});	
-		readerSettingsWarning = new JLabel(TextUtils.getText("docear.help.pdf_xchange_viewer.warning"));
+		readerSettingsWarning = new MultiLineActionLabel(TextUtils.getText("docear.help.pdf_xchange_viewer.warning"));
+		readerSettingsWarning.addActionListener(new ActionListener() {				
+			public void actionPerformed(ActionEvent e) {
+				if ("open_url".equals(e.getActionCommand())) {
+					try {
+						Controller.getCurrentController().getViewController().openDocument(URI.create("http://www.docear.org/support/user-manual/#compatible_pdf_readers"));
+					}
+					catch (IOException ex) {						
+						LogUtils.warn(ex);
+					}
+				}
+				else if ("preview_url".equals(e.getActionCommand())) {
+					try {
+						Controller.getCurrentController().getViewController().openDocument(URI.create("http://www.docear.org/faqs/why-does-docear-not-support-preview-and-skim/"));
+					}
+					catch (IOException ex) {						
+						LogUtils.warn(ex);
+					}
+				}
+			}
+		});
 		readerSettingsWarning.setForeground(Color.red);
 		readerSettingsWarning.setVisible(false);		
 		showWarningIfNecessary();
@@ -149,6 +170,12 @@ public class InstalledPdfReadersDialog extends JPanel {
 					showWarningIfNecessary();
 				}
 			});
+			readerChoice.addItemListener(new ItemListener() {
+				
+				public void itemStateChanged(ItemEvent e) {
+					System.out.println("asdasd");
+				}
+			});
 		} 
 		return readerChoice;
 	}
@@ -172,21 +199,25 @@ public class InstalledPdfReadersDialog extends JPanel {
 				catch (IOException e1) {
 				}			
 			}
+			if (compatible) {
+				readerSettingsWarning.setVisible(false);
+			}
 			PdfReaderFileFilter filter = new PdfReaderFileFilter();
 			if (!compatible && filter.isPdfXChange(execFile)) {
 				readerSettingsWarning.setText(TextUtils.getText("docear.help.pdf_xchange_viewer.warning"));
 				readerSettingsWarning.setVisible(true);
 			}
-			if (!compatible && filter.isAcrobat(execFile)) {
+			else if (!compatible && filter.isAcrobat(execFile)) {
 				readerSettingsWarning.setText(TextUtils.getText("docear.help.acrobat.warning"));
 				readerSettingsWarning.setVisible(true);
 			}
-			if (compatible) {
-				readerSettingsWarning.setVisible(false);
-			}
 		}
 		else{
-			if(readerHandles.length == 0){
+			if ("Preview".equals((((PDFReaderHandle) readerChoice.getSelectedItem())).getName())) {
+				readerSettingsWarning.setText(TextUtils.getText("docear.help.preview_viewer.warning"));
+				readerSettingsWarning.setVisible(true);
+			}
+			else if(readerHandles.length == 0){
 				readerSettingsWarning.setText(TextUtils.getText("docear.help.adobe_reader"));
 				readerSettingsWarning.setVisible(true);
 			}

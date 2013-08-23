@@ -3,6 +3,8 @@ package org.docear.plugin.bibtex.dialogs;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Window;
+import java.awt.event.WindowEvent;
 import java.io.StringReader;
 import java.util.Collection;
 import java.util.Iterator;
@@ -12,7 +14,6 @@ import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
@@ -33,6 +34,11 @@ import net.sf.jabref.imports.BibtexParser;
 import org.docear.plugin.bibtex.ReferencesController;
 import org.docear.plugin.bibtex.jabref.JabRefCommons;
 import org.docear.plugin.bibtex.jabref.JabRefCommons.MetadataCallableResult;
+import org.docear.plugin.core.ui.wizard.Wizard;
+import org.docear.plugin.core.ui.wizard.WizardContext;
+import org.docear.plugin.core.ui.wizard.WizardPageDescriptor;
+import org.docear.plugin.services.features.io.DocearServiceResponse.Status;
+import org.docear.plugin.services.features.user.action.DocearUserRegistrationAction;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.TextUtils;
 
@@ -149,7 +155,7 @@ private static final long serialVersionUID = -627410651667772600L;
 						if (ret.hasError()) {
 							hasError = true;
 							//Replace with local presentation
-							JOptionPane.showMessageDialog(UITools.getFrame(), ret.getError(), TextUtils.getText("docear.metadata.import.error"), JOptionPane.ERROR_MESSAGE);
+							showErrorMessage(ret.getError(), ret.getStatus() == Status.UNAUTHORIZED);
 						}					
 					
 						String bib = ret.getResult();
@@ -175,6 +181,45 @@ private static final long serialVersionUID = -627410651667772600L;
 				}
 			}.start();
 		}
+	}
+	
+	private void showErrorMessage(String message, boolean showRegistration) {
+		Window window = SwingUtilities.getWindowAncestor(PdfMetadataListDialog.this);
+		if(window != null && window != UITools.getFrame()) {
+			PdfMetadataListDialog.this.dispatchEvent(new WindowEvent(window, WindowEvent.WINDOW_CLOSING));
+			window.setVisible(false);
+		}
+		final Wizard wizard = new Wizard(UITools.getFrame());
+		
+		final Object regId = DocearUserRegistrationAction.addRegistrationPages(wizard);
+		MetadataErrorPage page = new MetadataErrorPage(message, showRegistration);
+		//JOptionPane.showMessageDialog(UITools.getFrame(), message , , JOptionPane.ERROR_MESSAGE);
+		
+		WizardPageDescriptor desc = new WizardPageDescriptor("error_message", page) {
+
+			@Override
+			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
+				wizard.cancel();
+				return null;
+			}
+
+			@Override
+			public WizardPageDescriptor getBackPageDescriptor(WizardContext context) {
+				return context.getModel().getPage(regId);
+			}
+			
+		};
+		wizard.registerWizardPanel(desc);
+		wizard.setStartPage(desc.getIdentifier());
+		
+		new Thread(new Runnable() {
+			public void run() {
+				int ret = wizard.show();
+				if(ret == Wizard.OK_OPTION) {
+					DocearUserRegistrationAction.useRegisteredUser(wizard);
+				}
+			}
+		}).start();
 	}
 	
 	class BibtexEntryListModel extends DefaultListModel {

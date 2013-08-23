@@ -39,7 +39,8 @@ public class DocearUserRegistrationAction extends AWorkspaceAction {
 		showRegistrationWizard();
 	}
 
-	private static void initWizard(Wizard wizard) {
+	public static Object addRegistrationPages(Wizard wizard) {
+		Object startId;
 		//registration page
 		WizardPageDescriptor desc = new WizardPageDescriptor("page.registration", new RegistrationPagePanel()) {
 			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
@@ -53,9 +54,10 @@ public class DocearUserRegistrationAction extends AWorkspaceAction {
 				context.getBackButton().setVisible(false);
 			}
 		};
-		desc.getPage().setPreferredSize(new Dimension(640,480));
+		desc.getPage().setPreferredSize(new Dimension(640,380));
 		wizard.registerWizardPanel(desc);
 		wizard.setStartPage(desc.getIdentifier());
+		startId = desc.getIdentifier();
 		
 		//registration verification
 		final DocearServiceTestTask task = getRegistrationVerificationTask();
@@ -87,7 +89,6 @@ public class DocearUserRegistrationAction extends AWorkspaceAction {
 			
 		};
 		desc.getPage().setSkipOnBack(true);
-		desc.getPage().setPreferredSize(new Dimension(640,480));
 		wizard.registerWizardPanel(desc);
 		
 		desc = new WizardPageDescriptor("page.registration.keep_workspace", new KeepWorkspaceSettingsPagePanel()) {
@@ -106,9 +107,9 @@ public class DocearUserRegistrationAction extends AWorkspaceAction {
 			
 		};
 		desc.getPage().setSkipOnBack(true);
-		desc.getPage().setPreferredSize(new Dimension(640,480));
 		wizard.registerWizardPanel(desc);
 		
+		return startId;
 	}
 	
 	public static DocearServiceTestTask getRegistrationVerificationTask() {
@@ -160,27 +161,31 @@ public class DocearUserRegistrationAction extends AWorkspaceAction {
 			FileUtils.moveDirectory(srcDir, destDir);
 		}
 	}
+	
+	public static void useRegisteredUser(final Wizard wizard) {
+		DocearUser user = wizard.getContext().get(DocearUser.class);
+		DocearUser clone = user.clone();
+		user.activate();
+		user.setBackupEnabled(clone.isBackupEnabled());
+		user.setCollaborationEnabled(clone.isCollaborationEnabled());
+		user.setSynchronizationEnabled(clone.isSynchronizationEnabled());
+		user.setRecommendationsEnabled(clone.isRecommendationsEnabled());
+		DocearController.getController().getEventQueue().invoke(new Runnable() {
+			public void run() {
+				WorkspaceController.save();
+			}
+		});
+	}
 
 	public static void showRegistrationWizard() {
 		final Wizard wiz = new Wizard(UITools.getFrame());
-		initWizard(wiz);
+		addRegistrationPages(wiz);
 		
 		new Thread(new Runnable() {
 			public void run() {
 				int ret = wiz.show();
 				if(ret == Wizard.OK_OPTION) {
-					DocearUser user = wiz.getContext().get(DocearUser.class);
-					DocearUser clone = user.clone();
-					user.activate();
-					user.setBackupEnabled(clone.isBackupEnabled());
-					user.setCollaborationEnabled(clone.isCollaborationEnabled());
-					user.setSynchronizationEnabled(clone.isSynchronizationEnabled());
-					user.setRecommendationsEnabled(clone.isRecommendationsEnabled());
-					DocearController.getController().getEventQueue().invoke(new Runnable() {
-						public void run() {
-							WorkspaceController.save();
-						}
-					});
+					useRegisteredUser(wiz);
 				}
 			}
 		}).start();

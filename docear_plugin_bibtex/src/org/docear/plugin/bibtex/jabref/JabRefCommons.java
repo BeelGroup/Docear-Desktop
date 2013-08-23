@@ -90,6 +90,7 @@ public abstract class JabRefCommons {
 	public static class MetadataCallableResult {
 		private String result;
 		private String errorText;
+		DocearServiceResponse.Status status;
 
 		public static MetadataCallableResult newInstance() {
 			return new MetadataCallableResult();
@@ -109,6 +110,14 @@ public abstract class JabRefCommons {
 
 		public void setError(String text) {
 			this.errorText = text;
+		}
+		
+		public DocearServiceResponse.Status getStatus() {
+			return this.status;
+		}
+
+		public void setStatus(DocearServiceResponse.Status status) {
+			this.status = status;
 		}
 
 		public boolean hasError() {
@@ -334,7 +343,7 @@ public abstract class JabRefCommons {
 		metadata.runServiceRequest(hash, params);
 		int response = JOptionPane.showConfirmDialog(UITools.getFrame(), metadata, TextUtils.getText("docear.metadata.import.title"),
 				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-		//if(metadata.wasSuccessful()) //does not work anymore with errors shown right away
+		if(metadata.wasSuccessful()) //does not work anymore with errors shown right away
 		{
 			if (response == JOptionPane.OK_OPTION) {
 				Util.setAutomaticFields(metadata.getEntries(), true, true, false);
@@ -382,7 +391,7 @@ public abstract class JabRefCommons {
 		metadata.runServiceRequest(hash, params);
 		int response = JOptionPane.showConfirmDialog(UITools.getFrame(), metadata, TextUtils.getText("docear.metadata.import.title"),
 				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-		//if(metadata.wasSuccessful()) //does not work anymore with errors shown right away
+		if(metadata.wasSuccessful()) //does not work anymore with errors shown right away
 		{
 			if (response == JOptionPane.OK_OPTION) {
 				BibtexEntry selected = metadata.getSelectedEntry();
@@ -482,6 +491,7 @@ public abstract class JabRefCommons {
 				try {
 					StringBuilder sb = new StringBuilder();
 					DocearServiceResponse serviceResponse = ServiceController.getConnectionController().get("/internal/documents/" + hash + "/metadata", params);
+					result.setStatus(serviceResponse.getStatus());
 					if (serviceResponse.getStatus() == DocearServiceResponse.Status.FAILURE || serviceResponse.getStatus() == DocearServiceResponse.Status.UNAUTHORIZED) {
 						// JOptionPane.showMessageDialog(UITools.getFrame(),
 						// serviceResponse.getContentAsString(),
