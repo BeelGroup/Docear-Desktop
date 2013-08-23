@@ -37,6 +37,8 @@ import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.map.mindmapmode.MMapController;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.mindmapmode.MModeController;
+import org.freeplane.features.nodestyle.NodeStyleController;
+import org.freeplane.features.nodestyle.mindmapmode.MNodeStyleController;
 import org.freeplane.features.url.UrlManager;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
@@ -393,6 +395,9 @@ public abstract class MonitoringUtils {
 				node.removeExtension(new IcomingNodeExtension());
 			}
 		}
+		
+		((MNodeStyleController) NodeStyleController.getController()).setBold(node, true);
+		
 	}
 
 	public static boolean isIncomingNode(NodeModel node) {
