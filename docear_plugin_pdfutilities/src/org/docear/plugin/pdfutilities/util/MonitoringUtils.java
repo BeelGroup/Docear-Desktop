@@ -1,5 +1,6 @@
 package org.docear.plugin.pdfutilities.util;
 
+import java.awt.Color;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -396,8 +397,11 @@ public abstract class MonitoringUtils {
 			}
 		}
 		
-		((MNodeStyleController) NodeStyleController.getController()).setBold(node, true);
-		
+		MNodeStyleController mNodeStyleController = ((MNodeStyleController) NodeStyleController.getController());
+		mNodeStyleController.setBold(node, true);
+		mNodeStyleController.setBackgroundColor(node, new Color(0, 0x66, 0x99));
+		mNodeStyleController.setColor(node, Color.white);
+		mNodeStyleController.setFontFamily(node, "Courier New");
 	}
 
 	public static boolean isIncomingNode(NodeModel node) {
