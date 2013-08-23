@@ -3,6 +3,7 @@ package org.docear.plugin.pdfutilities.features;
 import java.io.IOException;
 import java.util.Map.Entry;
 
+import org.docear.plugin.pdfutilities.util.MonitoringUtils;
 import org.freeplane.core.extension.IExtension;
 import org.freeplane.core.io.IAttributeHandler;
 import org.freeplane.core.io.IElementDOMHandler;
@@ -16,6 +17,7 @@ import org.freeplane.n3.nanoxml.XMLElement;
 
 public class DocearNodeMonitoringExtensionXmlBuilder implements IElementDOMHandler, IExtensionElementWriter, IExtensionAttributeWriter {	
 	
+	public static final String INCOMING_ATTRIBUTE_NAME = "INCOMING";
 	private static final String DOCEAR_NODE_EXTENSION_KEY_XML_TAG = "key";
 	private static final String DOCEAR_NODE_EXTENSION_VALUE_XML_TAG = "value";
 	private static final String DOCEAR_NODE_EXTENSION_OBJECT_XML_TAG = "object";
@@ -25,8 +27,23 @@ public class DocearNodeMonitoringExtensionXmlBuilder implements IElementDOMHandl
 	public void registerBy(final ReadManager reader, final WriteManager writer) {
 		reader.addElementHandler(DOCEAR_NODE_EXTENSION_XML_TAG, this);
 		reader.addElementHandler(DOCEAR_NODE_EXTENSIONS_XML_TAG, this);
+		reader.addAttributeHandler("node", INCOMING_ATTRIBUTE_NAME, new IAttributeHandler() {
+			public void setAttribute(Object node, String value) {
+				if(node instanceof NodeModel) {
+					MonitoringUtils.markAsIncomingNode((NodeModel)node);
+				}
+			}
+		});
 		writer.addExtensionElementWriter(DocearNodeMonitoringExtension.class, this);
 		writer.addExtensionAttributeWriter(DocearNodeMonitoringExtension.class, this);
+		writer.addExtensionAttributeWriter(IcomingNodeExtension.class, new IExtensionAttributeWriter() {
+			
+			public void writeAttributes(ITreeWriter writer, Object userObject, IExtension extension) {
+				if(userObject instanceof NodeModel && MonitoringUtils.isIncomingNode((NodeModel)userObject)) {
+					writer.addAttribute(INCOMING_ATTRIBUTE_NAME, "true");
+				}
+			}
+		});
 		registerAttributeHandlers(reader);
 	}
 	

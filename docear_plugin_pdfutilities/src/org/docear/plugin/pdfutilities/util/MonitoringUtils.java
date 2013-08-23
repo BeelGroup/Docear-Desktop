@@ -25,8 +25,10 @@ import org.docear.plugin.pdfutilities.features.DocearNodeMonitoringExtension.Doc
 import org.docear.plugin.pdfutilities.features.DocearNodeMonitoringExtensionController;
 import org.docear.plugin.pdfutilities.features.IAnnotation;
 import org.docear.plugin.pdfutilities.features.IAnnotation.AnnotationType;
+import org.docear.plugin.pdfutilities.features.IcomingNodeExtension;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
 import org.docear.plugin.pdfutilities.pdf.PdfFileFilter;
+import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.attribute.AttributeController;
 import org.freeplane.features.attribute.NodeAttributeTableModel;
 import org.freeplane.features.link.LinkController;
@@ -376,6 +378,45 @@ public abstract class MonitoringUtils {
 			}
 		}
 		return null;
+	}
+
+	public static void markAsIncomingNode(NodeModel node) {
+		IcomingNodeExtension ext = node.getExtension(IcomingNodeExtension.class);
+		NodeModel parent = node.getParentNode();
+		if(ext == null) {			
+			if(parent == null || isMonitoringNode(parent)) {
+				node.addExtension(new IcomingNodeExtension());
+			}
+		}
+		else {
+			if(parent != null && !isMonitoringNode(parent)) {
+				node.removeExtension(new IcomingNodeExtension());
+			}
+		}
+	}
+
+	public static boolean isIncomingNode(NodeModel node) {
+		return node.getExtension(IcomingNodeExtension.class) != null;
+	}
+
+	public static NodeModel getIncomingNode(NodeModel monitoringNode) {
+		if(monitoringNode == null || isIncomingNode(monitoringNode)) {
+			return monitoringNode;
+		}
+		
+		if(isMonitoringNode(monitoringNode)) {
+			for (NodeModel node : monitoringNode.getChildren()) {
+				if(isIncomingNode(node)) {
+					return node;
+				}
+			}
+			NodeModel nuIncoming = ((MMapController) Controller.getCurrentModeController().getMapController()).newNode(TextUtils.getRawText("docear.monitoring.incoming.text"), monitoringNode.getMap());
+			markAsIncomingNode(nuIncoming);
+			return nuIncoming;
+		}
+		else {
+			return getIncomingNode(monitoringNode.getParentNode());
+		}
 	}
 
 

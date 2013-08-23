@@ -329,6 +329,15 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 		fireStatusUpdate(SwingWorkerDialog.SET_PROGRESS_BAR_DETERMINATE, null, null);
 		fireStatusUpdate(SwingWorkerDialog.PROGRESS_BAR_TEXT, null, TextUtils.getText("AbstractMonitoringAction.17")); //$NON-NLS-1$
 
+		if (MonitoringUtils.isMonitoringNode(target) || !MonitoringUtils.isIncomingNode(target)) {
+			target = MonitoringUtils.getIncomingNode(target);
+		}
+		
+		if(target == null) {
+			fireStatusUpdate(SwingWorkerDialog.DETAILS_LOG_TEXT, null, TextUtils.getText("docear.monitoring.incoming.error"));
+			return false;
+		}
+		
 		for (AnnotationModel annotation : newAnnotations) {
 			if (canceled()) return false;
 			try {
