@@ -12,17 +12,15 @@ import org.freeplane.features.link.mindmapmode.MLinkController;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.plugin.workspace.URIUtils;
-import org.freeplane.plugin.workspace.model.WorkspaceModelEvent;
-import org.freeplane.plugin.workspace.model.WorkspaceModelEvent.WorkspaceModelEventType;
 
 public class MindmapFileLinkUpdater extends AMindmapUpdater {
 	
-	WorkspaceModelEvent event;
 	Map<File, File> fileMap = new HashMap<File, File>();
+	private boolean renamed = false;
 
-	public MindmapFileLinkUpdater(String title, WorkspaceModelEvent event,	Map<File, File> fileMap) {
-		super(title);		
-		this.event = event;
+	public MindmapFileLinkUpdater(String title, boolean renamed, Map<File, File> fileMap) {
+		super(title);
+		this.renamed  = renamed;
 		this.fileMap = fileMap;
 	}
 
@@ -39,7 +37,7 @@ public class MindmapFileLinkUpdater extends AMindmapUpdater {
 		if(link != null){
 			if(fileMap.containsKey(link)){
 				((MLinkController) LinkController.getController()).setLinkTypeDependantLink(node, fileMap.get(link));
-				if(event != null && event.getType() == WorkspaceModelEventType.RENAMED && node.getText().equals(link.getName())){
+				if(renamed && node.getText().equals(link.getName())){
 					node.setText(fileMap.get(link).getName());
 				}
 				AnnotationModel annotation = AnnotationController.getModel(node, false);

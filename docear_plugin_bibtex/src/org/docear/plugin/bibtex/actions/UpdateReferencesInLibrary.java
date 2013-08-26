@@ -1,6 +1,7 @@
 package org.docear.plugin.bibtex.actions;
 
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 
 
 import org.docear.plugin.bibtex.ReferenceUpdater;
@@ -10,6 +11,7 @@ import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.url.mindmapmode.SaveAll;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
 public class UpdateReferencesInLibrary extends AFreeplaneAction{
 	/**
@@ -31,7 +33,9 @@ public class UpdateReferencesInLibrary extends AFreeplaneAction{
 		
 		MindmapUpdateController mindmapUpdateController = new MindmapUpdateController();
 		mindmapUpdateController.addMindmapUpdater(new ReferenceUpdater(TextUtils.getText("update_references_library_mindmaps")));
-		mindmapUpdateController.updateRegisteredMindmapsInProject();			
+		ArrayList<AWorkspaceProject> projects = new ArrayList<AWorkspaceProject>();
+		projects.add(WorkspaceController.getMapProject());
+		mindmapUpdateController.updateRegisteredMindmapsInProject(projects);			
 		
 	}
 

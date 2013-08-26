@@ -710,8 +710,9 @@ public class JabRefFrame extends JPanel implements OutputPrinter {
 						return; // The user clicked cancel.
 				}
 			}
-
-			frame.dispose();
+			if(isTopLevel) {
+				frame.dispose();
+			}
 
 			prefs.putInt("posX", JabRefFrame.this.getLocation().x);
 			prefs.putInt("posY", JabRefFrame.this.getLocation().y);
