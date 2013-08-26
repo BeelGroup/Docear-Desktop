@@ -18,6 +18,7 @@ import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.url.IMapConverter;
 import org.freeplane.features.url.MapConversionException;
+import org.freeplane.plugin.workspace.WorkspaceController;
 
 public class MapConverter implements IMapConverter {
 	
@@ -49,7 +50,7 @@ public class MapConverter implements IMapConverter {
 			mindmapUpdateController.addMindmapUpdater(new AnnotationModelUpdater(TextUtils.getText("MapConverter.0"))); //$NON-NLS-1$		
 			fireConvertMapsEvent(mindmapUpdateController);
 			//mindmapUpdateController.addMindmapUpdater(new MindmapLinkTypeUpdater("Converting hyperlinks...."));
-			if(!mindmapUpdateController.updateMindmapsInList(maps)){				
+			if(!mindmapUpdateController.updateMindmapsInList(maps, WorkspaceController.getMapProject())){				
 				for(MapModel map : maps){
 					DocearMapModelExtension docearMapModel = DocearMapModelController.getModel(map);
 					if(docearMapModel != null){

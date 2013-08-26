@@ -1,6 +1,7 @@
 package org.docear.plugin.bibtex.actions;
 
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 
 import org.docear.plugin.bibtex.ReferenceUpdater;
 import org.docear.plugin.core.mindmap.MindmapUpdateController;
@@ -13,6 +14,7 @@ import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.actions.AWorkspaceAction;
 import org.freeplane.plugin.workspace.components.menu.CheckEnableOnPopup;
 import org.freeplane.plugin.workspace.features.WorkspaceMapModelExtension;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 
 @CheckEnableOnPopup
 @EnabledAction(checkOnNodeChange=true)
@@ -34,7 +36,9 @@ public class UpdateReferencesAllOpenMapsAction extends AWorkspaceAction {
 		
 		MindmapUpdateController mindmapUpdateController = new MindmapUpdateController();
 		mindmapUpdateController.addMindmapUpdater(new ReferenceUpdater(TextUtils.getText("update_references_open_mindmaps")));
-		mindmapUpdateController.updateOpenMindmaps();
+		ArrayList<AWorkspaceProject> projects = new ArrayList<AWorkspaceProject>();
+		projects.add(WorkspaceController.getMapProject());
+		mindmapUpdateController.updateOpenMindmaps(projects);
 	}
 	
 	@Override

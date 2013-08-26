@@ -1,6 +1,7 @@
 package org.docear.plugin.pdfutilities.listener;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,35 +14,34 @@ import org.docear.plugin.pdfutilities.map.MindmapFileLinkUpdater;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.plugin.workspace.model.WorkspaceModelEvent;
 import org.freeplane.plugin.workspace.model.WorkspaceModelEvent.WorkspaceModelEventType;
+import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.model.project.IProjectModelListener;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
 
 public class DocearProjectModelListener implements IProjectModelListener {
 	
-	private void updateMaps(WorkspaceModelEvent event) {
+	private void updateMaps(AWorkspaceProject project, File newFile, File oldFile, boolean renamed) {
 		Map<File, File> fileMap = new HashMap<File, File>();
-		if(!((File)event.getNewValue()).isDirectory()){				
-			File oldFile = (File) event.getOldValue();
-			File newFile = (File) event.getNewValue();			
-			fileMap.put(oldFile, newFile);			
+		if(!newFile.isDirectory()) {
+			fileMap.put(oldFile, newFile);
 		}
 		else{
-			File oldFile = (File) event.getOldValue();
-			File newFile = (File) event.getNewValue();
 			Collection<File> files = FileUtils.listFiles(newFile, null, true);			
 			for(File file : files){
 				String oldPath = file.getPath().replace(newFile.getPath(), oldFile.getPath());
 				fileMap.put(new File(oldPath), file);				
 			}			
 		}
-		updateMaps(event, fileMap); 
+		updateMaps(project, fileMap, renamed); 
 	}
 
-	private void updateMaps(WorkspaceModelEvent event,	Map<File, File> fileMap) {
+	private void updateMaps(AWorkspaceProject project, Map<File, File> fileMap, boolean renamed) {
+		ArrayList<AWorkspaceProject> projects = new ArrayList<AWorkspaceProject>();
+		projects.add(project);
 		MindmapUpdateController mindmapUpdateController = new MindmapUpdateController(false);
-		mindmapUpdateController.addMindmapUpdater(new MindmapFileLinkUpdater(TextUtils.getText("updating_links"), event, fileMap));
-		mindmapUpdateController.updateCurrentMindmap();//updateAllMindmapsInWorkspace();
+		mindmapUpdateController.addMindmapUpdater(new MindmapFileLinkUpdater(TextUtils.getText("updating_links"), renamed, fileMap));
+		mindmapUpdateController.updateAllMindmapsInProject(projects);
 	}
 
 	public void treeNodesChanged(WorkspaceModelEvent event) {
@@ -54,7 +54,7 @@ public class DocearProjectModelListener implements IProjectModelListener {
 					File newFile = new File(parent, (String) event.getNewValue());
 					 
 					AnnotationController.getController().updateIndex(newFile, oldFile);
-					updateMaps(event);
+					updateMaps(event.getProject(), newFile, oldFile, true);
 				}
 				catch (Exception e) {
 					DocearLogger.warn(e);
@@ -71,28 +71,26 @@ public class DocearProjectModelListener implements IProjectModelListener {
 		
 	}
 
-	public void treeStructureChanged(WorkspaceModelEvent event) {
-		if(event.getType() == WorkspaceModelEventType.MOVED){
-			if(event.getTreePath().getLastPathComponent() instanceof DefaultFileNode || event.getTreePath().getLastPathComponent() instanceof LinkTypeFileNode){
-				try {
-					File oldFile = null;
-					File newFile = null;
-					if(event.getType() == WorkspaceModelEventType.RENAMED) {
-						DefaultFileNode target = (DefaultFileNode) event.getTreePath().getLastPathComponent();
-						File parent = target.getFile().getParentFile();
-						oldFile = new File(parent, (String) event.getOldValue());
-						newFile = new File(parent, (String) event.getNewValue());
-					} 
-					else if(event.getType() == WorkspaceModelEventType.MOVED) {
-						newFile = (File) event.getNewValue();
-						oldFile = (File) event.getOldValue();
-					}
-					AnnotationController.getController().updateIndex(newFile, oldFile);
-					updateMaps(event);
-				}
-				catch (Exception e) {
-					DocearLogger.warn(e);
-				}
+	public void treeStructureChanged(WorkspaceModelEvent event) {		
+		if(event.getTreePath().getLastPathComponent() instanceof DefaultFileNode || event.getTreePath().getLastPathComponent() instanceof LinkTypeFileNode){
+			File oldFile = null;
+			File newFile = null;
+			if(event.getType() == WorkspaceModelEventType.RENAMED) {
+				DefaultFileNode target = (DefaultFileNode) event.getTreePath().getLastPathComponent();
+				File parent = target.getFile().getParentFile();
+				oldFile = new File(parent, (String) event.getOldValue());
+				newFile = new File(parent, (String) event.getNewValue());
+			} 
+			else if(event.getType() == WorkspaceModelEventType.MOVED) {
+				newFile = (File) event.getNewValue();
+				oldFile = (File) event.getOldValue();
+			}
+			try {
+				AnnotationController.getController().updateIndex(newFile, oldFile);
+				updateMaps(event.getProject(), newFile, oldFile, (event.getType() == WorkspaceModelEventType.RENAMED));
+			}
+			catch (Exception e) {
+				DocearLogger.warn(e);
 			}
 		}
 	}

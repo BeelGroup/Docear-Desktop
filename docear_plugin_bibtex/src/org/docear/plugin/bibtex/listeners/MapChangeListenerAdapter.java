@@ -114,7 +114,7 @@ public class MapChangeListenerAdapter extends AMapChangeListenerAdapter {
     								}
     								
     								try {
-    									MindmapUpdateController mindmapUpdateController = new MindmapUpdateController(true);
+    									MindmapUpdateController mindmapUpdateController = new MindmapUpdateController(false);
     									mindmapUpdateController.addMindmapUpdater(new ReferenceUpdater(TextUtils.getText("update_references_open_mindmaps")));
     									mindmapUpdateController.updateCurrentMindmap(true);
     								}

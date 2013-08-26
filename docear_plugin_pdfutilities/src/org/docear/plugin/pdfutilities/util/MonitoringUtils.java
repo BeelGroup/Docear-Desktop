@@ -140,6 +140,10 @@ public abstract class MonitoringUtils {
 		if(attributeModel.getAttributeKeyList().contains(PdfUtilitiesController.MON_FLATTEN_DIRS)){
 			AttributeController.getController(MModeController.getMModeController()).performRemoveRow(attributeModel, attributeModel.getAttributePosition(PdfUtilitiesController.MON_FLATTEN_DIRS));			
 		}
+		
+		if(attributeModel.getAttributeKeyList().contains(PdfUtilitiesController.MON_EXTRA_INCOMING)){
+			AttributeController.getController(MModeController.getMModeController()).performRemoveRow(attributeModel, attributeModel.getAttributePosition(PdfUtilitiesController.MON_EXTRA_INCOMING));			
+		}
 	}
 	
 	public static boolean isAutoMonitorNode(NodeModel node) {

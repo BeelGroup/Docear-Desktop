@@ -5,6 +5,7 @@ import java.beans.PropertyChangeListener;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -15,6 +16,7 @@ import javax.swing.SwingUtilities;
 import org.docear.plugin.core.MapItem;
 import org.docear.plugin.core.features.DocearMapModelExtension;
 import org.docear.plugin.core.features.MapModificationSession;
+import org.docear.plugin.core.logging.DocearLogger;
 import org.docear.plugin.core.ui.SwingWorkerDialog;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.freeplane.core.util.LogUtils;
@@ -50,21 +52,23 @@ public class MindmapUpdateController {
 		return this.updaters;
 	}
 
+	@SuppressWarnings("serial")
 	public boolean updateAllMindmapsInCurrentMapsProject() {
-		AWorkspaceProject project = WorkspaceController.getMapProject();
+		final AWorkspaceProject project = WorkspaceController.getMapProject();
 		if (project != null) {
-			return updateAllMindmapsInProject(project);
+			return updateAllMindmapsInProject(new ArrayList<AWorkspaceProject>(){{ add(project); }});
 		}
 		return false;
 	}
 	
-	public boolean updateAllMindmapsInWorkspace() {
-		return updateAllMindmapsInProject(WorkspaceController.getCurrentModel().getProjects().toArray(new AWorkspaceProject[0]));		
-	}
+//	public boolean updateAllMindmapsInWorkspace() {
+//		return updateAllMindmapsInProject(WorkspaceController.getCurrentModel().getProjects().toArray(new AWorkspaceProject[0]));		
+//	}
 	
-	public boolean updateAllMindmapsInProject(AWorkspaceProject... projects) {
+	public boolean updateAllMindmapsInProject(Collection<AWorkspaceProject> projects) {
 		List<MapItem> maps = new ArrayList<MapItem>();
 		
+		boolean changes = false;
 		for (AWorkspaceProject project : projects) {
     		if(!DocearWorkspaceProject.isCompatible(project)) {
     			return false;
@@ -72,61 +76,75 @@ public class MindmapUpdateController {
     		for (URI uri : project.getModel().getAllNodesFiltered(".mm")) {
     			maps.add(new MapItem(uri));
     		}
+    		changes = updateMindmaps(maps, project) | changes;
 		}
 		
-		return updateMindmaps(maps);
-	}
-		
-	public boolean updateRegisteredMindmapsInProject() {
-		return updateRegisteredMindmapsInProject(false);
+		return changes;
 	}
 	
-	public boolean updateRegisteredMindmapsInProject(boolean openMindmapsToo, AWorkspaceProject... projects) {
-		List<MapItem> maps = new ArrayList<MapItem>(); 
+	public boolean updateRegisteredMindmapsInProject(Collection<AWorkspaceProject> projects) {
+		return updateRegisteredMindmapsInProject(projects, true);
+	}
+	
+	@SuppressWarnings("serial")
+	public boolean updateRegisteredMindmapsInProject(Collection<AWorkspaceProject> projects, boolean addOpenedMindmaps) {
 		
-		if (projects==null || projects.length==0) {
-			projects = new AWorkspaceProject[] {WorkspaceController.getMapProject()};
+		
+		if (projects==null) {
+			projects = new ArrayList<AWorkspaceProject>();
 		}
 		
-		if (projects.length == 0) {
-			return false;
+		if (projects.size() == 0) {
+			projects.add(WorkspaceController.getMapProject());
+			//return false;
 		}
-		
-		for (AWorkspaceProject project : projects) {
+		boolean changes = false;
+		for (final AWorkspaceProject project : projects) {
+			List<MapItem> maps = new ArrayList<MapItem>(); 
     		if (project != null) {
         		if(DocearWorkspaceProject.isCompatible(project)) {
         			for(URI mapUri : ((DocearWorkspaceProject)project).getLibraryMaps()) {
         				maps.add(new MapItem(mapUri));
         			}
         		}
-        		if (openMindmapsToo) {
-        			for (MapItem item : getAllOpenMaps()) {
+        		if (addOpenedMindmaps) {
+        			for (MapItem item : getAllOpenedMaps(new ArrayList<AWorkspaceProject>(){{ add(project); }})) {
         				maps.add(item);
         			}
         		}
     		}
+    		changes = updateMindmaps(maps, project) | changes;
 		}
-		
-		return updateMindmaps(maps);
+		return changes;
 	}
 	
-	public boolean updateRegisteredMindmapsInWorkspace(boolean openMindmapsToo) {
-		return updateRegisteredMindmapsInProject(openMindmapsToo, WorkspaceController.getCurrentModel().getProjects().toArray(new AWorkspaceProject[0]));		
+	public boolean updateOpenMindmaps(Collection<AWorkspaceProject> projects) {
+		List<MapItem> maps = getAllOpenedMaps(projects);
+
+		return updateMindmaps(maps, WorkspaceController.getMapProject());
 	}
 
-	public boolean updateOpenMindmaps() {
-		List<MapItem> maps = getAllOpenMaps();
-
-		return updateMindmaps(maps);
-	}
-
-	private List<MapItem> getAllOpenMaps() {
+	private List<MapItem> getAllOpenedMaps(Collection<AWorkspaceProject> projects) {
 		List<MapItem> maps = new ArrayList<MapItem>();
 		Map<String, MapModel> openMaps = Controller.getCurrentController().getMapViewManager().getMaps();
 		for (String name : openMaps.keySet()) {
-			maps.add(new MapItem(openMaps.get(name)));
+			MapItem item = new MapItem(openMaps.get(name));
+			if(arrayContains(projects, WorkspaceController.getMapProject(item.getModel()))) {
+				maps.add(item);
+			}
 		}
 		return maps;
+	}
+
+	private boolean arrayContains(Collection<AWorkspaceProject> projects, AWorkspaceProject mapProject) {
+		if(projects != null) {
+			for (AWorkspaceProject project : projects) {
+				if(project.equals(mapProject)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	public boolean updateCurrentMindmap() {
@@ -143,10 +161,10 @@ public class MindmapUpdateController {
 		catch (NullPointerException e) {			
 		}
 		
-		return updateMindmaps(maps, closeWhenDone);
+		return updateMindmaps(maps, WorkspaceController.getMapProject(), closeWhenDone);
 	}
 
-	public boolean updateMindmapsInList(List<MapModel> maps) {
+	public boolean updateMindmapsInList(List<MapModel> maps, AWorkspaceProject workingProject) {
 		List<MapItem> mapItems = new ArrayList<MapItem>();
 
 		for (MapModel map : maps) {
@@ -157,16 +175,16 @@ public class MindmapUpdateController {
 			}
 		}
 
-		return updateMindmaps(mapItems);
+		return updateMindmaps(mapItems, workingProject);
 
 	}
 
-	public boolean updateMindmaps(List<MapItem> uris) {
-		return updateMindmaps(uris, false);
+	public boolean updateMindmaps(List<MapItem> uris, AWorkspaceProject workingProject) {
+		return updateMindmaps(uris, workingProject, false);
 	}
 
-	public boolean updateMindmaps(List<MapItem> maps, boolean closeWhenDone) {
-		final SwingWorker<Void, Void> thread = getUpdateThread(maps, closeWhenDone);
+	public boolean updateMindmaps(List<MapItem> maps, AWorkspaceProject workingProject, boolean closeWhenDone) {
+		final SwingWorker<Void, Void> thread = getUpdateThread(maps, workingProject, closeWhenDone);
 		if(showDialog){
 			SwingWorkerDialog workerDialog = new SwingWorkerDialog(Controller.getCurrentController().getViewController().getJFrame());
 			workerDialog.setHeadlineText(TextUtils.getText("updating_mindmaps_headline"));
@@ -195,11 +213,11 @@ public class MindmapUpdateController {
 		return !thread.isCancelled();
 	}
 
-	public SwingWorker<Void, Void> getUpdateThread(final List<MapItem> maps) {
-		return getUpdateThread(maps, false);
+	public SwingWorker<Void, Void> getUpdateThread(final List<MapItem> maps, AWorkspaceProject workingProject) {
+		return getUpdateThread(maps, workingProject, false);
 	}
 
-	public SwingWorker<Void, Void> getUpdateThread(final List<MapItem> maps, final boolean closeWhenDone) {
+	public SwingWorker<Void, Void> getUpdateThread(final List<MapItem> maps, final AWorkspaceProject workingProject, final boolean closeWhenDone) {
 
 		return new SwingWorker<Void, Void>() {
 			private int totalCount;
@@ -223,8 +241,7 @@ public class MindmapUpdateController {
 					fireStatusUpdate(SwingWorkerDialog.SET_PROGRESS_BAR_DETERMINATE, null, null);
 					int count = 0;
 					fireProgressUpdate(100 * count / totalCount);
-					AWorkspaceProject workingProject = WorkspaceController.getMapProject();
-
+					
 					for (AMindmapUpdater updater : getMindmapUpdaters()) {
 						count++;
 						fireStatusUpdate(SwingWorkerDialog.PROGRESS_BAR_TEXT, null, updater.getTitle());
@@ -318,7 +335,22 @@ public class MindmapUpdateController {
 						long l = System.currentTimeMillis();
 						for(INodeView nodeView : item.getModel().getRootNode().getViewers()) {
 							if(nodeView instanceof NodeView) {
-								((NodeView) nodeView).updateAll();								
+								final NodeView nView = (NodeView) nodeView;
+								SwingUtilities.invokeLater(new Runnable() {
+									
+									@Override
+									public void run() {
+										try {
+											nView.updateAll();
+										}
+										catch (Exception e) {
+											DocearLogger.warn(e);
+										}
+										
+									}
+								});
+									
+								
 							}
 						}
 						LogUtils.info("resetting folding complete: "+(System.currentTimeMillis()-l));
