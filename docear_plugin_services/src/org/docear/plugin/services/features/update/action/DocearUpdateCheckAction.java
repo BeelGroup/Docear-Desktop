@@ -55,7 +55,7 @@ public class DocearUpdateCheckAction extends AFreeplaneAction {
 						Controller.getCurrentController().getViewController().openDocument(new URI(uri));
 					}
 					
-					if(choice != Wizard.CANCEL_OPTION) {
+					if(choice == Wizard.SKIP_OPTION) {
 						//don't show the same version again
 						DocearController.getPropertiesController().setProperty("docer.update_checker.savedLatestVersion", latestVersionString);
 					}
