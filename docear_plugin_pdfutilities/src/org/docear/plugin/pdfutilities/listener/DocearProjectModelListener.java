@@ -27,6 +27,7 @@ public class DocearProjectModelListener implements IProjectModelListener {
 			fileMap.put(oldFile, newFile);
 		}
 		else{
+			fileMap.put(oldFile, newFile);
 			Collection<File> files = FileUtils.listFiles(newFile, null, true);			
 			for(File file : files){
 				String oldPath = file.getPath().replace(newFile.getPath(), oldFile.getPath());
