@@ -146,7 +146,7 @@
 <attribute NAME="title" VALUE="{I}ntroducing {M}r. {DL}ib, a {M}achine-readable {D}igital {L}ibrary"/>
 <attribute NAME="year" VALUE="2011"/>
 <attribute NAME="key" VALUE="Beel2011b"/>
-<node TEXT="Original paper of Mr. DLib" ID="ID_1622656898" CREATED="1377254527722" MODIFIED="1377254527723" LINK="project://@LITERATURE_REPO_DEMO@/Mr.%20DLib%20--%20A%20Machine%20Readable%20Digital%20Library.pdf">
+<node TEXT="Original paper of Mr. DLib" ID="ID_1622656898" CREATED="1377254527722" MODIFIED="1377254527723" LINK="@LITERATURE_REPO_DEMO@/Mr.%20DLib%20--%20A%20Machine%20Readable%20Digital%20Library.pdf">
 <pdf_annotation type="COMMENT" page="1" object_id="8567786430884620990" object_number="247" document_hash="C89BE08F76C6699010B345C2DE33E21942F5B5F9E75CBC4EA2DED3A7894C36A">
     <pdf_title>Mr. DLib</pdf_title>
 </pdf_annotation>
@@ -182,7 +182,7 @@
 <attribute NAME="year" VALUE="2011"/>
 <attribute NAME="key" VALUE="Beel2011b"/>
 </node>
-<node TEXT="Mr.  DLib  is  in  Beta  stage" ID="ID_1070108263" CREATED="1377254527763" MODIFIED="1377254527764" LINK="project://@LITERATURE_REPO_DEMO@/Mr.%20DLib%20--%20A%20Machine%20Readable%20Digital%20Library.pdf">
+<node TEXT="Mr.  DLib  is  in  Beta  stage" ID="ID_1070108263" CREATED="1377254527763" MODIFIED="1377254527764" LINK="@LITERATURE_REPO_DEMO@/Mr.%20DLib%20--%20A%20Machine%20Readable%20Digital%20Library.pdf">
 <pdf_annotation type="HIGHLIGHTED_TEXT" page="2" object_id="6138972236448930126" object_number="262" document_hash="C89BE08F76C6699010B345C2DE33E21942F5B5F9E75CBC4EA2DED3A7894C36A">
     <pdf_title>Mr. DLib</pdf_title>
 </pdf_annotation>
@@ -204,7 +204,7 @@
     <pdf_title>Citation Counts (An Empirical Study)</pdf_title>
 </pdf_annotation>
 </node>
-<node TEXT="Academic Search Engine Optimization (ASEO) -- Optimizing Scholarly Literature for Google Scholar and Co.pdf" FOLDED="true" ID="ID_1201134460" CREATED="1377253110716" MODIFIED="1377253110716" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="Academic Search Engine Optimization (ASEO) -- Optimizing Scholarly Literature for Google Scholar and Co.pdf" FOLDED="true" ID="ID_1201134460" CREATED="1377253110716" MODIFIED="1377253110716" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="PDF_FILE" object_id="0" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -213,7 +213,7 @@
 <attribute NAME="title" VALUE="{A}cademic {S}earch {E}ngine {O}ptimization ({ASEO}): {O}ptimizing {S}cholarly {L}iterature for {G}oogle {S}cholar and {C}o."/>
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel10"/>
-<node TEXT="ASEO, original paper" ID="ID_1583319109" CREATED="1377253110726" MODIFIED="1377253110727" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="ASEO, original paper" ID="ID_1583319109" CREATED="1377253110726" MODIFIED="1377253110727" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="COMMENT" page="1" object_id="8263066794476473883" object_number="540" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -223,7 +223,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel10"/>
 </node>
-<node TEXT="Academic search engine optimization (ASEO) isthe creation, publication, and modification ofscholarly literature in away that makes it easierfor academic search engines to both crawl it and index it" ID="ID_914397853" CREATED="1377253110731" MODIFIED="1377253110732" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="Academic search engine optimization (ASEO) isthe creation, publication, and modification ofscholarly literature in away that makes it easierfor academic search engines to both crawl it and index it" ID="ID_914397853" CREATED="1377253110731" MODIFIED="1377253110732" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="1" object_id="6586680723832937891" object_number="560" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -233,7 +233,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel10"/>
 </node>
-<node TEXT="Guidelines for optimizing scholarly literature for Google Scholar" ID="ID_55036082" CREATED="1377253110738" MODIFIED="1377253110738" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="Guidelines for optimizing scholarly literature for Google Scholar" ID="ID_55036082" CREATED="1377253110738" MODIFIED="1377253110738" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="4" object_id="604168050337690953" object_number="604" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -242,7 +242,7 @@
 <attribute NAME="title" VALUE="{A}cademic {S}earch {E}ngine {O}ptimization ({ASEO}): {O}ptimizing {S}cholarly {L}iterature for {G}oogle {S}cholar and {C}o."/>
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel10"/>
-<node TEXT="Preparation" ID="ID_1640893916" CREATED="1377253110743" MODIFIED="1377253110743" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="Preparation" ID="ID_1640893916" CREATED="1377253110743" MODIFIED="1377253110743" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="4" object_id="8482135874656766483" object_number="607" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -251,7 +251,7 @@
 <attribute NAME="title" VALUE="{A}cademic {S}earch {E}ngine {O}ptimization ({ASEO}): {O}ptimizing {S}cholarly {L}iterature for {G}oogle {S}cholar and {C}o."/>
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel10"/>
-<node TEXT="select appropriate keywords" ID="ID_1500943123" CREATED="1377253110748" MODIFIED="1377253110748" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="select appropriate keywords" ID="ID_1500943123" CREATED="1377253110748" MODIFIED="1377253110748" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="4" object_id="3073750765831981927" object_number="623" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -262,7 +262,7 @@
 <attribute NAME="key" VALUE="Beel10"/>
 </node>
 </node>
-<node TEXT="Writing" ID="ID_1512395850" CREATED="1377253110753" MODIFIED="1377253110753" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="Writing" ID="ID_1512395850" CREATED="1377253110753" MODIFIED="1377253110753" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="4" object_id="6221960723761710884" object_number="610" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -271,7 +271,7 @@
 <attribute NAME="title" VALUE="{A}cademic {S}earch {E}ngine {O}ptimization ({ASEO}): {O}ptimizing {S}cholarly {L}iterature for {G}oogle {S}cholar and {C}o."/>
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel10"/>
-<node TEXT="mention keywords in the right sections" ID="ID_1454169096" CREATED="1377253110758" MODIFIED="1377253110758" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="mention keywords in the right sections" ID="ID_1454169096" CREATED="1377253110758" MODIFIED="1377253110758" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="4" object_id="8373210805562294939" object_number="626" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -281,7 +281,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel10"/>
 </node>
-<node TEXT="use of synomys" ID="ID_176839552" CREATED="1377253110763" MODIFIED="1377253110763" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="use of synomys" ID="ID_176839552" CREATED="1377253110763" MODIFIED="1377253110763" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="4" object_id="502391199784375316" object_number="629" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -291,7 +291,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel10"/>
 </node>
-<node TEXT="spelling of names" ID="ID_1736760824" CREATED="1377253110767" MODIFIED="1377253110767" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="spelling of names" ID="ID_1736760824" CREATED="1377253110767" MODIFIED="1377253110767" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="4" object_id="6542812008812141339" object_number="632" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -301,7 +301,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel10"/>
 </node>
-<node TEXT="(self-) citations" ID="ID_249230812" CREATED="1377253110772" MODIFIED="1377253110772" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="(self-) citations" ID="ID_249230812" CREATED="1377253110772" MODIFIED="1377253110772" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="4" object_id="5693988831034334278" object_number="635" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -312,7 +312,7 @@
 <attribute NAME="key" VALUE="Beel10"/>
 </node>
 </node>
-<node TEXT="Preparing for publication" ID="ID_264439539" CREATED="1377253110777" MODIFIED="1377253110777" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="Preparing for publication" ID="ID_264439539" CREATED="1377253110777" MODIFIED="1377253110777" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="4" object_id="7535512442391338200" object_number="613" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -321,7 +321,7 @@
 <attribute NAME="title" VALUE="{A}cademic {S}earch {E}ngine {O}ptimization ({ASEO}): {O}ptimizing {S}cholarly {L}iterature for {G}oogle {S}cholar and {C}o."/>
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel10"/>
-<node TEXT="machine-readable text and images" ID="ID_1241462719" CREATED="1377253110782" MODIFIED="1377253110782" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="machine-readable text and images" ID="ID_1241462719" CREATED="1377253110782" MODIFIED="1377253110782" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="4" object_id="4890269440098323285" object_number="638" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -331,7 +331,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel10"/>
 </node>
-<node TEXT="complete PDF metadata" ID="ID_703619496" CREATED="1377253110787" MODIFIED="1377253110787" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="complete PDF metadata" ID="ID_703619496" CREATED="1377253110787" MODIFIED="1377253110787" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="5" object_id="9190605491370668953" object_number="649" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -342,7 +342,7 @@
 <attribute NAME="key" VALUE="Beel10"/>
 </node>
 </node>
-<node TEXT="Publishing" ID="ID_355077579" CREATED="1377253110792" MODIFIED="1377253110792" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="Publishing" ID="ID_355077579" CREATED="1377253110792" MODIFIED="1377253110792" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="5" object_id="8140322814053406652" object_number="617" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -352,7 +352,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel10"/>
 </node>
-<node TEXT="Follow-up" ID="ID_454499611" CREATED="1377253110797" MODIFIED="1377253110798" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="Follow-up" ID="ID_454499611" CREATED="1377253110797" MODIFIED="1377253110798" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="5" object_id="381813393247285939" object_number="620" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -363,7 +363,7 @@
 <attribute NAME="key" VALUE="Beel10"/>
 </node>
 </node>
-<node TEXT="Preparation" ID="ID_1298888658" CREATED="1377253110803" MODIFIED="1377253110803" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="Preparation" ID="ID_1298888658" CREATED="1377253110803" MODIFIED="1377253110803" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="4" object_id="8482135874656766483" object_number="607" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -372,7 +372,7 @@
 <attribute NAME="title" VALUE="{A}cademic {S}earch {E}ngine {O}ptimization ({ASEO}): {O}ptimizing {S}cholarly {L}iterature for {G}oogle {S}cholar and {C}o."/>
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel10"/>
-<node TEXT="select appropriate keywords" ID="ID_828465141" CREATED="1377253110807" MODIFIED="1377253110808" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="select appropriate keywords" ID="ID_828465141" CREATED="1377253110807" MODIFIED="1377253110808" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="4" object_id="3073750765831981927" object_number="623" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -383,7 +383,7 @@
 <attribute NAME="key" VALUE="Beel10"/>
 </node>
 </node>
-<node TEXT="select appropriate keywords" ID="ID_1662908084" CREATED="1377253110812" MODIFIED="1377253110812" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="select appropriate keywords" ID="ID_1662908084" CREATED="1377253110812" MODIFIED="1377253110812" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="4" object_id="3073750765831981927" object_number="623" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -393,7 +393,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel10"/>
 </node>
-<node TEXT="Writing" ID="ID_61674080" CREATED="1377253110817" MODIFIED="1377253110817" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="Writing" ID="ID_61674080" CREATED="1377253110817" MODIFIED="1377253110817" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="4" object_id="6221960723761710884" object_number="610" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -402,7 +402,7 @@
 <attribute NAME="title" VALUE="{A}cademic {S}earch {E}ngine {O}ptimization ({ASEO}): {O}ptimizing {S}cholarly {L}iterature for {G}oogle {S}cholar and {C}o."/>
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel10"/>
-<node TEXT="mention keywords in the right sections" ID="ID_128528136" CREATED="1377253110822" MODIFIED="1377253110822" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="mention keywords in the right sections" ID="ID_128528136" CREATED="1377253110822" MODIFIED="1377253110822" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="4" object_id="8373210805562294939" object_number="626" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -412,7 +412,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel10"/>
 </node>
-<node TEXT="use of synomys" ID="ID_99239042" CREATED="1377253110826" MODIFIED="1377253110826" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="use of synomys" ID="ID_99239042" CREATED="1377253110826" MODIFIED="1377253110826" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="4" object_id="502391199784375316" object_number="629" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -422,7 +422,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel10"/>
 </node>
-<node TEXT="spelling of names" ID="ID_1899458341" CREATED="1377253110831" MODIFIED="1377253110831" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="spelling of names" ID="ID_1899458341" CREATED="1377253110831" MODIFIED="1377253110831" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="4" object_id="6542812008812141339" object_number="632" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -432,7 +432,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel10"/>
 </node>
-<node TEXT="(self-) citations" ID="ID_1155667922" CREATED="1377253110837" MODIFIED="1377253110838" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="(self-) citations" ID="ID_1155667922" CREATED="1377253110837" MODIFIED="1377253110838" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="4" object_id="5693988831034334278" object_number="635" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -443,7 +443,7 @@
 <attribute NAME="key" VALUE="Beel10"/>
 </node>
 </node>
-<node TEXT="mention keywords in the right sections" ID="ID_777770144" CREATED="1377253110843" MODIFIED="1377253110843" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="mention keywords in the right sections" ID="ID_777770144" CREATED="1377253110843" MODIFIED="1377253110843" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="4" object_id="8373210805562294939" object_number="626" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -453,7 +453,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel10"/>
 </node>
-<node TEXT="use of synomys" ID="ID_1520934544" CREATED="1377253110849" MODIFIED="1377253110849" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="use of synomys" ID="ID_1520934544" CREATED="1377253110849" MODIFIED="1377253110849" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="4" object_id="502391199784375316" object_number="629" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -463,7 +463,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel10"/>
 </node>
-<node TEXT="spelling of names" ID="ID_1502913543" CREATED="1377253110854" MODIFIED="1377253110854" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="spelling of names" ID="ID_1502913543" CREATED="1377253110854" MODIFIED="1377253110854" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="4" object_id="6542812008812141339" object_number="632" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -473,7 +473,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel10"/>
 </node>
-<node TEXT="(self-) citations" ID="ID_227296985" CREATED="1377253110859" MODIFIED="1377253110859" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="(self-) citations" ID="ID_227296985" CREATED="1377253110859" MODIFIED="1377253110859" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="4" object_id="5693988831034334278" object_number="635" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -483,7 +483,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel10"/>
 </node>
-<node TEXT="Preparing for publication" ID="ID_25472326" CREATED="1377253110864" MODIFIED="1377253110864" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="Preparing for publication" ID="ID_25472326" CREATED="1377253110864" MODIFIED="1377253110864" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="4" object_id="7535512442391338200" object_number="613" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -492,7 +492,7 @@
 <attribute NAME="title" VALUE="{A}cademic {S}earch {E}ngine {O}ptimization ({ASEO}): {O}ptimizing {S}cholarly {L}iterature for {G}oogle {S}cholar and {C}o."/>
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel10"/>
-<node TEXT="machine-readable text and images" ID="ID_1730979316" CREATED="1377253110868" MODIFIED="1377253110869" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="machine-readable text and images" ID="ID_1730979316" CREATED="1377253110868" MODIFIED="1377253110869" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="4" object_id="4890269440098323285" object_number="638" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -502,7 +502,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel10"/>
 </node>
-<node TEXT="complete PDF metadata" ID="ID_1437546408" CREATED="1377253110873" MODIFIED="1377253110873" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="complete PDF metadata" ID="ID_1437546408" CREATED="1377253110873" MODIFIED="1377253110873" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="5" object_id="9190605491370668953" object_number="649" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -513,7 +513,7 @@
 <attribute NAME="key" VALUE="Beel10"/>
 </node>
 </node>
-<node TEXT="machine-readable text and images" ID="ID_762223733" CREATED="1377253110878" MODIFIED="1377253110878" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="machine-readable text and images" ID="ID_762223733" CREATED="1377253110878" MODIFIED="1377253110878" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="4" object_id="4890269440098323285" object_number="638" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -523,7 +523,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel10"/>
 </node>
-<node TEXT="complete PDF metadata" ID="ID_1987711533" CREATED="1377253110883" MODIFIED="1377253110883" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="complete PDF metadata" ID="ID_1987711533" CREATED="1377253110883" MODIFIED="1377253110883" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="5" object_id="9190605491370668953" object_number="649" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -533,7 +533,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel10"/>
 </node>
-<node TEXT="Publishing" ID="ID_1957027113" CREATED="1377253110887" MODIFIED="1377253110888" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="Publishing" ID="ID_1957027113" CREATED="1377253110887" MODIFIED="1377253110888" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="5" object_id="8140322814053406652" object_number="617" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -543,7 +543,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel10"/>
 </node>
-<node TEXT="Follow-up" ID="ID_1099048608" CREATED="1377253110893" MODIFIED="1377253110893" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
+<node TEXT="Follow-up" ID="ID_1099048608" CREATED="1377253110893" MODIFIED="1377253110893" LINK="@LITERATURE_REPO_DEMO@/Academic%20Search%20Engine%20Optimization%20(ASEO)%20--%20Optimizing%20Scholarly%20Literature%20for%20Google%20Scholar%20and%20Co.pdf">
 <pdf_annotation type="BOOKMARK" page="5" object_id="381813393247285939" object_number="620" document_hash="A54AEBAC3934EFCB5864365F2FE7AA665BB98504D8F19FAEE6C47F75FA7">
     <pdf_title>Academic Search Engine Optimization (ASEO): Optimizing Scholarly Literature for Google Scholar &amp; Co.</pdf_title>
 </pdf_annotation>
@@ -556,7 +556,7 @@
 </node>
 </node>
 <node TEXT="Category 3: Search Engine Spam" FOLDED="true" ID="ID_606982085" CREATED="1344509076356" MODIFIED="1377253018613">
-<node TEXT="Academic search engine spam and Google Scholars resilience against it.pdf" FOLDED="true" ID="ID_593602310" CREATED="1377253161946" MODIFIED="1377253161946" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
+<node TEXT="Academic search engine spam and Google Scholars resilience against it.pdf" FOLDED="true" ID="ID_593602310" CREATED="1377253161946" MODIFIED="1377253161946" LINK="@LITERATURE_REPO_DEMO@/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
 <pdf_annotation type="PDF_FILE" object_id="0" document_hash="3C641461C926D2C38E6F53D2C479A2E5C9943E3947752A6915088CEFD64D">
     <pdf_title>Academic search engine spam and Google Scholar resilience against it</pdf_title>
 </pdf_annotation>
@@ -565,7 +565,7 @@
 <attribute NAME="title" VALUE="{A}cademic search engine spam and {G}oogle {S}cholar&apos;s resilience against it"/>
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel2010"/>
-<node TEXT="(First?) paper about spam on Google&#xd;&#xa;Scholar (authors did various experiments)" ID="ID_1608141554" CREATED="1377253161959" MODIFIED="1377253161960" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
+<node TEXT="(First?) paper about spam on Google&#xd;&#xa;Scholar (authors did various experiments)" ID="ID_1608141554" CREATED="1377253161959" MODIFIED="1377253161960" LINK="@LITERATURE_REPO_DEMO@/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
 <pdf_annotation type="COMMENT" page="1" object_id="1233226424981438033" object_number="44" document_hash="3C641461C926D2C38E6F53D2C479A2E5C9943E3947752A6915088CEFD64D">
     <pdf_title>Academic search engine spam and Google Scholar resilience against it</pdf_title>
 </pdf_annotation>
@@ -575,7 +575,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel2010"/>
 </node>
-<node TEXT="&#x201c;In my opinion, being interested in how (academic) &#xd;&#xa;search engines function and how scientific papers are &#xd;&#xa;indexed and, of course, responding to these&#x2026; well&#x2026; &#xd;&#xa;circumstances of the scientific citing business is just &#xd;&#xa;natural.&#x201d;" ID="ID_256836799" CREATED="1377253161972" MODIFIED="1377253161972" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
+<node TEXT="&#x201c;In my opinion, being interested in how (academic) &#xd;&#xa;search engines function and how scientific papers are &#xd;&#xa;indexed and, of course, responding to these&#x2026; well&#x2026; &#xd;&#xa;circumstances of the scientific citing business is just &#xd;&#xa;natural.&#x201d;" ID="ID_256836799" CREATED="1377253161972" MODIFIED="1377253161972" LINK="@LITERATURE_REPO_DEMO@/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
 <pdf_annotation type="HIGHLIGHTED_TEXT" page="3" object_id="4694565655893184301" object_number="670" document_hash="3C641461C926D2C38E6F53D2C479A2E5C9943E3947752A6915088CEFD64D">
     <pdf_title>Academic search engine spam and Google Scholar resilience against it</pdf_title>
 </pdf_annotation>
@@ -585,7 +585,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel2010"/>
 </node>
-<node TEXT="&#x201c;ASEO sounds good to me. I think it&#x2019;s a good idea.&#x201d; " ID="ID_819073935" CREATED="1377253161984" MODIFIED="1377253161984" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
+<node TEXT="&#x201c;ASEO sounds good to me. I think it&#x2019;s a good idea.&#x201d; " ID="ID_819073935" CREATED="1377253161984" MODIFIED="1377253161984" LINK="@LITERATURE_REPO_DEMO@/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
 <pdf_annotation type="HIGHLIGHTED_TEXT" page="3" object_id="6997347770198985775" object_number="674" document_hash="3C641461C926D2C38E6F53D2C479A2E5C9943E3947752A6915088CEFD64D">
     <pdf_title>Academic search engine spam and Google Scholar resilience against it</pdf_title>
 </pdf_annotation>
@@ -595,7 +595,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel2010"/>
 </node>
-<node TEXT="&#x201c;Search engine optimization (SEO) has a golden age in &#xd;&#xa;this internet era, but to use it in academic research, it &#xd;&#xa;sounds quite strange for me. After reading this &#xd;&#xa;publication [&#x2026;] my opinion changed.&#x201d;" ID="ID_734716234" CREATED="1377253161991" MODIFIED="1377253161992" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
+<node TEXT="&#x201c;Search engine optimization (SEO) has a golden age in &#xd;&#xa;this internet era, but to use it in academic research, it &#xd;&#xa;sounds quite strange for me. After reading this &#xd;&#xa;publication [&#x2026;] my opinion changed.&#x201d;" ID="ID_734716234" CREATED="1377253161991" MODIFIED="1377253161992" LINK="@LITERATURE_REPO_DEMO@/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
 <pdf_annotation type="HIGHLIGHTED_TEXT" page="3" object_id="3908528143424240724" object_number="678" document_hash="3C641461C926D2C38E6F53D2C479A2E5C9943E3947752A6915088CEFD64D">
     <pdf_title>Academic search engine spam and Google Scholar resilience against it</pdf_title>
 </pdf_annotation>
@@ -605,7 +605,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel2010"/>
 </node>
-<node TEXT="&#x201c;I&#x2019;m not a big fan of this area of research [&#x2026;]. I know &#xd;&#xa;it&#x2019;s in the call for papers, but I think that&#x2019;s a mistake.&#x201d; " ID="ID_1700165248" CREATED="1377253162000" MODIFIED="1377253162000" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
+<node TEXT="&#x201c;I&#x2019;m not a big fan of this area of research [&#x2026;]. I know &#xd;&#xa;it&#x2019;s in the call for papers, but I think that&#x2019;s a mistake.&#x201d; " ID="ID_1700165248" CREATED="1377253162000" MODIFIED="1377253162000" LINK="@LITERATURE_REPO_DEMO@/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
 <pdf_annotation type="HIGHLIGHTED_TEXT" page="3" object_id="3032326042890678893" object_number="682" document_hash="3C641461C926D2C38E6F53D2C479A2E5C9943E3947752A6915088CEFD64D">
     <pdf_title>Academic search engine spam and Google Scholar resilience against it</pdf_title>
 </pdf_annotation>
@@ -615,7 +615,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel2010"/>
 </node>
-<node TEXT="&#x201c;[This] paper seems to encourage scientific paper &#xd;&#xa;authors to learn Google scholar&#x2019;s ranking method and &#xd;&#xa;write papers accordingly to boost ranking [which is not] &#xd;&#xa;acceptable to scientific communities which are supposed &#xd;&#xa;to advocate true technical quality/impact instead of &#xd;&#xa;ranking.&#x201d;" ID="ID_815057142" CREATED="1377253162007" MODIFIED="1377253162007" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
+<node TEXT="&#x201c;[This] paper seems to encourage scientific paper &#xd;&#xa;authors to learn Google scholar&#x2019;s ranking method and &#xd;&#xa;write papers accordingly to boost ranking [which is not] &#xd;&#xa;acceptable to scientific communities which are supposed &#xd;&#xa;to advocate true technical quality/impact instead of &#xd;&#xa;ranking.&#x201d;" ID="ID_815057142" CREATED="1377253162007" MODIFIED="1377253162007" LINK="@LITERATURE_REPO_DEMO@/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
 <pdf_annotation type="HIGHLIGHTED_TEXT" page="3" object_id="388480596169551378" object_number="690" document_hash="3C641461C926D2C38E6F53D2C479A2E5C9943E3947752A6915088CEFD64D">
     <pdf_title>Academic search engine spam and Google Scholar resilience against it</pdf_title>
 </pdf_annotation>
@@ -625,7 +625,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel2010"/>
 </node>
-<node TEXT="&#x201c;[&#x2026;] on first impressions [Academic Search Engine &#xd;&#xa;Optimization] sounds like the stupidest idea I&#x2019;ve ever &#xd;&#xa;heard.&#x201d;" ID="ID_116417012" CREATED="1377253162014" MODIFIED="1377253162015" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
+<node TEXT="&#x201c;[&#x2026;] on first impressions [Academic Search Engine &#xd;&#xa;Optimization] sounds like the stupidest idea I&#x2019;ve ever &#xd;&#xa;heard.&#x201d;" ID="ID_116417012" CREATED="1377253162014" MODIFIED="1377253162015" LINK="@LITERATURE_REPO_DEMO@/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
 <pdf_annotation type="HIGHLIGHTED_TEXT" page="4" object_id="1864079549975559860" object_number="694" document_hash="3C641461C926D2C38E6F53D2C479A2E5C9943E3947752A6915088CEFD64D">
     <pdf_title>Academic search engine spam and Google Scholar resilience against it</pdf_title>
 </pdf_annotation>
@@ -635,7 +635,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel2010"/>
 </node>
-<node TEXT="researchers  can  make  their  articles  appear  for  keyword &#xd;&#xa;searches the original article would not be considered relevant for" ID="ID_1922097147" CREATED="1377253162021" MODIFIED="1377253162021" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
+<node TEXT="researchers  can  make  their  articles  appear  for  keyword &#xd;&#xa;searches the original article would not be considered relevant for" ID="ID_1922097147" CREATED="1377253162021" MODIFIED="1377253162021" LINK="@LITERATURE_REPO_DEMO@/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
 <pdf_annotation type="HIGHLIGHTED_TEXT" page="12" object_id="3020955619003091331" object_number="727" document_hash="3C641461C926D2C38E6F53D2C479A2E5C9943E3947752A6915088CEFD64D">
     <pdf_title>Academic search engine spam and Google Scholar resilience against it</pdf_title>
 </pdf_annotation>
@@ -645,7 +645,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel2010"/>
 </node>
-<node TEXT="Google Scholar indexes Wikipedia articles when the article is available &#xd;&#xa;as PDF on a third party website" ID="ID_640268100" CREATED="1377253162028" MODIFIED="1377253162028" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
+<node TEXT="Google Scholar indexes Wikipedia articles when the article is available &#xd;&#xa;as PDF on a third party website" ID="ID_640268100" CREATED="1377253162028" MODIFIED="1377253162028" LINK="@LITERATURE_REPO_DEMO@/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
 <pdf_annotation type="HIGHLIGHTED_TEXT" page="17" object_id="2432873822894292314" object_number="731" document_hash="3C641461C926D2C38E6F53D2C479A2E5C9943E3947752A6915088CEFD64D">
     <pdf_title>Academic search engine spam and Google Scholar resilience against it</pdf_title>
 </pdf_annotation>
@@ -655,7 +655,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel2010"/>
 </node>
-<node TEXT=" Google  Scholar  applies  only  very  rudimentary  or  no&#xd;&#xa;mechanisms to detect and prevent spam" ID="ID_1578885914" CREATED="1377253162034" MODIFIED="1377253162035" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
+<node TEXT=" Google  Scholar  applies  only  very  rudimentary  or  no&#xd;&#xa;mechanisms to detect and prevent spam" ID="ID_1578885914" CREATED="1377253162034" MODIFIED="1377253162035" LINK="@LITERATURE_REPO_DEMO@/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
 <pdf_annotation type="HIGHLIGHTED_TEXT" page="22" object_id="5452467516221586338" object_number="743" document_hash="3C641461C926D2C38E6F53D2C479A2E5C9943E3947752A6915088CEFD64D">
     <pdf_title>Academic search engine spam and Google Scholar resilience against it</pdf_title>
 </pdf_annotation>
@@ -665,7 +665,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel2010"/>
 </node>
-<node TEXT="Google  Scholar  is  far  easier  to  spam  than  the  classic  Google &#xd;&#xa;Search for  Web pages" ID="ID_326026538" CREATED="1377253162040" MODIFIED="1377253162041" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
+<node TEXT="Google  Scholar  is  far  easier  to  spam  than  the  classic  Google &#xd;&#xa;Search for  Web pages" ID="ID_326026538" CREATED="1377253162040" MODIFIED="1377253162041" LINK="@LITERATURE_REPO_DEMO@/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
 <pdf_annotation type="HIGHLIGHTED_TEXT" page="23" object_id="7052667448061833645" object_number="739" document_hash="3C641461C926D2C38E6F53D2C479A2E5C9943E3947752A6915088CEFD64D">
     <pdf_title>Academic search engine spam and Google Scholar resilience against it</pdf_title>
 </pdf_annotation>
@@ -675,7 +675,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel2010"/>
 </node>
-<node TEXT="Google  Scholar  indexed  invisible  text  in  all  kind  of  articles" ID="ID_34687059" CREATED="1377253162047" MODIFIED="1377253162047" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
+<node TEXT="Google  Scholar  indexed  invisible  text  in  all  kind  of  articles" ID="ID_34687059" CREATED="1377253162047" MODIFIED="1377253162047" LINK="@LITERATURE_REPO_DEMO@/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
 <pdf_annotation type="HIGHLIGHTED_TEXT" page="23" object_id="3985818313108140965" object_number="747" document_hash="3C641461C926D2C38E6F53D2C479A2E5C9943E3947752A6915088CEFD64D">
     <pdf_title>Academic search engine spam and Google Scholar resilience against it</pdf_title>
 </pdf_annotation>
@@ -685,7 +685,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel2010"/>
 </node>
-<node TEXT="A researcher  could  put  invisible  keywords  in his  article  before,  or  even &#xd;&#xa;after, publication and increase the ranking and visibility of this article &#xd;&#xa;on Google Scholar" ID="ID_1741432713" CREATED="1377253162051" MODIFIED="1377253162051" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
+<node TEXT="A researcher  could  put  invisible  keywords  in his  article  before,  or  even &#xd;&#xa;after, publication and increase the ranking and visibility of this article &#xd;&#xa;on Google Scholar" ID="ID_1741432713" CREATED="1377253162051" MODIFIED="1377253162051" LINK="@LITERATURE_REPO_DEMO@/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
 <pdf_annotation type="HIGHLIGHTED_TEXT" page="23" object_id="6652381048033757407" object_number="751" document_hash="3C641461C926D2C38E6F53D2C479A2E5C9943E3947752A6915088CEFD64D">
     <pdf_title>Academic search engine spam and Google Scholar resilience against it</pdf_title>
 </pdf_annotation>
@@ -695,7 +695,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel2010"/>
 </node>
-<node TEXT="Google  Scholar  counted  references  that  were  added  to  modified &#xd;&#xa;versions of  already  published  articles." ID="ID_1974705954" CREATED="1377253162057" MODIFIED="1377253162058" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
+<node TEXT="Google  Scholar  counted  references  that  were  added  to  modified &#xd;&#xa;versions of  already  published  articles." ID="ID_1974705954" CREATED="1377253162057" MODIFIED="1377253162058" LINK="@LITERATURE_REPO_DEMO@/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
 <pdf_annotation type="HIGHLIGHTED_TEXT" page="24" object_id="8341705944677656818" object_number="755" document_hash="3C641461C926D2C38E6F53D2C479A2E5C9943E3947752A6915088CEFD64D">
     <pdf_title>Academic search engine spam and Google Scholar resilience against it</pdf_title>
 </pdf_annotation>
@@ -705,7 +705,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel2010"/>
 </node>
-<node TEXT="Google Scholar also  indexed fake articles" ID="ID_1834191555" CREATED="1377253162064" MODIFIED="1377253162064" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
+<node TEXT="Google Scholar also  indexed fake articles" ID="ID_1834191555" CREATED="1377253162064" MODIFIED="1377253162064" LINK="@LITERATURE_REPO_DEMO@/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
 <pdf_annotation type="HIGHLIGHTED_TEXT" page="24" object_id="3787082930503831950" object_number="759" document_hash="3C641461C926D2C38E6F53D2C479A2E5C9943E3947752A6915088CEFD64D">
     <pdf_title>Academic search engine spam and Google Scholar resilience against it</pdf_title>
 </pdf_annotation>
@@ -715,7 +715,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel2010"/>
 </node>
-<node TEXT="Google  Scholar  indexed  modified  versions  of  articles  that &#xd;&#xa;contained   advertisements" ID="ID_1275897870" CREATED="1377253162068" MODIFIED="1377253162069" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
+<node TEXT="Google  Scholar  indexed  modified  versions  of  articles  that &#xd;&#xa;contained   advertisements" ID="ID_1275897870" CREATED="1377253162068" MODIFIED="1377253162069" LINK="@LITERATURE_REPO_DEMO@/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
 <pdf_annotation type="HIGHLIGHTED_TEXT" page="25" object_id="2419601524059293377" object_number="767" document_hash="3C641461C926D2C38E6F53D2C479A2E5C9943E3947752A6915088CEFD64D">
     <pdf_title>Academic search engine spam and Google Scholar resilience against it</pdf_title>
 </pdf_annotation>
@@ -725,7 +725,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel2010"/>
 </node>
-<node TEXT="A very brief investigation of CiteSeer&#xd;&#xa;and Microsoft Academic Search indicates&#xd;&#xa;that they do not detect academic search &#xd;&#xa;engine spam either" ID="ID_742851121" CREATED="1377253162075" MODIFIED="1377253162075" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
+<node TEXT="A very brief investigation of CiteSeer&#xd;&#xa;and Microsoft Academic Search indicates&#xd;&#xa;that they do not detect academic search &#xd;&#xa;engine spam either" ID="ID_742851121" CREATED="1377253162075" MODIFIED="1377253162075" LINK="@LITERATURE_REPO_DEMO@/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
 <pdf_annotation type="HIGHLIGHTED_TEXT" page="25" object_id="6951610264074101230" object_number="771" document_hash="3C641461C926D2C38E6F53D2C479A2E5C9943E3947752A6915088CEFD64D">
     <pdf_title>Academic search engine spam and Google Scholar resilience against it</pdf_title>
 </pdf_annotation>
@@ -735,7 +735,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel2010"/>
 </node>
-<node TEXT="Related work on classic search engine spam" ID="ID_507528258" CREATED="1377253162081" MODIFIED="1377253162082" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
+<node TEXT="Related work on classic search engine spam" ID="ID_507528258" CREATED="1377253162081" MODIFIED="1377253162082" LINK="@LITERATURE_REPO_DEMO@/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
 <pdf_annotation type="BOOKMARK" page="5" object_id="6533772850543188583" object_number="664" document_hash="3C641461C926D2C38E6F53D2C479A2E5C9943E3947752A6915088CEFD64D">
     <pdf_title>Academic search engine spam and Google Scholar resilience against it</pdf_title>
 </pdf_annotation>
@@ -745,7 +745,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel2010"/>
 </node>
-<node TEXT="Motivation why researchers might do academic search engine spam" ID="ID_1634100245" CREATED="1377253162087" MODIFIED="1377253162087" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
+<node TEXT="Motivation why researchers might do academic search engine spam" ID="ID_1634100245" CREATED="1377253162087" MODIFIED="1377253162087" LINK="@LITERATURE_REPO_DEMO@/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
 <pdf_annotation type="BOOKMARK" page="7" object_id="1334231183826421543" object_number="666" document_hash="3C641461C926D2C38E6F53D2C479A2E5C9943E3947752A6915088CEFD64D">
     <pdf_title>Academic search engine spam and Google Scholar resilience against it</pdf_title>
 </pdf_annotation>
@@ -754,7 +754,7 @@
 <attribute NAME="title" VALUE="{A}cademic search engine spam and {G}oogle {S}cholar&apos;s resilience against it"/>
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel2010"/>
-<node TEXT="increase reputation" ID="ID_1058733116" CREATED="1377253162091" MODIFIED="1377253162091" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
+<node TEXT="increase reputation" ID="ID_1058733116" CREATED="1377253162091" MODIFIED="1377253162091" LINK="@LITERATURE_REPO_DEMO@/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
 <pdf_annotation type="BOOKMARK" page="7" object_id="241891064650635480" object_number="667" document_hash="3C641461C926D2C38E6F53D2C479A2E5C9943E3947752A6915088CEFD64D">
     <pdf_title>Academic search engine spam and Google Scholar resilience against it</pdf_title>
 </pdf_annotation>
@@ -764,7 +764,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel2010"/>
 </node>
-<node TEXT="increase visibility" ID="ID_584528083" CREATED="1377253162096" MODIFIED="1377253162096" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
+<node TEXT="increase visibility" ID="ID_584528083" CREATED="1377253162096" MODIFIED="1377253162096" LINK="@LITERATURE_REPO_DEMO@/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
 <pdf_annotation type="BOOKMARK" page="8" object_id="3280440608542986801" object_number="668" document_hash="3C641461C926D2C38E6F53D2C479A2E5C9943E3947752A6915088CEFD64D">
     <pdf_title>Academic search engine spam and Google Scholar resilience against it</pdf_title>
 </pdf_annotation>
@@ -774,7 +774,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel2010"/>
 </node>
-<node TEXT="ill-will" ID="ID_447215516" CREATED="1377253162100" MODIFIED="1377253162100" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
+<node TEXT="ill-will" ID="ID_447215516" CREATED="1377253162100" MODIFIED="1377253162100" LINK="@LITERATURE_REPO_DEMO@/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
 <pdf_annotation type="BOOKMARK" page="9" object_id="1242433081876144295" object_number="669" document_hash="3C641461C926D2C38E6F53D2C479A2E5C9943E3947752A6915088CEFD64D">
     <pdf_title>Academic search engine spam and Google Scholar resilience against it</pdf_title>
 </pdf_annotation>
@@ -785,7 +785,7 @@
 <attribute NAME="key" VALUE="Beel2010"/>
 </node>
 </node>
-<node TEXT="increase reputation" ID="ID_1825626121" CREATED="1377253162105" MODIFIED="1377253162105" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
+<node TEXT="increase reputation" ID="ID_1825626121" CREATED="1377253162105" MODIFIED="1377253162105" LINK="@LITERATURE_REPO_DEMO@/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
 <pdf_annotation type="BOOKMARK" page="7" object_id="241891064650635480" object_number="667" document_hash="3C641461C926D2C38E6F53D2C479A2E5C9943E3947752A6915088CEFD64D">
     <pdf_title>Academic search engine spam and Google Scholar resilience against it</pdf_title>
 </pdf_annotation>
@@ -795,7 +795,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel2010"/>
 </node>
-<node TEXT="increase visibility" ID="ID_896507969" CREATED="1377253162109" MODIFIED="1377253162109" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
+<node TEXT="increase visibility" ID="ID_896507969" CREATED="1377253162109" MODIFIED="1377253162109" LINK="@LITERATURE_REPO_DEMO@/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
 <pdf_annotation type="BOOKMARK" page="8" object_id="3280440608542986801" object_number="668" document_hash="3C641461C926D2C38E6F53D2C479A2E5C9943E3947752A6915088CEFD64D">
     <pdf_title>Academic search engine spam and Google Scholar resilience against it</pdf_title>
 </pdf_annotation>
@@ -805,7 +805,7 @@
 <attribute NAME="year" VALUE="2010"/>
 <attribute NAME="key" VALUE="Beel2010"/>
 </node>
-<node TEXT="ill-will" ID="ID_1810750362" CREATED="1377253162113" MODIFIED="1377253162114" LINK="project://140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/_data/140AAA5B521EDA4SR2SFJXRJJ1BR3S4SHFKK/default_files/../../../literature_repository/Example%20PDFs/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
+<node TEXT="ill-will" ID="ID_1810750362" CREATED="1377253162113" MODIFIED="1377253162114" LINK="@LITERATURE_REPO_DEMO@/Academic%20search%20engine%20spam%20and%20Google%20Scholars%20resilience%20against%20it.pdf">
 <pdf_annotation type="BOOKMARK" page="9" object_id="1242433081876144295" object_number="669" document_hash="3C641461C926D2C38E6F53D2C479A2E5C9943E3947752A6915088CEFD64D">
     <pdf_title>Academic search engine spam and Google Scholar resilience against it</pdf_title>
 </pdf_annotation>
