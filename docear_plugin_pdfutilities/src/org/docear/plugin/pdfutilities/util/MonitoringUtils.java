@@ -14,6 +14,7 @@ import java.util.Stack;
 
 import org.docear.plugin.core.CoreConfiguration;
 import org.docear.plugin.core.DocearController;
+import org.docear.plugin.core.logging.DocearLogger;
 import org.docear.plugin.core.util.MapUtils;
 import org.docear.plugin.core.util.NodeUtilities;
 import org.docear.plugin.core.workspace.AVirtualDirectory;
@@ -29,14 +30,18 @@ import org.docear.plugin.pdfutilities.features.IAnnotation.AnnotationType;
 import org.docear.plugin.pdfutilities.features.IcomingNodeExtension;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
 import org.docear.plugin.pdfutilities.pdf.PdfFileFilter;
+import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.attribute.AttributeController;
 import org.freeplane.features.attribute.NodeAttributeTableModel;
+import org.freeplane.features.edge.EdgeController;
+import org.freeplane.features.edge.mindmapmode.MEdgeController;
 import org.freeplane.features.link.LinkController;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.map.mindmapmode.MMapController;
 import org.freeplane.features.mode.Controller;
+import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.features.nodestyle.NodeStyleController;
 import org.freeplane.features.nodestyle.mindmapmode.MNodeStyleController;
@@ -45,6 +50,8 @@ import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.features.WorkspaceMapModelExtension;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
+
+import com.google.common.collect.Lists;
 
 public abstract class MonitoringUtils {
 	
@@ -397,11 +404,19 @@ public abstract class MonitoringUtils {
 			}
 		}
 		
-		MNodeStyleController mNodeStyleController = ((MNodeStyleController) NodeStyleController.getController());
-		mNodeStyleController.setBold(node, true);
-		mNodeStyleController.setBackgroundColor(node, new Color(0, 0x66, 0x99));
-		mNodeStyleController.setColor(node, Color.white);
-		mNodeStyleController.setFontFamily(node, "Courier New");
+		try {
+    		MNodeStyleController mNodeStyleController = ((MNodeStyleController) NodeStyleController.getController());
+    		mNodeStyleController.setBold(node, true);
+    		mNodeStyleController.setBackgroundColor(node, new Color(0, 0x66, 0x99));
+    		mNodeStyleController.setColor(node, Color.white);
+    		mNodeStyleController.setFontFamily(node, "Courier New");
+    		
+    		final MEdgeController edgeController = (MEdgeController) EdgeController.getController();
+    		edgeController.setColor(node, new Color(0, 0x66, 0x99));
+		}
+		catch(Exception e) {
+			DocearLogger.warn(e);
+		}
 	}
 
 	public static boolean isIncomingNode(NodeModel node) {
@@ -426,8 +441,10 @@ public abstract class MonitoringUtils {
 				}
 				MMapController mapCtrl = (MMapController) Controller.getCurrentModeController().getMapController();
 				NodeModel nuIncoming = mapCtrl.newNode(TextUtils.getRawText("docear.monitoring.incoming.text"), monitoringNode.getMap());
+				
 				markAsIncomingNode(nuIncoming);
-				mapCtrl.addNewNode(nuIncoming, monitoringNode, monitoringNode.getChildCount(), monitoringNode.isNewChildLeft());
+				mapCtrl.addNewNode(nuIncoming, monitoringNode, 0, false);
+				
 				return nuIncoming;
 			}
 		}
@@ -435,7 +452,7 @@ public abstract class MonitoringUtils {
 			return getIncomingNode(monitoringNode.getParentNode());
 		}
 	}
-	
+
 	public static void setExtraIncomingNodeEnable(NodeModel monitoringNode, boolean enabled) {
 		NodeUtilities.setAttribute(monitoringNode, PdfUtilitiesController.MON_EXTRA_INCOMING , enabled ? "1" : "0");
 	}
