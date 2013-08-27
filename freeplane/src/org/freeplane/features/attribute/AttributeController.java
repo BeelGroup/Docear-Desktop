@@ -46,7 +46,7 @@ import org.freeplane.features.text.TextController;
 public class AttributeController implements IExtension {
 	public static final String SHOW_ICON_FOR_ATTRIBUTES = "show_icon_for_attributes";
 	private static final Integer ATTRIBUTE_TOOLTIP = 7;
-	static private UIIcon attributeIcon = null;
+	public static UIIcon attributeIcon = null;
 	public static AttributeController getController() {
 		return getController(Controller.getCurrentModeController());
 	}

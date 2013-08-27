@@ -6,12 +6,15 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.dnd.DropTarget;
 import java.awt.event.KeyEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 
 import javax.swing.AbstractAction;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
@@ -63,12 +66,14 @@ import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.docear.plugin.core.workspace.model.IDocearProjectListener;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
 import org.docear.plugin.pdfutilities.map.MapConverter;
+import org.docear.plugin.pdfutilities.util.MonitoringUtils;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.IKeyStrokeProcessor;
 import org.freeplane.core.ui.IMenuContributor;
 import org.freeplane.core.ui.KeyBindingProcessor;
 import org.freeplane.core.ui.MenuBuilder;
+import org.freeplane.core.ui.components.MultipleImage;
 import org.freeplane.core.ui.components.OneTouchCollapseResizer;
 import org.freeplane.core.ui.ribbon.ARibbonContributor;
 import org.freeplane.core.ui.ribbon.IRibbonContributorFactory;
@@ -77,6 +82,12 @@ import org.freeplane.core.ui.ribbon.RibbonBuildContext;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
+import org.freeplane.features.attribute.AttributeController;
+import org.freeplane.features.icon.IStateIconProvider;
+import org.freeplane.features.icon.IconController;
+import org.freeplane.features.icon.UIIcon;
+import org.freeplane.features.link.LinkController.LinkType;
+import org.freeplane.features.map.INodeView;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
@@ -94,11 +105,14 @@ import org.freeplane.plugin.workspace.model.WorkspaceModelListener;
 import org.freeplane.plugin.workspace.model.project.IProjectSelectionListener;
 import org.freeplane.plugin.workspace.model.project.ProjectSelectionEvent;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
+import org.freeplane.view.swing.map.MainView;
 import org.freeplane.view.swing.map.NodeView;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 
 public class ReferencesController extends ALanguageController implements IDocearEventListener {
+	
+	private PropertyChangeListener iconChangeListener;
 	
 	//mapModel with reference which is currently changed
 	private MapModel inChange = null;
@@ -160,7 +174,7 @@ public class ReferencesController extends ALanguageController implements IDocear
 		this.addPluginDefaults();
 		this.addMenuEntries();
 		this.registerListeners();
-
+		
 		this.initJabref();
 	}
 
@@ -170,8 +184,56 @@ public class ReferencesController extends ALanguageController implements IDocear
 		JabRefPreferences.getInstance(JabrefWrapper.class).setLabelPatternSavePackage(ILabelPattern.class);
 	}
 	
+	private void adjustDefaultAttributesIcon(NodeModel node) {
+		for (INodeView view : node.getViewers()) {
+			if(view instanceof NodeView) {
+				if (jabRefAttributes.getBibtexKey(node) != null) {
+					Icon attributesIcon = new ImageIcon(ReferencesController.class.getResource("/images/references_small.png"));				
+					((NodeView)view).getMainView().addPropertyChangeListener("icon", getIconChangeListener());
+				}
+				
+			}
+		}
+	}
 
-	private void registerListeners() {		
+	private PropertyChangeListener getIconChangeListener() {
+		if(iconChangeListener == null) {
+			iconChangeListener = new PropertyChangeListener() {
+				
+				public void propertyChange(PropertyChangeEvent evt) {
+					if(evt.getSource() instanceof MainView) {
+						final MainView view = (MainView)evt.getSource();
+						MultipleImage icon = (MultipleImage) view.getIcon();
+    					if(icon != null) {    						
+    						Icon attributesIcon = new ImageIcon(ReferencesController.class.getResource("/images/references_small.png"));
+    						if(attributesIcon !=  null) {
+    							icon.addOrReplaceIcon(AttributeController.attributeIcon.getIcon(), attributesIcon);
+    						}
+						}
+    					SwingUtilities.invokeLater(new Runnable() {
+							public void run() {
+    							view.removePropertyChangeListener("icon", iconChangeListener);
+    							view.repaint();
+    						}
+    					});
+					}
+					
+					
+				}
+			};
+		}
+		return iconChangeListener;
+	}
+
+	private void registerListeners() {	
+		IconController.getController(modeController).addStateIconProvider(new IStateIconProvider() {			
+			public UIIcon getStateIcon(NodeModel node) {
+				adjustDefaultAttributesIcon(node);
+				return null;
+			}			
+		});
+		
+		
 		MapConverter.addMapsConvertedListener(splmmMapsConvertedListener);
 		
 		

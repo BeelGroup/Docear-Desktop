@@ -742,7 +742,7 @@ public class PdfUtilitiesController extends ALanguageController {
 	private void adjustDefaultLinkIcon(NodeModel node) {
 		for (INodeView view : node.getViewers()) {
 			if(view instanceof NodeView) {
-				Icon newIcon = MonitoringUtils.getAnnotationModelIcon(node);
+				Icon newIcon = MonitoringUtils.getAnnotationModelIcon(node);				
 				if(newIcon != null) {
 					((NodeView)view).getMainView().addPropertyChangeListener("icon", getIconChangeListener());
 				}
