@@ -2,8 +2,6 @@ package org.docear.plugin.pdfutilities;
 
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.dnd.DropTarget;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -49,7 +47,6 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeSelectionEvent;
-import javax.swing.text.html.HTMLEditorKit.LinkController;
 
 import org.apache.commons.io.FilenameUtils;
 import org.docear.plugin.core.ALanguageController;
@@ -130,10 +127,8 @@ import org.freeplane.features.icon.IStateIconProvider;
 import org.freeplane.features.icon.IconController;
 import org.freeplane.features.icon.UIIcon;
 import org.freeplane.features.link.LinkController.LinkType;
-import org.freeplane.features.map.INodeChangeListener;
 import org.freeplane.features.map.INodeView;
 import org.freeplane.features.map.MapModel;
-import org.freeplane.features.map.NodeChangeEvent;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
@@ -150,7 +145,6 @@ import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
 import org.freeplane.view.swing.map.MainView;
 import org.freeplane.view.swing.map.NodeView;
-import org.freeplane.view.swing.map.ZoomableLabelUI;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandButton.CommandButtonKind;
 import org.pushingpixels.flamingo.api.common.JCommandToggleButton;
@@ -159,8 +153,6 @@ import org.pushingpixels.flamingo.api.common.popup.JCommandPopupMenu;
 import org.pushingpixels.flamingo.api.common.popup.JPopupPanel;
 import org.pushingpixels.flamingo.api.common.popup.PopupPanelCallback;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
-
-import com.sun.org.apache.xml.internal.utils.NodeVector;
 
 public class PdfUtilitiesController extends ALanguageController {
 
@@ -213,6 +205,9 @@ public class PdfUtilitiesController extends ALanguageController {
 	private ImportNewChildAnnotationsAction importNewChildAnnotationsAction;
 	private RemoveLinebreaksAction removeLinebreaksAction;
 	private MonitoringFlattenSubfoldersAction monitoringFlattenSubfoldersAction;
+	private MonitoringGroupRadioButtonAction flattenOnAction;
+	private MonitoringGroupRadioButtonAction flattenOffAction;
+	private MonitoringGroupRadioButtonAction flattenDefaultAction;
 	private MonitoringGroupRadioButtonAction autoOnAction;
 	private MonitoringGroupRadioButtonAction autoOffAction;
 	private MonitoringGroupRadioButtonAction autoDefaultAction;
@@ -793,6 +788,7 @@ public class PdfUtilitiesController extends ALanguageController {
 		//res.setDefaultProperty(EditMonitoringFolderAction.KEY+".icon", "/images/docear/monitoring/Project -- Main -- Import.png");
 
 		res.setDefaultProperty(MonitoringFlattenSubfoldersAction.KEY+".icon", "/images/docear/monitoring/MonitoringSettings-FlattenDirectory.png");
+		res.setDefaultProperty("flatten_dirs.icon", "/images/docear/monitoring/MonitoringSettings-FlattenDirectory.png");
 		res.setDefaultProperty("auto_monitoring.icon", "/images/docear/monitoring/MonitoringSettings-AutoupdateOnOpeningMaps.png");
 		res.setDefaultProperty("subfolders.icon", "/images/docear/monitoring/MonitoringSettings-ReadSubfolders.png");
 		
@@ -822,6 +818,13 @@ public class PdfUtilitiesController extends ALanguageController {
 		modeController.addAction(editMonitoringFolderAction);
 		this.monitoringFlattenSubfoldersAction = new MonitoringFlattenSubfoldersAction();
 		modeController.addAction(monitoringFlattenSubfoldersAction);
+		
+		flattenOnAction = new MonitoringGroupRadioButtonAction("mon_flatten_on", MON_FLATTEN_DIRS, 1, modeController);
+		flattenOffAction = new MonitoringGroupRadioButtonAction("mon_flatten_off", MON_FLATTEN_DIRS, 0, modeController);
+		flattenDefaultAction = new MonitoringGroupRadioButtonAction("mon_flatten_default", MON_FLATTEN_DIRS, 2, modeController);
+		WorkspaceController.addAction(flattenOnAction);
+		WorkspaceController.addAction(flattenOffAction);
+		WorkspaceController.addAction(flattenDefaultAction);
 		
 		autoOnAction = new MonitoringGroupRadioButtonAction("mon_auto_on", MON_AUTO, 1, modeController);
 		autoOffAction = new MonitoringGroupRadioButtonAction("mon_auto_off", MON_AUTO, 0, modeController);
@@ -906,6 +909,14 @@ public class PdfUtilitiesController extends ALanguageController {
 
 				builder.addMenuItem(
 						MENU_BAR + MONITORING_MENU + SETTINGS_MENU,
+						new JMenu(TextUtils.getText("flatten_dirs")), MENU_BAR + MONITORING_MENU + SETTINGS_MENU + "FlattenDirs", //$NON-NLS-1$
+						MenuBuilder.AS_CHILD);
+				builder.addMenuItem(monitoringCategory + MONITORING_MENU + SETTINGS_MENU,
+						new JMenu(TextUtils.getText("flatten_dirs")), monitoringCategory + MONITORING_MENU + SETTINGS_MENU + "FlattenDirs", //$NON-NLS-1$
+						MenuBuilder.AS_CHILD);
+				
+				builder.addMenuItem(
+						MENU_BAR + MONITORING_MENU + SETTINGS_MENU,
 						new JMenu(TextUtils.getText("PdfUtilitiesController_12")), MENU_BAR + MONITORING_MENU + SETTINGS_MENU + AUTOUPDATE_MENU, //$NON-NLS-1$
 						MenuBuilder.AS_CHILD);
 				builder.addMenuItem(monitoringCategory + MONITORING_MENU + SETTINGS_MENU,
@@ -920,16 +931,36 @@ public class PdfUtilitiesController extends ALanguageController {
 						new JMenu(TextUtils.getText("PdfUtilitiesController_14")), monitoringCategory + MONITORING_MENU + SETTINGS_MENU + SUBFOLDERS_MENU, //$NON-NLS-1$
 						MenuBuilder.AS_CHILD);
 				
+				
+//				builder.addRadioItem(MENU_BAR + MONITORING_MENU + SETTINGS_MENU, monitoringFlattenSubfoldersAction, false);
+//				builder.addRadioItem(monitoringCategory + MONITORING_MENU + SETTINGS_MENU, monitoringFlattenSubfoldersAction, false);
+//				monitoringFlattenSubfoldersAction.initView(builder);
+				
+				flattenOnAction.addGroupItem(flattenDefaultAction);
+				flattenOnAction.addGroupItem(flattenOffAction);
+				flattenOffAction.addGroupItem(flattenDefaultAction);
+				flattenOffAction.addGroupItem(flattenOnAction);
+				flattenDefaultAction.addGroupItem(flattenOffAction);
+				flattenDefaultAction.addGroupItem(flattenOnAction);
+
+				builder.addRadioItem(monitoringCategory + MONITORING_MENU + SETTINGS_MENU + "FlattenDirs", flattenOnAction, false);
+				builder.addRadioItem(MENU_BAR + MONITORING_MENU + SETTINGS_MENU + "FlattenDirs", flattenOnAction, false);
+				builder.addRadioItem(monitoringCategory + MONITORING_MENU + SETTINGS_MENU + "FlattenDirs", flattenOffAction, false);
+				builder.addRadioItem(MENU_BAR + MONITORING_MENU + SETTINGS_MENU + "FlattenDirs", flattenOffAction, false);
+				builder.addRadioItem(monitoringCategory + MONITORING_MENU + SETTINGS_MENU + "FlattenDirs", flattenDefaultAction, false);
+				builder.addRadioItem(MENU_BAR + MONITORING_MENU + SETTINGS_MENU + "FlattenDirs", flattenDefaultAction, false);
+
+				flattenOnAction.initView(builder);
+				flattenOffAction.initView(builder);
+				flattenDefaultAction.initView(builder);
+				
+				
 				autoOnAction.addGroupItem(autoDefaultAction);
 				autoOnAction.addGroupItem(autoOffAction);
 				autoOffAction.addGroupItem(autoDefaultAction);
 				autoOffAction.addGroupItem(autoOnAction);
 				autoDefaultAction.addGroupItem(autoOffAction);
 				autoDefaultAction.addGroupItem(autoOnAction);
-
-				builder.addRadioItem(MENU_BAR + MONITORING_MENU + SETTINGS_MENU, monitoringFlattenSubfoldersAction, false);
-				builder.addRadioItem(monitoringCategory + MONITORING_MENU + SETTINGS_MENU, monitoringFlattenSubfoldersAction, false);
-				monitoringFlattenSubfoldersAction.initView(builder);
 
 				builder.addRadioItem(monitoringCategory + MONITORING_MENU + SETTINGS_MENU + AUTOUPDATE_MENU, autoOnAction, false);
 				builder.addRadioItem(MENU_BAR + MONITORING_MENU + SETTINGS_MENU + AUTOUPDATE_MENU, autoOnAction, false);
@@ -1631,7 +1662,28 @@ public class PdfUtilitiesController extends ALanguageController {
 				
 				@Override
 				public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
-					final JCommandToggleButton flattenButton = RibbonActionContributorFactory.createCommandToggleButton(monitoringFlattenSubfoldersAction);
+					final JCommandButton flattenButton = RibbonActionContributorFactory.createCommandButton(RibbonActionContributorFactory.getDummyAction("flatten_dirs"));
+					flattenButton.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
+					flattenButton.setPopupCallback(new PopupPanelCallback() {
+						
+						public JPopupPanel getPopupPanel(JCommandButton commandButton) {
+							JCommandPopupMenu popupmenu = new JCommandPopupMenu();
+							JCommandToggleMenuButton defaultButton = RibbonActionContributorFactory.createCommandToggleMenuButton(flattenDefaultAction);	
+							flattenDefaultAction.setSelected();
+							defaultButton.getActionModel().setSelected(flattenDefaultAction.isSelected());
+							flattenOnAction.setSelected();
+							JCommandToggleMenuButton onButton = RibbonActionContributorFactory.createCommandToggleMenuButton(flattenOnAction);
+							onButton.getActionModel().setSelected(flattenOnAction.isSelected());
+							flattenOffAction.setSelected();
+							JCommandToggleMenuButton offButton = RibbonActionContributorFactory.createCommandToggleMenuButton(flattenOffAction);
+							offButton.getActionModel().setSelected(flattenOffAction.isSelected());
+							
+							popupmenu.addMenuButton(defaultButton);
+							popupmenu.addMenuButton(onButton);
+							popupmenu.addMenuButton(offButton);
+							return popupmenu;
+						}
+					});
 					ChildProperties childProps = new ChildProperties();
 					childProps.set(RibbonElementPriority.class, RibbonElementPriority.MEDIUM);
 					addDefaultToggleHandler(context, flattenButton);

@@ -566,11 +566,12 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 						if (oldAnnotation.getAnnotationType().equals(AnnotationType.PDF_FILE)) continue;
 						if (oldAnnotation.getAnnotationType().equals(AnnotationType.FILE)) continue;
 						String oldAnnotationWithoutHTML = HtmlUtils.extractText(oldAnnotation.getTitle());
+						String oldAnnotationTitle = oldAnnotation.getTitle().replace("\r", "").replace("\n", "").replace("\t", "")/*.replace(" ", "")*/;
 						String importedAnnotationWithoutHTML = HtmlUtils.extractText(importedAnnotation.getTitle());
 						String importedAnnotationTitle = importedAnnotation.getTitle().replace("\r", "").replace("\n", "").replace("\t", "")
 								/*.replace(" ", "")*/;
 						importedAnnotationWithoutHTML = importedAnnotationWithoutHTML.replace("\r", "").replace("\n", "").replace("\t", "")/*.replace(" ", "")*/;
-						String oldAnnotationTitle = oldAnnotation.getTitle().replace("\r", "").replace("\n", "").replace("\t", "")/*.replace(" ", "")*/;
+						
 						oldAnnotationWithoutHTML = oldAnnotationWithoutHTML.replace("\r", "").replace("\n", "").replace("\t", "")/*.replace(" ", "")*/;
 						if (!importedAnnotationTitle.trim().equals(oldAnnotationTitle.trim())
 								&& !importedAnnotationTitle.trim().equals(oldAnnotationWithoutHTML.trim()) && !importedAnnotationWithoutHTML.trim().equals(oldAnnotationWithoutHTML.trim())) {
