@@ -30,7 +30,7 @@ public class DocearNodeMonitoringExtensionXmlBuilder implements IElementDOMHandl
 		reader.addAttributeHandler("node", INCOMING_ATTRIBUTE_NAME, new IAttributeHandler() {
 			public void setAttribute(Object node, String value) {
 				if(node instanceof NodeModel) {
-					MonitoringUtils.markAsIncomingNode((NodeModel)node);
+					MonitoringUtils.markAsIncomingNode((NodeModel)node, false);
 				}
 			}
 		});

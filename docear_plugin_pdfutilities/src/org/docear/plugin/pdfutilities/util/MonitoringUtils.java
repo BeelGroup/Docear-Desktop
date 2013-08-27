@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-import javax.swing.AbstractAction;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
@@ -24,7 +23,6 @@ import org.docear.plugin.core.util.NodeUtilities;
 import org.docear.plugin.core.workspace.AVirtualDirectory;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
-import org.docear.plugin.pdfutilities.actions.ImportNewAnnotationsAction;
 import org.docear.plugin.pdfutilities.features.AnnotationID;
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
 import org.docear.plugin.pdfutilities.features.AnnotationNodeModel;
@@ -35,7 +33,6 @@ import org.docear.plugin.pdfutilities.features.IAnnotation.AnnotationType;
 import org.docear.plugin.pdfutilities.features.IcomingNodeExtension;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
 import org.docear.plugin.pdfutilities.pdf.PdfFileFilter;
-import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.attribute.AttributeController;
 import org.freeplane.features.attribute.NodeAttributeTableModel;
@@ -46,7 +43,6 @@ import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.map.mindmapmode.MMapController;
 import org.freeplane.features.mode.Controller;
-import org.freeplane.features.mode.ModeController;
 import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.features.nodestyle.NodeStyleController;
 import org.freeplane.features.nodestyle.mindmapmode.MNodeStyleController;
@@ -55,7 +51,6 @@ import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.features.WorkspaceMapModelExtension;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
-import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 
 public abstract class MonitoringUtils {
 	
@@ -401,7 +396,7 @@ public abstract class MonitoringUtils {
 		return null;
 	}
 
-	public static void markAsIncomingNode(NodeModel node) {
+	public static void markAsIncomingNode(NodeModel node, boolean addStyle) {
 		IcomingNodeExtension ext = node.getExtension(IcomingNodeExtension.class);
 		NodeModel parent = node.getParentNode();
 		if(ext == null) {			
@@ -414,19 +409,20 @@ public abstract class MonitoringUtils {
 				node.removeExtension(new IcomingNodeExtension());
 			}
 		}
-		
-		try {
-    		MNodeStyleController mNodeStyleController = ((MNodeStyleController) NodeStyleController.getController());
-    		mNodeStyleController.setBold(node, true);
-    		mNodeStyleController.setBackgroundColor(node, new Color(0, 0x66, 0x99));
-    		mNodeStyleController.setColor(node, Color.white);
-    		mNodeStyleController.setFontFamily(node, "Courier New");
-    		
-    		final MEdgeController edgeController = (MEdgeController) EdgeController.getController();
-    		edgeController.setColor(node, new Color(0, 0x66, 0x99));
-		}
-		catch(Exception e) {
-			DocearLogger.warn(e);
+		if(addStyle) {
+			try {
+	    		MNodeStyleController mNodeStyleController = ((MNodeStyleController) NodeStyleController.getController());
+	    		mNodeStyleController.setBold(node, true);
+	    		mNodeStyleController.setBackgroundColor(node, new Color(0, 0x66, 0x99));
+	    		mNodeStyleController.setColor(node, Color.white);
+	    		mNodeStyleController.setFontFamily(node, "Courier New");
+	    		
+	    		final MEdgeController edgeController = (MEdgeController) EdgeController.getController();
+	    		edgeController.setColor(node, new Color(0, 0x66, 0x99));
+			}
+			catch(Exception e) {
+				DocearLogger.warn(e);
+			}
 		}
 	}
 
@@ -435,13 +431,13 @@ public abstract class MonitoringUtils {
 	}
 
 	public static NodeModel getIncomingNode(NodeModel monitoringNode) {
-		if(monitoringNode == null || isIncomingNode(monitoringNode)) {
+		if(monitoringNode == null || (!isExtraIncomingNodeEnabled(monitoringNode) && isIncomingNode(monitoringNode))) {
 			return monitoringNode;
 		}
 		
 		if(isMonitoringNode(monitoringNode)) {
 			if(!isExtraIncomingNodeEnabled(monitoringNode)) {
-				markAsIncomingNode(monitoringNode);
+				markAsIncomingNode(monitoringNode, false);
 				return monitoringNode;
 			}
 			else {
@@ -453,7 +449,7 @@ public abstract class MonitoringUtils {
 				MMapController mapCtrl = (MMapController) Controller.getCurrentModeController().getMapController();
 				NodeModel nuIncoming = mapCtrl.newNode(TextUtils.getRawText("docear.monitoring.incoming.text"), monitoringNode.getMap());
 				
-				markAsIncomingNode(nuIncoming);
+				markAsIncomingNode(nuIncoming, true);
 				mapCtrl.addNewNode(nuIncoming, monitoringNode, 0, false);
 				
 				return nuIncoming;
