@@ -1,4 +1,4 @@
-Data Processing
+﻿Data Processing
 
 If you want to give something back there is an important thing you can do (besides donating, spreading the word, etc.) and that is: sharing your data. One of the reasons we develop Docear is that we want to know how mind maps are created and what kind of information they contain. We want to know this in order to improve Docear and other applications. For instance, we believe that data from mind maps could be used to enhance document classification or social tag recommender systems (read our publications for more details). And to do this we need mind maps - your mind maps. We are aware that mind maps may contain very sensitive and private information and therefore it's entirely up to you if you share your data or not.
 
