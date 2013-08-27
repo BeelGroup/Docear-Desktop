@@ -81,9 +81,10 @@ public class MultipleImage implements Icon {
 	}
 	
 	public void addOrReplaceIcon(Icon oldIcon, Icon newIcon) {
-		if(newIcon == null) {
+		if(newIcon == null || mIcons.indexOf(newIcon) >= 0) {
 			return;
 		}
+		
 		if(oldIcon == null) {
 			mIcons.add(newIcon);
 		}
