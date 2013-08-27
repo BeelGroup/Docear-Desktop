@@ -23,7 +23,7 @@
 	<property name="build4mac" value="${root}/build4mac" />
 	<property name="build.plugins" value="${build}/plugins" />
 	<property name="dist" value="${root}/dist" />
-	<property name="macappfullpath" value="${build4mac}/Freeplane.app" />
+	<property name="macappfullpath" value="${build4mac}/${ApplicationName}.app" />
 	<toLowerCase property="ApplicationNameToLowerCase" value="${ApplicationName}" />
 
 	<property name="launcher_src" value="src" />
@@ -698,6 +698,12 @@
 		<copy file="${workspace}/freeplane_plugin_script/dist/script-api.zip"
 			tofile="${dist}/script-api-${ver}.zip"
 			failonerror="false"/>
+	</target>
+	
+	<target name="docear4mac"  depends="clean,  zip4mac" if="isMacOs" >
+		<exec executable="hdiutil">
+			<arg line="create -srcfolder ${macappfullpath} ${dist}/${ApplicationNameToLowerCase}.dmg"/>
+		</exec>
 	</target>
 	
 	<target name="docear-nsis" depends="docear-bin">
