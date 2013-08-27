@@ -294,6 +294,9 @@ public final class WorkspaceController implements IExtension {
 	}
 	
 	public static WorkspaceMapModelExtension getMapModelExtension(MapModel map, boolean createIfNotExists) {
+		if(map == null) {
+			return null;
+		}
 		WorkspaceMapModelExtension wmme = map.getExtension(WorkspaceMapModelExtension.class);
 		if(createIfNotExists && wmme == null) {
 			wmme = new WorkspaceMapModelExtension();

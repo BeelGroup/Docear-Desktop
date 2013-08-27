@@ -18,6 +18,7 @@ import org.docear.plugin.bibtex.jabref.ResolveDuplicateEntryAbortedException;
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.features.DocearMapModelExtension;
 import org.docear.plugin.core.features.MapModificationSession;
+import org.docear.plugin.core.logging.DocearLogger;
 import org.docear.plugin.core.mindmap.MindmapUpdateController;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
@@ -35,10 +36,12 @@ public class MapChangeListenerAdapter extends AMapChangeListenerAdapter {
 	public void mapChanged(MapChangeEvent event) {
 		try {
 			WorkspaceMapModelExtension wmme = WorkspaceController.getMapModelExtension(event.getMap());
-			wmme.getProject().getExtensions(JabRefProjectExtension.class).selectBasePanel();			
+			if(wmme != null && wmme.getProject() != null && wmme.getProject().getExtensions(JabRefProjectExtension.class) != null) {
+				wmme.getProject().getExtensions(JabRefProjectExtension.class).selectBasePanel();
+			}
 		}
 		catch(Exception e) {
-			LogUtils.warn("MapChangeListenerAdapter.mapChanged(): "+e.getMessage());
+			DocearLogger.warn(e);
 		}
 	}
 

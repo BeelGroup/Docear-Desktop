@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -173,13 +174,17 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 		super.setPreferredSize(new Dimension(Math.max(size.width, getMinimumSize().width), Math.max(size.height, getMinimumSize().height)));	
 	}
 
-	public void expandPath(TreePath treePath) {
-		try {
-			mTree.expandPath(treePath);
-		}
-		catch(Exception e) {
-			LogUtils.warn("TreeView.expandPath(): " + e.getMessage());
-		}
+	public void expandPath(final TreePath treePath) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					mTree.expandPath(treePath);
+				}
+				catch(Exception e) {
+					LogUtils.warn("TreeView.expandPath(): " + e.getMessage());
+				}
+			}
+		});
 	}
 
 	public void collapsePath(TreePath treePath) {

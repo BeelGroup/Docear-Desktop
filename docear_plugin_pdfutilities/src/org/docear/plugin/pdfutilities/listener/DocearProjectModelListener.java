@@ -86,12 +86,14 @@ public class DocearProjectModelListener implements IProjectModelListener {
 				newFile = (File) event.getNewValue();
 				oldFile = (File) event.getOldValue();
 			}
-			try {
-				AnnotationController.getController().updateIndex(newFile, oldFile);
-				updateMaps(event.getProject(), newFile, oldFile, (event.getType() == WorkspaceModelEventType.RENAMED));
-			}
-			catch (Exception e) {
-				DocearLogger.warn(e);
+			if(newFile != null && oldFile != null) {
+				try {
+					AnnotationController.getController().updateIndex(newFile, oldFile);
+					updateMaps(event.getProject(), newFile, oldFile, (event.getType() == WorkspaceModelEventType.RENAMED));
+				}
+				catch (Exception e) {
+					DocearLogger.warn(e);
+				}
 			}
 		}
 	}

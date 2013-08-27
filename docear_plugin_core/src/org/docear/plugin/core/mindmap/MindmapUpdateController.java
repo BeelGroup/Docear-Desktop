@@ -288,7 +288,7 @@ public class MindmapUpdateController {
 							if (this.mapHasChanged) {
 								if (!mapItem.isMapOpen()) {
 									saveMap(map);
-									MapChangeEvent event = new MapChangeEvent(this, UrlManager.MAP_URL, map.getURL(), null);
+									MapChangeEvent event = new MapChangeEvent(this, map, UrlManager.MAP_URL, map.getURL(), map.getURL());
 									Controller.getCurrentModeController().getMapController().fireMapChanged(event);
 									map.destroy();
 								}

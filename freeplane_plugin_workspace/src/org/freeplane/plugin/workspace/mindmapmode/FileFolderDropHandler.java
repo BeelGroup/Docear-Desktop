@@ -21,6 +21,7 @@ import org.freeplane.plugin.workspace.io.ITask;
 import org.freeplane.plugin.workspace.io.IFileSystemRepresentation;
 import org.freeplane.plugin.workspace.io.SkipTaskException;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
+import org.freeplane.plugin.workspace.model.WorkspaceTreeModel;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 import org.freeplane.plugin.workspace.nodes.FolderLinkNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
@@ -95,10 +96,11 @@ public class FileFolderDropHandler extends DefaultFileDropHandler {
 				if(onSkipList(destFile.getParentFile(), properties)) {
 					throw new SkipTaskException();
 				}
+				WorkspaceTreeModel model = targetNode.getModel();
 				AWorkspaceTreeNode parent = node.getParent();
-				targetNode.getModel().cutNodeFromParent(node);
+				model.cutNodeFromParent(node);
 				parent.refresh();
-				targetNode.getModel().nodeMoved(node, srcFile, destFile);
+				model.nodeMoved(node, srcFile, destFile);
 			}
 			
 			private boolean onSkipList(File dest, Properties properties) {
