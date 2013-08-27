@@ -30,6 +30,13 @@ public class JabRefProjectExtension implements IWorkspaceProjectExtension {
                 final MainTable table = getBaseHandle().getBasePanel().getMainTable();
                 table.setFocusable(false);
                 getBaseHandle().showBasePanel();
+                
+                SwingUtilities.invokeLater(new Runnable() {					
+					@Override
+					public void run() {
+						table.setFocusable(true);
+					}
+				});
             }
             catch(Exception ex) {
                 
