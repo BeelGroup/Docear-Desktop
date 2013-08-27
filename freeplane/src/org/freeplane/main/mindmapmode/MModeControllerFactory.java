@@ -23,9 +23,10 @@ import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 
 import javax.swing.Box;
+import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -66,15 +67,19 @@ import org.freeplane.features.encrypt.mindmapmode.MEncryptionController;
 import org.freeplane.features.export.mindmapmode.ExportController;
 import org.freeplane.features.export.mindmapmode.ImportMindmanagerFiles;
 import org.freeplane.features.icon.HierarchicalIcons;
+import org.freeplane.features.icon.IStateIconProvider;
 import org.freeplane.features.icon.IconController;
+import org.freeplane.features.icon.UIIcon;
 import org.freeplane.features.icon.mindmapmode.IconSelectionPlugin;
 import org.freeplane.features.icon.mindmapmode.MIconController;
 import org.freeplane.features.link.LinkController;
+import org.freeplane.features.link.NodeLinks;
 import org.freeplane.features.link.mindmapmode.MLinkController;
 import org.freeplane.features.map.AlwaysUnfoldedNode;
 import org.freeplane.features.map.FoldingController;
 import org.freeplane.features.map.FreeNode;
 import org.freeplane.features.map.MapController;
+import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.map.SummaryNode;
 import org.freeplane.features.map.mindmapmode.ChangeNodeLevelController;
 import org.freeplane.features.map.mindmapmode.MMapController;
@@ -340,5 +345,29 @@ public class MModeControllerFactory {
 		else {
 			userInputListenerFactory.getRibbonBuilder().updateRibbon(ResourceController.getResourceController().getResource("/xml/mindmapmoderibbon.xml"));
 		}
+		
+		IconController.getController(modeController).addStateIconProvider(new IStateIconProvider() {			
+			public UIIcon getStateIcon(NodeModel node) {
+				final URI link = NodeLinks.getLink(node);
+				return wrapIcon(LinkController.getLinkIcon(link, node));
+			}
+
+			private UIIcon wrapIcon(final Icon linkIcon) {
+				UIIcon icon = null;
+				if(linkIcon != null) {
+					if(linkIcon instanceof UIIcon) {
+						icon = (UIIcon) linkIcon;
+					}
+					else {
+    					icon = new UIIcon("ownIcon", null) {
+    						public Icon getIcon() {
+    							return linkIcon;
+    						}
+    					};
+					}
+				}
+				return icon;
+			}
+		});
 	}
 }

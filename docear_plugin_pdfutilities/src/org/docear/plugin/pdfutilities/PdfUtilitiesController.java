@@ -2,6 +2,8 @@ package org.docear.plugin.pdfutilities;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.dnd.DropTarget;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -44,8 +46,10 @@ import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeSelectionEvent;
+import javax.swing.text.html.HTMLEditorKit.LinkController;
 
 import org.apache.commons.io.FilenameUtils;
 import org.docear.plugin.core.ALanguageController;
@@ -110,6 +114,7 @@ import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.IMenuContributor;
 import org.freeplane.core.ui.IMouseListener;
 import org.freeplane.core.ui.MenuBuilder;
+import org.freeplane.core.ui.components.MultipleImage;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.ui.ribbon.ARibbonContributor;
 import org.freeplane.core.ui.ribbon.CurrentState;
@@ -124,7 +129,11 @@ import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.icon.IStateIconProvider;
 import org.freeplane.features.icon.IconController;
 import org.freeplane.features.icon.UIIcon;
+import org.freeplane.features.link.LinkController.LinkType;
+import org.freeplane.features.map.INodeChangeListener;
+import org.freeplane.features.map.INodeView;
 import org.freeplane.features.map.MapModel;
+import org.freeplane.features.map.NodeChangeEvent;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
@@ -139,7 +148,9 @@ import org.freeplane.plugin.workspace.model.WorkspaceModelListener;
 import org.freeplane.plugin.workspace.model.project.IProjectModelListener;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
+import org.freeplane.view.swing.map.MainView;
 import org.freeplane.view.swing.map.NodeView;
+import org.freeplane.view.swing.map.ZoomableLabelUI;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandButton.CommandButtonKind;
 import org.pushingpixels.flamingo.api.common.JCommandToggleButton;
@@ -148,6 +159,8 @@ import org.pushingpixels.flamingo.api.common.popup.JCommandPopupMenu;
 import org.pushingpixels.flamingo.api.common.popup.JPopupPanel;
 import org.pushingpixels.flamingo.api.common.popup.PopupPanelCallback;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
+
+import com.sun.org.apache.xml.internal.utils.NodeVector;
 
 public class PdfUtilitiesController extends ALanguageController {
 
@@ -219,6 +232,7 @@ public class PdfUtilitiesController extends ALanguageController {
 	};
 	private UIIcon refreshMonitoringIcon ;
 	private IProjectModelListener projectModelListener;
+	private PropertyChangeListener iconChangeListener;
 	
 	private static PdfUtilitiesController controller;
 	public static final Icon REFRESH_MONITORING_ICON = new ImageIcon(PdfUtilitiesController.class.getResource("/icons/view-refresh-3.png"));
@@ -690,6 +704,7 @@ public class PdfUtilitiesController extends ALanguageController {
 		AnnotationController.install(new AnnotationController(modeController));
 		IconController.getController(modeController).addStateIconProvider(new IStateIconProvider() {			
 			public UIIcon getStateIcon(NodeModel node) {
+				adjustDefaultLinkIcon(node);
 				if(MonitoringUtils.isMonitoringNode(node)) {
 					if (refreshMonitoringIcon  == null) {
 						refreshMonitoringIcon = new UIIcon(TextUtils.getText("docear.monitoring.reload.name"), "/icons/refresh icon.png", TextUtils.getText("docear.monitoring.reload.desc")) {	
@@ -719,8 +734,52 @@ public class PdfUtilitiesController extends ALanguageController {
 				return null;
 			}
 		});
+		
 		DocearNodeMonitoringExtensionController.install(new DocearNodeMonitoringExtensionController(modeController));
 		
+	}
+
+	private void adjustDefaultLinkIcon(NodeModel node) {
+		for (INodeView view : node.getViewers()) {
+			if(view instanceof NodeView) {
+				Icon newIcon = MonitoringUtils.getAnnotationModelIcon(node);
+				if(newIcon != null) {
+					((NodeView)view).getMainView().addPropertyChangeListener("icon", getIconChangeListener());
+				}
+				
+			}
+		}
+		
+	}
+
+	private PropertyChangeListener getIconChangeListener() {
+		if(iconChangeListener == null) {
+			iconChangeListener = new PropertyChangeListener() {
+				
+				public void propertyChange(PropertyChangeEvent evt) {
+					if(evt.getSource() instanceof MainView) {
+						final MainView view = (MainView)evt.getSource();
+						MultipleImage icon = (MultipleImage) view.getIcon();
+    					if(icon != null) {
+    						NodeModel node = view.getNodeView().getModel();
+    						Icon newIcon = MonitoringUtils.getAnnotationModelIcon(node);
+    						if(newIcon !=  null) {
+    							icon.addOrReplaceIcon(LinkType.DEFAULT.icon, newIcon);
+    						}
+						}
+    					SwingUtilities.invokeLater(new Runnable() {    						
+    						public void run() {
+    							view.removePropertyChangeListener("icon", iconChangeListener);
+    							view.repaint();
+    						}
+    					});
+					}
+					
+					
+				}
+			};
+		}
+		return iconChangeListener;
 	}
 
 	private void registerActions(ModeController modeController) {
