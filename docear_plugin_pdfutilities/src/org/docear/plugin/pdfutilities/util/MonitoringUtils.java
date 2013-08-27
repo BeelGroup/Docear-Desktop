@@ -12,6 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import javax.swing.AbstractAction;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+
 import org.docear.plugin.core.CoreConfiguration;
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.logging.DocearLogger;
@@ -20,6 +24,7 @@ import org.docear.plugin.core.util.NodeUtilities;
 import org.docear.plugin.core.workspace.AVirtualDirectory;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
+import org.docear.plugin.pdfutilities.actions.ImportNewAnnotationsAction;
 import org.docear.plugin.pdfutilities.features.AnnotationID;
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
 import org.docear.plugin.pdfutilities.features.AnnotationNodeModel;
@@ -30,7 +35,7 @@ import org.docear.plugin.pdfutilities.features.IAnnotation.AnnotationType;
 import org.docear.plugin.pdfutilities.features.IcomingNodeExtension;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
 import org.docear.plugin.pdfutilities.pdf.PdfFileFilter;
-import org.freeplane.core.util.LogUtils;
+import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.attribute.AttributeController;
 import org.freeplane.features.attribute.NodeAttributeTableModel;
@@ -50,10 +55,12 @@ import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.features.WorkspaceMapModelExtension;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
-
-import com.google.common.collect.Lists;
+import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
 
 public abstract class MonitoringUtils {
+	
+	private static final Icon defaultAnnotationIcon = new ImageIcon(WorkspaceController.class.getResource("/images/16x16/annotation_link.png"));
+	private static final Icon defaultPdfIcon = new ImageIcon(WorkspaceController.class.getResource("/images/16x16/acrobat.png"));
 	
 	public static boolean isMonitoringNode(NodeModel node) {
 		NodeAttributeTableModel attributeModel = (NodeAttributeTableModel) node.getExtension(NodeAttributeTableModel.class);
@@ -507,6 +514,21 @@ public abstract class MonitoringUtils {
 			default:
 				return false;
 		}
+	}
+
+	public static Icon getAnnotationModelIcon(NodeModel node) {
+		Icon icon = null;
+		IAnnotation model = AnnotationController.getAnnotationNodeModel(node);
+		
+		if(model != null) { 
+    		if(model.getAnnotationType().equals(AnnotationType.PDF_FILE)){
+    			icon = defaultPdfIcon;
+    		}		
+    		else if(!model.getAnnotationType().equals(AnnotationType.FILE)){
+    			icon = defaultAnnotationIcon;    						
+    		}
+		}
+		return icon;
 	}
 
 

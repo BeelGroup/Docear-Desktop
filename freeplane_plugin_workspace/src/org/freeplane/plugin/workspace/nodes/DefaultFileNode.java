@@ -98,19 +98,27 @@ public class DefaultFileNode extends AWorkspaceTreeNode implements IWorkspaceNod
 			renderer.setClosedIcon(NOT_EXISTING);
 			return true;
 		}		
-		icon = WorkspaceController.getCurrentModeExtension().getView().getNodeTypeIconManager().getIconForNode(this);
+		icon = getIcon();
 		if(icon == null) {
 			icon = FileSystemView.getFileSystemView().getSystemIcon(getFile());
 			renderer.setLeafIcon(icon);
 			return true;
 		}
-		// the next steps should not get reached
+		// the next steps should never be reached
 		if(icon == null) {
 			renderer.setLeafIcon(DEFAULT_ICON);
 		} else {
 			renderer.setLeafIcon(icon);
 		}
 		return true;
+	}
+	
+	public Icon getIcon() {
+		icon = WorkspaceController.getCurrentModeExtension().getView().getNodeTypeIconManager().getIconForNode(this);
+		if(icon == null) {
+			icon = FileSystemView.getFileSystemView().getSystemIcon(getFile());
+		}
+		return icon;
 	}
 	
 	protected AWorkspaceTreeNode clone(DefaultFileNode node) {
