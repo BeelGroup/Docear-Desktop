@@ -20,6 +20,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.text.BadLocationException;
@@ -45,10 +46,12 @@ public class SwingWorkerDialog extends JDialog implements PropertyChangeListener
 	public static final String DETAILS_LOG_TEXT = "details_log_text";
 	public static final String REPAINT = "repaint";
 	public static final String CLOSE = "close";
+	public static final String SET_ON_TOP = "set_on_top";
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
 	private SwingWorker<?,?> thread;
 	private JPanel mainPanel;
 	private JProgressBar progressBar;
@@ -304,6 +307,15 @@ public class SwingWorkerDialog extends JDialog implements PropertyChangeListener
 		}
 		if(evt.getPropertyName().equals(SET_SUB_HEADLINE)){
 			this.setSubHeadlineText("" + evt.getNewValue());
+		}
+		if(evt.getPropertyName().equals(SET_ON_TOP)){
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					getOwner().toFront();
+					requestFocusInWindow();
+				}
+			});
 		}
 	}	
 

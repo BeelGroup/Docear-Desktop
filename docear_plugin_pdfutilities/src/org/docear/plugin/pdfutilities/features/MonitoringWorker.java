@@ -401,8 +401,8 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 		if (orphanedNodes.size() > 0) {
 			if (canceled()) return false;
 			try {
-				int result = UITools.showConfirmDialog(target,
-						TextUtils.getText("AbstractMonitoringAction.18"), TextUtils.getText("AbstractMonitoringAction.18"), JOptionPane.YES_NO_OPTION); //$NON-NLS-1$ //$NON-NLS-2$
+				int result = UITools.showConfirmDialog(target, TextUtils.getText("AbstractMonitoringAction.18"), TextUtils.getText("AbstractMonitoringAction.18"), JOptionPane.YES_NO_OPTION); //$NON-NLS-1$ //$NON-NLS-2$
+				fireStatusUpdate(SwingWorkerDialog.SET_ON_TOP, null, null);
 				if (result == JOptionPane.OK_OPTION) {
 					fireStatusUpdate(SwingWorkerDialog.SET_PROGRESS_BAR_DETERMINATE, null, null);
 					fireStatusUpdate(SwingWorkerDialog.PROGRESS_BAR_TEXT, null, TextUtils.getText("AbstractMonitoringAction.20")); //$NON-NLS-1$
