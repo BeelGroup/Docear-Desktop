@@ -317,7 +317,7 @@ public class MindmapUpdateController {
 
 			private String getMapTitle(MapModel map) {
 				String mapTitle = "";
-					if (map.getFile() != null) {
+				if (map.getFile() != null) {
 					mapTitle = map.getFile().getName();
 				}
 				else {
@@ -330,7 +330,7 @@ public class MindmapUpdateController {
 				NodeView.setModifyModelWithoutRepaint(false);
 				MapView.setNoRepaint(false);
 				for (MapItem item : maps) {
-					if (item.isMapOpen()) {
+					if (item.getModel() != null && item.isMapOpen()) {
 						LogUtils.info("updating view for map: " + item.getIdentifierForDialog());
 						long l = System.currentTimeMillis();
 						for(INodeView nodeView : item.getModel().getRootNode().getViewers()) {

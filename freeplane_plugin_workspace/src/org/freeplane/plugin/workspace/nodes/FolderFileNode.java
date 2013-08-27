@@ -84,9 +84,11 @@ public class FolderFileNode extends DefaultFileNode implements TreeExpansionList
 		try {
 			if (getFile().isDirectory()) {
 				inRefresh = true;
-				getModel().removeAllElements(this);
-				loadDirectoryFiles(getFile());
-				getModel().reload(this);
+				if(getModel() != null) {
+					getModel().removeAllElements(this);
+					loadDirectoryFiles(getFile());
+					getModel().reload(this);
+				}
 			}
 		}
 		catch (Exception e) {
