@@ -31,3 +31,4 @@ freeplane_plugin_remote_server_tests/report
 freeplane_plugin_remote_server_tests/src/files/mindmaps/4.mm
 freeplane_plugin_remote_client/lib
 freeplane_plugin_remote_shared/lib
+docear_framework/launcher_build/
