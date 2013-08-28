@@ -109,7 +109,12 @@ public abstract class WorkspaceModel implements TreeModel {
 					event = validatedModelEvent(event);
 					synchronized (listeners) {
 						for (int i = listeners.size()-1; i >= 0; i--) {
-							listeners.get(i).treeStructureChanged(event);
+							try {
+								listeners.get(i).treeStructureChanged(event);
+							}
+							catch (Exception ex) {
+								LogUtils.warn(ex);
+							}
 						}
 					}
 				}
@@ -118,7 +123,12 @@ public abstract class WorkspaceModel implements TreeModel {
 					event = validatedModelEvent(event);
 					synchronized (listeners) {
 						for (int i = listeners.size()-1; i >= 0; i--) {
-							listeners.get(i).treeNodesRemoved(event);
+							try {
+								listeners.get(i).treeNodesRemoved(event);
+							}
+							catch (Exception ex) {
+								LogUtils.warn(ex);
+							}
 						}
 					}
 				}
@@ -127,7 +137,12 @@ public abstract class WorkspaceModel implements TreeModel {
 					event = validatedModelEvent(event);
 					synchronized (listeners) {						
 						for (int i = listeners.size()-1; i >= 0; i--) {
-							listeners.get(i).treeNodesInserted(event);
+							try {
+								listeners.get(i).treeNodesInserted(event);
+							}
+							catch (Exception ex) {
+								LogUtils.warn(ex);
+							}
 						}
 					}
 				}
@@ -136,7 +151,12 @@ public abstract class WorkspaceModel implements TreeModel {
 					event = validatedModelEvent(event);
 					synchronized (listeners) {
 						for (int i = listeners.size()-1; i >= 0; i--) {
-							listeners.get(i).treeNodesChanged(event);
+							try {
+								listeners.get(i).treeNodesChanged(event);
+							}
+							catch (Exception ex) {
+								LogUtils.warn(ex);
+							}
 						}
 					}
 				}

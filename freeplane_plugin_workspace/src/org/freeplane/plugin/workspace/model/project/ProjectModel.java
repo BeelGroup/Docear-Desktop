@@ -72,7 +72,12 @@ public class ProjectModel implements WorkspaceTreeModel {
 			if (listeners[i] == IProjectModelListener.class) {
 				// Lazily create the event:
 				if (e == null) e = new WorkspaceModelEvent(getProject(), source, path, childIndices, children);
-				((IProjectModelListener) listeners[i + 1]).treeNodesChanged(e);
+				try {
+					((IProjectModelListener) listeners[i + 1]).treeNodesChanged(e);
+				}
+				catch (Exception ex) {
+					LogUtils.warn(ex);
+				}
 			}
 		}
 	}
@@ -85,7 +90,12 @@ public class ProjectModel implements WorkspaceTreeModel {
 		// those that are interested in this event
 		for (int i = listeners.length - 2; i >= 0; i -= 2) {
 			if (listeners[i] == IProjectModelListener.class) {
-				((IProjectModelListener) listeners[i + 1]).treeNodesChanged(e);
+				try {
+					((IProjectModelListener) listeners[i + 1]).treeNodesChanged(e);
+				}
+				catch (Exception ex) {
+					LogUtils.warn(ex);
+				}
 			}
 		}
 	}
@@ -100,7 +110,12 @@ public class ProjectModel implements WorkspaceTreeModel {
 			if (listeners[i] == IProjectModelListener.class) {
 				// Lazily create the event:
 				if (e == null) e = new WorkspaceModelEvent(getProject(), source, path, childIndices, children);
-				((IProjectModelListener) listeners[i + 1]).treeNodesInserted(e);
+				try {
+					((IProjectModelListener) listeners[i + 1]).treeNodesInserted(e);
+				}
+				catch (Exception ex) {
+					LogUtils.warn(ex);
+				}
 			}
 		}
 	}
@@ -115,7 +130,12 @@ public class ProjectModel implements WorkspaceTreeModel {
 			if (listeners[i] == IProjectModelListener.class) {
 				// Lazily create the event:
 				if (e == null) e = new WorkspaceModelEvent(getProject(), source, path, childIndices, children);
-				((IProjectModelListener) listeners[i + 1]).treeNodesRemoved(e);
+				try {
+					((IProjectModelListener) listeners[i + 1]).treeNodesRemoved(e);
+				}
+				catch (Exception ex) {
+					LogUtils.warn(ex);
+				}
 			}
 		}
 	}
@@ -130,7 +150,12 @@ public class ProjectModel implements WorkspaceTreeModel {
 			if (listeners[i] == IProjectModelListener.class) {
 				// Lazily create the event:
 				if (e == null) e = new WorkspaceModelEvent(getProject(), source, path, WorkspaceModelEventType.DELETED, from, to);
-				((IProjectModelListener) listeners[i + 1]).treeNodesRemoved(e);
+				try {
+					((IProjectModelListener) listeners[i + 1]).treeNodesRemoved(e);
+				}
+				catch (Exception ex) {
+					LogUtils.warn(ex);
+				}
 			}
 		}
 	}
@@ -145,7 +170,12 @@ public class ProjectModel implements WorkspaceTreeModel {
 			if (listeners[i] == IProjectModelListener.class) {
 				// Lazily create the event:
 				if (e == null) e = new WorkspaceModelEvent(getProject(), source, path, childIndices, children);
-				((IProjectModelListener) listeners[i + 1]).treeStructureChanged(e);
+				try {
+					((IProjectModelListener) listeners[i + 1]).treeStructureChanged(e);
+				}
+				catch (Exception ex) {
+					LogUtils.warn(ex);
+				}
 			}
 		}
 	}
@@ -160,7 +190,12 @@ public class ProjectModel implements WorkspaceTreeModel {
 			if (listeners[i] == IProjectModelListener.class) {
 				// Lazily create the event:
 				if (e == null) e = new WorkspaceModelEvent(getProject(), source, path);
-				((IProjectModelListener) listeners[i + 1]).treeStructureChanged(e);
+				try {
+					((IProjectModelListener) listeners[i + 1]).treeStructureChanged(e);
+				}
+				catch (Exception ex) {
+					LogUtils.warn(ex);
+				}
 			}
 		}
 	}
@@ -175,7 +210,12 @@ public class ProjectModel implements WorkspaceTreeModel {
 			if (listeners[i] == IProjectModelListener.class) {
 				// Lazily create the event:
 				if (e == null) e = new WorkspaceModelEvent(getProject(), source, path, WorkspaceModelEventType.MOVED, from, to);
-				((IProjectModelListener) listeners[i + 1]).treeStructureChanged(e);
+				try {
+					((IProjectModelListener) listeners[i + 1]).treeStructureChanged(e);
+				}
+				catch (Exception ex) {
+					LogUtils.warn(ex);
+				}
 			}
 		}
 	}
@@ -190,7 +230,12 @@ public class ProjectModel implements WorkspaceTreeModel {
 			if (listeners[i] == IProjectModelListener.class) {
 				// Lazily create the event:
 				if (e == null) e = new WorkspaceModelEvent(getProject(), source, path, WorkspaceModelEventType.RENAMED, from, to);
-				((IProjectModelListener) listeners[i + 1]).treeNodesChanged(e);
+				try {
+					((IProjectModelListener) listeners[i + 1]).treeNodesChanged(e);
+				}
+				catch (Exception ex) {
+					LogUtils.warn(ex);
+				}
 			}
 		}
 	}
