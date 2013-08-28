@@ -63,178 +63,196 @@ public class ProjectModel implements WorkspaceTreeModel {
 	}
 
 	protected void fireTreeNodesChanged(Object source, TreePath path, int[] childIndices, Object[] children) {
-		// Guaranteed to return a non-null array
-		Object[] listeners = listenerList.getListenerList();
-		WorkspaceModelEvent e = null;
-		// Process the listeners last to first, notifying
-		// those that are interested in this event
-		for (int i = listeners.length - 2; i >= 0; i -= 2) {
-			if (listeners[i] == IProjectModelListener.class) {
-				// Lazily create the event:
-				if (e == null) e = new WorkspaceModelEvent(getProject(), source, path, childIndices, children);
-				try {
-					((IProjectModelListener) listeners[i + 1]).treeNodesChanged(e);
-				}
-				catch (Exception ex) {
-					LogUtils.warn(ex);
+		synchronized (this) {
+			// Guaranteed to return a non-null array
+			Object[] listeners = listenerList.getListenerList();
+			WorkspaceModelEvent e = null;
+			// Process the listeners last to first, notifying
+			// those that are interested in this event
+			for (int i = listeners.length - 2; i >= 0; i -= 2) {
+				if (listeners[i] == IProjectModelListener.class) {
+					// Lazily create the event:
+					if (e == null) e = new WorkspaceModelEvent(getProject(), source, path, childIndices, children);
+					try {
+						((IProjectModelListener) listeners[i + 1]).treeNodesChanged(e);
+					}
+					catch (Exception ex) {
+						LogUtils.warn(ex);
+					}
 				}
 			}
 		}
 	}
 	
 	protected void fireTreeNodeChanged(Object source, TreePath path, int childIndex, Object children, Object oldValue, Object newValue) {
-		// Guaranteed to return a non-null array
-		Object[] listeners = listenerList.getListenerList();
-		WorkspaceModelEvent e = new WorkspaceModelEvent(getProject(), source, path, WorkspaceModelEventType.DEFAULT, oldValue, newValue);
-		// Process the listeners last to first, notifying
-		// those that are interested in this event
-		for (int i = listeners.length - 2; i >= 0; i -= 2) {
-			if (listeners[i] == IProjectModelListener.class) {
-				try {
-					((IProjectModelListener) listeners[i + 1]).treeNodesChanged(e);
-				}
-				catch (Exception ex) {
-					LogUtils.warn(ex);
+		synchronized (this) {
+			// Guaranteed to return a non-null array
+			Object[] listeners = listenerList.getListenerList();
+			WorkspaceModelEvent e = new WorkspaceModelEvent(getProject(), source, path, WorkspaceModelEventType.DEFAULT, oldValue, newValue);
+			// Process the listeners last to first, notifying
+			// those that are interested in this event
+			for (int i = listeners.length - 2; i >= 0; i -= 2) {
+				if (listeners[i] == IProjectModelListener.class) {
+					try {
+						((IProjectModelListener) listeners[i + 1]).treeNodesChanged(e);
+					}
+					catch (Exception ex) {
+						LogUtils.warn(ex);
+					}
 				}
 			}
 		}
 	}
 
 	protected void fireTreeNodesInserted(Object source, TreePath path, int[] childIndices, Object[] children) {
-		// Guaranteed to return a non-null array
-		Object[] listeners = listenerList.getListenerList();
-		WorkspaceModelEvent e = null;
-		// Process the listeners last to first, notifying
-		// those that are interested in this event
-		for (int i = listeners.length - 2; i >= 0; i -= 2) {
-			if (listeners[i] == IProjectModelListener.class) {
-				// Lazily create the event:
-				if (e == null) e = new WorkspaceModelEvent(getProject(), source, path, childIndices, children);
-				try {
-					((IProjectModelListener) listeners[i + 1]).treeNodesInserted(e);
-				}
-				catch (Exception ex) {
-					LogUtils.warn(ex);
+		synchronized (this) {
+			// Guaranteed to return a non-null array
+			Object[] listeners = listenerList.getListenerList();
+			WorkspaceModelEvent e = null;
+			// Process the listeners last to first, notifying
+			// those that are interested in this event
+			for (int i = listeners.length - 2; i >= 0; i -= 2) {
+				if (listeners[i] == IProjectModelListener.class) {
+					// Lazily create the event:
+					if (e == null) e = new WorkspaceModelEvent(getProject(), source, path, childIndices, children);
+					try {
+						((IProjectModelListener) listeners[i + 1]).treeNodesInserted(e);
+					}
+					catch (Exception ex) {
+						LogUtils.warn(ex);
+					}
 				}
 			}
 		}
 	}
 
 	protected void fireTreeNodesRemoved(Object source, TreePath path, int[] childIndices, Object[] children) {
-		// Guaranteed to return a non-null array
-		Object[] listeners = listenerList.getListenerList();
-		WorkspaceModelEvent e = null;
-		// Process the listeners last to first, notifying
-		// those that are interested in this event
-		for (int i = listeners.length - 2; i >= 0; i -= 2) {
-			if (listeners[i] == IProjectModelListener.class) {
-				// Lazily create the event:
-				if (e == null) e = new WorkspaceModelEvent(getProject(), source, path, childIndices, children);
-				try {
-					((IProjectModelListener) listeners[i + 1]).treeNodesRemoved(e);
-				}
-				catch (Exception ex) {
-					LogUtils.warn(ex);
+		synchronized (this) {
+			// Guaranteed to return a non-null array
+			Object[] listeners = listenerList.getListenerList();
+			WorkspaceModelEvent e = null;
+			// Process the listeners last to first, notifying
+			// those that are interested in this event
+			for (int i = listeners.length - 2; i >= 0; i -= 2) {
+				if (listeners[i] == IProjectModelListener.class) {
+					// Lazily create the event:
+					if (e == null) e = new WorkspaceModelEvent(getProject(), source, path, childIndices, children);
+					try {
+						((IProjectModelListener) listeners[i + 1]).treeNodesRemoved(e);
+					}
+					catch (Exception ex) {
+						LogUtils.warn(ex);
+					}
 				}
 			}
 		}
 	}
 
 	protected void fireTreeNodesRemoved(Object source, TreePath path, Object from, Object to) {
-		// Guaranteed to return a non-null array
-		Object[] listeners = listenerList.getListenerList();
-		WorkspaceModelEvent e = null;
-		// Process the listeners last to first, notifying
-		// those that are interested in this event
-		for (int i = listeners.length - 2; i >= 0; i -= 2) {
-			if (listeners[i] == IProjectModelListener.class) {
-				// Lazily create the event:
-				if (e == null) e = new WorkspaceModelEvent(getProject(), source, path, WorkspaceModelEventType.DELETED, from, to);
-				try {
-					((IProjectModelListener) listeners[i + 1]).treeNodesRemoved(e);
-				}
-				catch (Exception ex) {
-					LogUtils.warn(ex);
+		synchronized (this) {
+			// Guaranteed to return a non-null array
+			Object[] listeners = listenerList.getListenerList();
+			WorkspaceModelEvent e = null;
+			// Process the listeners last to first, notifying
+			// those that are interested in this event
+			for (int i = listeners.length - 2; i >= 0; i -= 2) {
+				if (listeners[i] == IProjectModelListener.class) {
+					// Lazily create the event:
+					if (e == null) e = new WorkspaceModelEvent(getProject(), source, path, WorkspaceModelEventType.DELETED, from, to);
+					try {
+						((IProjectModelListener) listeners[i + 1]).treeNodesRemoved(e);
+					}
+					catch (Exception ex) {
+						LogUtils.warn(ex);
+					}
 				}
 			}
 		}
 	}
 
 	protected void fireTreeStructureChanged(Object source, TreePath path, int[] childIndices, Object[] children) {
-		// Guaranteed to return a non-null array
-		Object[] listeners = listenerList.getListenerList();
-		WorkspaceModelEvent e = null;
-		// Process the listeners last to first, notifying
-		// those that are interested in this event
-		for (int i = listeners.length - 2; i >= 0; i -= 2) {
-			if (listeners[i] == IProjectModelListener.class) {
-				// Lazily create the event:
-				if (e == null) e = new WorkspaceModelEvent(getProject(), source, path, childIndices, children);
-				try {
-					((IProjectModelListener) listeners[i + 1]).treeStructureChanged(e);
-				}
-				catch (Exception ex) {
-					LogUtils.warn(ex);
+		synchronized (this) {
+			// Guaranteed to return a non-null array
+			Object[] listeners = listenerList.getListenerList();
+			WorkspaceModelEvent e = null;
+			// Process the listeners last to first, notifying
+			// those that are interested in this event
+			for (int i = listeners.length - 2; i >= 0; i -= 2) {
+				if (listeners[i] == IProjectModelListener.class) {
+					// Lazily create the event:
+					if (e == null) e = new WorkspaceModelEvent(getProject(), source, path, childIndices, children);
+					try {
+						((IProjectModelListener) listeners[i + 1]).treeStructureChanged(e);
+					}
+					catch (Exception ex) {
+						LogUtils.warn(ex);
+					}
 				}
 			}
 		}
 	}
 
 	protected void fireTreeStructureChanged(Object source, TreePath path) {
-		// Guaranteed to return a non-null array
-		Object[] listeners = listenerList.getListenerList();
-		WorkspaceModelEvent e = null;
-		// Process the listeners last to first, notifying
-		// those that are interested in this event
-		for (int i = listeners.length - 2; i >= 0; i -= 2) {
-			if (listeners[i] == IProjectModelListener.class) {
-				// Lazily create the event:
-				if (e == null) e = new WorkspaceModelEvent(getProject(), source, path);
-				try {
-					((IProjectModelListener) listeners[i + 1]).treeStructureChanged(e);
-				}
-				catch (Exception ex) {
-					LogUtils.warn(ex);
+		synchronized (this) {
+			// Guaranteed to return a non-null array
+			Object[] listeners = listenerList.getListenerList();
+			WorkspaceModelEvent e = null;
+			// Process the listeners last to first, notifying
+			// those that are interested in this event
+			for (int i = listeners.length - 2; i >= 0; i -= 2) {
+				if (listeners[i] == IProjectModelListener.class) {
+					// Lazily create the event:
+					if (e == null) e = new WorkspaceModelEvent(getProject(), source, path);
+					try {
+						((IProjectModelListener) listeners[i + 1]).treeStructureChanged(e);
+					}
+					catch (Exception ex) {
+						LogUtils.warn(ex);
+					}
 				}
 			}
 		}
 	}
 
 	protected void fireTreeStructureMoved(Object source, TreePath path, Object from, Object to) {
-		// Guaranteed to return a non-null array
-		Object[] listeners = listenerList.getListenerList();
-		WorkspaceModelEvent e = null;
-		// Process the listeners last to first, notifying
-		// those that are interested in this event
-		for (int i = listeners.length - 2; i >= 0; i -= 2) {
-			if (listeners[i] == IProjectModelListener.class) {
-				// Lazily create the event:
-				if (e == null) e = new WorkspaceModelEvent(getProject(), source, path, WorkspaceModelEventType.MOVED, from, to);
-				try {
-					((IProjectModelListener) listeners[i + 1]).treeStructureChanged(e);
-				}
-				catch (Exception ex) {
-					LogUtils.warn(ex);
+		synchronized (this) {
+			// Guaranteed to return a non-null array
+			Object[] listeners = listenerList.getListenerList();
+			WorkspaceModelEvent e = null;
+			// Process the listeners last to first, notifying
+			// those that are interested in this event
+			for (int i = listeners.length - 2; i >= 0; i -= 2) {
+				if (listeners[i] == IProjectModelListener.class) {
+					// Lazily create the event:
+					if (e == null) e = new WorkspaceModelEvent(getProject(), source, path, WorkspaceModelEventType.MOVED, from, to);
+					try {
+						((IProjectModelListener) listeners[i + 1]).treeStructureChanged(e);
+					}
+					catch (Exception ex) {
+						LogUtils.warn(ex);
+					}
 				}
 			}
 		}
 	}
 
 	protected void fireTreeNodeRenamed(Object source, TreePath path, Object from, Object to) {
-		// Guaranteed to return a non-null array
-		Object[] listeners = listenerList.getListenerList();
-		WorkspaceModelEvent e = null;
-		// Process the listeners last to first, notifying
-		// those that are interested in this event
-		for (int i = listeners.length - 2; i >= 0; i -= 2) {
-			if (listeners[i] == IProjectModelListener.class) {
-				// Lazily create the event:
-				if (e == null) e = new WorkspaceModelEvent(getProject(), source, path, WorkspaceModelEventType.RENAMED, from, to);
-				try {
-					((IProjectModelListener) listeners[i + 1]).treeNodesChanged(e);
-				}
-				catch (Exception ex) {
-					LogUtils.warn(ex);
+		synchronized (this) {
+			// Guaranteed to return a non-null array
+			Object[] listeners = listenerList.getListenerList();
+			WorkspaceModelEvent e = null;
+			// Process the listeners last to first, notifying
+			// those that are interested in this event
+			for (int i = listeners.length - 2; i >= 0; i -= 2) {
+				if (listeners[i] == IProjectModelListener.class) {
+					// Lazily create the event:
+					if (e == null) e = new WorkspaceModelEvent(getProject(), source, path, WorkspaceModelEventType.RENAMED, from, to);
+					try {
+						((IProjectModelListener) listeners[i + 1]).treeNodesChanged(e);
+					}
+					catch (Exception ex) {
+						LogUtils.warn(ex);
+					}
 				}
 			}
 		}

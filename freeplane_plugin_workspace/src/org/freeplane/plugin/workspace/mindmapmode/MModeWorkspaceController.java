@@ -15,6 +15,7 @@ import java.util.Properties;
 import javax.swing.Box;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
+import javax.swing.SwingUtilities;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.event.TreeModelEvent;
@@ -531,24 +532,33 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 			this.viewUpdater.run();
 		}
 		String[] projectsIds = getWorkspaceSettings().getProperty(WorkspaceSettings.WORKSPACE_MODEL_PROJECTS, "").split(WorkspaceSettings.WORKSPACE_MODEL_PROJECTS_SEPARATOR);
-		for (String projectID : projectsIds) {
-			String projectHome = getWorkspaceSettings().getProperty(projectID);
+		for (final String projectID : projectsIds) {
+			final String projectHome = getWorkspaceSettings().getProperty(projectID);
 			if(projectHome == null) {
 				continue;
 			}
-			AWorkspaceProject project = null;
 			try {
-				project = AWorkspaceProject.create(projectID, URIUtils.createURI(projectHome));
-				getModel().addProject(project);
-				getProjectLoader().loadProject(project);
-			}
-			catch (Exception e) {
+				SwingUtilities.invokeAndWait(new Runnable() {
+					public void run() {
+						AWorkspaceProject project = null;
+						try {
+							project = AWorkspaceProject.create(projectID, URIUtils.createURI(projectHome));
+							getModel().addProject(project);
+							getProjectLoader().loadProject(project);
+						}
+						catch (Exception e) {
+							LogUtils.severe(e);
+							if(project != null) {
+								getModel().removeProject(project);
+							}
+						}
+					}
+				});
+			} catch (Exception e) {
 				LogUtils.severe(e);
-				if(project != null) {
-					getModel().removeProject(project);
-				}
 			}
 		}
+		getWorkspaceView().repaint();
 	}
 
 	@Override

@@ -8,8 +8,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.swing.SwingUtilities;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOExceptionWithCause;
 import org.docear.plugin.core.io.ReplacingInputStream;
@@ -387,18 +385,7 @@ public class DocearProjectLoader extends ProjectLoader {
 		}
 
 		public void process(final AWorkspaceTreeNode parent, final AWorkspaceTreeNode node) {
-			try {
-				SwingUtilities.invokeAndWait(new Runnable() {
-					
-					@Override
-					public void run() {
-						_process(parent, node);
-					}
-				});
-			} catch (Exception e) {
-				LogUtils.severe(e);
-			}
-			
+			_process(parent, node);
 		}
 
 		private void _process(AWorkspaceTreeNode parent, AWorkspaceTreeNode node) {

@@ -194,6 +194,7 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 	public void refreshView() {
 		paintingEnabled = true;
 		getExpandedStateHandler().setExpandedStates(((AWorkspaceTreeNode)mTree.getModel().getRoot()).getModel(), true);
+		repaint();
 	}
 	
 	public void setModel(WorkspaceModel model) {
