@@ -5,13 +5,15 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 
+import javax.swing.SwingUtilities;
+
+import org.docear.plugin.core.logging.DocearLogger;
 import org.docear.plugin.core.ui.CreateProjectPagePanel;
 import org.docear.plugin.core.ui.wizard.Wizard;
 import org.docear.plugin.core.ui.wizard.WizardContext;
 import org.docear.plugin.core.ui.wizard.WizardPageDescriptor;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.freeplane.core.ui.components.UITools;
-import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
@@ -74,39 +76,53 @@ public class DocearNewProjectAction extends AWorkspaceAction {
 		wizard.setStartPage(desc.getIdentifier());
 	}
 
-	public static void createProject(AWorkspaceProject project) {
-		if(project == null) {
-			return;
-		}
-		File path = URIUtils.getFile(project.getProjectHome());
-		
-		//WORKSPACE - todo: ask for permission to create the directory or check for always_create setting
-		if(!path.exists() ) {
-			path.mkdirs();
-		}
-		
-		String projectName = null;		
-		DocearProjectSettings settings = project.getExtensions(DocearProjectSettings.class);
-		if(settings != null) {
-			projectName = settings.getProjectName();
-		}
-		
-		WorkspaceController.getCurrentModel().addProject(project);
+	public static void createProject(final AWorkspaceProject project) {
 		try {
-			LOAD_RETURN_TYPE return_type = WorkspaceController.getCurrentModeExtension().getProjectLoader().loadProject(project);
-			if(return_type == LOAD_RETURN_TYPE.NEW_PROJECT && projectName != null && projectName.length() > 0) {
-				project.getModel().getRoot().setName(projectName);
-				project.getModel().nodeChanged(project.getModel().getRoot(), null, projectName);
-			}
-		} catch (IOException e) {
-			LogUtils.severe(e);
-		}
+			SwingUtilities.invokeAndWait(new Runnable() {
+				
+				@Override
+				public void run() {
 
-		try {
-			WorkspaceController.save();
+					if(project == null) {
+						return;
+					}
+					File path = URIUtils.getFile(project.getProjectHome());
+					
+					//WORKSPACE - todo: ask for permission to create the directory or check for always_create setting
+					if(!path.exists() ) {
+						path.mkdirs();
+					}
+					
+					String projectName = null;		
+					DocearProjectSettings settings = project.getExtensions(DocearProjectSettings.class);
+					if(settings != null) {
+						projectName = settings.getProjectName();
+					}
+					
+					WorkspaceController.getCurrentModel().addProject(project);
+					try {
+						LOAD_RETURN_TYPE return_type = WorkspaceController.getCurrentModeExtension().getProjectLoader().loadProject(project);
+						if(return_type == LOAD_RETURN_TYPE.NEW_PROJECT && projectName != null && projectName.length() > 0) {
+							project.getModel().getRoot().setName(projectName);
+							project.getModel().nodeChanged(project.getModel().getRoot(), null, projectName);
+						}
+					} catch (IOException e) {
+						DocearLogger.error(e);
+					}
+					try {
+						WorkspaceController.save();
+					}
+					catch (Exception e) {
+						DocearLogger.warn(e);
+					}
+				}
+			});
 		}
-		catch (Exception e) {
+		catch (Exception ex) {
+			DocearLogger.warn(ex);
 		}
+		
+		
 	}
 
 }

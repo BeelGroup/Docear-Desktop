@@ -4,6 +4,8 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 
+import javax.swing.SwingUtilities;
+
 import org.docear.plugin.core.ui.ImportProjectPagePanel;
 import org.docear.plugin.core.ui.wizard.Wizard;
 import org.docear.plugin.core.ui.wizard.WizardContext;
@@ -75,46 +77,57 @@ public class DocearImportProjectAction extends AWorkspaceAction {
 		wizard.setStartPage(desc.getIdentifier());
 	}
 
-	public static void importProject(AWorkspaceProject project) {
-		if(project == null) {
-			return;
-		}
-		String projectName = null;		
-		DocearProjectSettings settings = project.getExtensions(DocearProjectSettings.class);
-		
-		if(settings != null) {
-			projectName = settings.getProjectName();
-		}
+	public static void importProject(final AWorkspaceProject project) {
 		try {
-			WorkspaceController.getCurrentModel().addProject(project);
-			if(project.getExtensions(DocearConversionDescriptor.class) != null) {
+			SwingUtilities.invokeAndWait(new Runnable() {			
+				@Override
+				public void run() {
+					if(project == null) {
+					return;
+				}
+				String projectName = null;		
+				DocearProjectSettings settings = project.getExtensions(DocearProjectSettings.class);
+				
+				if(settings != null) {
+					projectName = settings.getProjectName();
+				}
 				try {
-					DocearWorkspaceToProjectConverter.convert(project.getExtensions(DocearConversionDescriptor.class));
-					project.setLoaded();
-				} catch (IOException e) {
-					LogUtils.severe(e);
+					WorkspaceController.getCurrentModel().addProject(project);
+					if(project.getExtensions(DocearConversionDescriptor.class) != null) {
+						try {
+							DocearWorkspaceToProjectConverter.convert(project.getExtensions(DocearConversionDescriptor.class));
+							project.setLoaded();
+						} catch (IOException e) {
+							LogUtils.severe(e);
+						}
+						return;
+					} 
+					
+					try {
+						LOAD_RETURN_TYPE return_type = WorkspaceController.getCurrentModeExtension().getProjectLoader().loadProject(project);
+						if(return_type == LOAD_RETURN_TYPE.NEW_PROJECT && projectName != null && projectName.length() > 0) {
+							project.getModel().changeNodeName(project.getModel().getRoot(), projectName);
+						}
+					} catch (IOException e) {
+						LogUtils.severe(e);
+					} catch (WorkspaceModelException e) {
+						LogUtils.severe(e);
+					}
 				}
-				return;
-			} 
-			
-			try {
-				LOAD_RETURN_TYPE return_type = WorkspaceController.getCurrentModeExtension().getProjectLoader().loadProject(project);
-				if(return_type == LOAD_RETURN_TYPE.NEW_PROJECT && projectName != null && projectName.length() > 0) {
-					project.getModel().changeNodeName(project.getModel().getRoot(), projectName);
+				finally {
+					try {
+						WorkspaceController.save();
+					}
+					catch (Exception e) {
+					}
 				}
-			} catch (IOException e) {
-				LogUtils.severe(e);
-			} catch (WorkspaceModelException e) {
-				LogUtils.severe(e);
-			}
+				}
+			});
 		}
-		finally {
-			try {
-				WorkspaceController.save();
-			}
-			catch (Exception e) {
-			}
+		catch (Exception e) {
+			LogUtils.warn(e);
 		}
+		
 	}
 
 }

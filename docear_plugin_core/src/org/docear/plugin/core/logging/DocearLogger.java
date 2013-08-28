@@ -4,6 +4,10 @@ import org.freeplane.core.util.LogUtils;
 
 public class DocearLogger {
 
+	public static void info(Throwable cause) {
+		LogUtils.info("Excepton in "+getExceptionTrace(cause)+": "+cause.getMessage());
+	}
+	
 	public static void info(String msg) {
 		LogUtils.info(msg);
 	}
@@ -14,6 +18,10 @@ public class DocearLogger {
 	
 	public static void warn(Throwable cause) {
 		LogUtils.warn("Excepton in "+getExceptionTrace(cause)+": "+cause.getMessage());
+	}
+	
+	public static void error(Throwable cause) {
+		LogUtils.severe("Excepton in "+getExceptionTrace(cause)+": "+cause.getMessage());
 	}
 	
 	public static void error(String msg) {
