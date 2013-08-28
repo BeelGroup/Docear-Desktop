@@ -55,4 +55,6 @@ Bundle-ClassPath: lib/plugin.jar,
  lib/swingworker-backport.jar,
  lib/jpathwatch.jar,
  lib/jna.jar,
- lib/platform.jar
+ lib/platform.jar,
+ lib/commons-cli-1.2.jar,
+ lib/guava-14.0.1.jar

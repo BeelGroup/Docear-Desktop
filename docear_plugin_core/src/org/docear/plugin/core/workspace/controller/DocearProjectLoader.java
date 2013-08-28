@@ -396,7 +396,7 @@ public class DocearProjectLoader extends ProjectLoader {
 					}
 				});
 			} catch (Exception e) {
-				e.printStackTrace();
+				LogUtils.severe(e);
 			}
 			
 		}
