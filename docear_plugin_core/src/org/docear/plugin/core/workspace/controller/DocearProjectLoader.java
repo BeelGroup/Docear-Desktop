@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.swing.SwingUtilities;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOExceptionWithCause;
 import org.docear.plugin.core.io.ReplacingInputStream;
@@ -384,7 +386,22 @@ public class DocearProjectLoader extends ProjectLoader {
 			this.project = project;
 		}
 
-		public void process(AWorkspaceTreeNode parent, AWorkspaceTreeNode node) {
+		public void process(final AWorkspaceTreeNode parent, final AWorkspaceTreeNode node) {
+			try {
+				SwingUtilities.invokeAndWait(new Runnable() {
+					
+					@Override
+					public void run() {
+						_process(parent, node);
+					}
+				});
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+		}
+
+		private void _process(AWorkspaceTreeNode parent, AWorkspaceTreeNode node) {
 			if(getProject() == null) {
 				LogUtils.warn("Missing project container! cannot add node to a model.");
 				return;

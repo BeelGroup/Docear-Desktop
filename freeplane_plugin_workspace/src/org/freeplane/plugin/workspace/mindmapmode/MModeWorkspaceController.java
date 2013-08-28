@@ -97,7 +97,7 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 	private FileReadManager fileTypeManager;
 	private TreeView view;
 	private IWorkspaceSettingsHandler settings;
-	private WorkspaceModel wsModel;
+	private volatile WorkspaceModel wsModel;
 	private AWorkspaceProject selectedProject = null;
 	private IProjectSelectionListener projectSelectionListener;
 	private Runnable viewUpdater;
