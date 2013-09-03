@@ -28,7 +28,7 @@ public class RibbonBandContributorFactory implements IRibbonContributorFactory {
 				if (parent == null) {
 					return;
 				}
-				band = new JRibbonBand(TextUtils.getText("ribbon.band." + attributes.getProperty("name")), null);
+				band = new JRibbonBand(TextUtils.removeTranslateComment(TextUtils.getText("ribbon.band." + attributes.getProperty("name"))), null);
 				// read policies and sub-contributions
 				context.processChildren(context.getCurrentPath(), this);
 				setResizePolicies(attributes.getProperty("resize_policies"));

@@ -72,7 +72,7 @@ public class RibbonAcceleratorManager implements IKeyStrokeProcessor, IAccelerat
     			return;
     		}
     		if (keyStroke != null && oldAction != null) {
-    			UITools.errorMessage(TextUtils.format("action_keystroke_in_use_error", keyStroke, getActionTitle(action.getKey()), getActionTitle(oldAction.getKey())));
+    			UITools.errorMessage(TextUtils.removeTranslateComment(TextUtils.format("action_keystroke_in_use_error", keyStroke, getActionTitle(action.getKey()), getActionTitle(oldAction.getKey()))));
     			accelerators.put(keyStroke, oldAction);
     			final String shortcutKey = getPropertyKey(action.getKey());
     			
@@ -98,7 +98,7 @@ public class RibbonAcceleratorManager implements IKeyStrokeProcessor, IAccelerat
 		if(title == null || title.isEmpty()) {
 			title = key;
 		}
-		return title;
+		return TextUtils.removeTranslateComment(title);
  	}
  	
  	public void setDefaultAccelerator(final String itemKey, final String accelerator) {
@@ -178,7 +178,7 @@ public class RibbonAcceleratorManager implements IKeyStrokeProcessor, IAccelerat
 		}
 		else{
 			if(oldShortcut != null){
-				final int replace = JOptionPane.showConfirmDialog(UITools.getFrame(), oldShortcut, TextUtils.getText("remove_shortcut_question"), JOptionPane.YES_NO_OPTION);
+				final int replace = JOptionPane.showConfirmDialog(UITools.getFrame(), oldShortcut, TextUtils.removeTranslateComment(TextUtils.getText("remove_shortcut_question")), JOptionPane.YES_NO_OPTION);
 				if (replace != JOptionPane.YES_OPTION) {
 					return;
 				}
@@ -264,7 +264,7 @@ public class RibbonAcceleratorManager implements IKeyStrokeProcessor, IAccelerat
  			output.close();
  		}
  		catch (final IOException e1) {
- 			UITools.errorMessage(TextUtils.getText("can_not_save_key_set"));
+ 			UITools.errorMessage(TextUtils.removeTranslateComment(TextUtils.getText("can_not_save_key_set")));
  		}
  	}
  	
@@ -274,8 +274,8 @@ public class RibbonAcceleratorManager implements IKeyStrokeProcessor, IAccelerat
 	
 	private static boolean askForReplaceShortcutViaDialog(String oldMenuItemTitle) {
 		final int replace = JOptionPane.showConfirmDialog(UITools.getFrame(), 
-				TextUtils.format("replace_shortcut_question", oldMenuItemTitle),
-				TextUtils.format("replace_shortcut_title"), JOptionPane.YES_NO_OPTION);
+				TextUtils.removeTranslateComment(TextUtils.format("replace_shortcut_question", oldMenuItemTitle)),
+				TextUtils.removeTranslateComment(TextUtils.format("replace_shortcut_title")), JOptionPane.YES_NO_OPTION);
 		return replace == JOptionPane.YES_OPTION;
 	}
 	/***********************************************************************************

@@ -33,7 +33,7 @@ public class RibbonMenuSecondaryGroupContributorFactory implements IRibbonContri
 			}
 			
 			public void contribute(RibbonBuildContext context, ARibbonContributor parent) {
-				group = new SecondaryEntryGroup(TextUtils.getRawText("ribbon.menu.group."+getKey()));
+				group = new SecondaryEntryGroup(TextUtils.removeTranslateComment(TextUtils.getRawText("ribbon.menu.group."+getKey())));
 				context.processChildren(context.getCurrentPath(), this);
 				parent.addChild(group, new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", ""))));
 			}

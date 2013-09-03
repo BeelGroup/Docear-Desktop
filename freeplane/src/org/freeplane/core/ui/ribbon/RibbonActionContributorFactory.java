@@ -50,6 +50,13 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 	public static final String ACTION_NAME_PROPERTY = "ACTION_NAME";
 	public static final String ACTION_CHANGE_LISTENER = "ACTION_CHANGE_LISTENER";
 	public static final String MANDATORY_PROPERTY = "MANDATORY";
+	public static ResizableIcon BLANK_ACTION_ICON;
+	static {
+		URL location = ResourceController.getResourceController().getResource("/images/blank_icon_48x48.png");
+		if (location != null) {
+			BLANK_ACTION_ICON = ImageWrapperResizableIcon.getIcon(location, new Dimension(48, 48));
+		}
+	}
 	
 	private final RibbonBuilder builder;
 	private ActionAcceleratorChangeListener changeListener;
@@ -143,7 +150,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 		RichTooltip tip = null;
 		final String tooltip = TextUtils.getRawText(action.getTooltipKey(), null);
 		if (tooltip != null && !"".equals(tooltip)) {
-			tip = new RichTooltip(getActionTitle(action), tooltip);
+			tip = new RichTooltip(getActionTitle(action), TextUtils.removeTranslateComment(tooltip));
 		}
 		if(ks != null) {
 			if(tip == null) {
@@ -190,6 +197,9 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 				icon = ImageWrapperResizableIcon.getIcon(location, new Dimension(16, 16));
 			}
 		}
+		if(icon == null) {
+			icon = BLANK_ACTION_ICON;
+		}
 		return icon;
 	}
 
@@ -202,7 +212,7 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 		if(title == null || title.isEmpty()) {
 			title = action.getTextKey();
 		}
-		return title;
+		return TextUtils.removeTranslateComment(title);
 	}
 	
 	public static AFreeplaneAction getDummyAction(final String key) {

@@ -39,11 +39,11 @@ public class EdgeStyleContributorFactory implements IRibbonContributorFactory {
 					return;
 				}
 
-				JRibbonBand band = new JRibbonBand(TextUtils.getText("ribbon.band.edgeStyles"), null, null);
+				JRibbonBand band = new JRibbonBand(TextUtils.removeTranslateComment(TextUtils.getText("ribbon.band.edgeStyles")), null, null);
 				band.setExpandButtonKeyTip("ES");
 				band.setCollapsedStateKeyTip("ZE");
 
-				JCommandButton styleGroupButton = new JCommandButton(TextUtils.getText("edgeStyleGroupAction.text"));				
+				JCommandButton styleGroupButton = new JCommandButton(TextUtils.removeTranslateComment(TextUtils.getText("edgeStyleGroupAction.text")));				
 				styleGroupButton.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
 				AFreeplaneAction action = context.getBuilder().getMode().getAction("EdgeStyleAsParentAction");
 				final JCommandToggleMenuButton styleAsParent = RibbonActionContributorFactory.createCommandToggleMenuButton(action);
@@ -98,7 +98,7 @@ public class EdgeStyleContributorFactory implements IRibbonContributorFactory {
 
 				band.addCommandButton(styleGroupButton, RibbonElementPriority.MEDIUM);
 
-				JCommandButton lineWidthGroupButton = new JCommandButton(TextUtils.getText("edgeLineWidthGroupAction.text"));
+				JCommandButton lineWidthGroupButton = new JCommandButton(TextUtils.removeTranslateComment(TextUtils.getText("edgeLineWidthGroupAction.text")));
 				lineWidthGroupButton.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);				
 				action = context.getBuilder().getMode().getAction("EdgeWidthAction_width_parent");
 				final JCommandToggleMenuButton widthParent = RibbonActionContributorFactory.createCommandToggleMenuButton(action);

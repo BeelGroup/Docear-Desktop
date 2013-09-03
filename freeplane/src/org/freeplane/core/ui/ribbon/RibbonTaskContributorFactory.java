@@ -30,7 +30,7 @@ public class RibbonTaskContributorFactory implements IRibbonContributorFactory {
 						bands[count++] = hull.getObject();
 					}
 					
-					RibbonTask task = new RibbonTask(TextUtils.getText("ribbon."+getKey()), bands);
+					RibbonTask task = new RibbonTask(TextUtils.removeTranslateComment(TextUtils.getText("ribbon."+getKey())), bands);
 					if(parent != null) {
 						parent.addChild(task, new ChildProperties(parseOrderSettings(attributes.getProperty("orderPriority", ""))));
 					}

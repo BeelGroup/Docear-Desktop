@@ -87,7 +87,7 @@ public class TextUtils {
 		if (key == null) {
 			return null;
 		}
-		return ((ResourceBundles) ResourceController.getResourceController().getResources()).getResourceString(key);
+		return removeTranslateComment(((ResourceBundles) ResourceController.getResourceController().getResources()).getResourceString(key));
 	}
 
 	public static String getText(final String key, final String defaultString) {
@@ -100,8 +100,8 @@ public class TextUtils {
 		if (key == null) {
 			return defaultString;
 		}
-		return ((ResourceBundles) ResourceController.getResourceController().getResources()).getResourceString(key,
-		    defaultString);
+		return removeTranslateComment(((ResourceBundles) ResourceController.getResourceController().getResources()).getResourceString(key,
+		    defaultString));
 	}
 
 	public static String getOptionalTranslation(String text) {

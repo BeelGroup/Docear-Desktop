@@ -44,7 +44,7 @@ public class ViewSettingsContributorFactory implements IRibbonContributorFactory
 				if (parent == null) {
 					return;
 				}				
-				JRibbonBand band = new JRibbonBand(TextUtils.getText("ribbon.band.viewsettings"), null, null);
+				JRibbonBand band = new JRibbonBand(TextUtils.removeTranslateComment(TextUtils.getText("ribbon.band.viewsettings")), null, null);
 								
 				createAttributeViewMenu(context, band);
 				createNoteViewMenu(context, band);
@@ -60,7 +60,7 @@ public class ViewSettingsContributorFactory implements IRibbonContributorFactory
 			}
 
 			private void createToolbarsMenu(final RibbonBuildContext context, JRibbonBand band) {
-				JCommandButton button = new JCommandButton(TextUtils.getText("menu_toolbars"));
+				JCommandButton button = new JCommandButton(TextUtils.removeTranslateComment(TextUtils.getText("menu_toolbars")));
 				button.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
 				button.setPopupCallback(new PopupPanelCallback() {
 					public JPopupPanel getPopupPanel(JCommandButton commandButton) {
@@ -106,7 +106,7 @@ public class ViewSettingsContributorFactory implements IRibbonContributorFactory
 
 
 			private void createToolTipMenu(final RibbonBuildContext context, final JRibbonBand band) {
-				JCommandButton button = new JCommandButton(TextUtils.getText("menu_hoverView"));
+				JCommandButton button = new JCommandButton(TextUtils.removeTranslateComment(TextUtils.getText("menu_hoverView")));
 				button.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
 				button.setPopupCallback(new PopupPanelCallback() {
 					public JPopupPanel getPopupPanel(JCommandButton commandButton) {
@@ -138,7 +138,7 @@ public class ViewSettingsContributorFactory implements IRibbonContributorFactory
 
 
 			private void createNoteViewMenu(final RibbonBuildContext context, final JRibbonBand band) {				
-				JCommandButton displayNotesButton = new JCommandButton(TextUtils.getText("menu_noteView"));
+				JCommandButton displayNotesButton = new JCommandButton(TextUtils.removeTranslateComment(TextUtils.getText("menu_noteView")));
 				displayNotesButton.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
 				displayNotesButton.setPopupCallback(new PopupPanelCallback() {
 					public JPopupPanel getPopupPanel(JCommandButton commandButton) {
@@ -156,7 +156,7 @@ public class ViewSettingsContributorFactory implements IRibbonContributorFactory
     					toggleButton.getActionModel().setSelected(showIconAction.isSelected());
     					popupmenu.addMenuButton(toggleButton);
     					
-    					JCommandMenuButton button = new JCommandMenuButton(TextUtils.getText("note_window_location"), null);
+    					JCommandMenuButton button = new JCommandMenuButton(TextUtils.removeTranslateComment(TextUtils.getText("note_window_location")), null);
     					button.setDisplayState(CommandButtonDisplayState.MEDIUM);
     					button.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
     					button.setPopupCallback(new PopupPanelCallback() {
@@ -199,7 +199,7 @@ public class ViewSettingsContributorFactory implements IRibbonContributorFactory
 			}
 
 			private void createAttributeViewMenu(final RibbonBuildContext context, JRibbonBand band) {
-				JCommandButton button = new JCommandButton(TextUtils.getText("menu_displayAttributes"));
+				JCommandButton button = new JCommandButton(TextUtils.removeTranslateComment(TextUtils.getText("menu_displayAttributes")));
 				button.setDisplayState(CommandButtonDisplayState.MEDIUM);
 				button.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
 				button.setPopupCallback(new PopupPanelCallback() {

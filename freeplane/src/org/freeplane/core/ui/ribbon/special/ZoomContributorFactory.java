@@ -57,7 +57,7 @@ public class ZoomContributorFactory implements IRibbonContributorFactory {
 				if (parent == null) {
 					return;
 				}				
-				JFlowRibbonBand band = new JFlowRibbonBand(TextUtils.getText("ribbon.band.zoom"), null, null);
+				JFlowRibbonBand band = new JFlowRibbonBand(TextUtils.removeTranslateComment(TextUtils.getText("ribbon.band.zoom")), null, null);
 				
 				JComboBox zoomBox = ((MapViewController) Controller.getCurrentController().getMapViewManager()).createZoomBox();
 				addDefaultToggleHandler(context,zoomBox);

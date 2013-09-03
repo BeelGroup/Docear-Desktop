@@ -64,7 +64,7 @@ public class FontStyleContributorFactory implements IRibbonContributorFactory {
 				}
 
 				// RIBBONS expandlistener and icon
-				JFlowRibbonBand band = new JFlowRibbonBand(TextUtils.getText("ribbon.band.font"), null, null);
+				JFlowRibbonBand band = new JFlowRibbonBand(TextUtils.removeTranslateComment(TextUtils.getText("ribbon.band.font")), null, null);
 				band.setExpandButtonKeyTip("FN");
 				band.setCollapsedStateKeyTip("ZF");
 

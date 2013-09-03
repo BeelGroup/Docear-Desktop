@@ -27,7 +27,7 @@ public class FlowRibbonBandContributorFactory implements IRibbonContributorFacto
 				if (parent == null) {
 					return;
 				}
-				band = new JFlowRibbonBand(TextUtils.getText("ribbon.band." + attributes.getProperty("name")), null);
+				band = new JFlowRibbonBand(TextUtils.removeTranslateComment(TextUtils.getText("ribbon.band." + attributes.getProperty("name"))), null);
 				RibbonBandResizePolicy policy = band.getCurrentResizePolicy();
 				band.setCurrentResizePolicy(policy);
 				// read policies and sub-contributions

@@ -31,7 +31,7 @@ public class FilterConditionsContributorFactory implements IRibbonContributorFac
 					return;
 				}				
 				
-				JCommandButton button = new JCommandButton(TextUtils.getText("FilterCondition"));
+				JCommandButton button = new JCommandButton(TextUtils.removeTranslateComment(TextUtils.getText("FilterCondition")));
 				button.setCommandButtonKind(CommandButtonKind.POPUP_ONLY);
 				button.setPopupCallback(new PopupPanelCallback() {
 					public JPopupPanel getPopupPanel(JCommandButton commandButton) {
