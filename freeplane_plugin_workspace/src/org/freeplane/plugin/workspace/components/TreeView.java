@@ -3,6 +3,7 @@ package org.freeplane.plugin.workspace.components;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseListener;
@@ -175,19 +176,29 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 	}
 
 	public void expandPath(final TreePath treePath) {
-		try {
-			SwingUtilities.invokeAndWait(new Runnable() {
-				public void run() {
-					try {
-						mTree.expandPath(treePath);
+		if(EventQueue.isDispatchThread()) {
+			try {
+				mTree.expandPath(treePath);
+			}
+			catch(Exception e) {
+				LogUtils.warn("TreeView.expandPath(): ", e);
+			}
+		}
+		else {
+			try {
+				SwingUtilities.invokeAndWait(new Runnable() {
+					public void run() {
+						try {
+							mTree.expandPath(treePath);
+						}
+						catch(Exception e) {
+							LogUtils.warn("TreeView.expandPath(): ", e);
+						}
 					}
-					catch(Exception e) {
-						LogUtils.warn("TreeView.expandPath(): ", e);
-					}
-				}
-			});
-		} catch (Exception e) {
-			LogUtils.warn(e);
+				});
+			} catch (Exception e) {
+				LogUtils.warn(e);
+			}
 		}
 	}
 
