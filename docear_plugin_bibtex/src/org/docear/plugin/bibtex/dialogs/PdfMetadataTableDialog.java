@@ -5,9 +5,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
 import java.io.StringReader;
-import java.io.StringWriter;
 import java.nio.CharBuffer;
 import java.util.Collection;
 import java.util.Iterator;
@@ -28,7 +26,6 @@ import net.sf.jabref.export.ExportFormats;
 import net.sf.jabref.export.layout.LayoutHelper;
 
 import org.docear.plugin.bibtex.ReferencesController;
-import org.docear.plugin.bibtex.jabref.JabrefWrapper;
 import org.freeplane.core.util.TextUtils;
 
 import com.jgoodies.forms.factories.FormFactory;

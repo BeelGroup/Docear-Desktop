@@ -1,7 +1,5 @@
 package org.docear.plugin.bibtex.listeners;
 
-import java.awt.Component;
-import java.awt.KeyboardFocusManager;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.TreeMap;

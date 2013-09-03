@@ -1,7 +1,5 @@
 package org.docear.plugin.bibtex;
 
-import java.awt.KeyboardFocusManager;
-
 import javax.swing.SwingUtilities;
 
 import net.sf.jabref.gui.MainTable;

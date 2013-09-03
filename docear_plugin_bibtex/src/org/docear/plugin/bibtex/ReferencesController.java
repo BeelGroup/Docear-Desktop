@@ -66,7 +66,6 @@ import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.docear.plugin.core.workspace.model.IDocearProjectListener;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
 import org.docear.plugin.pdfutilities.map.MapConverter;
-import org.docear.plugin.pdfutilities.util.MonitoringUtils;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.IKeyStrokeProcessor;
@@ -86,7 +85,6 @@ import org.freeplane.features.attribute.AttributeController;
 import org.freeplane.features.icon.IStateIconProvider;
 import org.freeplane.features.icon.IconController;
 import org.freeplane.features.icon.UIIcon;
-import org.freeplane.features.link.LinkController.LinkType;
 import org.freeplane.features.map.INodeView;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
@@ -113,6 +111,7 @@ import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 public class ReferencesController extends ALanguageController implements IDocearEventListener {
 	
 	private PropertyChangeListener iconChangeListener;
+	private static final Icon attributesIcon = new ImageIcon(ReferencesController.class.getResource("/images/references_small.png"));
 	
 	//mapModel with reference which is currently changed
 	private MapModel inChange = null;
@@ -188,7 +187,7 @@ public class ReferencesController extends ALanguageController implements IDocear
 		for (INodeView view : node.getViewers()) {
 			if(view instanceof NodeView) {
 				if (jabRefAttributes.getBibtexKey(node) != null) {
-					Icon attributesIcon = new ImageIcon(ReferencesController.class.getResource("/images/references_small.png"));				
+//					Icon attributesIcon = new ImageIcon(ReferencesController.class.getResource("/images/references_small.png"));				
 					((NodeView)view).getMainView().addPropertyChangeListener("icon", getIconChangeListener());
 				}
 				
@@ -204,8 +203,8 @@ public class ReferencesController extends ALanguageController implements IDocear
 					if(evt.getSource() instanceof MainView) {
 						final MainView view = (MainView)evt.getSource();
 						MultipleImage icon = (MultipleImage) view.getIcon();
-    					if(icon != null) {    						
-    						Icon attributesIcon = new ImageIcon(ReferencesController.class.getResource("/images/references_small.png"));
+    					if(icon != null) {
+    						
     						if(attributesIcon !=  null) {
     							icon.addOrReplaceIcon(AttributeController.attributeIcon.getIcon(), attributesIcon);
     						}
