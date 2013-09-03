@@ -220,7 +220,7 @@ public class DocearProjectLoader extends ProjectLoader {
 		project.getModel().addNodeTo(trashNode, libNode);
 		
 		// expand library node by default
-		WorkspaceController.getCurrentModeExtension().getView().expandPath(libNode.getTreePath());
+		//WorkspaceController.getCurrentModeExtension().getView().expandPath(libNode.getTreePath());
 		
 		FolderTypeLiteratureRepositoryNode litRepoNode = new FolderTypeLiteratureRepositoryNode();
 		litRepoNode.setSystem(true);		
@@ -423,7 +423,7 @@ public class DocearProjectLoader extends ProjectLoader {
 					project.addExtension(FolderTypeLiteratureRepositoryNode.class, (IWorkspaceProjectExtension) node);
 				}
 				else if(node instanceof LinkTypeIncomingNode) {
-					WorkspaceController.getCurrentModeExtension().getView().expandPath(node.getParent().getTreePath());
+					//WorkspaceController.getCurrentModeExtension().getView().expandPath(node.getParent().getTreePath());
 				}
 			}
 		}

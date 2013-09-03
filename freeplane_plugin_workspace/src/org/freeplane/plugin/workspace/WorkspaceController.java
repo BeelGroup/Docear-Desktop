@@ -332,7 +332,13 @@ public final class WorkspaceController implements IExtension {
 		if(projectID == null) {
 			return null;
 		}
-		return getCurrentModeExtension().getModel().getCachedProjectByID(projectID);
+		try {
+			return getCurrentModeExtension().getModel().getCachedProjectByID(projectID);
+		}
+		catch (Exception e) {
+			LogUtils.info("Exception in org.freeplane.plugin.workspace.WorkspaceController.getCachedProjectByID(projectID): "+ e.getMessage());
+			return null;
+		}
 	}
 
 	public static void save() {

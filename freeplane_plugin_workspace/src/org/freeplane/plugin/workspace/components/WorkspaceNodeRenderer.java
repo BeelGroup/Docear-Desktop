@@ -12,6 +12,7 @@ import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
+import org.freeplane.core.util.LogUtils;
 import org.freeplane.plugin.workspace.dnd.DnDController;
 import org.freeplane.plugin.workspace.dnd.IWorspaceClipboardOwner;
 import org.freeplane.plugin.workspace.io.IFileSystemRepresentation;
@@ -72,7 +73,12 @@ public class WorkspaceNodeRenderer extends DefaultTreeCellRenderer {
 
 	private void setToolTip(DefaultTreeCellRenderer renderer, AWorkspaceTreeNode node) {
 		if(node instanceof IFileSystemRepresentation) {
-			renderer.setToolTipText(((IFileSystemRepresentation) node).getFile().getPath());
+			try {
+				renderer.setToolTipText(((IFileSystemRepresentation) node).getFile().getPath());
+			}
+			catch (Exception e) {
+				LogUtils.warn(e);
+			}
 		}
 	}
 

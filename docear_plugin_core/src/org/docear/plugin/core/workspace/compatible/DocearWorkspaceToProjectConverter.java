@@ -373,7 +373,7 @@ public class DocearWorkspaceToProjectConverter {
 					node.getChildAt(0).refresh();
 				}
 				else if(node instanceof FolderTypeLibraryNode) {
-					WorkspaceController.getCurrentModeExtension().getView().expandPath(node.getTreePath());
+					//WorkspaceController.getCurrentModeExtension().getView().expandPath(node.getTreePath());
 				}
 			}
 		}

@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseListener;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -175,16 +176,20 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 	}
 
 	public void expandPath(final TreePath treePath) {
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					mTree.expandPath(treePath);
+		try {
+			SwingUtilities.invokeAndWait(new Runnable() {
+				public void run() {
+					try {
+						mTree.expandPath(treePath);
+					}
+					catch(Exception e) {
+						LogUtils.warn("TreeView.expandPath(): ", e);
+					}
 				}
-				catch(Exception e) {
-					LogUtils.warn("TreeView.expandPath(): " + e.getMessage());
-				}
-			}
-		});
+			});
+		} catch (Exception e) {
+			LogUtils.warn(e);
+		}
 	}
 
 	public void collapsePath(TreePath treePath) {
