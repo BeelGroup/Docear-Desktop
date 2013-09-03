@@ -695,6 +695,7 @@ public class CoreConfiguration extends ALanguageController {
 			resController.setProperty("save_folding", "always_save_folding");
 			resController.setProperty("leftToolbarVisible", "false");
 			resController.setProperty("styleScrollPaneVisible", "true");
+			resController.setProperty("language", "en");
 			resController.setProperty(DocearController.DOCEAR_FIRST_RUN_PROPERTY, true);
 		}
 		WorkspaceController.addAction(new DocearRenameAction());
