@@ -508,6 +508,9 @@ abstract public class FrameController implements ViewController {
 	}
 
 	public String completeVisiblePropertyKey(final JComponent toolBar) {
+		if(toolBar == null) {
+			return null;
+		}
 		final Object key = toolBar.getClientProperty(VISIBLE_PROPERTY_KEY);
 		if (key == null) {
 			return null;
