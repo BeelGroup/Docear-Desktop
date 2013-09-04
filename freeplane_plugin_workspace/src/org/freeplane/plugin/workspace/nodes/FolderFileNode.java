@@ -92,7 +92,7 @@ public class FolderFileNode extends DefaultFileNode implements TreeExpansionList
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			LogUtils.warn("Exception in org.freeplane.plugin.workspace.nodes.FolderFileNode.refresh(): "+ e.getMessage());
 		}
 		finally {
 			inRefresh = false;

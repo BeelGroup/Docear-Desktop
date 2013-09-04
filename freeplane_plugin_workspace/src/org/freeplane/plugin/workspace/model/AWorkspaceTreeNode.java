@@ -243,8 +243,9 @@ public abstract class AWorkspaceTreeNode implements Cloneable, TreeNode, Destruc
 	}
 	
 	public WorkspaceTreeModel getModel() {
-		if(this.treeModel == null && getParent() != null) {
-			return getParent().getModel();
+		AWorkspaceTreeNode p = getParent();
+		if(this.treeModel == null && p != null) {
+			return p.getModel();
 		}
 		return this.treeModel;
 	}
