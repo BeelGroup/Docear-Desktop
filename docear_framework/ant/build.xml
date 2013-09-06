@@ -162,11 +162,11 @@
 		<mkdir dir="${build}" />
 		<copy todir="${build}">
 			<fileset dir="${script}" />
-			<mapper type="regexp" from="(.*)freeplane(.*)(\.bat|\.sh)" to="\1${ApplicationNameToLowerCase}\2\3" />
+			<mapper type="regexp" from="(.*)${ApplicationNameToLowerCase}(.*)(\.bat|\.sh)" to="\1${ApplicationNameToLowerCase}\2\3" />
 		</copy>
 		<copy todir="${build}">
 			<fileset dir="${script}" />
-			<mapper type="regexp" from="(.*)freeplane(.*)(\.exe)" to="\1${ApplicationNameToLowerCase}\2\3" />
+			<mapper type="regexp" from="(.*)${ApplicationNameToLowerCase}(.*)(\.exe)" to="\1${ApplicationNameToLowerCase}\2\3" />
 		</copy>
 		<copy todir="${build}">
 			<fileset dir="${script}" />
