@@ -6,6 +6,8 @@
 				<uri name="docear.service.help" label="docear.service.help.label"
 					uri="http://www.docear.org/support/user-manual/#web_service" />
 				<string name="docear.service.connect.username" enabled="false" />
+				<action name="docear.action.user.services" />
+				<action name="docear.action.user.login" />
 				<!-- action name="docear.clear.user_data" /-->
 			</separator>
 			<separator name="docear_options">
@@ -13,9 +15,6 @@
 					uri="http://www.docear.org/support/user-manual/#web_service_options" />
 				<!-- boolean name="docear_allow_usage_mining" /> 
 				<boolean name="docear_allow_information_retrieval" / -->
-			</separator>
-			<separator name="account_options">
-				<action name="docear.action.user.services" />
 			</separator>
 			<separator name="docear.update_checker">
 				<combo name="docear.update_checker.options">
