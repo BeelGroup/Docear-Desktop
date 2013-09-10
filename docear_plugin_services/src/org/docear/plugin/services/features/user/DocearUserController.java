@@ -9,6 +9,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.event.DocearEvent;
 import org.docear.plugin.core.event.IDocearEventListener;
+import org.docear.plugin.core.logging.DocearLogger;
 import org.docear.plugin.services.ADocearServiceFeature;
 import org.docear.plugin.services.DocearServiceException;
 import org.docear.plugin.services.ServiceController;
@@ -158,7 +159,8 @@ public class DocearUserController extends ADocearServiceFeature {
 
 			public void handleEvent(DocearEvent event) {
 				if(event.getEventObject() instanceof LoadWorkspaceEvent) {
-					((Runnable) event.getEventObject()).run();
+					DocearController.getController().getEventQueue().invoke((Runnable) event.getEventObject());
+					//((Runnable) event.getEventObject()).run();
 				}
 				else if (event.getSource().equals(connectionBar) && WorkspaceDocearServiceConnectionBar.ACTION_COMMAND_TOGGLE_CONNECTION_STATE.equals(event.getEventObject())) {
 					DocearUser user = getActiveUser();
@@ -185,7 +187,7 @@ public class DocearUserController extends ADocearServiceFeature {
 						try {
 							ServiceController.getFeature(DocearWorkspaceSettings.class).loadSettings(user);
 						} catch (IOException e) {
-							LogUtils.severe("Exception in org.docear.plugin.services.features.user.DocearUserController.loadUser(name):"+e.getMessage());
+							DocearLogger.warn(e);
 						}
 						if(!loginUser(user) && user.isValid()) {
 							//onlineCheck(user);

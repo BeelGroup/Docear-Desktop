@@ -164,6 +164,7 @@ public class DocearWorkspaceSettings extends ADocearServiceFeature implements IW
 			properties = new Properties();
 			in = new FileInputStream(settingsFile);
 			properties.load(in);
+			loadUser(user);
 		}
 		catch (final Exception ex) {
 			LogUtils.info("Workspace settings not found, creating new default settings");
@@ -172,8 +173,6 @@ public class DocearWorkspaceSettings extends ADocearServiceFeature implements IW
 		finally {
 			FileUtils.silentlyClose(in);
 		}
-		loadUser(user);
-		
 	}
 	
 	public void store(DocearUser user) throws IOException {
@@ -226,9 +225,9 @@ public class DocearWorkspaceSettings extends ADocearServiceFeature implements IW
 
 	public String getProperty(String key, String defaultValue) {
 		String value = properties.getProperty(key);
-		if(value == null && wrappedHandler != null) {
-			value = wrappedHandler.getProperty(key, defaultValue);
-		}
+//		if(value == null && wrappedHandler != null) {
+//			value = wrappedHandler.getProperty(key, defaultValue);
+//		}
 		if(value == null) {
 			return defaultValue;
 		}
