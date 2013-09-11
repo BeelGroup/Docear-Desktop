@@ -446,6 +446,7 @@
 					<include name="freeplane_mac/**" />
 					<include name="freeplane_framework/**" />
 					<include name="freeplane_devresources/**" />
+                    <include name="docear_plugin*/**" />
 					<include name="JOrtho_0.4_freeplane/**" />
 					<include name="build.xml" />
 					<exclude name=".*/**" />
