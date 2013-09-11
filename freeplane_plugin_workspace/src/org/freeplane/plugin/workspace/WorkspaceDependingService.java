@@ -30,11 +30,15 @@ public abstract class WorkspaceDependingService implements BundleActivator{
 	
 	protected abstract Collection<IWorkspaceDependingControllerExtension> getControllerExtensions();
 	
+	protected abstract void setupDefaults(BundleContext context);
+	
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
 	 **********************************************************************************/
 	
 	public final void start(BundleContext context) throws Exception {
+		setupDefaults(context);
+		
 		final Hashtable<String, String[]> props = new Hashtable<String, String[]>();
 		props.put("dependsOn", new String[] { DEPENDS_ON }); //$NON-NLS-1$
 

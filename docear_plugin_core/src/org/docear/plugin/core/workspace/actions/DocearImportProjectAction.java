@@ -1,6 +1,7 @@
 package org.docear.plugin.core.workspace.actions;
 
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 
@@ -79,7 +80,7 @@ public class DocearImportProjectAction extends AWorkspaceAction {
 
 	public static void importProject(final AWorkspaceProject project) {
 		try {
-			SwingUtilities.invokeAndWait(new Runnable() {			
+			Runnable runnable = new Runnable() {			
 				@Override
 				public void run() {
 					if(project == null) {
@@ -122,7 +123,14 @@ public class DocearImportProjectAction extends AWorkspaceAction {
 					}
 				}
 				}
-			});
+			};
+			
+			if (EventQueue.isDispatchThread()) {
+				runnable.run();
+			}
+			else {
+				SwingUtilities.invokeAndWait(runnable);
+			}
 		}
 		catch (Exception e) {
 			LogUtils.warn(e);

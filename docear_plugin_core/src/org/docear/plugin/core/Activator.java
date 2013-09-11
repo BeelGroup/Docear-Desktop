@@ -210,4 +210,10 @@ public class Activator extends WorkspaceDependingService {
 
 	public void stop(BundleContext context) throws Exception {
 	}
+
+	@Override
+	protected void setupDefaults(BundleContext context) {
+		// TODO Auto-generated method stub
+		
+	}
 }

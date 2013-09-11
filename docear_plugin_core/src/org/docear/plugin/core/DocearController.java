@@ -23,8 +23,10 @@ import org.docear.plugin.core.features.DocearProgressObserver;
 import org.docear.plugin.core.io.IOTools;
 import org.docear.plugin.core.listeners.MapWithoutProjectHandler;
 import org.docear.plugin.core.logger.DocearEventLogger;
+import org.docear.plugin.core.logging.DocearLogger;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.freeplane.core.resources.ResourceController;
+import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.mode.Controller;
@@ -89,9 +91,25 @@ public class DocearController implements IDocearEventListener {
 		return eventQueue;
 	}
 	
-	public boolean isLicenseDialogNecessary() {		
+	private boolean hasOutdatedConfigFiles() {
+		try {
+    		File file = new File(Compat.getApplicationUserDirectory());
+    		for (File dir : file.listFiles()) {
+    			if (dir.getName().equals("ribbons")) {
+    				return false;
+    			}
+    		}    		
+		}
+		catch (Exception e) {
+			DocearLogger.warn(e);
+		}
+		
+		return true;
+	}
+	
+	public boolean isLicenseDialogNecessary() {
 		int storedBuildNumber = Integer.parseInt(DocearController.getPropertiesController().getProperty(DOCEAR_VERSION_NUMBER, "0"));
-		if (storedBuildNumber == 0) {
+		if (storedBuildNumber == 0 || hasOutdatedConfigFiles()) {
 			DocearController.getPropertiesController().setProperty(DOCEAR_VERSION_NUMBER, ""+this.applicationBuildNumber);
 			return true;
 		}
