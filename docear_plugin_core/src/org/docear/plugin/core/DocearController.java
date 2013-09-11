@@ -91,7 +91,7 @@ public class DocearController implements IDocearEventListener {
 		return eventQueue;
 	}
 	
-	private boolean hasOutdatedConfigFiles() {
+	public boolean hasOutdatedConfigFiles() {
 		try {
     		File file = new File(Compat.getApplicationUserDirectory());
     		for (File dir : file.listFiles()) {

@@ -1219,6 +1219,10 @@ public class PdfUtilitiesController extends ALanguageController {
 		final URL defaults = this.getClass().getResource(ResourceController.PLUGIN_DEFAULTS_RESOURCE);
 		if (defaults == null) throw new RuntimeException("cannot open " + ResourceController.PLUGIN_DEFAULTS_RESOURCE); //$NON-NLS-1$
 		Controller.getCurrentController().getResourceController().addDefaults(defaults);
+		
+		if (DocearController.getController().hasOutdatedConfigFiles()) {
+			ResourceController.getResourceController().setProperty("docear_auto_monitoring", false);
+		}
 	}
 	
 	public String buildCommandString(File reader) {
