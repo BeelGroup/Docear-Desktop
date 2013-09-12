@@ -50,6 +50,7 @@ import org.docear.plugin.core.listeners.PropertyLoadListener;
 import org.docear.plugin.core.listeners.WorkspaceOpenDocumentListener;
 import org.docear.plugin.core.logger.DocearLogEvent;
 import org.docear.plugin.core.ui.OverlayViewport;
+import org.docear.plugin.core.ui.ribbons.DocearNodePrivacyContributorFactory;
 import org.docear.plugin.core.workspace.actions.DocearAddRepositoryPathAction;
 import org.docear.plugin.core.workspace.actions.DocearImportProjectAction;
 import org.docear.plugin.core.workspace.actions.DocearLibraryNewMindmap;
@@ -568,6 +569,7 @@ public class CoreConfiguration extends ALanguageController {
 			}
 		}
 		else {
+			modeController.getUserInputListenerFactory().getRibbonBuilder().registerContributorFactory("nodePrivacyActionContributor", new DocearNodePrivacyContributorFactory());
 			modeController.getUserInputListenerFactory().getRibbonBuilder().updateRibbon(DocearController.class.getResource("/xml/ribbons.xml"));
 		}
 		
