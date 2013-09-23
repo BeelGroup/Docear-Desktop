@@ -813,10 +813,9 @@ public class CoreConfiguration extends ALanguageController {
 			protected void initDefaults() {
 				super.initDefaults();
 				ResourceController.getResourceController().addPropertyChangeListener(new IFreeplanePropertyListener() {
-					
 					@Override
 					public void propertyChanged(String propertyName, String newValue, String oldValue) {
-						if(action.getPropertyName().equals(propertyName)) {
+						if(propertyName != null && propertyName.equals(action.getPropertyName())) {
 							fireCollapseStateChanged(null, !Boolean.parseBoolean(newValue));
 						}
 					}
