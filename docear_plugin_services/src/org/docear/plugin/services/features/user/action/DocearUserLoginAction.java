@@ -45,8 +45,11 @@ public class DocearUserLoginAction extends AWorkspaceAction {
 						user = wiz.getContext().get(DocearUser.class);
 					}
 					if(!user.equals(DocearUserController.getActiveUser())) {
+						DocearUser clonedUser = user.clone();
 						user.activate();
+						DocearUserController.getActiveUser().setAccessToken(clonedUser.getAccessToken());
 					}
+					
 					try {
 						WorkspaceController.getCurrentModeExtension().getView().refreshView();
 					}

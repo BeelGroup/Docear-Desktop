@@ -13,6 +13,7 @@ public class DocearUser implements IUserAccount, Cloneable {
 	public static final String SYNCHRONIZATION_PROPERTY = "SYNCHRONIZATION";
 	public static final String BACKUP_PROPERTY = "BACKUP";
 	public static final String COLLABORATION_PROPERTY = "COLLABORATION";
+	public static final String ACCESS_TOKEN_PROPERTY = "ACCESS_TOKEN";
 	public static final String TRANSMISSION_PROPERTY = "TRANSMISSION";
 	public static final String NEWSLETTER_PROPERTY = "NEWSLETTER";
 	public static final String IS_VALID_PROPERTY = "IS_VALID";
@@ -109,12 +110,15 @@ public class DocearUser implements IUserAccount, Cloneable {
 	}
 	
 	public void setAccessToken(String token) {
+		String oldValue = this.accessToken;
 		if(token == null || token.trim().isEmpty()) {
 			this.accessToken = null;
+			firePropertyChanged(ACCESS_TOKEN_PROPERTY, oldValue, accessToken);
 			setValid(false);
 		}
 		else {
 			this.accessToken = token;
+			firePropertyChanged(ACCESS_TOKEN_PROPERTY, oldValue, accessToken);
 			setOnline(true);
 			setValid(true);
 		}
