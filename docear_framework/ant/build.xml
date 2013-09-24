@@ -726,7 +726,7 @@
 		</checksum>
 	</target>
 	
-	<target name="docear-bin" depends="clean, git_version_info, binzip, srczip, javadoc">
+	<target name="docear-bin" depends="clean, git_version_info, binzip, srczip">
 		<copy file="${workspace}/freeplane/doc/history_en.txt" 
 			todir="${dist}" />
         <copy file="${build}/gitinfo.txt"
