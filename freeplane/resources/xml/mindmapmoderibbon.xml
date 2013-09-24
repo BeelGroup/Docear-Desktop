@@ -5,7 +5,6 @@
 			<ribbon_action action="EncryptedMap" mandatory="true"/>	
 			<separator />
 			<ribbon_action action="OpenAction" accelerator="control O" mandatory="true"/>
-			<ribbon_action action="OpenURLMapAction" mandatory="true"/>		
 			<separator />
 			<ribbon_action action="SaveAction" accelerator="control S" />
 			<ribbon_action action="SaveAsAction" accelerator="control shift S" />
