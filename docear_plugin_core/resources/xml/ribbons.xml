@@ -23,5 +23,10 @@
 	       <ribbon_action action="ToggleMapMaximizedAction" priority="medium" accelerator="TAB"/>
 		</ribbon_band>
 		</ribbon_task>
+		<ribbon_task name="tools_and_settings">
+            <ribbon_band name="tools_misc" resize_policies="Mirror">
+                <ribbon_contributor name="nodePrivacyActionContributor" />
+            </ribbon_band>
+        </ribbon_task>
 	</menu_category>
 </menu_structure>

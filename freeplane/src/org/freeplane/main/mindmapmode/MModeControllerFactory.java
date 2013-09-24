@@ -296,6 +296,9 @@ public class MModeControllerFactory {
 		});
 		try {
 			int width = Integer.parseInt(ResourceController.getResourceController().getProperty(TABBEDPANE_VIEW_WIDTH, "350"));
+			if(width <= 10) {
+				width = 350;
+			}
 			tabs.setPreferredSize(new Dimension(width, 40));
 		}
 		catch (Exception e) {

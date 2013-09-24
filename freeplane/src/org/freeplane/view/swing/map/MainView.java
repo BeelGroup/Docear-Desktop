@@ -397,7 +397,7 @@ public abstract class MainView extends ZoomableLabel {
 		final MapView mapView = (MapView) SwingUtilities.getAncestorOfClass(MapView.class, this);
 		final FreeplaneMenuBar freeplaneMenuBar = mapView.getModeController().getController().getViewController()
 		    .getFreeplaneMenuBar();
-		return !freeplaneMenuBar.isVisible()
+		return freeplaneMenuBar != null && !freeplaneMenuBar.isVisible()
 		        && freeplaneMenuBar.processKeyBinding(ks, e, JComponent.WHEN_IN_FOCUSED_WINDOW, pressed);
 	}
 

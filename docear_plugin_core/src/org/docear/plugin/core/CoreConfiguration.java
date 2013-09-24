@@ -50,6 +50,7 @@ import org.docear.plugin.core.listeners.PropertyLoadListener;
 import org.docear.plugin.core.listeners.WorkspaceOpenDocumentListener;
 import org.docear.plugin.core.logger.DocearLogEvent;
 import org.docear.plugin.core.ui.OverlayViewport;
+import org.docear.plugin.core.ui.ribbons.DocearNodePrivacyContributorFactory;
 import org.docear.plugin.core.workspace.actions.DocearAddRepositoryPathAction;
 import org.docear.plugin.core.workspace.actions.DocearImportProjectAction;
 import org.docear.plugin.core.workspace.actions.DocearLibraryNewMindmap;
@@ -568,6 +569,7 @@ public class CoreConfiguration extends ALanguageController {
 			}
 		}
 		else {
+			modeController.getUserInputListenerFactory().getRibbonBuilder().registerContributorFactory("nodePrivacyActionContributor", new DocearNodePrivacyContributorFactory());
 			modeController.getUserInputListenerFactory().getRibbonBuilder().updateRibbon(DocearController.class.getResource("/xml/ribbons.xml"));
 		}
 		
@@ -695,7 +697,7 @@ public class CoreConfiguration extends ALanguageController {
 			resController.setProperty("save_folding", "always_save_folding");
 			resController.setProperty("leftToolbarVisible", "false");
 			resController.setProperty("styleScrollPaneVisible", "true");
-			resController.setProperty("language", "en");
+			//resController.setProperty("language", "en");
 			resController.setProperty(DocearController.DOCEAR_FIRST_RUN_PROPERTY, true);
 		}
 		WorkspaceController.addAction(new DocearRenameAction());
@@ -811,10 +813,9 @@ public class CoreConfiguration extends ALanguageController {
 			protected void initDefaults() {
 				super.initDefaults();
 				ResourceController.getResourceController().addPropertyChangeListener(new IFreeplanePropertyListener() {
-					
 					@Override
 					public void propertyChanged(String propertyName, String newValue, String oldValue) {
-						if(action.getPropertyName().equals(propertyName)) {
+						if(propertyName != null && propertyName.equals(action.getPropertyName())) {
 							fireCollapseStateChanged(null, !Boolean.parseBoolean(newValue));
 						}
 					}

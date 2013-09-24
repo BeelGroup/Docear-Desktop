@@ -238,6 +238,14 @@ public class DocearUserController extends ADocearServiceFeature {
 					else if (DocearUser.IS_ONLINE_PROPERTY.equals(evt.getPropertyName())) {
 						connectionBar.setConnectionState(CONNECTION_STATE.CONNECTED);
 					}
+					else if (DocearUser.ACCESS_TOKEN_PROPERTY.equals(evt.getPropertyName())) {
+						if(evt.getNewValue() != null) {
+							ServiceController.getConnectionController().setDefaultHeader("accessToken", String.valueOf(evt.getNewValue()));
+						}
+						else {
+							ServiceController.getConnectionController().setDefaultHeader("accessToken", null);
+						}
+					}
 					adjustInfoBarConnectionState(user);
 				}
 			};
