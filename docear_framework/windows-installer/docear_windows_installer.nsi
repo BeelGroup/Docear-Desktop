@@ -108,6 +108,7 @@ ShowUninstDetails show
 
 # Installer sections
 Section -Main SEC0000
+    RmDir /r $INSTDIR
     call DownloadAndInstallJREIfNecessary
     ${If} ${RunningX64}
         SetRegView 64
@@ -180,24 +181,20 @@ done${UNSECTION_ID}:
 
 # Uninstaller sections
 Section /o -un.Main UNSEC0000
-    RmDir /r /REBOOTOK $APPDATA\Docear
+    RmDir /r /REBOOTOK $PROFILE\.docear
     SetShellVarContext all
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Docear Website.URL"
     Delete /REBOOTOK $SMPROGRAMS\$StartMenuGroup\Docear.lnk
     Delete /REBOOTOK $DESKTOP\Docear.lnk
     Delete /REBOOTOK "$DESKTOP\Docear (compatibility mode).lnk"
-    RmDir /r /REBOOTOK $INSTDIR
-    RmDir /r /REBOOTOK $INSTDIR
-    RmDir /r /REBOOTOK $INSTDIR
-    RmDir /r /REBOOTOK $INSTDIR
-    RmDir /r /REBOOTOK $INSTDIR
     Delete /REBOOTOK $INSTDIR\props.xargs
     Delete /REBOOTOK $INSTDIR\init.xargs
     Delete /REBOOTOK $INSTDIR\docear.bat
     Delete /REBOOTOK $INSTDIR\docear.sh
     Delete /REBOOTOK $INSTDIR\docear.png
     Delete /REBOOTOK $INSTDIR\framework.jar
-    Delete /REBOOTOK $INSTDIR\docear.exe    
+    Delete /REBOOTOK $INSTDIR\docear.exe 
+    RmDir /r /REBOOTOK $INSTDIR   
     DeleteRegValue HKLM "${REGKEY}\Components" Main
     ${unregisterExtension} ".mm" "Docear Mindmap"
 SectionEnd
