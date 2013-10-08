@@ -461,10 +461,7 @@ public class RegistrationPagePanel extends AWizardPage {
 		if(getPassword() == null && getComparePassword() == null) {
 			return true;
 		}
-		else if (getPassword() == null || getComparePassword() == null) {
-			return false;
-		}
-		else if(getParent() != null && getPassword().equals(getComparePassword())) {	
+		else if(getPassword() != null && getPassword().equals(getComparePassword())) {	
 			return true;
 		}
 		//mark both input fields with warning and tooltip text
