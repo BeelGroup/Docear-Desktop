@@ -461,6 +461,9 @@ public class RegistrationPagePanel extends AWizardPage {
 		if(getPassword() == null && getComparePassword() == null) {
 			return true;
 		}
+		else if (getPassword() == null || getComparePassword() == null) {
+			return false;
+		}
 		else if(getParent() != null && getPassword().equals(getComparePassword())) {	
 			return true;
 		}
