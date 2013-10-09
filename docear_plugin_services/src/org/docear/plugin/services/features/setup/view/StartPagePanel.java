@@ -89,10 +89,8 @@ public class StartPagePanel extends AWizardPage {
 		rdbtnRegister.setBackground(Color.WHITE);
 		rdbtnRegister.addChangeListener(new ChangeListener() {			
 			public void stateChanged(ChangeEvent e) {
-				if (context != null && isRegistrationOption()) {
-					enableButtons(context);
-					context.set(START_OPTION.class, START_OPTION.REGISTRATION);
-				}
+				updateOption();
+				enableButtons();
 			}
 		});
 		add(rdbtnRegister, "4, 4, 7, 1");
@@ -150,10 +148,8 @@ public class StartPagePanel extends AWizardPage {
 		rdbtnLogin.setBackground(Color.WHITE);
 		rdbtnLogin.addChangeListener(new ChangeListener() {			
 			public void stateChanged(ChangeEvent e) {
-				if (context != null && isLoginOption()) {
-					enableButtons(context);
-					context.set(START_OPTION.class, START_OPTION.LOGIN);
-				}
+				updateOption();
+				enableButtons();
 			}
 		});
 		add(rdbtnLogin, "4, 9");
@@ -180,7 +176,7 @@ public class StartPagePanel extends AWizardPage {
 						context.set(DocearUser.class, settings);
 					}
 					settings.setUsername(getUsername());
-					enableButtons(context);
+					enableButtons();
 				}
 			}
 			
@@ -206,7 +202,7 @@ public class StartPagePanel extends AWizardPage {
 						context.set(DocearUser.class, settings);
 					}
 					settings.setPassword(getPassword());
-					enableButtons(context);
+					enableButtons();
 				}
 			}
 			
@@ -266,15 +262,28 @@ public class StartPagePanel extends AWizardPage {
 		
 	}
 	
-	private void enableButtons(WizardContext ctxt) {
-		DocearUser settings = context.get(DocearUser.class);
-		if(isLoginOption() && (getUsername() == null || (getPassword() == null && (settings == null || settings.getAccessToken() == null))) ) {
-			ctxt.getNextButton().setEnabled(false);
-			getRootPane().setDefaultButton((JButton) ctxt.getBackButton());
+	private void updateOption() {
+		if (context != null) {
+			if(isRegistrationOption()) {
+				context.set(START_OPTION.class, START_OPTION.REGISTRATION);
+			}
+			else if (isLoginOption()) {
+				context.set(START_OPTION.class, START_OPTION.LOGIN);
+			}
 		}
-		else {
-			ctxt.getNextButton().setEnabled(true);
-			getRootPane().setDefaultButton((JButton) ctxt.getNextButton());
+	}
+	
+	private void enableButtons() {
+		if(context != null) {
+			DocearUser settings = context.get(DocearUser.class);
+			if(isLoginOption() && (getUsername() == null || (getPassword() == null && (settings == null || settings.getAccessToken() == null))) ) {
+				context.getNextButton().setEnabled(false);
+				getRootPane().setDefaultButton((JButton) context.getBackButton());
+			}
+			else {
+				context.getNextButton().setEnabled(true);
+				getRootPane().setDefaultButton((JButton) context.getNextButton());
+			}
 		}
 	}
 	
@@ -302,7 +311,8 @@ public class StartPagePanel extends AWizardPage {
 //			user.setAccessToken(token);
 //		}
 		prepareFields(user);
-		enableButtons(context);
+		updateOption();
+		enableButtons();
 	}
 
 }
