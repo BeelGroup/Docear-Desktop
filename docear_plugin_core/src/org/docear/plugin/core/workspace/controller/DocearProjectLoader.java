@@ -32,12 +32,14 @@ import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.link.LinkController;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
+import org.freeplane.plugin.workspace.creator.FolderTypePhysicalCreator;
 import org.freeplane.plugin.workspace.model.AWorkspaceNodeCreator;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.IResultProcessor;
 import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.model.project.IWorkspaceProjectExtension;
 import org.freeplane.plugin.workspace.model.project.ProjectLoader;
+import org.freeplane.plugin.workspace.nodes.FolderLinkNode;
 import org.freeplane.plugin.workspace.nodes.FolderTypeMyFilesNode;
 import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
 import org.freeplane.plugin.workspace.nodes.ProjectRootNode;
@@ -183,6 +185,14 @@ public class DocearProjectLoader extends ProjectLoader {
 		libNode.setName(TextUtils.getText(libNode.getClass().getName().toLowerCase(Locale.ENGLISH)+".label" ));
 		project.getModel().addNodeTo(libNode, root);
 		
+		FolderLinkNode draftsNode = new FolderLinkNode();
+		File draftsFile = new File(URIUtils.getAbsoluteFile(project.getProjectLibraryPath()).getParentFile(), "My Drafts");
+		draftsFile.mkdirs();
+		URI draftsPath = project.getRelativeURI(draftsFile.toURI());
+		draftsNode.setPath(draftsPath);
+		draftsNode.setName(TextUtils.getText(draftsNode.getClass().getName().toLowerCase(Locale.ENGLISH)+".drafts.label" ));
+		project.getModel().addNodeTo(draftsNode, root);
+		
 		URI libPath = project.getRelativeURI(project.getProjectLibraryPath());
 		
 //		LinkTypeIncomingNode incomNode = new LinkTypeIncomingNode();
@@ -310,7 +320,8 @@ public class DocearProjectLoader extends ProjectLoader {
 			createAndCopy(bibPath, "/demo/docear_example.bib", true, replaceMapping);
 		}
 		
-		createAndCopy(new File(defaultFilesPath, "My New Paper.mm"), "/demo/docear_example_project/My New Paper.mm", replaceMapping);
+		File draftsFile = new File(URIUtils.getAbsoluteFile(project.getProjectLibraryPath()).getParentFile(), "My Drafts");
+		createAndCopy(new File(draftsFile, "My New Paper.mm"), "/demo/docear_example_project/My New Paper.mm", replaceMapping);
 		
 		createAndCopy(new File(repoPath, "Academic Search Engine Optimization (ASEO) -- Optimizing Scholarly Literature for Google Scholar and Co.pdf"), "/demo/docear_example_pdfs/Academic Search Engine Optimization (ASEO) -- Optimizing Scholarly Literature for Google Scholar and Co.pdf");
 		createAndCopy(new File(repoPath, "Academic search engine spam and Google Scholars resilience against it.pdf"), "/demo/docear_example_pdfs/Academic search engine spam and Google Scholars resilience against it.pdf");
