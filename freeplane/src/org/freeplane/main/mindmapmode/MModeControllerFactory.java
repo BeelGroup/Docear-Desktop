@@ -196,6 +196,19 @@ public class MModeControllerFactory {
 //		this.controller = controller;
 		createStandardControllers();
 		createAddIns();
+		File file = new File(Compat.getApplicationUserDirectory(), "mindmapmoderibbon.xml");		
+		if (file.exists()) {
+			LogUtils.info("using alternative ribbon configuration file: "+file.getAbsolutePath());
+			try {				
+				modeController.getUserInputListenerFactory().getRibbonBuilder().updateRibbon(file.toURI().toURL());
+			}
+			catch (MalformedURLException e) {				
+				LogUtils.severe("MModeControllerFactory.createStandardControllers(): "+e.getMessage());
+			}
+		}
+		else {
+			modeController.getUserInputListenerFactory().getRibbonBuilder().updateRibbon(ResourceController.getResourceController().getResource("/xml/mindmapmoderibbon.xml"));
+		}
 		return modeController;
 	}
 
@@ -335,19 +348,7 @@ public class MModeControllerFactory {
 		final MToolbarContributor menuContributor = new MToolbarContributor(uiFactory);
 		modeController.addExtension(MUIFactory.class, uiFactory);
 		modeController.addMenuContributor(menuContributor);
-		File file = new File(Compat.getApplicationUserDirectory(), "mindmapmoderibbon.xml");		
-		if (file.exists()) {
-			LogUtils.info("using alternative ribbon configuration file: "+file.getAbsolutePath());
-			try {				
-				userInputListenerFactory.getRibbonBuilder().updateRibbon(file.toURI().toURL());
-			}
-			catch (MalformedURLException e) {				
-				LogUtils.severe("MModeControllerFactory.createStandardControllers(): "+e.getMessage());
-			}
-		}
-		else {
-			userInputListenerFactory.getRibbonBuilder().updateRibbon(ResourceController.getResourceController().getResource("/xml/mindmapmoderibbon.xml"));
-		}
+		
 		
 		IconController.getController(modeController).addStateIconProvider(new IStateIconProvider() {			
 			public UIIcon getStateIcon(NodeModel node) {
