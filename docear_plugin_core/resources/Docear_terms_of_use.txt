@@ -18,14 +18,13 @@ Sec. 2 Provision of Storage Space and Granting Access to Contents
 
 Sec. 3 Use of the Contents by Docear
 ------------------------------------
-(1) Docear is entitled to analyse and evaluate the user behaviour and the Contents saved on the Docear server in order to improve the Software and its functions and to develop new applications for the management of literature and other scientific resources. Detailed information as to the scope of use of the Contents by Docear is retrievable at http://www.docear.org/give-back/share-your-data/.
+(1) If the user explicitly agrees or uses certain functionalities of the Software, Docear is entitled to analyse and evaluate the user behaviour and the Contents saved on the Docear server in order to improve the Software and its functions and to develop new applications for the management of literature and other scientific resources. Detailed information as to the scope of use of the Contents by Docear is retrievable at http://www.docear.org/give-back/share-your-data/.
 
-(2) To the extent required for the purpose set forth in Sec. 3(1), the user shall grant Docear the gratuitous, non-exclusive, transferable right to use the Contents, which he saved on the Docear server, without limitation in time or place.
+(2) To the extent required for the purpose set forth in Sec. 3(1) – and only for that extent –, the user shall grant Docear the gratuitous, non-exclusive, transferable right to use the Contents, which he saved on the Docear server, without limitation in time or place.
 In particular, Docear is entitled
-	- to copy the respective Contents, to save the respective Contents in electronic databases and to make these Contents publicly available 
-	- to transfer the rights granted by virtue of these terms of use to third parties and to grant third parties – even in return for payment – rights to use the respective Contents, without a specific consent to this being required.
-(3) If the user uses only the basic functions of the Software without being registered, Docear shall not be entitled to analyse and use the respective Contents to the aforementioned extent. In this case Docear shall only be entitled to analyse the use made of the Software by the user for simple, anonymous user statistics (see http://www.docear.org/give-back/share-your-data/).
-
+    - to copy the respective Contents, to save the respective Contents in electronic databases and to make fragments of these Contents publicly available, if the user explicitly agreed to it or used functions as specified at http://www.docear.org/give-back/share-your-data/. Under no circumstances is Docear entitled to make entire Contents publicly available.
+    - to transfer the rights granted by virtue of these terms of use to third parties and to grant third parties  rights to use the respective Contents in the same way as Docear may use them, without a specific consent to this being required.
+(3) If the user uses only the basic functions of the Software without being registered, Docear shall not be entitled to analyse and use the respective Contents to the aforementioned extent. 
 
 Sec. 4 Obligations of Users and Blocking 
 ----------------------------------------

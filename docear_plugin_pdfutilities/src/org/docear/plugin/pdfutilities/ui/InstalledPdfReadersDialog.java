@@ -119,7 +119,7 @@ public class InstalledPdfReadersDialog extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				if ("open_url".equals(e.getActionCommand())) {
 					try {
-						Controller.getCurrentController().getViewController().openDocument(URI.create("http://www.docear.org/support/user-manual/#compatible_pdf_readers"));
+						Controller.getCurrentController().getViewController().openDocument(URI.create("http://www.docear.org/support/user-manual/#pdf_editors"));
 					}
 					catch (IOException ex) {						
 						LogUtils.warn(ex);
@@ -127,7 +127,7 @@ public class InstalledPdfReadersDialog extends JPanel {
 				}
 				else if ("preview_url".equals(e.getActionCommand())) {
 					try {
-						Controller.getCurrentController().getViewController().openDocument(URI.create("http://www.docear.org/faqs/why-does-docear-not-support-preview-and-skim/"));
+						Controller.getCurrentController().getViewController().openDocument(URI.create("http://www.docear.org/support/user-manual/#Preview_Mac_OS"));
 					}
 					catch (IOException ex) {						
 						LogUtils.warn(ex);
@@ -144,7 +144,7 @@ public class InstalledPdfReadersDialog extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				if ("open_url".equals(e.getActionCommand())) {
 					try {
-						Controller.getCurrentController().getViewController().openDocument(URI.create("http://www.docear.org/support/user-manual/#compatible_pdf_readers"));
+						Controller.getCurrentController().getViewController().openDocument(URI.create("http://www.docear.org/support/user-manual/#pdf_editors"));
 					}
 					catch (IOException ex) {						
 						LogUtils.warn(ex);
