@@ -233,10 +233,10 @@ public class CreateProjectPagePanel extends AWizardPage {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					if("mendeley".equals(e.getActionCommand())) {
-							Controller.getCurrentController().getViewController().openDocument(URI.create("https://www.docear.org/support/user-manual/#Mendeley-2"));
+							Controller.getCurrentController().getViewController().openDocument(URI.create("http://www.docear.org/faqs/how-to-use-zotero-and-docear-at-the-same-time/"));
 					}
 					else if("zotero".equals(e.getActionCommand())) {
-						Controller.getCurrentController().getViewController().openDocument(URI.create("https://www.docear.org/support/user-manual/#Zotero"));
+						Controller.getCurrentController().getViewController().openDocument(URI.create("http://www.docear.org/faqs/how-to-use-zotero-and-docear-at-the-same-time/"));
 					}
 				} catch (IOException ex) {
 					LogUtils.warn("org.docear.plugin.core.ui.CreateProjectPagePanel.CreateProjectPagePanel()$ActionListener.actionPerformed(ActionEvent): "+ ex.getMessage());

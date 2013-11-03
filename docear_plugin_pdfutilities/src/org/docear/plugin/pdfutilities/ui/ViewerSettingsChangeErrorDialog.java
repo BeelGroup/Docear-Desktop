@@ -68,13 +68,13 @@ public class ViewerSettingsChangeErrorDialog extends JPanel {
 			
 			public void actionPerformed(ActionEvent e) {
 				if ("open_url".equals(e.getActionCommand())) {
-					String anchor = "#compatible_pdf_readers";
+					String anchor = "#PDF_Editors";
 					PdfReaderFileFilter readerFilter = new PdfReaderFileFilter();
 					if (readerFilter.isPdfXChange(readerCommand)) {
-						anchor = "#pdfxcv";
+						anchor = "#PDF-XChange_Viewer";
 					}
 					else if (readerFilter.isAcrobat(readerCommand)) {
-						anchor = "#acrobat";
+						anchor = "#Adobe_Acrobat";
 					}
 					try {
 						Controller.getCurrentController().getViewController().openDocument(URI.create("http://www.docear.org/support/user-manual/"+anchor));

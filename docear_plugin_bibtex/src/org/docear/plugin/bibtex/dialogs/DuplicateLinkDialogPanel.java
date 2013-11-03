@@ -111,7 +111,7 @@ public class DuplicateLinkDialogPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {				
 				if("open_url".equals(e.getActionCommand())) {
 					try {
-						Controller.getCurrentController().getViewController().openDocument(URI.create("http://www.docear.org/support/user-manual/#bibtex_duplicates_mendeley"));
+						Controller.getCurrentController().getViewController().openDocument(URI.create("http://www.docear.org/faqs/how-to-use-mendeley-together-with-docear/#mendeley_duplicate_bibtex_keys"));
 						
 						int choice = JOptionPane.showConfirmDialog(UITools.getFrame(), TextUtils.getText("duplicates_quit_docear"), TextUtils.getText("duplicates_quit_docear_title"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 						if (choice == JOptionPane.OK_OPTION) {

@@ -16,13 +16,13 @@ import java.util.Properties;
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JMenu;
+import javax.swing.JOptionPane;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOExceptionWithCause;
 import org.docear.plugin.core.actions.DocearAboutAction;
 import org.docear.plugin.core.actions.DocearOpenUrlAction;
 import org.docear.plugin.core.actions.DocearQuitAction;
@@ -303,13 +303,12 @@ public class CoreConfiguration extends ALanguageController {
 					}
 				}
 				
-				private void waiting(boolean waitFor, Process proc)
-						throws IOExceptionWithCause {
+				private void waiting(boolean waitFor, Process proc) throws IOException {
 					if(waitFor) {
 						try {
 							proc.waitFor();
 						} catch (InterruptedException e) {
-							throw new IOExceptionWithCause(e);
+							throw new IOException(e);
 						}
 					}
 				}
@@ -321,6 +320,7 @@ public class CoreConfiguration extends ALanguageController {
 
 	private void copyInfoIfNecessary() {	
 		File _welcomeFile = new File(URIUtils.getFile(WorkspaceController.getApplicationSettingsHome()), "docear-welcome.mm");
+		
 		if(!_welcomeFile.exists()) {
 			createAndCopy(_welcomeFile, "/conf/docear-welcome.mm");			
 		}
@@ -346,7 +346,7 @@ public class CoreConfiguration extends ALanguageController {
 		}
 		catch (IOException e) {
 			LogUtils.warn(e);
-		}	
+		}
 	}
 
 	/**
@@ -354,7 +354,16 @@ public class CoreConfiguration extends ALanguageController {
 	 * @throws IOException
 	 */
 	private void createFile(File file) throws IOException {
-		if(!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
+		File absolute = file.getAbsoluteFile();
+		if(file.getParentFile() == null) {
+			LogUtils.warn("missing parent directory for user.settings: "+file);
+			LogUtils.warn("user.settings home: "+WorkspaceController.getApplicationSettingsHome());
+			int option = JOptionPane.showConfirmDialog(null, "Your user settings directory has not been set or is set with the system root directory. \nThis might cause further issues. \n Do you want to continue?", "Settings home warning", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+			if(option == JOptionPane.NO_OPTION) {
+				System.exit(1);
+			}
+		}
+		else if(!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
 			return;
 		}
 		file.createNewFile();

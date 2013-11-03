@@ -300,8 +300,8 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 		}
 		if ((file != null) && (file.exists())) {
 			if (!isCompatibleToJabref(file)) {
-				JHyperlink hyperlink = new JHyperlink("http://www.docear.org/support/user-manual/#docear_and_mendeley ",
-						"http://www.docear.org/support/user-manual/#docear_and_mendeley");
+				JHyperlink hyperlink = new JHyperlink("http://www.docear.org/faqs/how-to-use-mendeley-together-with-docear/",
+						"http://www.docear.org/faqs/how-to-use-mendeley-together-with-docear/");
 				JPanel panel = new JPanel(new BorderLayout());
 				panel.add(new JLabel(TextUtils.getText("jabref_mendeley_incompatible_1")), BorderLayout.NORTH);
 				panel.add(hyperlink, BorderLayout.CENTER);
