@@ -91,7 +91,7 @@ public abstract class URIUtils {
 			}
 			try {
 				if(absoluteURI.getRawPath().startsWith("//")) {
-					new File("\\\\"+absoluteURI.normalize().getPath());
+					return new File("\\\\"+absoluteURI.normalize().getPath());
 				}
 				else {
 					return new File(absoluteURI.normalize());
