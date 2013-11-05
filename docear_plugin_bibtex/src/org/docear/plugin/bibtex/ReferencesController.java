@@ -90,6 +90,7 @@ import org.freeplane.features.map.MapModel;
 import org.freeplane.features.map.NodeModel;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.mode.ModeController;
+import org.freeplane.features.styles.MapStyle;
 import org.freeplane.features.ui.INodeViewLifeCycleListener;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
@@ -202,19 +203,23 @@ public class ReferencesController extends ALanguageController implements IDocear
 				public void propertyChange(PropertyChangeEvent evt) {
 					if(evt.getSource() instanceof MainView) {
 						final MainView view = (MainView)evt.getSource();
-						MultipleImage icon = (MultipleImage) view.getIcon();
-    					if(icon != null) {
-    						
-    						if(attributesIcon !=  null) {
-    							icon.addOrReplaceIcon(AttributeController.attributeIcon.getIcon(), attributesIcon);
-    						}
+						
+						final String showAttributeIcon = MapStyle.getController(modeController).getPropertySetDefault(view.getNodeView().getMap().getModel(), AttributeController.SHOW_ICON_FOR_ATTRIBUTES);
+						final boolean showIcon = Boolean.parseBoolean(showAttributeIcon);
+						if(showIcon) {
+							MultipleImage icon = (MultipleImage) view.getIcon();
+	    					if(icon != null) {
+	    						if(attributesIcon !=  null /*&& AttributeController.attributeIcon != null/**/) {
+	    							icon.addOrReplaceIcon(AttributeController.attributeIcon.getIcon(), attributesIcon);
+	    						}
+							}
+	    					SwingUtilities.invokeLater(new Runnable() {
+								public void run() {
+	    							view.removePropertyChangeListener("icon", iconChangeListener);
+	    							view.repaint();
+	    						}
+	    					});
 						}
-    					SwingUtilities.invokeLater(new Runnable() {
-							public void run() {
-    							view.removePropertyChangeListener("icon", iconChangeListener);
-    							view.repaint();
-    						}
-    					});
 					}
 					
 					
