@@ -58,7 +58,6 @@ import org.docear.plugin.core.event.IDocearEventListener;
 import org.docear.plugin.core.util.CompareVersion;
 import org.docear.plugin.core.util.DirectoryFileFilter;
 import org.docear.plugin.core.util.MapUtils;
-import org.docear.plugin.core.util.NodeUtilities;
 import org.docear.plugin.core.util.WinRegistry;
 import org.docear.plugin.pdfutilities.actions.AbstractMonitoringAction;
 import org.docear.plugin.pdfutilities.actions.AddMonitoringFolderAction;
@@ -346,6 +345,9 @@ public class PdfUtilitiesController extends ALanguageController {
 					if (s.startsWith("PDF-Viewer") || s.startsWith("PDF-XChange Viewer")) {
 						handle.setName("PDF-Viewer");
 					}
+					else if (s.startsWith("PDF-XChange Editor")) {
+						handle.setName("PDF-XChange Editor");
+					}
 					else if (s.startsWith("Foxit Reader")) {
 						handle.setName("Foxit Reader");
 					}
@@ -372,7 +374,9 @@ public class PdfUtilitiesController extends ALanguageController {
 				}
 				if(handle.isComplete()) {
 					if (handle.compare(viewers.get(handle.getName())) == CompareVersion.GREATER) {
-						viewers.put(handle.getName(),handle);
+						if(!Compat.isWindowsOS() || new File(handle.getExecFile()).exists()) {
+							viewers.put(handle.getName(),handle);
+						}
 					}
 				}
 			}
@@ -427,7 +431,9 @@ public class PdfUtilitiesController extends ALanguageController {
 								String installPath = line.substring(15, line.length() - 1);
 								handle.setExecFile(installPath);
 								handle.setVersion("0");
-								viewers.put(handle.getName(),handle);
+								if(!Compat.isWindowsOS() || new File(handle.getExecFile()).exists()) {
+									viewers.put(handle.getName(),handle);
+								}
 								break;
 							}
 						}
@@ -504,6 +510,7 @@ public class PdfUtilitiesController extends ALanguageController {
 		return handles;
 	}
 
+	@SuppressWarnings("unused")
 	private void getPdfViewersByExt() {
 		try {
 			//HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\.pdf\\(default)
@@ -1745,17 +1752,9 @@ public class PdfUtilitiesController extends ALanguageController {
 					
 					context.getBuilder().getMapChangeAdapter().addListener(new IChangeObserver() {
 						public void updateState(CurrentState state) {
-							boolean selected = true;
 							NodeModel node = state.get(NodeModel.class);
 							if(node != null) {
-    							int value = NodeUtilities.getAttributeIntValue(node, PdfUtilitiesController.MON_FLATTEN_DIRS);
-    							if(value == 0){
-    								selected = false;
-    							}
-    							
-    							flattenButton.getActionModel().setSelected(selected);
     							flattenButton.setEnabled(updateMonitoringFolderAction.isEnabled());
-    							
     							autoMonitoringButton.setEnabled(MonitoringUtils.isMonitoringNode(node));
     							subfoldersButton.setEnabled(MonitoringUtils.isMonitoringNode(node));
 							}
