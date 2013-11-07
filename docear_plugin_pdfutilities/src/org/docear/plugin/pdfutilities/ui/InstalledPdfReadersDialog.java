@@ -106,7 +106,7 @@ public class InstalledPdfReadersDialog extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				if ("open_url".equals(e.getActionCommand())) {
 					try {
-						Controller.getCurrentController().getViewController().openDocument(URI.create("http://www.tracker-software.com/product/pdf-xchange-viewer/"));
+						Controller.getCurrentController().getViewController().openDocument(URI.create("http://www.tracker-software.com/downloads/PDFXVwer.exe"));
 					}
 					catch (IOException ex) {						
 						LogUtils.warn(ex);
