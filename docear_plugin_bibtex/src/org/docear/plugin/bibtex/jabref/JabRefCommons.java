@@ -302,10 +302,15 @@ public abstract class JabRefCommons {
 	
 	private static List<BibtexEntry> readXmpEntries(String fileName) {
 		List<BibtexEntry> xmpEntriesInFile = null;
+		PrintStream err = System.err;
+		System.setErr(new PrintStream(new StringOutputStream()));
 		try {
 			xmpEntriesInFile = XMPUtil.readXMP(fileName);
 		} catch (Throwable e) {
 			LogUtils.warn("exception in JabRefCommons.readXmpEntries(): " + e.getMessage());
+		}
+		finally {
+			System.setErr(err);
 		}
 		return xmpEntriesInFile;
 	}
