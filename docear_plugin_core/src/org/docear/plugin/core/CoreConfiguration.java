@@ -354,7 +354,6 @@ public class CoreConfiguration extends ALanguageController {
 	 * @throws IOException
 	 */
 	private void createFile(File file) throws IOException {
-		File absolute = file.getAbsoluteFile();
 		if(file.getParentFile() == null) {
 			LogUtils.warn("missing parent directory for user.settings: "+file);
 			LogUtils.warn("user.settings home: "+WorkspaceController.getApplicationSettingsHome());

@@ -471,8 +471,10 @@ public class OneTouchCollapseResizer extends JResizer {
 	public void recalibrate() {
 		if(getClientProperty(ALREADY_IN_PAINT) == null) {
 			final JComponent parent = (JComponent) getParent();
-			parent.revalidate();
-			parent.repaint();
+			if(parent != null) {
+				parent.revalidate();
+				parent.repaint();
+			}
 		}
 	}
 }

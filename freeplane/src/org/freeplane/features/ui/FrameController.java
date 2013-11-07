@@ -63,12 +63,13 @@ import org.freeplane.core.ui.FixedBasicComboBoxEditor;
 import org.freeplane.core.ui.IUserInputListenerFactory;
 import org.freeplane.core.ui.components.ContainerComboBoxEditor;
 import org.freeplane.core.ui.components.FreeplaneMenuBar;
+import org.freeplane.core.ui.components.JResizer.Direction;
 import org.freeplane.core.ui.components.OneTouchCollapseResizer;
+import org.freeplane.core.ui.components.OneTouchCollapseResizer.CollapseDirection;
+import org.freeplane.core.ui.components.OneTouchCollapseResizer.ComponentCollapseListener;
 import org.freeplane.core.ui.components.ResizeEvent;
 import org.freeplane.core.ui.components.ResizerListener;
 import org.freeplane.core.ui.components.UITools;
-import org.freeplane.core.ui.components.JResizer.Direction;
-import org.freeplane.core.ui.components.OneTouchCollapseResizer.CollapseDirection;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.format.FormattedDate;
@@ -241,7 +242,7 @@ abstract public class FrameController implements ViewController {
 			
 			Box resizableTabs = Box.createVerticalBox();
 			resizableTabs.add(comp);
-			OneTouchCollapseResizer otcr = new OneTouchCollapseResizer(Direction.UP, CollapseDirection.COLLAPSE_UP);
+			final OneTouchCollapseResizer otcr = new OneTouchCollapseResizer(Direction.UP, CollapseDirection.COLLAPSE_UP);
 			otcr.setSliderLocked(true);
 			resizableTabs.add(otcr);
 			otcr.addResizerListener(new ResizerListener() {
@@ -251,6 +252,15 @@ abstract public class FrameController implements ViewController {
 						comp.setMaximumSize(new Dimension(Integer.MAX_VALUE, 151));
 						comp.setPreferredSize(new Dimension(comp.getWidth(), 151));
 					}
+				}
+			});
+			otcr.addCollapseListener(new ComponentCollapseListener() {
+				public void componentExpanded(ResizeEvent event) {
+					comp.setPreferredSize(null);
+					otcr.recalibrate();
+				}
+				
+				public void componentCollapsed(ResizeEvent event) {
 				}
 			});
 			
