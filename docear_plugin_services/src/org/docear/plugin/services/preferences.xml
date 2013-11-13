@@ -5,10 +5,10 @@
 			<separator name="account_options">
 				<uri name="docear.service.help" label="docear.service.help.label"
 					uri="http://www.docear.org/support/user-manual/#Docear8217s_Online_Services" />
-				<string name="docear.service.connect.username" enabled="false" />
+				<!--  string name="docear.service.connect.username" enabled="false" / -->
 				<action name="docear.action.user.services" />
 				<action name="docear.action.user.login" />
-				<!-- action name="docear.clear.user_data" /-->
+				<!-- action name="docear.clear.user_data" / -->
 			</separator>
 			<separator name="docear_options">
 				<uri name="docear.service.options.help" label="docear.service.help.label"
