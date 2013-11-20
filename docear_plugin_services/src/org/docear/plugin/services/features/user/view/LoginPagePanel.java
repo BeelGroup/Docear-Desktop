@@ -121,7 +121,7 @@ public class LoginPagePanel extends AWizardPage {
 		}
 		add(pwdPasswd, "4, 7, 5, 1, fill, default");
 
-		JHyperlink lblForgotPasswd = new JHyperlink(TextUtils.getText("docear.setup.wizard.login.forgot.passwd"), "http://www.docear.org/faqs/i-forgot-my-password-andor-username-what-can-i-do/");
+		JHyperlink lblForgotPasswd = new JHyperlink(TextUtils.getText("docear.setup.wizard.login.forgot.passwd"), "https://www.docear.org/my-docear/change-password/");
 		lblForgotPasswd.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblForgotPasswd.setUnderlinedWhenHovered(false);
 		add(lblForgotPasswd, "8, 9");
