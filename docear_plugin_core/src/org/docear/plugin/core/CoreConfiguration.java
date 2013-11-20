@@ -475,7 +475,7 @@ public class CoreConfiguration extends ALanguageController {
 		final int versionBuild = Integer.parseInt(buildProperties.getProperty("build.number")) -1;
 		controller.getResourceController().setProperty("docear_version", versionNumber);
 		controller.getResourceController().setProperty("docear_status", versionStatus+" "+versionStatusNumber+" build "+versionBuild);
-		
+		LogUtils.info("Docear version: " + versionNumber + "." + versionStatusNumber + " " + versionStatus + " build " + versionBuild);
 	}
 	
 	private void adjustProperties(Controller controller) {
