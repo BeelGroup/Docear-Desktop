@@ -37,7 +37,9 @@ import org.docear.plugin.bibtex.jabref.JabRefCommons.MetadataCallableResult;
 import org.docear.plugin.core.ui.wizard.Wizard;
 import org.docear.plugin.core.ui.wizard.WizardContext;
 import org.docear.plugin.core.ui.wizard.WizardPageDescriptor;
+import org.docear.plugin.services.ServiceController;
 import org.docear.plugin.services.features.io.DocearServiceResponse.Status;
+import org.docear.plugin.services.features.user.DocearUserController;
 import org.docear.plugin.services.features.user.action.DocearUserRegistrationAction;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.TextUtils;
@@ -155,7 +157,9 @@ private static final long serialVersionUID = -627410651667772600L;
 						if (ret.hasError()) {
 							hasError = true;
 							//Replace with local presentation
-							showErrorMessage(ret.getError(), ret.getStatus() == Status.UNAUTHORIZED);
+							if(ServiceController.getCurrentUser() == DocearUserController.LOCAL_USER) {
+								showErrorMessage(ret.getError(), ret.getStatus() == Status.UNAUTHORIZED);
+							}
 						}					
 					
 						String bib = ret.getResult();

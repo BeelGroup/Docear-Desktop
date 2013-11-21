@@ -38,8 +38,12 @@ public class LoginPagePanel extends AWizardPage {
 	public LoginPagePanel() {
 		this(null);
 	}
+	
+	public LoginPagePanel(String message) {
+		this(null, message);
+	}
 
-	public LoginPagePanel(DocearUser startSettings) {
+	public LoginPagePanel(DocearUser startSettings, String message) {
 		setBackground(Color.WHITE);
 		setLayout(new FormLayout(new ColumnSpec[] {
 				FormFactory.RELATED_GAP_COLSPEC,
@@ -53,6 +57,8 @@ public class LoginPagePanel extends AWizardPage {
 				FormFactory.RELATED_GAP_COLSPEC,
 				ColumnSpec.decode("default:grow"),},
 			new RowSpec[] {
+				FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
@@ -125,6 +131,11 @@ public class LoginPagePanel extends AWizardPage {
 		lblForgotPasswd.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblForgotPasswd.setUnderlinedWhenHovered(false);
 		add(lblForgotPasswd, "8, 9");
+		
+		if(message != null) {
+			JLabel lblMessage = new JLabel(message);
+			add(lblMessage, "2, 11, 9, 1");
+		}
 		
 		prepareFields(startSettings);
 	}

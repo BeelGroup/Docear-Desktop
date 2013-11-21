@@ -59,6 +59,7 @@ import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.nodes.FolderLinkNode;
 
 import com.sun.jersey.core.util.StringKeyStringValueIgnoreCaseMultivaluedMap;
+import com.sun.servicetag.UnauthorizedAccessException;
 
 public class RecommendationsController extends ADocearServiceFeature {
 
@@ -233,6 +234,9 @@ public class RecommendationsController extends ADocearServiceFeature {
 				}
 				else if (response.getStatus() == Status.UNKNOWN_HOST) {
 					throw new UnknownHostException("no connection");
+				}
+				else if (response.getStatus() == Status.UNAUTHORIZED) {
+					throw new UnauthorizedAccessException("unauthorized");
 				}			
 				else {
 					throw new UnexpectedException("unkown");

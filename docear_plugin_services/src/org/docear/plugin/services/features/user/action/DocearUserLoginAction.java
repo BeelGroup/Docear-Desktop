@@ -30,8 +30,16 @@ public class DocearUserLoginAction extends AWorkspaceAction {
 	}
 
 	public void actionPerformed(ActionEvent event) {
+		showLoginWizard();
+	}
+	
+	public static void showLoginWizard() {
+		showLoginWizard(null);
+	}
+	
+	public static void showLoginWizard(String message) {
 		final Wizard wiz = new Wizard(UITools.getFrame());
-		initWizard(wiz);
+		initWizard(wiz, message);
 		
 		new Thread(new Runnable() {
 			public void run() {
@@ -61,9 +69,9 @@ public class DocearUserLoginAction extends AWorkspaceAction {
 		}).start();
 	}
 	
-	private void initWizard(Wizard wizard) {
+	private static void initWizard(Wizard wizard, String message) {
 		//registration page
-		WizardPageDescriptor desc = new WizardPageDescriptor("page.login", new LoginPagePanel()) {
+		WizardPageDescriptor desc = new WizardPageDescriptor("page.login", new LoginPagePanel(message)) {
 			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
 				return context.getModel().getPage("page.verify.login");
 			}

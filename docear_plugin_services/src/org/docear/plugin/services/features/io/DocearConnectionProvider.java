@@ -22,6 +22,7 @@ import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.io.IOExceptionWithCause;
+import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.io.ProgressInputStream;
 import org.docear.plugin.services.ADocearServiceFeature;
 import org.docear.plugin.services.DocearServiceException;
@@ -203,6 +204,7 @@ public class DocearConnectionProvider extends ADocearServiceFeature {
 							response.getEntityInputStream());
 				}
 				else if (status != null && status.equals(Status.UNAUTHORIZED)) {
+					DocearController.getController().getEventQueue().dispatchEvent(new DocearUnauthorizedExceptionEvent(this));
 					return new DocearServiceResponse(org.docear.plugin.services.features.io.DocearServiceResponse.Status.UNAUTHORIZED,
 							getErrorMessageInputStream(response));
 				}
@@ -277,7 +279,16 @@ public class DocearConnectionProvider extends ADocearServiceFeature {
 		synchronized (proxyAuthentication) {
 			try {
 				appendDefaultHeaders(builder);
-				return builder.post(ClientResponse.class, requestEntity);
+				ClientResponse response = builder.post(ClientResponse.class, requestEntity);
+				try {
+					Status status = response.getClientResponseStatus();
+					if (status != null && status.equals(Status.UNAUTHORIZED)) {
+						DocearController.getController().getEventQueue().dispatchEvent(new DocearUnauthorizedExceptionEvent(this));
+					}
+				}	
+				catch (Exception e) {
+				}
+				return response;
 			}
 			catch (Exception e) {
 				LogUtils.info(e.getCause().toString());
@@ -321,6 +332,7 @@ public class DocearConnectionProvider extends ADocearServiceFeature {
 							response.getEntityInputStream());
 				}
 				else if (status != null && status.equals(Status.UNAUTHORIZED)) {
+					DocearController.getController().getEventQueue().dispatchEvent(new DocearUnauthorizedExceptionEvent(this));
 					return new DocearServiceResponse(org.docear.plugin.services.features.io.DocearServiceResponse.Status.UNAUTHORIZED,
 							getErrorMessageInputStream(response));
 				}

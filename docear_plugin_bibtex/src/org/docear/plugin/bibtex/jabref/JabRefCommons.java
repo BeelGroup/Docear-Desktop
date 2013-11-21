@@ -498,18 +498,10 @@ public abstract class JabRefCommons {
 					DocearServiceResponse serviceResponse = ServiceController.getConnectionController().get("/internal/documents/" + hash + "/metadata", params);
 					result.setStatus(serviceResponse.getStatus());
 					if (serviceResponse.getStatus() == DocearServiceResponse.Status.FAILURE || serviceResponse.getStatus() == DocearServiceResponse.Status.UNAUTHORIZED) {
-						// JOptionPane.showMessageDialog(UITools.getFrame(),
-						// serviceResponse.getContentAsString(),
-						// TextUtils.getText("docear.metadata.import.error"),
-						// JOptionPane.ERROR_MESSAGE);
 						result.setError(serviceResponse.getContentAsString());
 						return;
 					}
 					if (serviceResponse.getStatus() == DocearServiceResponse.Status.NO_CONTENT) {
-						// JOptionPane.showMessageDialog(UITools.getFrame(),
-						// TextUtils.getText("docear.metadata.import.infotext"),
-						// TextUtils.getText("docear.metadata.import.info"),
-						// JOptionPane.INFORMATION_MESSAGE);
 						result.setError(TextUtils.getText("docear.metadata.import.infotext"));
 						return;
 					}

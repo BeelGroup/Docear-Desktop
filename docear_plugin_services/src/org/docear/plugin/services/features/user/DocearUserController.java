@@ -14,6 +14,7 @@ import org.docear.plugin.services.ADocearServiceFeature;
 import org.docear.plugin.services.DocearServiceException;
 import org.docear.plugin.services.ServiceController;
 import org.docear.plugin.services.features.io.DocearConnectionProvider;
+import org.docear.plugin.services.features.io.DocearUnauthorizedExceptionEvent;
 import org.docear.plugin.services.features.user.action.DocearUserLoginAction;
 import org.docear.plugin.services.features.user.action.DocearUserRegistrationAction;
 import org.docear.plugin.services.features.user.action.DocearUserServicesAction;
@@ -24,6 +25,7 @@ import org.freeplane.core.user.IUserAccountChangeListener;
 import org.freeplane.core.user.UserAccountChangeEvent;
 import org.freeplane.core.user.UserAccountController;
 import org.freeplane.core.util.LogUtils;
+import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.ModeController;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.components.TreeView;
@@ -172,6 +174,16 @@ public class DocearUserController extends ADocearServiceFeature {
 					}
 					else {
 						WorkspaceController.getAction(DocearUserServicesAction.KEY).actionPerformed(null);
+					}
+				}
+				else if(event instanceof DocearUnauthorizedExceptionEvent) {
+					DocearUser user = getActiveUser();
+					if(user!= null && user.getAccessToken() != null && user.getAccessToken().trim().length() > 0) {
+						DocearController.getController().getEventQueue().invoke(new Runnable() {
+							public void run() {
+								DocearUserLoginAction.showLoginWizard(TextUtils.getText("docear.service.unauthorized"));
+							}
+						});
 					}
 				}
 			}
