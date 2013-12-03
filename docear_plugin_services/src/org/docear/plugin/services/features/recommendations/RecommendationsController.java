@@ -28,6 +28,7 @@ import org.docear.plugin.services.ServiceController;
 import org.docear.plugin.services.features.io.DocearConnectionProvider;
 import org.docear.plugin.services.features.io.DocearServiceResponse;
 import org.docear.plugin.services.features.io.DocearServiceResponse.Status;
+import org.docear.plugin.services.features.io.UnauthorizedException;
 import org.docear.plugin.services.features.recommendations.model.RecommendationEntry;
 import org.docear.plugin.services.features.recommendations.model.RecommendationsModel;
 import org.docear.plugin.services.features.recommendations.model.RecommendationsModelNode;
@@ -59,7 +60,6 @@ import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.nodes.FolderLinkNode;
 
 import com.sun.jersey.core.util.StringKeyStringValueIgnoreCaseMultivaluedMap;
-import com.sun.servicetag.UnauthorizedAccessException;
 
 public class RecommendationsController extends ADocearServiceFeature {
 
@@ -165,7 +165,7 @@ public class RecommendationsController extends ADocearServiceFeature {
 		return model;
 	}
 	
-	public static Collection<RecommendationEntry> getNewRecommendations(boolean userRequest) throws UnknownHostException, UnexpectedException, AlreadyInUseException {		
+	public static Collection<RecommendationEntry> getNewRecommendations(boolean userRequest) throws UnknownHostException, UnauthorizedException, UnexpectedException, AlreadyInUseException {		
 		synchronized (mutex ) {
 			if(isRequesting) {
 				throw new AlreadyInUseException();
@@ -175,7 +175,7 @@ public class RecommendationsController extends ADocearServiceFeature {
 		}
 		try {
 			DocearUser user = ServiceController.getCurrentUser();
-			String name = ServiceController.getCurrentUser().getUsername();
+			String name = user.getUsername();
 			if (!CoreUtils.isEmpty(name)) {
 				MultivaluedMap<String,String> params = new StringKeyStringValueIgnoreCaseMultivaluedMap();
 				if(!userRequest) {
@@ -236,8 +236,8 @@ public class RecommendationsController extends ADocearServiceFeature {
 					throw new UnknownHostException("no connection");
 				}
 				else if (response.getStatus() == Status.UNAUTHORIZED) {
-					throw new UnauthorizedAccessException("unauthorized");
-				}			
+					throw new UnauthorizedException("unauthorized");
+				}
 				else {
 					throw new UnexpectedException("unkown");
 				}
