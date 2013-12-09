@@ -10,14 +10,14 @@ public class DocearMapModelExtension implements IExtension {
 	
 	private MapModificationSession session;
 	
-	private String version = "1.0";
+	private String version = DocearMapModelController.CURRENT_MAP_VERSION;
 	private DocearMapType type;
 	private String mapId;
 	private URI uri;
 	private boolean incompatible;	
 
 	public DocearMapModelExtension() {
-		setVersion("1.0");
+		setVersion(DocearMapModelController.CURRENT_MAP_VERSION);
 	}
 	
 	public DocearMapModelExtension(String version) {
