@@ -523,6 +523,7 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 			NodeModel node = ((MMapController) Controller.getCurrentModeController().getMapController()).newNode(tempAnnotation.getTitle(), map);
 			AnnotationController.setModel(node, tempAnnotation);
 			NodeUtilities.setLinkFrom(tempAnnotation.getSource(), node);
+			tempAnnotation.setIsNewID(false);
 			result.push(node);
 			tempAnnotation.setInserted(true);
 			tempAnnotation = tempAnnotation.getParent();
@@ -553,7 +554,6 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 			fireProgressUpdate(100 * count / importedFiles.keySet().size());
 			System.out.println("");
 			if (!nodeIndex.containsKey(id)) {
-				nodeIndex.containsKey(id);
 				importedFiles.get(id).setNew(true);
 				newAnnotations.add(importedFiles.get(id));
 			}
@@ -689,13 +689,12 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 
 		if (annotation != null && annotation.getAnnotationID() != null) {
 			AnnotationID id = annotation.getAnnotationID();
-			if (!nodeIndex.containsKey(id)) {
-				nodeIndex.put(id, new ArrayList<NodeModel>());
+			List<NodeModel> nodeList = nodeIndex.get(id);
+			if (nodeList == null) {
+				nodeList = new ArrayList<NodeModel>();
+				nodeIndex.put(id, nodeList);
 			}
-			else {
-				nodeIndex.containsKey(id);
-			}
-			nodeIndex.get(id).add(node);
+			nodeList.add(node);
 		}
 
 		for (NodeModel child : node.getChildren()) {

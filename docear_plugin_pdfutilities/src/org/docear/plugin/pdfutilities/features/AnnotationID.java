@@ -49,12 +49,11 @@ public class AnnotationID {
 			}
 			else {
 				//if the UIDs not match and one of them was fresh generated try to compare the object numbers
-				//DOCEAR - FIXME: 
-				//if(isCreated || ((AnnotationID) object).isCreated) {
+				if(isCreated || ((AnnotationID) object).isCreated) {
 					if(this.internalObjectNumber == other.internalObjectNumber) {
 						firstStepCleared = true;
 					}
-				//}
+				}
 			}
 			//compare the document association
 			if(firstStepCleared) {
