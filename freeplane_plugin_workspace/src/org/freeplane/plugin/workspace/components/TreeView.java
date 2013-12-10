@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -110,9 +111,21 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 		
 		initTransferHandler();
 		
-				
-		this.add(new JScrollPane(mTree), BorderLayout.CENTER);
+		workspaceBox = Box.createVerticalBox();
+		workspaceBox.add(new JScrollPane(mTree));		
+		this.add(workspaceBox, BorderLayout.CENTER);
 		
+	}
+	
+	public void addBottomBanner(Component comp) {
+		workspaceBox.remove(comp);
+		workspaceBox.add(comp);
+		workspaceBox.validate();
+	}
+	
+	public void removeBottomBanner(Component comp) {
+		workspaceBox.remove(comp);
+		workspaceBox.validate();
 	}
 	
 	private ExpandedStateHandler getExpandedStateHandler() {
@@ -365,6 +378,7 @@ public class TreeView extends JPanel implements IWorkspaceView, ComponentCollaps
 
 	public final static String BOTTOM_TOOLBAR_STACK = BorderLayout.SOUTH;
 	public final static String TOP_TOOLBAR_STACK = BorderLayout.NORTH;
+	private Box workspaceBox;
 	public void addToolBar(Component comp, String toolBarStack) {
 		this.add(comp, toolBarStack);
 	}

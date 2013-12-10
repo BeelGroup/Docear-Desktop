@@ -279,7 +279,7 @@ public class MModeWorkspaceController extends AWorkspaceModeExtension {
 					expanded = !Boolean.parseBoolean(getWorkspaceSettings().getProperty(WorkspaceSettings.WORKSPACE_VIEW_COLLAPSED, "false"));
 				}
 				catch (Exception e) {
-					// ignore -> default is true
+					// default is set true -> ignore exception
 				}
 				otcr.setExpanded(expanded);
 			}

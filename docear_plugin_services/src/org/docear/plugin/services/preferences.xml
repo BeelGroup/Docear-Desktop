@@ -15,6 +15,7 @@
 					uri="http://www.docear.org/support/user-manual/#Docear8217s_Online_Services" />
 				<!-- boolean name="docear_allow_usage_mining" /> 
 				<boolean name="docear_allow_information_retrieval" / -->
+				<boolean name="docear.banner.paypal.show" />
 			</separator>
 			<separator name="docear.update_checker">
 				<combo name="docear.update_checker.options">

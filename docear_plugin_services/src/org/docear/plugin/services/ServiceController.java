@@ -13,6 +13,7 @@ import org.docear.plugin.core.event.IDocearEventListener;
 import org.docear.plugin.core.features.DocearFileBackupController;
 import org.docear.plugin.core.ui.OverlayViewport;
 import org.docear.plugin.services.features.io.DocearConnectionProvider;
+import org.docear.plugin.services.features.payment.DocearPaymentController;
 import org.docear.plugin.services.features.recommendations.RecommendationsController;
 import org.docear.plugin.services.features.recommendations.actions.ShowRecommendationsAction;
 import org.docear.plugin.services.features.setup.action.DocearSetupWizardAction;
@@ -69,6 +70,7 @@ public class ServiceController {
 			serviceController.installFeature(new DocearConnectionProvider());
 			ServiceController.getConnectionController().setDefaultHeader("version", Integer.toString(DocearController.getController().getApplicationBuildNumber()));
 			serviceController.installFeature(new DocearUserController());
+			serviceController.installFeature(new DocearPaymentController());
 			
 			if (DocearController.getController().isLicenseDialogNecessary()) {
 				DocearSetupWizardAction.startWizard(true);
