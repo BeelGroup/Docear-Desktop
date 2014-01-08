@@ -65,20 +65,25 @@ public class AddOnsController {
 				return name.endsWith(".plugin.xml");
 			}
 		});
-		final IXMLParser parser = XMLParserFactory.createDefaultXMLParser();
-		for (File file : addonXmlFiles) {
-			BufferedInputStream inputStream = null;
-			try {
-				inputStream = new BufferedInputStream(new FileInputStream(file));
-				final IXMLReader reader = new StdXMLReader(inputStream);
-				parser.setReader(reader);
-				registerInstalledAddOn(new AddOnProperties(AddOnType.PLUGIN, (XMLElement) parser.parse()));
-			}
-			catch (final Exception e) {
-				LogUtils.warn("error parsing " + file, e);
-			}
-			finally {
-				FileUtils.silentlyClose(inputStream);
+		if(addonXmlFiles == null) {
+			LogUtils.warn("unable to list AddOns directory: "+ addOnsDir);
+		}
+		else {
+			final IXMLParser parser = XMLParserFactory.createDefaultXMLParser();
+			for (File file : addonXmlFiles) {
+				BufferedInputStream inputStream = null;
+				try {
+					inputStream = new BufferedInputStream(new FileInputStream(file));
+					final IXMLReader reader = new StdXMLReader(inputStream);
+					parser.setReader(reader);
+					registerInstalledAddOn(new AddOnProperties(AddOnType.PLUGIN, (XMLElement) parser.parse()));
+				}
+				catch (final Exception e) {
+					LogUtils.warn("error parsing " + file, e);
+				}
+				finally {
+					FileUtils.silentlyClose(inputStream);
+				}
 			}
 		}
 	}
