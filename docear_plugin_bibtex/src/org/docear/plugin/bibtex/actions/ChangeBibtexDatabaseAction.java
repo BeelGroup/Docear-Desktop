@@ -37,6 +37,7 @@ public class ChangeBibtexDatabaseAction extends AWorkspaceAction {
 			fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			fileChooser.setMultiSelectionEnabled(false);
 			fileChooser.setFileHidingEnabled(true);
+			fileChooser.setAcceptAllFileFilterUsed(false);
 			fileChooser.addChoosableFileFilter(new FileFilter() {
 				public String getDescription() {
 					return "*.bib (" + TextUtils.getText("locationdialog.filefilter.bib") + ")";
