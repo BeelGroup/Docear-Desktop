@@ -26,6 +26,7 @@ import org.apache.commons.io.FileUtils;
 import org.docear.plugin.core.actions.DocearAboutAction;
 import org.docear.plugin.core.actions.DocearOpenUrlAction;
 import org.docear.plugin.core.actions.DocearQuitAction;
+import org.docear.plugin.core.actions.DocearRemoveNodeLinkAction;
 import org.docear.plugin.core.actions.DocearRemoveRepositoryPathRibbonAction;
 import org.docear.plugin.core.actions.DocearSetNodePrivacyAction;
 import org.docear.plugin.core.actions.DocearShowDataPrivacyStatementAction;
@@ -524,7 +525,7 @@ public class CoreConfiguration extends ALanguageController {
 	}
 		
 	private void addMenus(ModeController modeController) {
-		//RIBBONS implement
+		modeController.addAction(new DocearRemoveNodeLinkAction());
 		if("true".equals(System.getProperty("docear.debug", "false"))) {
 			modeController.addAction(new DocearSetNodePrivacyAction());
 		}
@@ -565,6 +566,15 @@ public class CoreConfiguration extends ALanguageController {
 					builder.addAction("/node_popup", new DocearSetNodePrivacyAction(),	MenuBuilder.AS_CHILD);
 					
 				}
+				String key = (String) builder.getKeyByUserObject(WorkspaceController.getAction(modeController, "ExtractLinkFromTextAction"));
+				if(key != null) {
+					builder.addAction(key, WorkspaceController.getAction(modeController, DocearRemoveNodeLinkAction.KEY), MenuBuilder.AFTER);
+				}
+				else {
+					builder.addSeparator("popup_navigate", MenuBuilder.AS_CHILD);
+					builder.addAction("popup_navigate", WorkspaceController.getAction(modeController, DocearRemoveNodeLinkAction.KEY), MenuBuilder.AS_CHILD);
+				}
+				
 			}
 		});
 		File file = new File(Compat.getApplicationUserDirectory(), "docear_core_ribbon.xml");		

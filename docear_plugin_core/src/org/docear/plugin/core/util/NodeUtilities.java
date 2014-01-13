@@ -33,6 +33,17 @@ public class NodeUtilities {
 	public static URI getLink(NodeModel node) {
 		return NodeLinks.getLink(node);
 	}
+	
+	public static boolean hasHyperlink(NodeModel node) {
+		return NodeLinks.getLink(node) != null;
+	}
+	
+	public static void removeHyperlink(NodeModel node) {
+		NodeLinks links = NodeLinks.getModel(node);
+		if(links != null) {
+			links.setHyperLink(null);
+		}
+	}
 
 	public static NodeModel insertChildNodeFrom(NodeModel node, boolean isLeft, NodeModel target) {
 		((MMapController) Controller.getCurrentModeController().getMapController()).insertNode(node, target, false, isLeft, isLeft);

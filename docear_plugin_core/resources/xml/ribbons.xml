@@ -1,32 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <menu_structure>
 	<menu_category name="ribbon">
+		<ribbon_task name="resources" orderPriority="0">
+			<ribbon_band name="links" resize_policies="Mirror">
+				<ribbon_action action="DocearRemoveNodeLinkAction" />
+			</ribbon_band>
+		</ribbon_task>
 		<ribbon_task name="help">
-		    <ribbon_band name="help_misc" resize_policies="Mirror">
-		        <ribbon_action action="OpenLogsFolderAction" priority="top" mandatory="true"/>
-		    </ribbon_band>
-		    <ribbon_band name="licences" resize_policies="Mirror" orderPriority="1000">
-				<ribbon_action action="GPLPanelAction" mandatory="true"/>
-				<ribbon_action action="DataPrivacyPanelAction" mandatory="true"/>
-				<ribbon_action action="TOSPanelAction" priority="top" mandatory="true"/>
-				<ribbon_action action="DataProcessingPanelAction" mandatory="true"/>
+			<ribbon_band name="help_misc" resize_policies="Mirror">
+				<ribbon_action action="OpenLogsFolderAction" priority="top" mandatory="true" />
+			</ribbon_band>
+			<ribbon_band name="licences" resize_policies="Mirror" orderPriority="1000">
+				<ribbon_action action="GPLPanelAction" mandatory="true" />
+				<ribbon_action action="DataPrivacyPanelAction" mandatory="true" />
+				<ribbon_action action="TOSPanelAction" priority="top" mandatory="true" />
+				<ribbon_action action="DataProcessingPanelAction" mandatory="true" />
 			</ribbon_band>
 			<ribbon_band name="contact" resize_policies="Mirror" orderPriority="2000">
-			    <ribbon_action action="ContactAction" priority="top" mandatory="true"/>
-				<ribbon_action action="ManualAction" priority="top" mandatory="true"/>
-				<ribbon_action action="FAQAction" priority="top" mandatory="true"/>
-				<!--ribbon_action name="Videos" /-->								
+				<ribbon_action action="ContactAction" priority="top" mandatory="true" />
+				<ribbon_action action="ManualAction" priority="top" mandatory="true" />
+				<ribbon_action action="FAQAction" priority="top" mandatory="true" />
+				<!--ribbon_action name="Videos" / -->
 			</ribbon_band>
 		</ribbon_task>
 		<ribbon_task name="view">
-		<ribbon_band name="view_mode" resize_policies="Mirror">
-	       <ribbon_action action="ToggleMapMaximizedAction" priority="medium" accelerator="TAB"/>
-		</ribbon_band>
+			<ribbon_band name="view_mode" resize_policies="Mirror">
+				<ribbon_action action="ToggleMapMaximizedAction" priority="medium" accelerator="TAB" />
+			</ribbon_band>
 		</ribbon_task>
 		<ribbon_task name="tools_and_settings">
-            <ribbon_band name="tools_misc" resize_policies="Mirror">
-                <ribbon_contributor name="nodePrivacyActionContributor" />
-            </ribbon_band>
-        </ribbon_task>
+			<ribbon_band name="tools_misc" resize_policies="Mirror">
+				<ribbon_contributor name="nodePrivacyActionContributor" />
+			</ribbon_band>
+		</ribbon_task>
 	</menu_category>
 </menu_structure>

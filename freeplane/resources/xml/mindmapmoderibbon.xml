@@ -253,7 +253,7 @@
 			<ribbon_band name="links" resize_policies="Mirror">
 				<ribbon_action action="AddConnectorAction"/>
 				<ribbon_action action="AddLocalLinkAction" accelerator="alt shift L" />				    
-				<ribbon_action action="SetLinkByFileChooserAction" />
+				<ribbon_action action="SetLinkByFileChooserAction" priority="top"/>
 				<ribbon_action action="SetLinkByTextFieldAction" />
 				<ribbon_action action="ExtractLinkFromTextAction" />
 				<ribbon_action action="SetLinkAnchorAction" >
