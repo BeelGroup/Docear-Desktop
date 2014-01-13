@@ -20,7 +20,7 @@ public class DocearCheckForUpdatesAction extends AFreeplaneAction {
 	public void actionPerformed(ActionEvent e) {
 		DocearController.getController().getEventQueue().invoke(new Runnable() {
 			public void run() {
-				ServiceController.getFeature(UpdateCheck.class).checkForUpdates();
+				ServiceController.getFeature(UpdateCheck.class).checkForUpdates(true);
 			}
 		});
 		
