@@ -585,14 +585,14 @@
                 version="${ver}"
                 infostring="${ApplicationName} ${ver}"
                 shortname="${ApplicationName}"
-                bundleid="org.freeplane.core"
-                jvmversion="1.2+"
+                bundleid="org.${ApplicationNameToLowerCase}"
+                jvmversion="1.6+"
                 vmoptions="${debugparams} -Xmx512m ${macdefines}"
                 arguments="-xargs ./props.xargs -xargs ./init.xargs"
                 jar="${build}/framework.jar"
                 icon="${mac-jarbundler}/docear.icns"
                 stubfile="${mac-jarbundler}/FreeplaneJavaApplicationStub"
-                signature="FP"
+                signature="DCR"
                 >
 			<!-- For OSGI we want the entire build/ tree except WIndows-related stuff
              Commented out to allow testing jar=framework.jar
@@ -653,7 +653,7 @@
 		<chmod file="${macappfullpath}/Contents/Resources/Java/${ApplicationNameToLowerCase}.sh" perm="ugo+rx" />
 	</target>
 
-	<target name="zip4mac" depends="git_version_info, macosxapp">
+	<target name="zip4mac" depends="git_version_info, macosxapp, sign4mac">
 		<zip destfile="${dist}/${ApplicationNameToLowerCase}_macos.zip" compress="true">
 			<zipfileset dir="${build4mac}" prefix="${ApplicationNameToLowerCase}-${ver}">
 				<exclude name="${macappfullpath}/Contents/MacOS/FreeplaneJavaApplicationStub"/>
@@ -663,7 +663,7 @@
 		</zip>
 	</target>
 	
-	<target name="dmg4mac"  depends="git_version_info, macosxapp" if="isMacOs" >
+	<target name="dmg4mac"  depends="git_version_info, macosxapp, sign4mac" if="isMacOs" >
 		<exec executable="hdiutil">
 			<arg line="create -srcfolder ${macappfullpath} ${dist}/${ApplicationNameToLowerCase}.dmg"/>
 		</exec>
@@ -706,6 +706,12 @@
 			<arg line="create -srcfolder ${macappfullpath} ${dist}/${ApplicationNameToLowerCase}.dmg"/>
 		</exec>
 	</target>
+    
+    <target name="sign4mac"  depends="macosxapp" if="isMacOs" >
+        <exec executable="codesign">
+            <arg line="--force --verify --verbose --sign &#34;Open Source Developer, Marcel Genzmehr&#34; ${macappfullpath}"/>
+        </exec>
+    </target>
 	
 	<target name="docear-nsis" depends="docear-bin">
 		<nsis script="${root}/windows-installer/docear_windows_installer.nsi" verbosity="4" out="${root}/dist/nsis-build.log" noconfig="yes">
