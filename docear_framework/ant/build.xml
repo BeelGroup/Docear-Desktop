@@ -653,7 +653,7 @@
 		<chmod file="${macappfullpath}/Contents/Resources/Java/${ApplicationNameToLowerCase}.sh" perm="ugo+rx" />
 	</target>
 
-	<target name="zip4mac" depends="git_version_info, macosxapp, sign4mac">
+	<target name="zip4mac" depends="git_version_info, macosxapp">
 		<zip destfile="${dist}/${ApplicationNameToLowerCase}_macos.zip" compress="true">
 			<zipfileset dir="${build4mac}" prefix="${ApplicationNameToLowerCase}-${ver}">
 				<exclude name="${macappfullpath}/Contents/MacOS/FreeplaneJavaApplicationStub"/>
@@ -663,7 +663,7 @@
 		</zip>
 	</target>
 	
-	<target name="dmg4mac"  depends="git_version_info, macosxapp, sign4mac" if="isMacOs" >
+	<target name="dmg4mac"  depends="git_version_info, macosxapp" if="isMacOs" >
 		<exec executable="hdiutil">
 			<arg line="create -srcfolder ${macappfullpath} ${dist}/${ApplicationNameToLowerCase}.dmg"/>
 		</exec>
