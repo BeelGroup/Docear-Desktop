@@ -199,7 +199,7 @@ public class MultiLineActionLabel extends JPanel implements SwingConstants, Acce
 			lastPos = currentPos+"<action cmd=\"".length();
 			String actionCommand = text.substring(lastPos, text.indexOf("\"", lastPos));			
 			lastPos = text.indexOf(">", lastPos)+1;
-			currentPos = text.indexOf("</action>", (currentPos + 1));			
+			currentPos = text.indexOf("</action>", (lastPos + 1));			
 			ActionLabelItem item = new ActionLabelItem(text.substring(lastPos, currentPos));
 			item.setActionCommand(actionCommand);
 			textTokens.add(item);

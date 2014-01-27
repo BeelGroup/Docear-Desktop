@@ -77,6 +77,7 @@ public class CreateProjectPagePanel extends AWizardPage {
 	private List<URI> parsedList;
 	private JCheckBox chckbxIncludeDemoFiles;
 	private File defaultPath;
+	private MultiLineActionLabel lblInfoWhenCreateAProject;
 
 	/***********************************************************************************
 	 * CONSTRUCTORS
@@ -107,6 +108,8 @@ public class CreateProjectPagePanel extends AWizardPage {
 				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC,
+				FormFactory.DEFAULT_ROWSPEC,
 				RowSpec.decode("fill:default"),
 				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
@@ -126,9 +129,33 @@ public class CreateProjectPagePanel extends AWizardPage {
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,}));
 		
+		
+		lblInfoWhenCreateAProject = new MultiLineActionLabel(TextUtils.getText("docear.setup.wizard.create.info"));
+		Font f = lblInfoWhenCreateAProject.getFont().deriveFont(Font.BOLD);
+		lblInfoWhenCreateAProject.setFont(f);
+		lblInfoWhenCreateAProject.setForeground(Color.RED);
+		lblInfoWhenCreateAProject.setBackground(Color.WHITE);
+		lblInfoWhenCreateAProject.setVisible(!WorkspaceController.getCurrentModel().getProjects().isEmpty());
+		lblInfoWhenCreateAProject.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if("project_read_more".equals(e.getActionCommand())) {
+					try {
+						Controller.getCurrentController().getViewController().openDocument(URI.create("http://www.docear.org/faqs/what-is-a-project/"));
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
+		});
+		add(lblInfoWhenCreateAProject, "4, 2, 7, 1");
+		
 		/***********
 		 * option 1
 		 */
+		
+		
 		
 		lblWarning = new JLabel(TextUtils.getText("docear.setup.wizard.create.warn1"));
 		URL url = WorkspaceController.class.getResource("/images/16x16/dialog-warning-4.png");
@@ -136,7 +163,7 @@ public class CreateProjectPagePanel extends AWizardPage {
 			lblWarning.setIcon(new ImageIcon(url));
 		}
 		lblWarning.setVisible(false);
-		add(lblWarning, "2, 2, 9, 1");
+		add(lblWarning, "2, 4, 9, 1");
 		
 		rdbtnStartFromScratch = new JRadioButton(TextUtils.getText("docear.setup.wizard.create.option.title.1"));
 		rdbtnStartFromScratch.setSelected(true);
@@ -149,27 +176,27 @@ public class CreateProjectPagePanel extends AWizardPage {
 			}
 		});
 		
-		add(rdbtnStartFromScratch, "2, 4, 9, 1");
+		add(rdbtnStartFromScratch, "2, 6, 9, 1");
 		
 		JLabel lblProjectName = new JLabel(TextUtils.getText("docear.setup.wizard.create.name.label"));
-		add(lblProjectName, "4, 6, right, default");
+		add(lblProjectName, "4, 8, right, default");
 		
 		computeDefaultProjectPath(null);
 		txtProjectName = new JTextField();
 		txtProjectName.setText(defaultPath.getName());
 		txtProjectName.setColumns(10);
 		txtProjectName.addKeyListener(getProjectNameListener());
-		add(txtProjectName, "6, 6, fill, default");
+		add(txtProjectName, "6, 8, fill, default");
 		
 		
 		JLabel lblProjectHome = new JLabel(TextUtils.getText("docear.setup.wizard.create.home.label"));
-		add(lblProjectHome, "4, 8, right, default");
+		add(lblProjectHome, "4, 10, right, default");
 		
 		txtProjectHome = new JTextField();
 		txtProjectHome.setText(defaultPath.getAbsolutePath());
 		txtProjectHome.setColumns(10);
 		txtProjectHome.addKeyListener(getProjectHomeListener());
-		add(txtProjectHome, "6, 8, fill, default");
+		add(txtProjectHome, "6, 10, fill, default");
 		
 		
 		JButton btnBrowse = new JButton(TextUtils.getText("docear.setup.wizard.create.browse.label"));
@@ -178,7 +205,7 @@ public class CreateProjectPagePanel extends AWizardPage {
 				showProjectHomeChooser();
 			}
 		});
-		add(btnBrowse, "8, 8");
+		add(btnBrowse, "8, 10");
 		
 		optionGroup1.add(lblProjectHome);
 		optionGroup1.add(lblProjectName);
@@ -200,7 +227,7 @@ public class CreateProjectPagePanel extends AWizardPage {
 				updateFields();
 			}
 		});
-		add(rdbtnUseExisting, "2, 10, 9, 1");
+		add(rdbtnUseExisting, "2, 12, 9, 1");
 		
 		final JEditorPane dtrpnInfoText = new JEditorPane() {
 			private static final long serialVersionUID = 1L;
@@ -222,7 +249,7 @@ public class CreateProjectPagePanel extends AWizardPage {
 		dtrpnInfoText.setEditable(false);
 		dtrpnInfoText.setBackground(Color.WHITE);
 		dtrpnInfoText.setText(TextUtils.getText("docear.setup.wizard.create.option.info"));
-		add(dtrpnInfoText, "4, 11, 7, 1, fill, fill");
+		add(dtrpnInfoText, "4, 13, 7, 1, fill, fill");
 		
 		final MultiLineActionLabel malReadInfo = new MultiLineActionLabel(TextUtils.getText("docear.setup.wizard.create.option.read"));
 		malReadInfo.setBorder(new EmptyBorder(0, 2, 0, 0));
@@ -244,10 +271,10 @@ public class CreateProjectPagePanel extends AWizardPage {
 				
 			}
 		});
-		add(malReadInfo, "4, 12, 7, 1, fill, top");
+		add(malReadInfo, "4, 14, 7, 1, fill, top");
 		
 		final JLabel lblProjectName_1 = new JLabel(TextUtils.getText("docear.setup.wizard.create.name.label"));
-		add(lblProjectName_1, "4, 14, right, top");
+		add(lblProjectName_1, "4, 16, right, top");
 		
 		computeDefaultProjectPath(null);
 		
@@ -255,16 +282,16 @@ public class CreateProjectPagePanel extends AWizardPage {
 		txtProjectName_1.setText(defaultPath.getName());
 		txtProjectName_1.setColumns(10);
 		txtProjectName_1.addKeyListener(getProjectNameListener());
-		add(txtProjectName_1, "6, 14, fill, default");
+		add(txtProjectName_1, "6, 16, fill, default");
 				
 		final JLabel lblProjectHome_1 = new JLabel(TextUtils.getText("docear.setup.wizard.create.home.label"));
-		add(lblProjectHome_1, "4, 16, right, top");
+		add(lblProjectHome_1, "4, 18, right, top");
 		
 		txtProjectHome_1 = new JTextField();
 		txtProjectHome_1.setText(defaultPath.getAbsolutePath());
 		txtProjectHome_1.setColumns(10);
 		txtProjectHome_1.addKeyListener(getProjectHomeListener());
-		add(txtProjectHome_1, "6, 16, fill, default");
+		add(txtProjectHome_1, "6, 18, fill, default");
 		
 		
 		final JButton btnBrowse_2 = new JButton(TextUtils.getText("docear.setup.wizard.create.browse.label"));
@@ -273,10 +300,10 @@ public class CreateProjectPagePanel extends AWizardPage {
 				showProjectHomeChooser();
 			}
 		});
-		add(btnBrowse_2, "8, 16");
+		add(btnBrowse_2, "8, 18");
 		
 		final JLabel lblBibtexFile = new JLabel(TextUtils.getText("docear.setup.wizard.create.bibtex.label"));
-		add(lblBibtexFile, "4, 18, right, top");
+		add(lblBibtexFile, "4, 20, right, top");
 		
 		txtBibFile = new JTextField();
 		txtBibFile.setText(getProjectName()+".bib");
@@ -318,7 +345,7 @@ public class CreateProjectPagePanel extends AWizardPage {
 				}
 			}
 		});
-		add(txtBibFile, "6, 18, fill, default");
+		add(txtBibFile, "6, 20, fill, default");
 		
 		final JButton btnBrowseBib = new JButton(TextUtils.getText("docear.setup.wizard.create.browse.label"));
 		btnBrowseBib.addActionListener(new ActionListener() {
@@ -351,13 +378,13 @@ public class CreateProjectPagePanel extends AWizardPage {
 				}
 			}
 		});
-		add(btnBrowseBib, "8, 18");
+		add(btnBrowseBib, "8, 20");
 		
 		JLabel lblPdfsLiterature = new JLabel(TextUtils.getText("docear.setup.wizard.create.literature.label"));
-		add(lblPdfsLiterature, "4, 20, right, top");
+		add(lblPdfsLiterature, "4, 22, right, top");
 		
 		JScrollPane scrollPane = new JScrollPane();
-		add(scrollPane, "6, 20, 1, 5, fill, fill");
+		add(scrollPane, "6, 22, 1, 5, fill, fill");
 		
 		final JList repositoryPathList = new JList();
 		repositoryPathList.setModel(repoModel);
@@ -402,7 +429,7 @@ public class CreateProjectPagePanel extends AWizardPage {
 				}
 			}
 		});
-		add(btnAdd, "8, 20");
+		add(btnAdd, "8, 22");
 		
 		final JButton btnRemove = new JButton(TextUtils.getText("docear.setup.wizard.create.remove.label"));
 		btnRemove.addActionListener(new ActionListener() {
@@ -416,7 +443,7 @@ public class CreateProjectPagePanel extends AWizardPage {
 				}
 			}
 		});
-		add(btnRemove, "8, 22");
+		add(btnRemove, "8, 24");
 		
 		optionGroup2.add(lblProjectHome_1);
 		optionGroup2.add(lblProjectName_1);
@@ -453,7 +480,7 @@ public class CreateProjectPagePanel extends AWizardPage {
 		chckbxIncludeDemoFiles = new JCheckBox(TextUtils.getText("docear.setup.wizard.create.demo.label"));
 		chckbxIncludeDemoFiles.setSelected(true);
 		chckbxIncludeDemoFiles.setBackground(Color.WHITE);
-		add(chckbxIncludeDemoFiles, "2, 28, 9, 1");
+		add(chckbxIncludeDemoFiles, "2, 30, 9, 1");
 		
 		ButtonGroup group = new ButtonGroup();
 		group.add(rdbtnImportMendeley);
@@ -502,12 +529,12 @@ public class CreateProjectPagePanel extends AWizardPage {
 	
 	private void enableControls(WizardContext context) {
 		if(context != null) {
-			if(NameExistsInWorkspace(getProjectName())) {
+			if(nameExistsInWorkspace(getProjectName())) {
 				lblWarning.setText(TextUtils.getText("docear.setup.wizard.create.warn1"));
 				lblWarning.setVisible(true);
 				context.getNextButton().setEnabled(false);					
 			}
-			else if(PathExistsInWorkspace(getProjectHomePath())) {
+			else if(pathExistsInWorkspace(getProjectHomePath())) {
 				lblWarning.setText(TextUtils.getText("docear.setup.wizard.create.warn2"));
 				lblWarning.setVisible(true);
 				context.getNextButton().setEnabled(false);
@@ -651,7 +678,7 @@ public class CreateProjectPagePanel extends AWizardPage {
 		}
 	}
 	
-	private boolean NameExistsInWorkspace(String name) {
+	private boolean nameExistsInWorkspace(String name) {
 		if(name == null) {
 			return true;
 		}
@@ -668,7 +695,7 @@ public class CreateProjectPagePanel extends AWizardPage {
 		return false;
 	}
 	
-	private boolean PathExistsInWorkspace(String path) {
+	private boolean pathExistsInWorkspace(String path) {
 		if(path == null) {
 			return true;
 		}
