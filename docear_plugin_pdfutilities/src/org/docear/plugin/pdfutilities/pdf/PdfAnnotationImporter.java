@@ -237,9 +237,6 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 			AnnotationModel annotation = new AnnotationModel(meta.getUID());
 			transferMetaObject(meta, annotation);
 			annotations.add(annotation);
-			if(meta.hasChildren()) {
-				importBookmarksRecursive(annotations, meta.getChildren());
-			}
 		}
 	}
 	
