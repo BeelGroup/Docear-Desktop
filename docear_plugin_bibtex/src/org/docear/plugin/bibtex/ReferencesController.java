@@ -27,7 +27,9 @@ import javax.swing.event.PopupMenuListener;
 import javax.swing.event.TreeModelEvent;
 
 import net.sf.jabref.BibtexEntry;
+import net.sf.jabref.GUIGlobals;
 import net.sf.jabref.JabRefPreferences;
+import net.sf.jabref.export.DocearReferenceUpdateController;
 
 import org.docear.plugin.bibtex.actions.AddExistingReferenceAction;
 import org.docear.plugin.bibtex.actions.AddNewReferenceAction;
@@ -61,6 +63,7 @@ import org.docear.plugin.core.event.DocearEvent;
 import org.docear.plugin.core.event.DocearEventType;
 import org.docear.plugin.core.event.IDocearEventListener;
 import org.docear.plugin.core.features.DocearMaximizeMapHandler;
+import org.docear.plugin.core.logging.DocearLogger;
 import org.docear.plugin.core.workspace.model.DocearProjectChangedEvent;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.docear.plugin.core.workspace.model.IDocearProjectListener;
@@ -100,10 +103,13 @@ import org.freeplane.plugin.workspace.features.AWorkspaceModeExtension;
 import org.freeplane.plugin.workspace.features.ProjectURLHandler;
 import org.freeplane.plugin.workspace.features.WorkspaceMapModelExtension;
 import org.freeplane.plugin.workspace.model.WorkspaceModelEvent;
+import org.freeplane.plugin.workspace.model.WorkspaceModelEvent.WorkspaceModelEventType;
 import org.freeplane.plugin.workspace.model.WorkspaceModelListener;
+import org.freeplane.plugin.workspace.model.project.IProjectModelListener;
 import org.freeplane.plugin.workspace.model.project.IProjectSelectionListener;
 import org.freeplane.plugin.workspace.model.project.ProjectSelectionEvent;
 import org.freeplane.plugin.workspace.nodes.DefaultFileNode;
+import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
 import org.freeplane.view.swing.map.MainView;
 import org.freeplane.view.swing.map.NodeView;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
@@ -161,6 +167,7 @@ public class ReferencesController extends ALanguageController implements IDocear
 	private IDocearProjectListener projectListener;
 	private IProjectSelectionListener projectSelectionListener;
 	private Runnable runOnce;
+	private IProjectModelListener prjModelListener;
 
 	public ReferencesController(ModeController modeController) {
 		super();
@@ -262,7 +269,108 @@ public class ReferencesController extends ALanguageController implements IDocear
 		Controller.getCurrentController().addAction(new AddRecommendedDocumentAction());
 	}
 	
-	
+	private IProjectModelListener getProjectModelListener() {
+		if(prjModelListener == null) {
+			prjModelListener = new IProjectModelListener() {
+				
+				public void treeNodesChanged(WorkspaceModelEvent event) {
+					if(event.getType() == WorkspaceModelEventType.RENAMED){
+						if(event.getTreePath().getLastPathComponent() instanceof DefaultFileNode) { 
+							try { 
+								DefaultFileNode target = (DefaultFileNode) event.getTreePath().getLastPathComponent();
+								File parent = target.getFile().getParentFile();
+								File oldFile = new File(parent, (String) event.getOldValue());
+								File newFile = new File(parent, (String) event.getNewValue());
+								 
+								updateJabref((DocearWorkspaceProject) event.getProject(), newFile, oldFile, true);
+							}
+							catch (Exception e) {
+								DocearLogger.warn(e);
+							}
+						}
+					}
+				}
+
+				public void treeNodesInserted(WorkspaceModelEvent event) {
+					
+				}
+
+				public void treeNodesRemoved(WorkspaceModelEvent event) {
+					
+				}
+
+				public void treeStructureChanged(WorkspaceModelEvent event) {		
+					if(event.getTreePath().getLastPathComponent() instanceof DefaultFileNode || event.getTreePath().getLastPathComponent() instanceof LinkTypeFileNode){
+						File oldFile = null;
+						File newFile = null;
+						if(event.getType() == WorkspaceModelEventType.RENAMED) {
+							DefaultFileNode target = (DefaultFileNode) event.getTreePath().getLastPathComponent();
+							File parent = target.getFile().getParentFile();
+							oldFile = new File(parent, (String) event.getOldValue());
+							newFile = new File(parent, (String) event.getNewValue());
+						} 
+						else if(event.getType() == WorkspaceModelEventType.MOVED) {
+							newFile = (File) event.getNewValue();
+							oldFile = (File) event.getOldValue();
+						}
+						if(newFile != null && oldFile != null) {
+							try {
+								updateJabref((DocearWorkspaceProject) event.getProject(), newFile, oldFile, (event.getType() == WorkspaceModelEventType.RENAMED));
+							}
+							catch (Exception e) {
+								DocearLogger.warn(e);
+							}
+						}
+					}
+				}
+			};
+		}
+		return prjModelListener;
+	}
+
+	private void updateJabref(DocearWorkspaceProject project, final File newFile, final File oldFile, boolean renamed) {
+		if(oldFile == null) {
+			return;
+		}
+		//we don't look at pathes
+		if(!renamed) {
+			return;
+		}
+		final JabRefProjectExtension ext = (JabRefProjectExtension) project.getExtensions(JabRefProjectExtension.class);
+		if(ext != null) {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					ReferencesController contr = ReferencesController.getController();
+					final JabrefWrapper wrapper = contr.getJabrefWrapper();
+					wrapper.getJabrefFrame().showBasePanel(ext.getBaseHandle().getBasePanel());
+					DocearController.getController().getEventQueue().invoke(new Runnable() {
+						@Override
+						public void run() {
+							DocearReferenceUpdateController.lock();
+							try {
+								String nodeFileName = oldFile.getName();
+								for (BibtexEntry entry : wrapper.getDatabase().getEntries()) {
+									String jabrefFiles = entry.getField(GUIGlobals.FILE_FIELD);
+									if (jabrefFiles != null) {
+										// path linked in jabref
+										for (String jabrefFile : JabRefAttributes.parsePathNames(entry, jabrefFiles)) {
+											if (jabrefFile.endsWith(nodeFileName)) {
+												entry.setField(GUIGlobals.FILE_FIELD, jabrefFiles.replace(nodeFileName, newFile.getName()));
+												return;
+											}
+										}
+									}
+								}
+							}
+							finally {
+								DocearReferenceUpdateController.unlock();
+							}
+						}
+					});
+				}
+			});
+		}
+	}
 
 	public static ReferencesController getController() {
 		return referencesController;
@@ -357,6 +465,7 @@ public class ReferencesController extends ALanguageController implements IDocear
 			@Override
 			public void projectRemoved(WorkspaceModelEvent event) {
 				if(DocearWorkspaceProject.isCompatible(event.getProject())) {
+					event.getProject().getModel().removeProjectModelListener(getProjectModelListener());
 					try {
 						final File file = URIUtils.getFile(ProjectURLHandler.resolve(event.getProject(), ((DocearWorkspaceProject)event.getProject()).getBibtexDatabase().toURL()).toURI());
 						if(file == null) {
@@ -372,6 +481,7 @@ public class ReferencesController extends ALanguageController implements IDocear
 			@Override
 			public void projectAdded(WorkspaceModelEvent event) {
 				if(event.getProject() instanceof DocearWorkspaceProject) {
+					event.getProject().getModel().addProjectModelListener(getProjectModelListener());
 					((DocearWorkspaceProject) event.getProject()).addProjectListener(getProjectListener());
 				}
 				initContextMenusOnce();
@@ -394,7 +504,7 @@ public class ReferencesController extends ALanguageController implements IDocear
 	
 	private void addOrUpdateProjectExtension(DocearWorkspaceProject project, JabRefBaseHandle handle) {
 		JabRefProjectExtension ext = (JabRefProjectExtension) project.getExtensions(JabRefProjectExtension.class);
-		if(handle == null) {			
+		if(handle == null) {
 			project.removeExtension(JabRefProjectExtension.class);
 			if(ext != null) {
 				final JabRefBaseHandle extHandle = ext.getBaseHandle();

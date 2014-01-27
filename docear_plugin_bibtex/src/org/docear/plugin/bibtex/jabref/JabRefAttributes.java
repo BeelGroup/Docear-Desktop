@@ -712,7 +712,7 @@ public class JabRefAttributes {
 		return entry;
 	}
 
-	public ArrayList<String> parsePathNames(BibtexEntry entry, String path) {
+	public static ArrayList<String> parsePathNames(BibtexEntry entry, String path) {
 		ArrayList<String> fileNames = new ArrayList<String>();
 
 		ArrayList<String> paths = extractPaths(path);
