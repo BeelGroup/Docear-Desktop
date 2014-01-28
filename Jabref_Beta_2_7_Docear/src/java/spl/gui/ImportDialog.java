@@ -2,6 +2,7 @@ package spl.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -10,6 +11,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.Locale;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -23,6 +27,8 @@ import javax.swing.KeyStroke;
 import javax.swing.border.TitledBorder;
 
 import net.sf.jabref.Globals;
+import net.sf.jabref.Util;
+import net.sf.jabref.external.ExternalFileType;
 import spl.localization.LocalizationSupport;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
@@ -49,6 +55,9 @@ public class ImportDialog extends JDialog {
     private int dropRow;
     private String fileName;
     
+    /**
+     * @wbp.parser.constructor
+     */
     public ImportDialog(int dropRow, String fileName) {
     	this(dropRow, fileName, null);
     }
@@ -105,6 +114,62 @@ public class ImportDialog extends JDialog {
         	b.append(radioButtonUpdateEmptyFields);
         	b.append(labelMrDlib2);
         }
+        Calendar cal = Calendar.getInstance(Locale.GERMANY);
+        cal.clear();
+        cal.set(2014, 3, 1);
+        if(cal.after(Calendar.getInstance(Locale.GERMANY))) {
+        	b.append(new JLabel(""),3);
+        	b.append(new JLabel(""),3);
+        	MultiLineActionLabel message = new MultiLineActionLabel("<b style=\"color: red;\">Do you want better PDF metadata extraction and automatic PDF file renaming?</b><action cmd=\"donate\">Read here...</action>");
+        	message.setPreferredSize(new Dimension(0, 25));
+        	message.setFont(message.getFont().deriveFont(Font.BOLD));
+        	message.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent event) {
+					String link = Util.sanitizeUrl("http://www.docear.org/2014/01/23/call-for-donation-automatic-pdf-metadata-extraction-and-renaming/");
+	                ExternalFileType fileType = Globals.prefs.getExternalFileTypeByExt("html");
+	                try {
+		                if (Globals.ON_MAC) {
+		                	String[] cmd = ((fileType.getOpenWith() != null) && (fileType.getOpenWith().length() > 0)) ?
+		                            new String[] { "/usr/bin/open", "-a", fileType.getOpenWith(), link } :
+		                            new String[] { "/usr/bin/open", link };
+		                    Runtime.getRuntime().exec(cmd);
+						} else if (Globals.ON_WIN) {	
+							if ((fileType.getOpenWith() != null) && (fileType.getOpenWith().length() > 0)) {
+		                        // Application is specified. Use it:
+		                        Util.openFileWithApplicationOnWindows(link, fileType.getOpenWith());
+		                    } else
+		                    	Util.openFileOnWindows(link, true);
+						} else {
+		                    // Use the given app if specified, and the universal "xdg-open" otherwise:
+		                    String[] openWith;
+		                    if ((fileType.getOpenWith() != null) && (fileType.getOpenWith().length() > 0))
+		                        openWith = fileType.getOpenWith().split(" ");
+		                    else
+		                        openWith = new String[] {"xdg-open"};
+	
+		                    String[] cmd = new String[openWith.length+1];
+		                    System.arraycopy(openWith, 0, cmd, 0, openWith.length);
+		                    cmd[cmd.length-1] = link;
+		                    Runtime.getRuntime().exec(cmd);
+						}
+	                }
+	                catch (IOException ex) {
+	                	if ((fileType != null) && (fileType.getOpenWith() != null)
+	                            && (fileType.getOpenWith().length() > 0) &&
+	                                (ex.getMessage().indexOf(fileType.getOpenWith()) >= 0)) {
+
+	                            JOptionPane.showMessageDialog(ImportDialog.this, Globals.lang("Unable to open link. "
+	                                +"The application '%0' associated with the file type '%1' could not be called.",
+	                                    fileType.getOpenWith(), fileType.getName()),
+	                                    Globals.lang("Could not open link"), JOptionPane.ERROR_MESSAGE);
+	                	}
+	                	ex.printStackTrace();
+					}
+				}
+			});
+        	b.append(message, 3);
+        }
         b.getPanel().setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
         ButtonBarBuilder bb = new ButtonBarBuilder();
         bb.addGlue();
@@ -116,6 +181,7 @@ public class ImportDialog extends JDialog {
         contentPane.add(panel3, BorderLayout.NORTH);
         contentPane.add(b.getPanel(), BorderLayout.CENTER);
         contentPane.add(bb.getPanel(), BorderLayout.SOUTH);
+        
 
         //$$$setupUI$$$();
         //this.setText();
