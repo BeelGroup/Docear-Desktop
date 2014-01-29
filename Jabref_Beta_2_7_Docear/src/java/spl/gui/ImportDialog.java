@@ -116,7 +116,7 @@ public class ImportDialog extends JDialog {
         }
         Calendar cal = Calendar.getInstance(Locale.GERMANY);
         cal.clear();
-        cal.set(2014, 3, 1);
+        cal.set(2014, 2, 1);
         if(cal.after(Calendar.getInstance(Locale.GERMANY))) {
         	b.append(new JLabel(""),3);
         	b.append(new JLabel(""),3);
