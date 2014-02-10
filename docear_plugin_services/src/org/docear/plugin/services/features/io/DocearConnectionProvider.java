@@ -41,7 +41,7 @@ import com.sun.jersey.core.util.StringKeyStringValueIgnoreCaseMultivaluedMap;
 import com.sun.jersey.multipart.impl.MultiPartWriter;
 
 public class DocearConnectionProvider extends ADocearServiceFeature {
-	public static final int CONNECTION_TIMEOUT = 7000;
+	public static final int CONNECTION_TIMEOUT = 10000;
 	private Object proxyAuthentication = new Object();
 
 	private static ApacheHttpClient client = ApacheHttpClient.create();
