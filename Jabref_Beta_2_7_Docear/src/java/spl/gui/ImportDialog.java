@@ -120,7 +120,7 @@ public class ImportDialog extends JDialog {
         if(cal.after(Calendar.getInstance(Locale.GERMANY))) {
         	b.append(new JLabel(""),3);
         	b.append(new JLabel(""),3);
-        	MultiLineActionLabel message = new MultiLineActionLabel("<b style=\"color: red;\">Do you want better PDF metadata extraction and automatic PDF file renaming?</b><action cmd=\"donate\">Read here...</action>");
+        	MultiLineActionLabel message = new MultiLineActionLabel("<b style=\"color: red;\">Do you want better PDF metadata extraction and automatic PDF file renaming? </b><action cmd=\"donate\">Read here...</action>");
         	message.setPreferredSize(new Dimension(0, 25));
         	message.setFont(message.getFont().deriveFont(Font.BOLD));
         	message.addActionListener(new ActionListener() {
