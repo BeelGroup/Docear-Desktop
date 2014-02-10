@@ -21,6 +21,7 @@ import javax.swing.ProgressMonitor;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.commons.lang.NullArgumentException;
+import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.logging.DocearLogger;
 import org.docear.plugin.core.util.CoreUtils;
 import org.docear.plugin.services.ADocearServiceFeature;
@@ -133,10 +134,8 @@ public class RecommendationsController extends ADocearServiceFeature {
 				});
 				model = task.get(DocearConnectionProvider.CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
 				//handshake -> send receive confirmation
-				DocearServiceResponse resp = ServiceController.getConnectionController().put("user/"+ServiceController.getCurrentUser().getName()+"/recommendations/"+ String.valueOf(model.getSetId())+"/", null);
-				if(resp.getStatus() != Status.OK) {
-					DocearLogger.info(resp.getContentAsString());
-				}
+				sendReceiveConfirmation(model);
+				
 			}
 			catch (Exception e) {
 				executor.shutdownNow();
@@ -155,6 +154,17 @@ public class RecommendationsController extends ADocearServiceFeature {
 			model = new RecommendationsModel(null);
 		}		
 		return model;
+	}
+
+	public static void sendReceiveConfirmation(final RecommendationsModel model) {
+		DocearController.getController().getEventQueue().invoke(new Runnable() {
+			public void run() {
+				DocearServiceResponse resp = ServiceController.getConnectionController().put("user/"+ServiceController.getCurrentUser().getName()+"/recommendations/"+ String.valueOf(model.getSetId())+"/", null);
+				if(resp.getStatus() != Status.OK) {
+					DocearLogger.info(resp.getContentAsString());
+				}
+			}
+		});
 	}
 	
 	private static RecommendationsModel getExceptionModel(Exception e) {

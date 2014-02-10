@@ -19,6 +19,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.logging.DocearLogger;
 import org.docear.plugin.services.ServiceController;
 import org.docear.plugin.services.features.io.DocearServiceResponse;
@@ -77,16 +78,22 @@ public class StarPanel extends JPanel {
 				
 				public void mouseReleased(MouseEvent e) {
 					if(e.getComponent().equals(StarBar.this)) {
-						int mark = getMark(e.getPoint().x, (e.getComponent().getSize().width/5));
+						final int mark = getMark(e.getPoint().x, (e.getComponent().getSize().width/5));
 						updateStars(mark, true);
 						repaint();
-						isValueSet = true;
-						MultivaluedMap<String, String> formParams = new MultivaluedMapImpl();
-						formParams.add("rating", String.valueOf(mark));
-						//send rating for recommendations
-						DocearServiceResponse resp = ServiceController.getConnectionController().put("user/"+ServiceController.getCurrentUser().getName()+"/recommendations/"+ String.valueOf(setId)+"/", formParams);
-						if(resp.getStatus() != Status.OK) {
-							DocearLogger.info(resp.getContentAsString());
+						if(!isValueSet) {
+							isValueSet = true;
+							DocearController.getController().getEventQueue().invoke(new Runnable() {
+								public void run() {
+									MultivaluedMap<String, String> formParams = new MultivaluedMapImpl();
+									formParams.add("rating", String.valueOf(mark));
+									//send rating for recommendations
+									DocearServiceResponse resp = ServiceController.getConnectionController().put("user/"+ServiceController.getCurrentUser().getName()+"/recommendations/"+ String.valueOf(setId)+"/", formParams);
+									if(resp.getStatus() != Status.OK) {
+										DocearLogger.info(resp.getContentAsString());
+									}
+								}
+							});
 						}
 					}
 					
