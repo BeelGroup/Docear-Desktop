@@ -11,7 +11,9 @@ import org.freeplane.core.util.TextUtils;
 public class RecommendationsModel {
 
 	private RecommendationsModelNode rootNode;
-
+	private String evaluationLabel = "";
+	private int id = 0;
+	
 	public RecommendationsModel(Collection<RecommendationEntry> recommendations) {
 		new RecommendationsModel();
 		parseRecommendations(recommendations);
@@ -37,6 +39,8 @@ public class RecommendationsModel {
 		// small hack: first element in collection is xml-element "recommendations"
 		RecommendationEntry recommendationsElement = entries.next();
 		String rootTitle = recommendationsElement.getTitle();
+		evaluationLabel = recommendationsElement.getEvaluationLabel();
+		id = recommendationsElement.getSetId();
 		
 		if (rootTitle != null && rootTitle.trim().length() > 0) {
 			setRoot(RecommendationsModelNode.createRecommendationContainerNode(rootTitle));
@@ -62,6 +66,10 @@ public class RecommendationsModel {
 			return TextUtils.format("recommendations.map.label.forUser", label);
 		}
 		return TextUtils.getText("recommendations.map.label.anonymous");
+	}
+	
+	public String getEvaluationLabel() {
+		return evaluationLabel ;
 	}
 
 	public void setRoot(RecommendationsModelNode root) {
@@ -107,5 +115,9 @@ public class RecommendationsModel {
 			return -1;
 		}
 		return parent.getIndex(child);
+	}
+
+	public int getSetId() {
+		return id;
 	}
 }

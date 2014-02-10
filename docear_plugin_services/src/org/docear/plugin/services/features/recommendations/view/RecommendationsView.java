@@ -55,6 +55,8 @@ public class RecommendationsView extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private static JTabbedPane tabPane;
 	private static RecommendationsView view;
+	private String evaluationLabel = "";
+	private int recSetId = 0;
 
 	public RecommendationsView(final RecommendationsModel model) {
 		this();
@@ -135,8 +137,11 @@ public class RecommendationsView extends JPanel {
 	}
 
 	private void layoutModel(RecommendationsModel model) {
+		evaluationLabel = model.getEvaluationLabel();
+		recSetId = model.getSetId();
 		RecommendationsModelNode node = model.getRootNode();
 		layoutModel(node, null);
+		
 
 	}
 
@@ -288,10 +293,15 @@ public class RecommendationsView extends JPanel {
 		
 		this.add(getNewButtonBar(), BorderLayout.NORTH);
 		this.add(containerPanel, BorderLayout.CENTER);
+		this.add(getStarBar(), BorderLayout.SOUTH);
 		
 		return panel;
 	}
 	
+	private Component getStarBar() {
+		return new StarPanel(evaluationLabel, recSetId);
+	}
+
 	private Component getNewButtonBar() {
 		JPanel panel = new JPanel(new LayoutManager() {
 			

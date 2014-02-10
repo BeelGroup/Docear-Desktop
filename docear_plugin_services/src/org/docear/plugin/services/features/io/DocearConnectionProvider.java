@@ -268,6 +268,56 @@ public class DocearConnectionProvider extends ADocearServiceFeature {
 		return put(webResource.getRequestBuilder(), c);
 	}
 	
+	public DocearServiceResponse post(String path, MultivaluedMap<String, String> params) {
+
+		try {
+			if (params == null) {
+				params = new StringKeyStringValueIgnoreCaseMultivaluedMap();
+			}
+			
+			ClientResponse response = post(getServiceResource().path(path), params);
+			try {
+				Status status = response.getClientResponseStatus();
+				if (status != null && status.equals(Status.OK)) {
+					return new DocearServiceResponse(org.docear.plugin.services.features.io.DocearServiceResponse.Status.OK,
+							response.getEntityInputStream());
+				}
+				else if (status != null && status.equals(Status.NO_CONTENT)) {
+					return new DocearServiceResponse(org.docear.plugin.services.features.io.DocearServiceResponse.Status.NO_CONTENT,
+							response.getEntityInputStream());
+				}
+				else if (status != null && status.equals(Status.UNAUTHORIZED)) {
+					DocearController.getController().getEventQueue().dispatchEvent(new DocearUnauthorizedExceptionEvent(this));
+					return new DocearServiceResponse(org.docear.plugin.services.features.io.DocearServiceResponse.Status.UNAUTHORIZED,
+							getErrorMessageInputStream(response));
+				}
+				else {
+					return new DocearServiceResponse(org.docear.plugin.services.features.io.DocearServiceResponse.Status.FAILURE,
+							getErrorMessageInputStream(response));
+				}
+			}
+			finally {
+				response.close();
+			}
+		}
+		catch (ClientHandlerException e) {
+			if (e.getCause() instanceof UnknownHostException || e.getCause() instanceof NoRouteToHostException
+					|| e.getCause() instanceof SocketTimeoutException || e.getCause() instanceof ConnectException) {
+				return new DocearServiceResponse(org.docear.plugin.services.features.io.DocearServiceResponse.Status.UNKNOWN_HOST,
+						new ByteArrayInputStream(e.getMessage().getBytes()));
+			}
+			else {
+				return new DocearServiceResponse(org.docear.plugin.services.features.io.DocearServiceResponse.Status.FAILURE,
+						new ByteArrayInputStream(e.getMessage().getBytes()));
+			}
+		}
+		catch (Exception e) {
+			return new DocearServiceResponse(org.docear.plugin.services.features.io.DocearServiceResponse.Status.FAILURE, new ByteArrayInputStream(
+					e.getMessage().getBytes()));
+		}
+
+	}
+	
 	public ClientResponse post(WebResource webResource, Object requestEntity) throws Exception {
 		return post(webResource.getRequestBuilder(), requestEntity);
 	}

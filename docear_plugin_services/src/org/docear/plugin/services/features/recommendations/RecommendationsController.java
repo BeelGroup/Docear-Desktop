@@ -132,6 +132,11 @@ public class RecommendationsController extends ADocearServiceFeature {
 					
 				});
 				model = task.get(DocearConnectionProvider.CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
+				//handshake -> send receive confirmation
+				DocearServiceResponse resp = ServiceController.getConnectionController().put("user/"+ServiceController.getCurrentUser().getName()+"/recommendations/"+ String.valueOf(model.getSetId())+"/", null);
+				if(resp.getStatus() != Status.OK) {
+					DocearLogger.info(resp.getContentAsString());
+				}
 			}
 			catch (Exception e) {
 				executor.shutdownNow();
@@ -198,11 +203,16 @@ public class RecommendationsController extends ADocearServiceFeature {
 						List<RecommendationEntry> recommendations = new ArrayList<RecommendationEntry>();
 						
 						java.util.Iterator<DocearXmlElement> iterator = documents.iterator();
+						int id = 0;
 						if (iterator.hasNext()) {
 							DocearXmlElement document = iterator.next();
 							//"recommendations" element
 							DocearXmlElement recommendationsElement = document.getParent().getParent();
-							recommendations.add(new RecommendationEntry(null, recommendationsElement.getAttributeValue("descriptor"), null, null, false));
+							String evaluationLabel = recommendationsElement.getAttributeValue("evaluationLabel");
+							evaluationLabel = ((evaluationLabel == null || evaluationLabel.trim().isEmpty()) ? "How good are these recommendations?" : evaluationLabel);
+							String strId = recommendationsElement.getAttributeValue("id");
+							id = ((strId == null || strId.trim().isEmpty()) ? 0 : Integer.parseInt(strId));
+							recommendations.add(new RecommendationEntry(id, null, recommendationsElement.getAttributeValue("descriptor"), evaluationLabel, null, null, false));
 						}
 						
 						for (DocearXmlElement document : documents) {
@@ -215,7 +225,7 @@ public class RecommendationsController extends ADocearServiceFeature {
 									String prefix = recommendationElement.getAttributeValue("prefix");
 									String click = recommendationElement.getAttributeValue("fulltext");
 									boolean highlighted = ("true".equals(recommendationElement.getAttributeValue("highlighted")) ? true:false);
-									recommendations.add(new RecommendationEntry(prefix, title, url, click, highlighted));
+									recommendations.add(new RecommendationEntry(id, prefix, title, "", url, click, highlighted));
 								}
 							}
 							catch (Exception e) {

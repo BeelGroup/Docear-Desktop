@@ -10,14 +10,18 @@ public class RecommendationEntry {
 	private final URL clickUrl;
 	private final String prefix;
 	private final boolean highlighted;
+	private String evaluationLabel = "";
+	private int id;
 	
 	
-	public RecommendationEntry(String prefix, String title, String url, String clickUrl, boolean highlighted) throws MalformedURLException {
+	public RecommendationEntry(int setId, String prefix, String title, String evaluationLabel, String url, String clickUrl, boolean highlighted) throws MalformedURLException {
 		this.prefix = prefix;
 		this.title = title;
 		this.link = (url==null ? null:new URL(url));
 		this.clickUrl = (clickUrl==null ? null:new URL(clickUrl));
 		this.highlighted = highlighted;
+		this.evaluationLabel = evaluationLabel;
+		this.id = setId;
 	}
 	
 	public String getPrefix() {
@@ -26,6 +30,14 @@ public class RecommendationEntry {
 
 	public String getTitle() {
 		return title;
+	}
+	
+	public String getEvaluationLabel() {
+		return evaluationLabel;
+	}
+
+	public int getSetId() {
+		return id;
 	}
 
 	public URL getLink() {
