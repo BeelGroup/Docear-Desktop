@@ -3,11 +3,18 @@ package org.docear.plugin.bibtex.dialogs;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.io.StringReader;
+import java.net.URI;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Locale;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
@@ -34,6 +41,7 @@ import net.sf.jabref.imports.BibtexParser;
 import org.docear.plugin.bibtex.ReferencesController;
 import org.docear.plugin.bibtex.jabref.JabRefCommons;
 import org.docear.plugin.bibtex.jabref.JabRefCommons.MetadataCallableResult;
+import org.docear.plugin.core.ui.MultiLineActionLabel;
 import org.docear.plugin.core.ui.wizard.Wizard;
 import org.docear.plugin.core.ui.wizard.WizardContext;
 import org.docear.plugin.core.ui.wizard.WizardPageDescriptor;
@@ -43,6 +51,7 @@ import org.docear.plugin.services.features.user.DocearUserController;
 import org.docear.plugin.services.features.user.action.DocearUserRegistrationAction;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.TextUtils;
+import org.freeplane.features.mode.Controller;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -85,11 +94,31 @@ private static final long serialVersionUID = -627410651667772600L;
 				ColumnSpec.decode("default:grow"),
 				FormFactory.RELATED_GAP_COLSPEC,},
 			new RowSpec[] {
-				RowSpec.decode("max(20dlu;default)"),}));
+				RowSpec.decode("max(20dlu;default)"),
+				RowSpec.decode("default:grow"),}));
 		
 		lblNewLabel = new JLabel(TextUtils.getText("docear.metadata.import.help"));
 		panel.add(lblNewLabel, "2, 1");
 		
+		Calendar cal = Calendar.getInstance(Locale.GERMANY);
+		cal.clear();
+		cal.set(2014, 2, 15);
+		if(cal.after(Calendar.getInstance(Locale.GERMANY))) {
+			MultiLineActionLabel message = new MultiLineActionLabel("<b style=\"color: red;\">Do you want better PDF metadata extraction and automatic PDF file renaming? </b><action cmd=\"donate\">Read here...</action>");
+			message.setPreferredSize(new Dimension(0, 25));
+			message.setFont(message.getFont().deriveFont(Font.BOLD));
+			message.setBackground(panel.getBackground());
+			message.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent event) {
+					try {
+						Controller.getCurrentController().getViewController().openDocument(URI.create("http://www.docear.org/2014/01/23/call-for-donation-automatic-pdf-metadata-extraction-and-renaming/"));
+					} catch (IOException ignore) {
+					}
+				}
+			});
+			panel.add(message, "1, 2, 3, 1, fill, fill");
+		}
 				
 		scrollPane = new JScrollPane();
 		scrollPane.setViewportBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
