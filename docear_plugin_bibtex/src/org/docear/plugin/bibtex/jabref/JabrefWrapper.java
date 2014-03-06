@@ -493,7 +493,7 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
     		}
 		}
 		finally {
-			DocearReferenceUpdateController.lock();
+			DocearReferenceUpdateController.unlock();
 		}
 	}
 
