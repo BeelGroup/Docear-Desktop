@@ -29,6 +29,7 @@ import net.sf.jabref.Globals;
 import net.sf.jabref.JabRef;
 import net.sf.jabref.JabRefFrame;
 import net.sf.jabref.Util;
+import net.sf.jabref.export.DocearReferenceUpdateController;
 import net.sf.jabref.export.SaveDatabaseAction;
 import net.sf.jabref.export.SaveSession;
 import net.sf.jabref.external.FileLinksUpgradeWarning;
@@ -479,13 +480,20 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 	 *            The result of the bib file parse operation.
 	 */
 	public static void performPostOpenActions(BasePanel panel, ParserResult pr, boolean mustRaisePanel) {
-		for (Iterator<PostOpenAction> iterator = postOpenActions.iterator(); iterator.hasNext();) {
-			PostOpenAction action = iterator.next();
-			if (action.isActionNecessary(pr)) {
-				if (mustRaisePanel)
-					panel.frame().getTabbedPane().setSelectedComponent(panel);
-				action.performAction(panel, pr);
-			}
+		DocearReferenceUpdateController.lock();
+		
+		try {
+    		for (Iterator<PostOpenAction> iterator = postOpenActions.iterator(); iterator.hasNext();) {
+    			PostOpenAction action = iterator.next();
+    			if (action.isActionNecessary(pr)) {
+    				if (mustRaisePanel)
+    					panel.frame().getTabbedPane().setSelectedComponent(panel);
+    				action.performAction(panel, pr);
+    			}
+    		}
+		}
+		finally {
+			DocearReferenceUpdateController.lock();
 		}
 	}
 
