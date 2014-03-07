@@ -13,6 +13,8 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -42,23 +44,27 @@ public class DuplicateLinkDialogPanel extends JPanel {
 	private URI uri;
 	private File file;
 	private URL url;
+	
+	public final static int OK = 0;
+	public final static int IGNORE = 1;
 
-	public DuplicateLinkDialogPanel(final List<BibtexEntry> entries, URL url) {
+	public DuplicateLinkDialogPanel(final List<BibtexEntry> entries, Object link) {
 		this.entries = entries;
-		try {
-			this.uri = url.toURI();
+		
+		if (link instanceof URL) {		
+			this.url = (URL) link;
+			try {
+				this.uri = this.url.toURI();
+			}
+			catch (URISyntaxException e) {
+				LogUtils.warn(e);
+			}
 		}
-		catch (URISyntaxException e) {
-			LogUtils.warn(e);
+		else if (link instanceof File) {			
+			this.file = (File) link;
+			this.uri = this.file.toURI();
 		}
-		this.url = url;
-		init();
-	}
-
-	public DuplicateLinkDialogPanel(final List<BibtexEntry> entries, File file) {
-		this.entries = entries;
-		this.uri = file.toURI();
-		this.file = file;
+		
 		init();
 	}
 
@@ -132,13 +138,22 @@ public class DuplicateLinkDialogPanel extends JPanel {
 //		p.add(new JLabel(TextUtils.format("docear.reference.duplicate_file.message", this.fileName)), BorderLayout.NORTH);
 		p.add(message, BorderLayout.NORTH);
 		p.add(mail, BorderLayout.SOUTH);
-		
-		
-		
-		add(p, BorderLayout.NORTH);
-		add(scrollPane, BorderLayout.CENTER);
-		
+
 		scrollPane.setViewportView(table);
+		add(p, BorderLayout.NORTH);
+		add(scrollPane);
+		
+		JPanel doAlwaysIPanel = new JPanel();
+//		alwaysIgnorePanel.setLayout(new BorderLayout());		
+		JCheckBox doAlwaysCheckbox = new JCheckBox();		
+		doAlwaysCheckbox.setSelected(false);
+		doAlwaysIPanel.add(doAlwaysCheckbox);
+		
+		JLabel doAlwaysLabel = new JLabel();
+		doAlwaysLabel.setText(TextUtils.getText("docear.reference.duplicate.doAlways"));
+		doAlwaysIPanel.add(doAlwaysLabel);
+		
+		add(doAlwaysIPanel, BorderLayout.SOUTH);
 	}
 
 	private AbstractTableModel getTableModel() {

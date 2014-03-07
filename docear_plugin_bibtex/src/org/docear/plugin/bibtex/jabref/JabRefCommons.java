@@ -150,7 +150,7 @@ public abstract class JabRefCommons {
 
 		JabrefWrapper wrapper = ReferencesController.getController().getJabrefWrapper();
 		if(file != null) {
-			new JabRefAttributes().removePdfFromBibtexEntry(file, oldEntry);
+			new JabRefAttributes().removeFileromBibtexEntry(file, oldEntry);
 			DroppedFileHandler dfh = new DroppedFileHandler(wrapper.getJabrefFrame(), wrapper.getBasePanel());
 			// DOCEAR - change file path to relative to bib-library path?
 			dfh.linkPdfToEntry(file.getPath(), oldEntry);

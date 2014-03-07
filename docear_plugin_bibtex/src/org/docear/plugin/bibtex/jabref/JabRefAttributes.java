@@ -368,7 +368,7 @@ public class JabRefAttributes {
 		return updateReferenceToNode(reference, node);
 	}
 
-	public void removePdfFromBibtexEntry(File file, BibtexEntry entry) {
+	public void removeFileromBibtexEntry(File file, BibtexEntry entry) {
 		String filename = file.getName();
 		FileListTableModel model = new FileListTableModel();
 		String oldVal = entry.getField(GUIGlobals.FILE_FIELD);
@@ -396,39 +396,9 @@ public class JabRefAttributes {
 		}
 	}
 
-	public List<String> retrieveFileLinksFromEntry(BibtexEntry entry) {
-		String jabrefFiles = entry.getField(GUIGlobals.FILE_FIELD);
-		if (jabrefFiles != null) {
-			// path linked in jabref
-			return parsePathNames(entry, jabrefFiles);
-		}
-		return Collections.emptyList();
-	}
 
-	private void removeDuplicateLinks(File file, BibtexEntry entry) {
-		BibtexDatabase database = ReferencesController.getController().getJabrefWrapper().getDatabase();
 
-		Iterator<BibtexEntry> iter = database.getEntries().iterator();
-		while (iter.hasNext()) {
-			BibtexEntry item = iter.next();
-			if (item != entry) {
-				ReferencesController.getController().getJabRefAttributes().removePdfFromBibtexEntry(file, item);
-			}
-		}
-	}
-
-	private void removeDuplicateLinks(URL url, BibtexEntry entry) {
-		BibtexDatabase database = ReferencesController.getController().getJabrefWrapper().getDatabase();
-
-		Iterator<BibtexEntry> iter = database.getEntries().iterator();
-		while (iter.hasNext()) {
-			BibtexEntry item = iter.next();
-			if (item != entry) {
-				ReferencesController.getController().getJabRefAttributes().removeUrlFromBibtexEntry(url, item);
-			}
-		}
-	}
-
+	
 	// public void resolveDuplicateLinks(BibtexEntry entry) throws
 	// InterruptedException {
 	// for (String s : retrieveFileLinksFromEntry(entry)) {
@@ -450,87 +420,7 @@ public class JabRefAttributes {
 		}
 	}
 
-	public BibtexEntry resolveDuplicateLinks(File file) throws ResolveDuplicateEntryAbortedException {
-		List<BibtexEntry> entries = new ArrayList<BibtexEntry>();
-
-		BibtexDatabase database = ReferencesController.getController().getJabrefWrapper().getDatabase();
-
-		for (BibtexEntry entry : database.getEntries()) {
-			for (String jabrefPath : retrieveFileLinksFromEntry(entry)) {
-				File jabrefFile = new File(jabrefPath);
-
-				if (jabrefFile != null && jabrefFile.getName().equals(file.getName())) {
-					entries.add(entry);
-					break;					
-				}
-			}
-		}
-
-		if (entries.size() == 1) {
-			return entries.get(0);
-		}
-		else if (entries.size() == 0) {
-			return null;
-		}
-		DuplicateLinkDialogPanel panel = new DuplicateLinkDialogPanel(entries, file);
-		int answer = JOptionPane.showConfirmDialog(UITools.getFrame(), panel, TextUtils.getText("docear.reference.duplicate_file.title"),
-				JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
-
-		if (answer != JOptionPane.OK_OPTION) {
-			throw new ResolveDuplicateEntryAbortedException(file);
-		}
-		else {
-			BibtexEntry entry = panel.getSelectedEntry();
-			removeDuplicateLinks(file, entry);
-			ReferencesController.getController().getJabrefWrapper().getBasePanel().runCommand("save");
-			setNodeDirty(true);
-			return entry;
-		}
-	}
-
-	public BibtexEntry resolveDuplicateLinks(URL url) throws ResolveDuplicateEntryAbortedException {
-		List<BibtexEntry> entries = new ArrayList<BibtexEntry>();
-
-		BibtexDatabase database = ReferencesController.getController().getJabrefWrapper().getDatabase();
-
-		for (BibtexEntry entry : database.getEntries()) {
-			URL entryUrl = null;
-			String urlString = entry.getField("url");
-			try {
-				if (urlString != null) {
-					entryUrl = new URL(urlString);
-				}
-			}
-			catch (MalformedURLException e) {
-				LogUtils.info(urlString + ": " + e.getMessage());
-			}
-			if (url.equals(entryUrl)) {
-				entries.add(entry);
-			}
-		}
-
-		if (entries.size() == 1) {
-			return entries.get(0);
-		}
-		else if (entries.size() == 0) {
-			return null;
-		}
-
-		DuplicateLinkDialogPanel panel = new DuplicateLinkDialogPanel(entries, url);
-		int answer = JOptionPane.showConfirmDialog(UITools.getFrame(), panel, TextUtils.getText("docear.reference.duplicate_url.title"),
-				JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
-
-		if (answer != JOptionPane.OK_OPTION) {
-			throw new ResolveDuplicateEntryAbortedException(url);
-		}
-		else {
-			BibtexEntry entry = panel.getSelectedEntry();
-			removeDuplicateLinks(url, entry);
-			ReferencesController.getController().getJabrefWrapper().getBasePanel().runCommand("save");
-			setNodeDirty(true);
-			return entry;
-		}
-	}
+	
 
 	// FIXME: not used yet --> implement functionality into
 	// findBibtexEntryForPDF
@@ -584,7 +474,7 @@ public class JabRefAttributes {
 				}
 			}
 			if (!ignoreDuplicates) {
-				resolveDuplicateLinks(nodeUrl);
+				DuplicateResolver.getDuplicateResolver().resolveDuplicateLinks(nodeUrl);
 			}
 
 			for (BibtexEntry entry : database.getEntries()) {
@@ -684,7 +574,7 @@ public class JabRefAttributes {
 				}
 			}
 			if (!ignoreDuplicates) {
-				resolveDuplicateLinks(nodeFile);
+				DuplicateResolver.getDuplicateResolver().resolveDuplicateLinks(nodeFile);
 			}
 
 			for (BibtexEntry entry : database.getEntries()) {
