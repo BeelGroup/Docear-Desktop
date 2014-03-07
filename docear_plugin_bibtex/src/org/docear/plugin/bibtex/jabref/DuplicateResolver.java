@@ -89,7 +89,7 @@ public class DuplicateResolver {
 		DuplicateLinkDialogPanel panel = new DuplicateLinkDialogPanel(entries, link);		
 		int answer = getDuplicateLinkDialogAnswer(panel);
 
-		if (answer == DuplicateLinkDialogPanel.OK) {
+		if (answer == JOptionPane.OK_OPTION) {
 			BibtexEntry entry = panel.getSelectedEntry();
 			removeDuplicateLinks(file, entry);
 			ReferencesController.getController().getJabrefWrapper().getBasePanel().runCommand("save");
@@ -100,32 +100,14 @@ public class DuplicateResolver {
 			throw new ResolveDuplicateEntryAbortedException(file);
 		}
 	}	
-	
-	/**
-	 * @param panel
-	 * @return 0=ok, 1=cancel, 2=cancelAll
-	 */
-	private int getDuplicateLinkDialogAnswer(DuplicateLinkDialogPanel panel) {
-		String[] options = new String[3];
 		
+	private int getDuplicateLinkDialogAnswer(DuplicateLinkDialogPanel panel) {		
+		String ok = TextUtils.getText("ok");	
 		String ignore = TextUtils.getText("docear.reference.duplicate.ignore");
-		String ok = TextUtils.getText("ok");
-		
-		if (Compat.isWindowsOS()) {
-			options[0] = ok;
-			options[1] = ignore;
-		}
-		else {			
-			options[1] = ignore;
-			options[0] = ok;
-		}
-		
+		String[] options = {ok, ignore};
+			
 		int answer = JOptionPane.showOptionDialog(UITools.getFrame(), panel, TextUtils.getText("docear.reference.duplicate_url.title"),
-				JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-		
-		if (!Compat.isWindowsOS()) {
-			return options.length-answer; 
-		}
+				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 		
 		return answer;
 	}

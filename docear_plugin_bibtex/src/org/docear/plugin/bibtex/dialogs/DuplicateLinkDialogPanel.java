@@ -44,9 +44,6 @@ public class DuplicateLinkDialogPanel extends JPanel {
 	private URI uri;
 	private File file;
 	private URL url;
-	
-	public final static int OK = 0;
-	public final static int IGNORE = 1;
 
 	public DuplicateLinkDialogPanel(final List<BibtexEntry> entries, Object link) {
 		this.entries = entries;
