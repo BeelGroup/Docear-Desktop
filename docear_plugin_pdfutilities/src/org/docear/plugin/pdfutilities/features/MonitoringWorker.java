@@ -605,7 +605,7 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 				fireProgressUpdate(100 * monitorFiles.indexOf(uri) / monitorFiles.size());
 				File file = URIUtils.getAbsoluteFile(uri);
 				fireStatusUpdate(SwingWorkerDialog.NEW_FILE, null, file.getName());
-				if (new PdfFileFilter().accept(uri)) {
+				if (PdfFileFilter.accept(uri)) {
 					AnnotationModel pdf;
 					while(warningHandler.retry()) {
 						try {

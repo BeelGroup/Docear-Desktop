@@ -29,6 +29,7 @@ import org.docear.plugin.bibtex.ReferencesController;
 import org.docear.plugin.bibtex.jabref.JabrefWrapper;
 import org.docear.plugin.core.ui.MultiLineActionLabel;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
+import org.docear.plugin.pdfutilities.pdf.PdfFileFilter;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
@@ -96,7 +97,7 @@ public class DuplicateLinkDialogPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				if("open_uri".equals(e.getActionCommand())) {
 					try {
-						if ("file".equals(uri.getScheme())) {
+						if ("file".equals(uri.getScheme()) && PdfFileFilter.accept(uri)) {
 							PdfUtilitiesController.getController().openPdfOnPage(uri, 0);
 						}
 						else {

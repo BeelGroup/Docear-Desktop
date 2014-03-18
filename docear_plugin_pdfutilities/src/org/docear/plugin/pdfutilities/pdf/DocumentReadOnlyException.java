@@ -3,6 +3,8 @@ package org.docear.plugin.pdfutilities.pdf;
 
 public class DocumentReadOnlyException extends Exception {
 
+	private static final long serialVersionUID = 1L;
+
 	/***********************************************************************************
 	 * CONSTRUCTORS
 	 **********************************************************************************/

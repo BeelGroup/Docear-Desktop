@@ -169,7 +169,7 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		MapModel map = Controller.getCurrentController().getMap();
 		URI absoluteUri = URIUtils.resolveURI(URIUtils.getAbsoluteURI(map), uri);
 		File file = URIUtils.getFile(absoluteUri);
-		if(uri == null || file == null || !file.exists() || !new PdfFileFilter().accept(uri)){
+		if(uri == null || file == null || !file.exists() || !PdfFileFilter.accept(uri)){
 			return null;
 		}
 		

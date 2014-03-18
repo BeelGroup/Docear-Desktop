@@ -5,15 +5,12 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.swing.JOptionPane;
 import javax.ws.rs.core.UriBuilder;
 
 import net.sf.jabref.BibtexDatabase;
@@ -29,12 +26,10 @@ import org.docear.plugin.bibtex.JabRefProjectExtension;
 import org.docear.plugin.bibtex.Reference;
 import org.docear.plugin.bibtex.Reference.Item;
 import org.docear.plugin.bibtex.ReferencesController;
-import org.docear.plugin.bibtex.dialogs.DuplicateLinkDialogPanel;
 import org.docear.plugin.core.features.DocearMapModelExtension;
 import org.docear.plugin.core.features.MapModificationSession;
 import org.docear.plugin.core.util.NodeUtilities;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
-import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;

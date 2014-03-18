@@ -203,7 +203,7 @@ public abstract class MonitoringUtils {
 	
 	public static boolean isPdfLinkedNode(NodeModel node){
 		URI link = NodeUtilities.getURI(node);		
-        return new PdfFileFilter().accept(link);
+        return PdfFileFilter.accept(link);
     }
 	
 
