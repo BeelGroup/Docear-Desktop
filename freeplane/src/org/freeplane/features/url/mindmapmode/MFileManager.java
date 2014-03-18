@@ -33,6 +33,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.io.RandomAccessFile;
 import java.io.Reader;
 import java.io.SequenceInputStream;
 import java.net.MalformedURLException;
@@ -811,8 +812,8 @@ public class MFileManager extends UrlManager implements IMapViewChangeListener {
 	/**@deprecated -- use MMapIO*/
 	@Deprecated
 	public void writeToFile(final MapModel map, final File file) throws FileNotFoundException, IOException {
-		
-		final FileOutputStream out = new FileOutputStream(file);
+		final File tmpFile = new File(file.getParentFile(), "~"+file.getName());
+		final FileOutputStream out = new FileOutputStream(tmpFile);
 		final FileLock lock = out.getChannel().tryLock();
 		if (lock == null) {
 			throw new IOException("can not obtain file lock for " + file);
@@ -826,7 +827,32 @@ public class MFileManager extends UrlManager implements IMapViewChangeListener {
 			if (lock.isValid()) {
 				lock.release();
 			}
+			if(isValidMapFile(tmpFile)) {
+				if(file.exists()) {
+					file.delete();
+				}
+				tmpFile.renameTo(file);
+			}
 		}
+	}
+	
+	private boolean isValidMapFile(File file) {
+		try {
+			RandomAccessFile raf = new RandomAccessFile(file, "r");
+			try {
+				raf.seek(raf.length()-7);
+				String end = raf.readLine();
+				if(end.contains("/map>")) {
+					return true;
+				}
+			}
+			finally {
+				raf.close();
+			}
+		}
+		catch (Exception ignore) {
+		}
+		return false;
 	}
 
 	public void setFile(final MapModel map, final File file) {
