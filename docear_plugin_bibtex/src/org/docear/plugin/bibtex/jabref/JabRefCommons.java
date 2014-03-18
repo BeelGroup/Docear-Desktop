@@ -32,6 +32,7 @@ import net.sf.jabref.FocusRequester;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefFrame;
 import net.sf.jabref.KeyCollisionException;
+import net.sf.jabref.SearchManager2;
 import net.sf.jabref.Util;
 import net.sf.jabref.export.DocearReferenceUpdateController;
 import net.sf.jabref.external.DroppedFileHandler;
@@ -158,7 +159,7 @@ public abstract class JabRefCommons {
 		else {
 			runCurrentMapUpdate();
 		}
-		showInReferenceManager(oldEntry);
+		showInReferenceManager(oldEntry, false);
 
 	}
 	
@@ -555,7 +556,7 @@ public abstract class JabRefCommons {
 		if(oldEntry == null) {
 			selected.setId(Util.createNeutralId());
 			wrapper.getBasePanel().getDatabase().insertEntry(selected);
-			showInReferenceManager(selected);
+			showInReferenceManager(selected, false);
 			DroppedFileHandler dfh = new DroppedFileHandler(wrapper.getJabrefFrame(), wrapper.getBasePanel());
 			
 			if(file != null) {
@@ -566,26 +567,36 @@ public abstract class JabRefCommons {
 		}
 		else {
 			JabRefCommons.updateEntryInDatabase(null, selected, oldEntry);
-			showInReferenceManager(oldEntry);
+			showInReferenceManager(oldEntry, false);
 		}
 		
 		
 	}
 	
 	public static void showInReferenceManager(String bibtexKey) {
+			showInReferenceManager(bibtexKey, false);
+	}
+	
+	public static BibtexEntry showInReferenceManager(String bibtexKey, boolean keepSelected) {
 		if (bibtexKey != null && bibtexKey.length()>0) {
 			JabrefWrapper wrapper = ReferencesController.getController().getJabrefWrapper();
 			BibtexEntry referenceEntry = wrapper.getDatabase().getEntryByKey(bibtexKey);
-			showInReferenceManager(referenceEntry);
+			return showInReferenceManager(referenceEntry, keepSelected);
 		}
+		return null;
 	}
 	
-	public static void showInReferenceManager(BibtexEntry referenceEntry) {
+	public static void clearSearchFilter() {
+		SearchManager2 searcher = (SearchManager2) ReferencesController.getController().getJabrefWrapper().getJabrefFrame().sidePaneManager.getComponent("search");
+		searcher.clearSearch();
+	}
+	
+	public static BibtexEntry showInReferenceManager(BibtexEntry referenceEntry, boolean keepSelected) {
 		if(referenceEntry == null) {
-			return;
+			return null;
 		}
-		MainTable table = ReferencesController.getController().getJabrefWrapper().getBasePanel().getMainTable();
 		
+		MainTable table = ReferencesController.getController().getJabrefWrapper().getBasePanel().getMainTable();
 		List<BibtexEntry> list = table.getTableRows();
 		int viewHeight = table.getPane().getHeight()-table.getTableHeader().getHeight();
 		Rectangle viewRect = new Rectangle(0,((JViewport)table.getParent()).getViewPosition().y, 4, viewHeight);
@@ -593,16 +604,19 @@ public abstract class JabRefCommons {
 		Rectangle rowArea = new Rectangle(); 
 		for(BibtexEntry row : list) {
 			if(row.equals(referenceEntry)) {
-				rowArea.setBounds(0, (table.getRowHeight()*pos), 2, table.getRowHeight());					
-				table.clearSelection();
+				rowArea.setBounds(0, (table.getRowHeight()*pos), 2, table.getRowHeight());
+				if(!keepSelected) {
+					table.clearSelection();
+				}
 				table.addRowSelectionInterval(pos,pos);
 				if(isRowOutsideViewArea(viewRect, rowArea)) {
 					((JViewport)table.getParent()).setViewPosition(rowArea.getLocation());
 				}
-				break;
+				return row;
 			}
 			pos++;
 		}
+		return null;
 	}
 	
 	private static boolean isRowOutsideViewArea(final Rectangle viewArea, final Rectangle row) {
