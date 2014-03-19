@@ -1,14 +1,18 @@
 package org.docear.plugin.bibtex.jabref;
 
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.Reader;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -25,6 +29,7 @@ import javax.swing.SwingUtilities;
 import javax.ws.rs.core.MultivaluedMap;
 
 import net.sf.jabref.BasePanel;
+import net.sf.jabref.BibtexDatabase;
 import net.sf.jabref.BibtexEntry;
 import net.sf.jabref.BibtexEntryType;
 import net.sf.jabref.EntryTypeDialog;
@@ -41,12 +46,20 @@ import net.sf.jabref.labelPattern.LabelPatternUtil;
 import net.sf.jabref.undo.UndoableInsertEntry;
 import net.sf.jabref.util.XMPUtil;
 
+import org.docear.metadata.data.MetaDataSource;
+import org.docear.metadata.data.ScholarMetaData.ScholarSource;
+import org.docear.metadata.events.CaptchaEvent;
 import org.docear.plugin.bibtex.Reference;
 import org.docear.plugin.bibtex.ReferenceUpdater;
 import org.docear.plugin.bibtex.ReferencesController;
+import org.docear.plugin.bibtex.actions.MetaDataAction;
+import org.docear.plugin.bibtex.actions.MetaDataAction.MetaDataActionObject;
+import org.docear.plugin.bibtex.actions.MetaDataAction.MetaDataActionResult;
+import org.docear.plugin.bibtex.dialogs.CaptchaRequestDialog;
 import org.docear.plugin.bibtex.dialogs.PdfMetadataListDialog;
 import org.docear.plugin.bibtex.dialogs.PdfTitleQuestionDialog;
 import org.docear.plugin.core.mindmap.MindmapUpdateController;
+import org.docear.plugin.core.util.CoreUtils;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
 import org.docear.plugin.services.ServiceController;
 import org.docear.plugin.services.features.io.DocearServiceResponse;
@@ -159,7 +172,6 @@ public abstract class JabRefCommons {
 			runCurrentMapUpdate();
 		}
 		showInReferenceManager(oldEntry);
-
 	}
 	
 	private static void runCurrentMapUpdate() {
@@ -180,7 +192,9 @@ public abstract class JabRefCommons {
 					MindmapUpdateController mindmapUpdateController = new MindmapUpdateController(false);
 					mindmapUpdateController.addMindmapUpdater(new ReferenceUpdater(TextUtils.getText("update_references_current_mindmap")));
 					mindmapUpdateController.updateCurrentMindmap(true);
-				}
+				}catch(Exception e){
+					LogUtils.warn(e.getMessage());
+				}				
 				finally {
 					DocearReferenceUpdateController.unlock();
 				}
@@ -190,12 +204,15 @@ public abstract class JabRefCommons {
 	}
 
 	private static void addMissingFields(BibtexEntry oldEntry, BibtexEntry newData) {
-		DocearReferenceUpdateController.lock();
-		Collection<String> fields = newData.getAllFields();
-		for (String field : fields) {
-			if (oldEntry.getField(field) == null) {
+		DocearReferenceUpdateController.lock();		
+		for(String field : oldEntry.getAllFields()){
+			oldEntry.clearField(field);
+		}
+		for (String field : newData.getAllFields()) {
+			/*if (oldEntry.getField(field) == null) {
 				oldEntry.setField(field, newData.getField(field));
-			}
+			}*/
+			oldEntry.setField(field, newData.getField(field));
 		}
 		DocearReferenceUpdateController.unlock();
 	}
@@ -205,103 +222,180 @@ public abstract class JabRefCommons {
 	
 	
 	public static List<String> addOrUpdateRefenceEntry(String[] fileNames, int dropRow, JabRefFrame jabRefFrame, BasePanel basePanel, MainTable entryTable, boolean chooseFirst) {
-		List<String> unhandledFileNames = new ArrayList<String>();
-		if (fileNames != null && fileNames.length > 0) {			
-			for (String fileName : fileNames) {
-
-				// create document hash and try to extract the title for
-				// each file that is of type pdf
-				if (fileName.toLowerCase().endsWith(".pdf")) {
-					URI fileUri = new File(fileName).toURI();
-					
-					ImportDialog importDialog = new ImportDialog(dropRow, fileName, (chooseFirst ? (dropRow < 0) : null));
-					Tools.centerRelativeToWindow(importDialog, UITools.getFrame());
-					
-					String hash = AnnotationController.getDocumentHash(fileUri);
-					if(hash == null) {
-						importDialog.getRadioButtonMrDlib().setEnabled(false);
-						importDialog.getRadioButtonUpdateEmptyFields().setEnabled(false);
-						importDialog.getRadioButtonMrDlib().setSelected(false);
-						importDialog.getRadioButtonNoMeta().setSelected(true);
-					}
-					
-					List<BibtexEntry> xmpEntriesInFile = readXmpEntries(fileName);
-					if ((xmpEntriesInFile == null) || (xmpEntriesInFile.size() == 0)) {
-						importDialog.getRadioButtonXmp().setEnabled(false);
-					}
-					
-					if(chooseFirst) {
-						importDialog.showDialog();						
-					}
-					else if (dropRow == -1 && hash != null) { // dropped on a new area
-						// create new entry (with metadata? empty entry?
-						try {
-							showMetadataDialog(fileUri);
-						} catch (Exception e) {
-							LogUtils.warn("exception in JabRefCommons.addOrUpdateRefenceEntry() 1 : " + e.getMessage());
-						}
-						continue;						
-					} 
-					
-					// dropped on an existing entry
-					if(!chooseFirst) {
-						importDialog.showDialog();						
-					}
-					if (importDialog.getResult() == JOptionPane.OK_OPTION) {
-						// xmp metadata was selected
-						if (importDialog.getRadioButtonXmp().isSelected()) {
-							PrintStream old_err = System.err;
-							try {
-								System.setErr(new PrintStream(new StringOutputStream(), false));
-								ImportMenuItem importer = new ImportMenuItem(jabRefFrame, false);
-								importer.automatedImport(new String[] { fileName });
-							} 
-							finally {
-								System.setErr(old_err);
-							}
-						}
-						// docear services was selected
-						else if (importDialog.getRadioButtonMrDlib().isSelected()) {
-							try {
-								showMetadataDialog(fileUri);
-							} catch (Exception e) {
-								LogUtils.warn("exception in JabRefCommons.addOrUpdateRefenceEntry() 2 : " + e.getMessage());
-							}
-						} else {
-							
-							if (importDialog.getRadioButtonNoMeta().isSelected()) {
-								BibtexEntry newEntry = JabRefCommons.createNewEntry(jabRefFrame, basePanel);
-								if (newEntry != null) {
-									DroppedFileHandler dfh = new DroppedFileHandler(jabRefFrame, basePanel);
-									dfh.linkPdfToEntry(fileName, newEntry);
-								}
-							}
-							// update was selected
-							else if (importDialog.getRadioButtonUpdateEmptyFields().isSelected()) {
-								try {
-									showMetadataUpdateDialog(fileUri, entryTable.getEntryAt(dropRow));
-								} catch (Exception e) {
-									LogUtils.warn("exception in JabRefCommons.addOrUpdateRefenceEntry() 3: " + e.getMessage());
-								}
-							}
-							// attach file only was selected
-							else if (importDialog.getRadioButtononlyAttachPDF().isSelected()) {
-								DroppedFileHandler dfh = new DroppedFileHandler(jabRefFrame, basePanel);
-								dfh.linkPdfToEntry(fileName, entryTable.getEntryAt(dropRow));
-							}
-						}
-					}
-				} else {
-					// add filename to fallback list
-					unhandledFileNames.add(fileName);
-				}
-			}	
+		
+		MetaDataActionObject result =  new MetaDataAction().new MetaDataActionObject();
+		if(fileNames == null) return new ArrayList<String>();
+		BibtexDatabase database = ReferencesController.getController().getJabrefWrapper().getDatabase();
+		JabRefAttributes jabref = new JabRefAttributes();
+		BibtexEntry dropEntry = null;
+		if(dropRow >= 0){
+			dropEntry = entryTable.getEntryAt(dropRow);
 		}
-		return unhandledFileNames;
+		for(String fileName : fileNames){
+			if (fileName != null && fileName.toLowerCase().endsWith(".pdf")) {
+				BibtexEntry existingEntry = null;
+				URI fileUri = new File(fileName).toURI();
+				for (BibtexEntry entry : database.getEntries()) {
+					URL entryUrl = null;
+					String urlString = entry.getField("url");
+					try {
+						if (urlString != null) {
+							entryUrl = new URL(urlString);
+						}
+						if (fileUri.toURL().equals(entryUrl)) {
+							existingEntry = entry;
+						}
+					}
+					catch (MalformedURLException e) {
+						LogUtils.info(urlString + ": " + e.getMessage());
+					}					
+					for (String jabrefPath : jabref.retrieveFileLinksFromEntry(entry)) {
+						File jabrefFile = new File(jabrefPath);
+						if (jabrefFile != null && jabrefFile.getName().equals(new File(fileName).getName())) {
+							existingEntry = entry;
+							break;
+						}
+					}
+					if(existingEntry != null) break;
+				}
+				MetaDataActionResult fileResult = new MetaDataAction().new MetaDataActionResult();
+				if(dropEntry != null && existingEntry != null){
+					fileResult.setDuplicatePdf(true);
+					fileResult.setShowattachOnlyOption(true);
+					fileResult.setEntryToUpdate(dropEntry);
+				}
+				else if(dropEntry == null && existingEntry != null){
+					fileResult.setEntryToUpdate(existingEntry);
+				}
+				else if(dropEntry != null && existingEntry == null){
+					fileResult.setEntryToUpdate(dropEntry);
+					fileResult.setShowattachOnlyOption(true);
+				}
+				result.getResult().put(fileUri, fileResult);
+			}
+			else{
+				result.getUnhandledFiles().add(fileName);
+			}
+		}
+		
+		MetaDataAction.showDialog(result);
+		
+		for(URI file :  result.getResult().keySet()){
+			MetaDataActionResult fileResult = result.getResult().get(file);
+			if(fileResult.isSelectedCancel()) continue;
+			if(fileResult.isAttachOnly()){
+				DroppedFileHandler dfh = new DroppedFileHandler(jabRefFrame, basePanel);
+				dfh.linkPdfToEntry(CoreUtils.resolveURI(file).getAbsolutePath(), fileResult.getEntryToUpdate());
+			}
+			if(fileResult.isSelectedBlank()){
+				addOrUpdateEntryToDatabase(CoreUtils.resolveURI(file), new BibtexEntry());
+							
+			}
+			else if((fileResult.isSelectedFetched() || fileResult.isSelectedXmp()) && fileResult.getResultEntry() != null){
+				addOrUpdateEntryToDatabase(CoreUtils.resolveURI(file), fileResult.getResultEntry());					
+			}
+			
+		}
+		
+		return result.getUnhandledFiles();
+		
+//		List<String> unhandledFileNames = new ArrayList<String>();
+//		if (fileNames != null && fileNames.length > 0) {			
+//			for (String fileName : fileNames) {
+//
+//				// create document hash and try to extract the title for
+//				// each file that is of type pdf
+//				if (fileName.toLowerCase().endsWith(".pdf")) {
+//					URI fileUri = new File(fileName).toURI();
+//					
+//					ImportDialog importDialog = new ImportDialog(dropRow, fileName, (chooseFirst ? (dropRow < 0) : null));
+//					Tools.centerRelativeToWindow(importDialog, UITools.getFrame());
+//					
+//					String hash = AnnotationController.getDocumentHash(fileUri);
+//					if(hash == null) {
+//						importDialog.getRadioButtonMrDlib().setEnabled(false);
+//						importDialog.getRadioButtonUpdateEmptyFields().setEnabled(false);
+//						importDialog.getRadioButtonMrDlib().setSelected(false);
+//						importDialog.getRadioButtonNoMeta().setSelected(true);
+//					}
+//					
+//					List<BibtexEntry> xmpEntriesInFile = readXmpEntries(fileName);
+//					if ((xmpEntriesInFile == null) || (xmpEntriesInFile.size() == 0)) {
+//						importDialog.getRadioButtonXmp().setEnabled(false);
+//					}
+//					
+//					if(chooseFirst) {
+//						importDialog.showDialog();						
+//					}
+//					else if (dropRow == -1 && hash != null) { // dropped on a new area
+//						// create new entry (with metadata? empty entry?
+//						try {
+//							showMetadataDialog(fileUri);
+//						} catch (Exception e) {
+//							LogUtils.warn("exception in JabRefCommons.addOrUpdateRefenceEntry() 1 : " + e.getMessage());
+//						}
+//						continue;						
+//					} 
+//					
+//					// dropped on an existing entry
+//					if(!chooseFirst) {
+//						importDialog.showDialog();						
+//					}
+//					if (importDialog.getResult() == JOptionPane.OK_OPTION) {
+//						// xmp metadata was selected
+//						if (importDialog.getRadioButtonXmp().isSelected()) {
+//							PrintStream old_err = System.err;
+//							try {
+//								System.setErr(new PrintStream(new StringOutputStream(), false));
+//								ImportMenuItem importer = new ImportMenuItem(jabRefFrame, false);
+//								importer.automatedImport(new String[] { fileName });
+//							} 
+//							finally {
+//								System.setErr(old_err);
+//							}
+//						}
+//						// docear services was selected
+//						else if (importDialog.getRadioButtonMrDlib().isSelected()) {
+//							try {
+//								showMetadataDialog(fileUri);
+//							} catch (Exception e) {
+//								LogUtils.warn("exception in JabRefCommons.addOrUpdateRefenceEntry() 2 : " + e.getMessage());
+//							}
+//						} else {
+//							
+//							if (importDialog.getRadioButtonNoMeta().isSelected()) {
+//								BibtexEntry newEntry = JabRefCommons.createNewEntry(jabRefFrame, basePanel);
+//								if (newEntry != null) {
+//									DroppedFileHandler dfh = new DroppedFileHandler(jabRefFrame, basePanel);
+//									dfh.linkPdfToEntry(fileName, newEntry);
+//								}
+//							}
+//							// update was selected
+//							else if (importDialog.getRadioButtonUpdateEmptyFields().isSelected()) {
+//								try {
+//									showMetadataUpdateDialog(fileUri, entryTable.getEntryAt(dropRow));
+//								} catch (Exception e) {
+//									LogUtils.warn("exception in JabRefCommons.addOrUpdateRefenceEntry() 3: " + e.getMessage());
+//								}
+//							}
+//							// attach file only was selected
+//							else if (importDialog.getRadioButtononlyAttachPDF().isSelected()) {
+//								DroppedFileHandler dfh = new DroppedFileHandler(jabRefFrame, basePanel);
+//								dfh.linkPdfToEntry(fileName, entryTable.getEntryAt(dropRow));
+//							}
+//						}
+//					}
+//				} else {
+//					// add filename to fallback list
+//					unhandledFileNames.add(fileName);
+//				}
+//			}	
+//		}
+//		return unhandledFileNames;
 	}
 	
-	private static List<BibtexEntry> readXmpEntries(String fileName) {
-		List<BibtexEntry> xmpEntriesInFile = null;
+	public static List<BibtexEntry> readXmpEntries(String fileName) {
+		List<BibtexEntry> xmpEntriesInFile = new ArrayList<BibtexEntry>();
 		PrintStream err = System.err;
 		System.setErr(new PrintStream(new StringOutputStream()));
 		try {
@@ -565,7 +659,7 @@ public abstract class JabRefCommons {
 			}
 		}
 		else {
-			JabRefCommons.updateEntryInDatabase(null, selected, oldEntry);
+			JabRefCommons.updateEntryInDatabase(file, selected, oldEntry);
 			showInReferenceManager(oldEntry);
 		}
 		
@@ -628,37 +722,47 @@ public abstract class JabRefCommons {
 	    if (type != null) { // Only if the dialog was not cancelled.
 	        String id = Util.createNeutralId();
 	        final BibtexEntry be = new BibtexEntry(id, type);
-	        try {
-	            panel.database().insertEntry(be);
-	
-	            // Set owner/timestamp if options are enabled:
-	            ArrayList<BibtexEntry> list = new ArrayList<BibtexEntry>();
-	            list.add(be);
-	            Util.setAutomaticFields(list, true, true, false);
-	
-	            // Create an UndoableInsertEntry object.
-	            panel.undoManager.addEdit(new UndoableInsertEntry(panel.database(), be, panel));
-	            panel.output(Globals.lang("Added new")+" '"+type.getName().toLowerCase()+"' "
-	                   +Globals.lang("entry")+".");
-	
-	            // We are going to select the new entry. Before that, make sure that we are in
-	            // show-entry mode. If we aren't already in that mode, enter the WILL_SHOW_EDITOR
-	            // mode which makes sure the selection will trigger display of the entry editor
-	            // and adjustment of the splitter.
-	            if (panel.getMode() != BasePanel.SHOWING_EDITOR) {
-	            	panel.setMode(BasePanel.WILL_SHOW_EDITOR);
-	            }
-	
-	            panel.showEntry(be);
-	            panel.markBaseChanged(); // The database just changed.
-	            new FocusRequester(panel.getEntryEditor(be));
-	            return be;
-	        } 
-	        catch (KeyCollisionException ex) {
-	        	LogUtils.warn("exception in JabRefCommons.createNewEntry(): " + ex.getMessage());	            
+	        if(insertEntry(panel, be)){
+	        	return be;
+	        }
+	        else{
+	        	return null;
 	        }
 	    }
 	    return null;
+	}
+
+	private static boolean insertEntry(BasePanel panel, final BibtexEntry be) {
+		try {
+		    panel.database().insertEntry(be);
+
+		    // Set owner/timestamp if options are enabled:
+		    ArrayList<BibtexEntry> list = new ArrayList<BibtexEntry>();
+		    list.add(be);
+		    Util.setAutomaticFields(list, true, true, false);
+
+		    // Create an UndoableInsertEntry object.
+		    panel.undoManager.addEdit(new UndoableInsertEntry(panel.database(), be, panel));
+		    panel.output(Globals.lang("Added new")+" '"+be.getType().getName().toLowerCase()+"' "
+		           +Globals.lang("entry")+".");
+
+		    // We are going to select the new entry. Before that, make sure that we are in
+		    // show-entry mode. If we aren't already in that mode, enter the WILL_SHOW_EDITOR
+		    // mode which makes sure the selection will trigger display of the entry editor
+		    // and adjustment of the splitter.
+		    if (panel.getMode() != BasePanel.SHOWING_EDITOR) {
+		    	panel.setMode(BasePanel.WILL_SHOW_EDITOR);
+		    }
+
+		    panel.showEntry(be);
+		    panel.markBaseChanged(); // The database just changed.
+		    new FocusRequester(panel.getEntryEditor(be));
+		    return true;
+		} 
+		catch (KeyCollisionException ex) {
+			LogUtils.warn("exception in JabRefCommons.insertEntry(): " + ex.getMessage());	            
+		}
+		return false;
 	}
 
 //	private static void insertFields(String[] fields, BibtexEntry entry, BibtexEntry newData) {
