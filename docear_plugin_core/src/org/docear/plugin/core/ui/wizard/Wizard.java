@@ -81,7 +81,7 @@ public class Wizard {
 	 * CONSTRUCTORS
 	 **********************************************************************************/
 
-	public Wizard(Frame owner) {
+	public Wizard(Window owner) {
 		wizardModel = new WizardModel();
 		wizard = new JDialog(owner);
 		wizardController = new WizardController(this);
@@ -199,6 +199,11 @@ public class Wizard {
 				public void setWizardTitle(String title) {
 					setTitle(title);
 				}
+
+				@Override
+				public Wizard getWizard() {
+					return Wizard.this;
+				}
 			};
 		}
 		return context;
@@ -218,8 +223,7 @@ public class Wizard {
 	public synchronized int show() {
 		returnCode = NOT_DEFINED;
 		returnCodeObserver.start();
-		wizard.setSize(640, 480);
-		centerOnOwner(wizard);
+		wizard.setSize(640, 480);		
 		
 		resetControls();
 		if(getStartPage() != null) {
@@ -228,6 +232,8 @@ public class Wizard {
 		
 		SwingUtilities.updateComponentTreeUI(wizard);
 		wizard.pack();
+		centerOnOwner(wizard);
+		wizard.toFront();
 		wizard.setVisible(true);
 		Window.getWindows();
 		wizard.toFront();
@@ -333,9 +339,13 @@ public class Wizard {
 		cardPanel.setLayout(cardLayout);
 		
 		backButton = new JButton("back");
+		backButton.setBackground(Color.WHITE);
 		nextButton = new JButton("next");
+		nextButton.setBackground(Color.WHITE);
 		skipButton = new JButton("skip");
+		skipButton.setBackground(Color.WHITE);
 		cancelButton = new JButton("cancel");
+		cancelButton.setBackground(Color.WHITE);
 
 		backButton.addActionListener(wizardController);
 		nextButton.addActionListener(wizardController);

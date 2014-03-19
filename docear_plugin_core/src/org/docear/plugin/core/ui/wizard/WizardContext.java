@@ -53,4 +53,6 @@ public abstract class WizardContext {
 	public abstract AbstractButton getNextButton();
 	public abstract AbstractButton getBackButton();
 	public abstract AbstractButton getSkipButton();
+
+	public abstract Wizard getWizard();
 }

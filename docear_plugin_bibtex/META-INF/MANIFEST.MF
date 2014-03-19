@@ -16,6 +16,8 @@ Import-Package: org.apache.commons.io,
  org.swingplus
 Bundle-ClassPath: lib/plugin.jar,
  lib/resources.jar,
- lib/JabRef-2.7.1.jar
+ lib/JabRef-2.7.1.jar,
+ lib/docear-metadata-lib-0.0.1.jar,
+ lib/slf4j-jdk14-1.7.6.jar
 Export-Package: org.docear.plugin.bibtex,
  org.docear.plugin.bibtex.jabref
