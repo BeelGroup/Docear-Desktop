@@ -6,7 +6,6 @@ import java.net.URI;
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.util.CoreUtils;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
-import org.freeplane.core.resources.ResourceController;
 import org.freeplane.plugin.workspace.event.IWorkspaceNodeActionListener;
 import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.nodes.ALinkNode;

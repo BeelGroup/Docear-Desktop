@@ -169,7 +169,7 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		MapModel map = Controller.getCurrentController().getMap();
 		URI absoluteUri = URIUtils.resolveURI(URIUtils.getAbsoluteURI(map), uri);
 		File file = URIUtils.getFile(absoluteUri);
-		if(uri == null || file == null || !file.exists() || !new PdfFileFilter().accept(uri)){
+		if(uri == null || file == null || !file.exists() || !PdfFileFilter.accept(uri)){
 			return null;
 		}
 		
@@ -206,7 +206,7 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 			this.modifiedDocument = extractor.isDocumentModified() || this.modifiedDocument;
 			for (APDMetaObject meta : metaObjects) {
 				AnnotationModel annotation = new AnnotationModel(meta.getUID());
-				transferMetaObject(meta, annotation);
+				transferMetaObject(document, meta, annotation);
 				annotations.add(annotation);
 			}
 		}
@@ -224,7 +224,7 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		try {
 			List<APDMetaObject> metaObjects = extractor.getMetaObjects();
 			this.modifiedDocument = extractor.isDocumentModified() || this.modifiedDocument;
-			importBookmarksRecursive(annotations, metaObjects);
+			importBookmarksRecursive(document, annotations, metaObjects);
 		}
 		finally {
 			extractor.resetAll();
@@ -232,17 +232,17 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		
 	}
 
-	private void importBookmarksRecursive(List<AnnotationModel> annotations, List<APDMetaObject> metaObjects) {
+	private void importBookmarksRecursive(PDDocument document, List<AnnotationModel> annotations, List<APDMetaObject> metaObjects) {
 		for (APDMetaObject meta : metaObjects) {
 			AnnotationModel annotation = new AnnotationModel(meta.getUID());
-			transferMetaObject(meta, annotation);
+			transferMetaObject(document, meta, annotation);
 			annotations.add(annotation);
 		}
 	}
 	
 	
 	
-	private void transferMetaObject(APDMetaObject meta, AnnotationModel annotation) {
+	private void transferMetaObject(PDDocument document, APDMetaObject meta, AnnotationModel annotation) {
 		
 		annotation.setOldObjectNumber(meta.getObjectNumber());
 		annotation.setIsNewID(meta.getContext().isNewID());
@@ -258,7 +258,7 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 				annotation.setDestinationUri(((UriDestination)meta.getDestination()).getUri());
 			}
 		}
-		
+		removeLinebreaks(annotation, meta.getObjectReference(), document);
 		if(this.setPDObject()){
 			annotation.setAnnotationObject(meta.getObjectReference());
 		}
@@ -266,7 +266,7 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		if(meta.hasChildren()) {
 			for (APDMetaObject metaChild : meta.getChildren()) {
 				AnnotationModel childAnnotation = new AnnotationModel(metaChild.getUID());
-				transferMetaObject(metaChild, childAnnotation);
+				transferMetaObject(document, metaChild, childAnnotation);
 				annotation.getChildren().add(childAnnotation);
 			}
 		}
@@ -357,7 +357,7 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		}
 	}
 	
-	public String removeLinebreaks(String text) {
+	public static String removeLinebreaks(String text) {
 		boolean keepDoubleLinebreaks = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.KEEP_DOUBLE_LINEBREAKS_KEY);
 		boolean addSpaces = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.ADD_SPACES_KEY);
 		boolean removeDashes = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.REMOVE_DASHES_KEY);

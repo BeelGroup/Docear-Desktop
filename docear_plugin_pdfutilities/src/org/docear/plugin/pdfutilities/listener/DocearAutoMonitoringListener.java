@@ -2,15 +2,11 @@ package org.docear.plugin.pdfutilities.listener;
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
-import java.io.File;
-import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TreeMap;
 
 import javax.swing.SwingUtilities;
@@ -30,16 +26,7 @@ public class DocearAutoMonitoringListener implements IMapLifeCycleListener,  Win
 	
 	private List<NodeModel> autoMonitorNodes = new ArrayList<NodeModel>();
 	private boolean startup = true;
-	
-	private FileFilter directoryFilter = new FileFilter() {
-		public boolean accept(File file) {
-			if(file.isDirectory()) {
-				return true;
-			}
-			return false;
-		}
-	};
-	
+		
 	Comparator<WatchKey> watchKeyComparator = new Comparator<WatchKey>() {
 
 		public int compare(WatchKey key1, WatchKey key2) {
@@ -175,44 +162,6 @@ public class DocearAutoMonitoringListener implements IMapLifeCycleListener,  Win
 			autoMonitorNodes.clear();
 		}		
 	}
-//	
-//	private void registerMonitoredDirectories(MapModel map, List<? extends NodeModel> monitoringNodes) {
-//		List<WatchKey> keys = mapKeysMap.get(map);
-//		if(keys == null) {
-//			keys = new ArrayList<WatchKey>();
-//			mapKeysMap.put(map, keys);
-//		}
-//		for(NodeModel model : monitoringNodes) {
-//			
-//			try {
-//				File dir = UriController.resolveFile(MModeWorkspaceUrlManager.getController().getAbsoluteUri(map, MonitoringUtils.getPdfDirFromMonitoringNode(model)));
-//				addMonitoringDirectory(map, dir);
-//			} catch (MalformedURLException e) {
-//				LogUtils.severe(e);
-//			}
-//			
-//		}
-//	}
-
-
-	private void addMonitoringDirectory(MapModel map, File dir) {
-		//TODO: enable automatic file monitoring
-//		if(dir != null && dir.exists() && dir.isDirectory()) {
-//			try {
-//				WatchKey key = Paths.get(dir.getPath()).register(watcher, StandardWatchEventKind.ENTRY_CREATE, StandardWatchEventKind.ENTRY_DELETE, StandardWatchEventKind.ENTRY_MODIFY);
-//				mapKeysMap.get(map).add(key);
-//				watchables.put(key, dir.getPath());
-//				keyMapMap.put(key, map);
-//			} catch (IOException e) {
-//				LogUtils.warn(e);
-//				return;
-//			}			
-//			File[] subDirs = dir.listFiles(directoryFilter );
-//			for (File file : subDirs) {
-//				addMonitoringDirectory(map, file);
-//			}
-//		}
-	}
 	
 	private void cleanUpWatchKey(WatchKey watchKey) {
 		watchKey.cancel();
@@ -220,34 +169,5 @@ public class DocearAutoMonitoringListener implements IMapLifeCycleListener,  Win
 		keyMapMap.remove(watchKey);
 	}
 	
-	private void onModifyFile(File file, WatchKey key) {
-		synchronized (watchables) {
-			//System.out.println("modified "+ file);
-		}
-	}
-
-	private void onDeleteFile(File file, WatchKey key) {
-		synchronized (watchables) {
-			//System.out.println("deleted "+ file);
-			Set<Entry<WatchKey, String>> entries= watchables.entrySet();
-			for (Entry<WatchKey, String> entry : entries) {
-				if(entry.getValue().equals(file.getPath())) {
-					//what to do
-				}
-			}
-		}
-		
-	}
-
-	private void onCreateFile(File file, WatchKey key) {
-		synchronized (watchables) {
-			//System.out.println("created "+ file);
-			if(file.exists()) {
-				if(file.isDirectory()) {
-					addMonitoringDirectory(keyMapMap.get(key), file);
-				}
-			}
-		}		
-	}
 
 }

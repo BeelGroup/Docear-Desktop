@@ -40,7 +40,7 @@ import org.docear.plugin.bibtex.actions.CopyBibtexToClipboard;
 import org.docear.plugin.bibtex.actions.CopyCiteKeyToClipboard;
 import org.docear.plugin.bibtex.actions.ReferenceQuitAction;
 import org.docear.plugin.bibtex.actions.RemoveReferenceAction;
-import org.docear.plugin.bibtex.actions.ShowInReferenceManagerAction;
+import org.docear.plugin.bibtex.actions.SelectInReferenceManagerAction;
 import org.docear.plugin.bibtex.actions.ShowJabrefPreferencesAction;
 import org.docear.plugin.bibtex.actions.UpdateReferencesAllMapsAction;
 import org.docear.plugin.bibtex.actions.UpdateReferencesAllOpenMapsAction;
@@ -644,7 +644,7 @@ public class ReferencesController extends ALanguageController implements IDocear
 		res.setDefaultProperty(AddOrUpdateReferenceEntryWorkspaceAction.KEY+".icon", "/images/docear/references/References-CreateOrUpdate.png");
 		res.setDefaultProperty(AddNewReferenceAction.KEY+".icon", "/images/docear/references/References-CreateOrUpdate.png");
 		res.setDefaultProperty(UpdateReferencesCurrentMapAction.KEY+".icon", "/images/docear/references/References-RefreshInCurrentMap.png");
-		res.setDefaultProperty(ShowInReferenceManagerAction.KEY+".icon", "/images/docear/references/References-ShowInReferenceManager.png");
+		res.setDefaultProperty(SelectInReferenceManagerAction.KEY+".icon", "/images/docear/references/References-ShowInReferenceManager.png");
 		
 		res.setDefaultProperty("ShowAllAttributesAction.icon", "/images/docear/references/ReferencesSettings-ShowAllAttributes.png");
 		res.setDefaultProperty("HideAllAttributesAction.icon", "/images/docear/references/ReferencesSettings-HideAllAttributes.png");
@@ -657,7 +657,7 @@ public class ReferencesController extends ALanguageController implements IDocear
 	}
 	
 	private void addMenuEntries() {
-		final ShowInReferenceManagerAction showRefAction = new ShowInReferenceManagerAction();
+		final SelectInReferenceManagerAction showRefAction = new SelectInReferenceManagerAction();
 		WorkspaceController.addAction(changeBibtexDatabase);
 		WorkspaceController.addAction(addExistingReference);
 		WorkspaceController.addAction(removeReference);

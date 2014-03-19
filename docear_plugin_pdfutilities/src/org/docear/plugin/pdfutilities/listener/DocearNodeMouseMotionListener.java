@@ -32,7 +32,6 @@ import org.docear.plugin.pdfutilities.actions.UpdateMonitoringFolderAction;
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
 import org.docear.plugin.pdfutilities.features.IAnnotation;
 import org.docear.plugin.pdfutilities.util.MonitoringUtils;
-import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.IMouseListener;
 import org.freeplane.core.ui.components.MultipleImage;
 import org.freeplane.core.util.LogUtils;

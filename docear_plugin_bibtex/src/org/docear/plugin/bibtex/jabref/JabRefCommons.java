@@ -1,7 +1,6 @@
 package org.docear.plugin.bibtex.jabref;
 
 import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,8 +11,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -37,25 +34,21 @@ import net.sf.jabref.FocusRequester;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefFrame;
 import net.sf.jabref.KeyCollisionException;
+import net.sf.jabref.SearchManager2;
 import net.sf.jabref.Util;
 import net.sf.jabref.export.DocearReferenceUpdateController;
 import net.sf.jabref.external.DroppedFileHandler;
 import net.sf.jabref.gui.MainTable;
-import net.sf.jabref.imports.ImportMenuItem;
 import net.sf.jabref.labelPattern.LabelPatternUtil;
 import net.sf.jabref.undo.UndoableInsertEntry;
 import net.sf.jabref.util.XMPUtil;
 
-import org.docear.metadata.data.MetaDataSource;
-import org.docear.metadata.data.ScholarMetaData.ScholarSource;
-import org.docear.metadata.events.CaptchaEvent;
 import org.docear.plugin.bibtex.Reference;
 import org.docear.plugin.bibtex.ReferenceUpdater;
 import org.docear.plugin.bibtex.ReferencesController;
 import org.docear.plugin.bibtex.actions.MetaDataAction;
 import org.docear.plugin.bibtex.actions.MetaDataAction.MetaDataActionObject;
 import org.docear.plugin.bibtex.actions.MetaDataAction.MetaDataActionResult;
-import org.docear.plugin.bibtex.dialogs.CaptchaRequestDialog;
 import org.docear.plugin.bibtex.dialogs.PdfMetadataListDialog;
 import org.docear.plugin.bibtex.dialogs.PdfTitleQuestionDialog;
 import org.docear.plugin.core.mindmap.MindmapUpdateController;
@@ -69,9 +62,6 @@ import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.plugin.workspace.io.StringOutputStream;
-
-import spl.Tools;
-import spl.gui.ImportDialog;
 
 import com.sun.jersey.core.util.StringKeyStringValueIgnoreCaseMultivaluedMap;
 
@@ -163,7 +153,7 @@ public abstract class JabRefCommons {
 
 		JabrefWrapper wrapper = ReferencesController.getController().getJabrefWrapper();
 		if(file != null) {
-			new JabRefAttributes().removePdfFromBibtexEntry(file, oldEntry);
+			new JabRefAttributes().removeFileromBibtexEntry(file, oldEntry);
 			DroppedFileHandler dfh = new DroppedFileHandler(wrapper.getJabrefFrame(), wrapper.getBasePanel());
 			// DOCEAR - change file path to relative to bib-library path?
 			dfh.linkPdfToEntry(file.getPath(), oldEntry);
@@ -171,7 +161,7 @@ public abstract class JabRefCommons {
 		else {
 			runCurrentMapUpdate();
 		}
-		showInReferenceManager(oldEntry);
+		showInReferenceManager(oldEntry, false);
 	}
 	
 	private static void runCurrentMapUpdate() {
@@ -225,8 +215,7 @@ public abstract class JabRefCommons {
 		
 		MetaDataActionObject result =  new MetaDataAction().new MetaDataActionObject();
 		if(fileNames == null) return new ArrayList<String>();
-		BibtexDatabase database = ReferencesController.getController().getJabrefWrapper().getDatabase();
-		JabRefAttributes jabref = new JabRefAttributes();
+		BibtexDatabase database = ReferencesController.getController().getJabrefWrapper().getDatabase();		
 		BibtexEntry dropEntry = null;
 		if(dropRow >= 0){
 			dropEntry = entryTable.getEntryAt(dropRow);
@@ -249,7 +238,7 @@ public abstract class JabRefCommons {
 					catch (MalformedURLException e) {
 						LogUtils.info(urlString + ": " + e.getMessage());
 					}					
-					for (String jabrefPath : jabref.retrieveFileLinksFromEntry(entry)) {
+					for (String jabrefPath : DuplicateResolver.getDuplicateResolver().retrieveFileLinksFromEntry(entry)) {
 						File jabrefFile = new File(jabrefPath);
 						if (jabrefFile != null && jabrefFile.getName().equals(new File(fileName).getName())) {
 							existingEntry = entry;
@@ -649,7 +638,7 @@ public abstract class JabRefCommons {
 		if(oldEntry == null) {
 			selected.setId(Util.createNeutralId());
 			wrapper.getBasePanel().getDatabase().insertEntry(selected);
-			showInReferenceManager(selected);
+			showInReferenceManager(selected, false);
 			DroppedFileHandler dfh = new DroppedFileHandler(wrapper.getJabrefFrame(), wrapper.getBasePanel());
 			
 			if(file != null) {
@@ -660,26 +649,36 @@ public abstract class JabRefCommons {
 		}
 		else {
 			JabRefCommons.updateEntryInDatabase(file, selected, oldEntry);
-			showInReferenceManager(oldEntry);
+			showInReferenceManager(oldEntry, false);
 		}
 		
 		
 	}
 	
 	public static void showInReferenceManager(String bibtexKey) {
+			showInReferenceManager(bibtexKey, false);
+	}
+	
+	public static BibtexEntry showInReferenceManager(String bibtexKey, boolean keepSelected) {
 		if (bibtexKey != null && bibtexKey.length()>0) {
 			JabrefWrapper wrapper = ReferencesController.getController().getJabrefWrapper();
 			BibtexEntry referenceEntry = wrapper.getDatabase().getEntryByKey(bibtexKey);
-			showInReferenceManager(referenceEntry);
+			return showInReferenceManager(referenceEntry, keepSelected);
 		}
+		return null;
 	}
 	
-	public static void showInReferenceManager(BibtexEntry referenceEntry) {
+	public static void clearSearchFilter() {
+		SearchManager2 searcher = (SearchManager2) ReferencesController.getController().getJabrefWrapper().getJabrefFrame().sidePaneManager.getComponent("search");
+		searcher.clearSearch();
+	}
+	
+	public static BibtexEntry showInReferenceManager(BibtexEntry referenceEntry, boolean keepSelected) {
 		if(referenceEntry == null) {
-			return;
+			return null;
 		}
-		MainTable table = ReferencesController.getController().getJabrefWrapper().getBasePanel().getMainTable();
 		
+		MainTable table = ReferencesController.getController().getJabrefWrapper().getBasePanel().getMainTable();
 		List<BibtexEntry> list = table.getTableRows();
 		int viewHeight = table.getPane().getHeight()-table.getTableHeader().getHeight();
 		Rectangle viewRect = new Rectangle(0,((JViewport)table.getParent()).getViewPosition().y, 4, viewHeight);
@@ -687,16 +686,19 @@ public abstract class JabRefCommons {
 		Rectangle rowArea = new Rectangle(); 
 		for(BibtexEntry row : list) {
 			if(row.equals(referenceEntry)) {
-				rowArea.setBounds(0, (table.getRowHeight()*pos), 2, table.getRowHeight());					
-				table.clearSelection();
+				rowArea.setBounds(0, (table.getRowHeight()*pos), 2, table.getRowHeight());
+				if(!keepSelected) {
+					table.clearSelection();
+				}
 				table.addRowSelectionInterval(pos,pos);
 				if(isRowOutsideViewArea(viewRect, rowArea)) {
 					((JViewport)table.getParent()).setViewPosition(rowArea.getLocation());
 				}
-				break;
+				return row;
 			}
 			pos++;
 		}
+		return null;
 	}
 	
 	private static boolean isRowOutsideViewArea(final Rectangle viewArea, final Rectangle row) {

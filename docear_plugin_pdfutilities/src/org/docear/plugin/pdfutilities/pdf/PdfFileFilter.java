@@ -17,17 +17,17 @@ public class PdfFileFilter implements FileFilter{
         return file.exists() && accept(path);
     }
 	
-	public boolean accept(URI uri){
+	public static boolean accept(URI uri){
 		File file = URIUtils.getAbsoluteFile(uri);
 		if(uri == null || file == null || !file.exists()){
 			return false;
 		}
 		else{
-			return this.accept(uri.toString());
+			return accept(uri.toString());
 		}	
 	}
 
-    public boolean accept(String path) {
+    public static  boolean accept(String path) {
         if(path == null || path.trim().length()==0) return false;
         
         if(path.toLowerCase().endsWith(".pdf")){ 

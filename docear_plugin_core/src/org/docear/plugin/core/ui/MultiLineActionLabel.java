@@ -268,50 +268,86 @@ public class MultiLineActionLabel extends JPanel implements SwingConstants, Acce
 		
 		FontMetrics fm = SwingUtilities2.getFontMetrics(this, g);
 		layout(fm, getWidth(), getHeight());
+		FontMetrics am = SwingUtilities2.getFontMetrics(this, g, fm.getFont().deriveFont(Font.BOLD));
 		
-		if (text != null) {
-			View view = (View) getClientProperty(BasicHTML.propertyKey);
-			if (view != null) {
-				try {
-					String clippedText = view.getDocument().getText(1, view.getDocument().getLength());					
-					identifyActionAreas(clippedText, fm, SwingUtilities2.getFontMetrics(this, g, fm.getFont().deriveFont(Font.BOLD)));
-					if(isEnabled()) {
-						g.setColor(getForeground().brighter().brighter().brighter().brighter());
-					}
-					view.paint(g, paintTextR);
-				} catch (Exception e) {
-				}				
-			} 
-		}
+		View view = (View) getClientProperty(BasicHTML.propertyKey);
+		if (view != null) {
+			try {
+				String clippedText = view.getDocument().getText(1, view.getDocument().getLength());
+				identifyActionAreas(clippedText, fm, am);
+				if(isEnabled()) {
+					g.setColor(getForeground().brighter().brighter().brighter().brighter());
+				}
+				view.paint(g, paintTextR);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}				
+		} 
+
 		if(isActionUnderline() && mouseHotspot != null) {
 			g.setColor(getActionColor());
-			int y = mouseHotspot.getHotArea().y+mouseHotspot.getHotArea().height - (int)(g.getFontMetrics().getDescent()*0.75);
-			g.drawLine(mouseHotspot.getHotArea().x, y, mouseHotspot.getHotArea().x+mouseHotspot.getHotArea().width, y);
+			mouseHotspot.drawUnderline(g);
 		}
 	}
 
 	private void identifyActionAreas(final String text, FontMetrics fmDefault, FontMetrics fmAction) {
 		int lastPos = 0;
 		for(ActionLabelItem item : actionItems) {
-			Rectangle rect = item.getHotArea();
+			item.clearBounds();
+			Rectangle rect = item.getNewBox();
 			int textPos = text.indexOf(item.getText(), lastPos);
 			if(textPos > -1) {
+				// text before action label
 				String sub = text.substring(0, textPos);
+				// starting pos for action label
 				rect.x = paintTextR.x + fmDefault.stringWidth(sub);
 				rect.y = paintTextR.y;
-				int width = getWidth()-getInsets().left-getInsets().right;
-				while(rect.x > width) {
+				// max available width 
+				int maxWidth = getWidth()-getInsets().left-getInsets().right;
+				// add new line as long as the label does not fit into the available width
+				while(rect.x > maxWidth) {
 					sub = findLastSpaceBeforeRightEnd(sub, fmDefault);
 					rect.x = paintTextR.x + fmDefault.stringWidth(sub);
 					rect.y += fmDefault.getHeight();
-				}
+				}				
 				rect.width = fmDefault.stringWidth(item.getText());
 				rect.height = fmDefault.getHeight();
+				
+				// check whether the action label fits into one line
+				sub = item.getText();
+				while((rect.x+rect.width) > maxWidth) {
+					sub = fitIntoWidth(sub, rect, fmDefault, maxWidth);
+					if(sub != null) {
+						int lastY = rect.y;
+						rect = item.getNewBox();
+						rect.x = paintTextR.x;
+						rect.y = lastY + fmDefault.getHeight();
+						rect.width = fmDefault.stringWidth(sub);
+						rect.height = fmDefault.getHeight();
+					}
+				}
+				
 				lastPos = textPos+item.getText().length();
 			}
-		}		
+		}
 	}
 	
+
+	private String fitIntoWidth(String sub, Rectangle rect, FontMetrics fmDefault, int maxWidth) {
+		String partSub = sub.substring(0);
+		int index = partSub.lastIndexOf(" ");
+		while((rect.x + fmDefault.stringWidth(partSub)) > maxWidth) {
+			index = partSub.lastIndexOf(" ");
+			partSub = sub.substring(0, index);
+		}
+		rect.width = fmDefault.stringWidth(partSub);
+		partSub = sub.substring(index+1);
+		if(partSub != null && partSub.trim().length()>0) {
+			return partSub;
+		}
+		
+		return null;
+	}
 
 	private String findLastSpaceBeforeRightEnd(final String sub, FontMetrics fmDefault) {
 		String partSub = sub.substring(0);
@@ -446,7 +482,7 @@ public class MultiLineActionLabel extends JPanel implements SwingConstants, Acce
 	
 	protected ActionLabelItem getIntersectingItem(Point point) {
 		for(ActionLabelItem item : actionItems) {
-			if(item.getHotArea().contains(point)) {
+			if(item.contains(point)) {
 				return item;
 			}
 		}
@@ -460,7 +496,7 @@ public class MultiLineActionLabel extends JPanel implements SwingConstants, Acce
 	
 	public ActionLabelItem getActionByLocation(Point point) {
 		for (ActionLabelItem item : actionItems) {
-			if(item.hotArea.contains(point)) {
+			if(item.contains(point)) {
 				return item;
 			}
 		}
@@ -520,14 +556,24 @@ public class MultiLineActionLabel extends JPanel implements SwingConstants, Acce
 	}
 
 	class ActionLabelItem extends TextToken {
-		private Rectangle hotArea = null;
+		private List<Rectangle> boxes = new ArrayList<Rectangle>();
 		private String actionCommand;
 		
 		
 		public ActionLabelItem(String text) {
 			super(text);
 		}
-		
+
+		public Rectangle getNewBox() {
+			Rectangle rect = new Rectangle();
+			boxes.add(rect);
+			return rect;
+		}
+
+		public void clearBounds() {
+			boxes.clear();
+		}
+
 		public void setActionCommand(String actionCommand) {
 			this.actionCommand = actionCommand;			
 		}
@@ -535,24 +581,29 @@ public class MultiLineActionLabel extends JPanel implements SwingConstants, Acce
 		public String getActionCommand() {
 			return actionCommand;
 		}
-		
-		public Rectangle getHotArea() {
-			if(hotArea == null) {
-				hotArea = new Rectangle();
-			}
-			return hotArea;
-		}
 
-		public void setHotArea(Rectangle hotArea) {
-			this.hotArea = hotArea;
-		}
-		
 		public String toString() {
 			StringBuilder builder = new StringBuilder();
 			builder.append("<span style=\"color: #"+getActionColorHex()+";\">");
 			builder.append(super.getText());
 			builder.append("</span>");
 			return builder.toString();
+		}
+		
+		public boolean contains(Point point) {
+			for(Rectangle box : boxes) {
+				if(box.contains(point)) {
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		public void drawUnderline(Graphics g) {
+			for(Rectangle box : boxes) {
+				int y = box.y+box.height - (int)(g.getFontMetrics().getDescent()*0.75);
+				g.drawLine(box.x, y, box.x+box.width, y);
+			}
 		}
 		
 	}

@@ -16,6 +16,7 @@ import net.sf.jabref.Globals;
 import net.sf.jabref.export.DocearReferenceUpdateController;
 import net.sf.jabref.labelPattern.LabelPatternUtil;
 
+import org.docear.plugin.bibtex.jabref.DuplicateResolver;
 import org.docear.plugin.bibtex.jabref.JabRefAttributes;
 import org.docear.plugin.bibtex.jabref.ResolveDuplicateEntryAbortedException;
 import org.docear.plugin.core.DocearController;
@@ -136,7 +137,7 @@ public class ReferenceUpdater extends AMindmapUpdater {
 				}
 				else {
 					try {
-						BibtexEntry singleEntry = jabRefAttributes.resolveDuplicateLinks(new File(path));
+						BibtexEntry singleEntry = DuplicateResolver.getDuplicateResolver().resolveDuplicateLinks(new File(path));
 						this.pdfReferences.put(name, singleEntry);
 					}
 					catch (ResolveDuplicateEntryAbortedException e) {
@@ -169,7 +170,7 @@ public class ReferenceUpdater extends AMindmapUpdater {
 			}
 			else {
 				try {
-					BibtexEntry singleEntry = jabRefAttributes.resolveDuplicateLinks(new URL(url));
+					BibtexEntry singleEntry = DuplicateResolver.getDuplicateResolver().resolveDuplicateLinks(new URL(url));
 					this.urlReferences.put(url, singleEntry);
 				}
 				catch (MalformedURLException e) {
