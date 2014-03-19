@@ -6,7 +6,7 @@
 	    	<ribbon_band name="misc" resize_policies="Mirror" orderPriority="last" >
 			   	<ribbon_action action="AddNewReferenceAction" priority="medium" >
 					<ribbon_action action="AddExistingReferenceAction"/>
-					<ribbon_action action="ShowInRefManagerAction"/>
+					<ribbon_action action="SelectInRefManagerAction"/>
 				</ribbon_action>				
 			</ribbon_band>
 		</ribbon_task>
@@ -16,7 +16,7 @@
 				<ribbon_action action="AddNewReferenceAction" priority="TOP" />
 				<ribbon_action action="AddExistingReferenceAction" priority="TOP" />
 				<ribbon_action action="RemoveReferenceAction" priority="TOP" />
-				<ribbon_action action="ShowInRefManagerAction" priority="Medium" />
+				<ribbon_action action="SelectInRefManagerAction" priority="Medium" />
 				<ribbon_action action="CopyBibtexKeyToClipboardAction" priority="Medium" />
 				<ribbon_action action="CopyCiteKeyToClipboardAction" priority="Medium" />
 				<ribbon_action action="UpdateReferencesCurrentMapAction" priority="Medium">
