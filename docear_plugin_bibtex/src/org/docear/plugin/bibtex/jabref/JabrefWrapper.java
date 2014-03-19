@@ -4,13 +4,12 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Scanner;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -412,14 +411,15 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 		allowedCharsBeforeSlash.add('^');
 		allowedCharsBeforeSlash.add('~');
 
-		Scanner in = null;
+		RandomAccessFile raf = null;
 		try {
-			in = new Scanner(new FileReader(f));
-			while (in.hasNextLine()) {
-				String line = in.nextLine();
-
+			//in = new Scanner(new FileReader(f));
+			raf = new RandomAccessFile(f, "r");
+			boolean isWin = Compat.isWindowsOS();
+			String line = null;
+			while ((line = raf.readLine()) != null) {
 				String normalized = line.trim().toLowerCase();
-				if (Compat.isWindowsOS() && normalized.startsWith("file")) {
+				if (isWin && normalized.startsWith("file")) {
 					if (normalized.contains("backslash$:")) {
 						return false;
 					}
@@ -455,7 +455,8 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 		}
 		finally {
 			try {
-				in.close();
+				//in.close();
+				raf.close();
 			}
 			catch (Exception e) {
 				LogUtils.warn(e);
