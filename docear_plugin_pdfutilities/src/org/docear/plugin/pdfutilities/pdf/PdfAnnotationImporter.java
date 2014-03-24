@@ -103,8 +103,9 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		Collection<AnnotationModel> importedAnnotations = new ArrayList<AnnotationModel>();
 		try{
 			importedAnnotations = importAnnotations(uri);
-		} catch(IOException e){
+		} catch(RuntimeException e){
 			LogUtils.info("IOexception during update file: "+ uri); //$NON-NLS-1$
+			LogUtils.warn(e);
 		}
 		URI absoluteUri = URIUtils.getAbsoluteURI(uri);
 		AnnotationModel root = new AnnotationModel(0, AnnotationType.PDF_FILE);
