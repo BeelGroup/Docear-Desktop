@@ -420,7 +420,6 @@ public class Wizard {
 						cardPanel.setPreferredSize(cardDim);
 						wizard.setPreferredSize(wizardDim);
 						wizard.pack();
-						System.out.println(pageDim+"     event: "+ event);
 						event.consume();
 					}
 				}
