@@ -35,6 +35,7 @@ public class MetaDataAction/* extends AWorkspaceAction */{
 		if(result.getResult().size() <= 0) return result;		
 		
 		final Wizard wiz = new Wizard(UITools.getFrame());
+		wiz.setResizable(true);
 		wiz.getContext().set(result.getClass(), result);
 				
 		WizardPageDescriptor metadataDescriptor = new WizardPageDescriptor("metadata", new MetaDataExtractorPage()) {

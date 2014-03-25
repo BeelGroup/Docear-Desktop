@@ -3,15 +3,14 @@ package org.docear.plugin.core.ui.wizard;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.Window;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 
 import javax.swing.AbstractButton;
@@ -75,7 +74,7 @@ public class Wizard {
 	private boolean drawButtonBarSeparator = false;
 	private JEditorPane titleComponent;
 	private WizardPageDescriptor startPageIdentifier;
-	private MouseAdapter dragHandler;
+	private boolean isResizable;
 
 	/***********************************************************************************
 	 * CONSTRUCTORS
@@ -213,6 +212,14 @@ public class Wizard {
 		this.startPageIdentifier = wizardModel.getPage(identifier);
 	}
 	
+	public void setResizable(boolean b) {
+		this.isResizable = b;
+	}
+	
+	public boolean isResizable() {
+		return this.isResizable;
+	}
+	
 	public WizardPageDescriptor getStartPage() {
 		if(this.startPageIdentifier == null) {
 			return wizardModel.getFirstPage();
@@ -223,7 +230,8 @@ public class Wizard {
 	public synchronized int show() {
 		returnCode = NOT_DEFINED;
 		returnCodeObserver.start();
-		wizard.setSize(640, 480);		
+		wizard.setMinimumSize(new Dimension(150, 150));
+		wizard.setSize(640, 480);
 		
 		resetControls();
 		if(getStartPage() != null) {
@@ -276,11 +284,13 @@ public class Wizard {
 	}
 	
 	private void initComponents() {
-		JPanel mainPanel = new JPanel(true);
+		WizardMouseAdapter mAdapter = new WizardMouseAdapter(this);
+		
+		final JPanel mainPanel = new JPanel(true);
 		JPanel contentPanel = new JPanel();
-		JPanel headPanel = new JPanel();
+		final JPanel headPanel = new JPanel();
 		JPanel headControls = new JPanel();
-		JPanel titlePanel = new JPanel();
+		final JPanel titlePanel = new JPanel();
 		titleComponent = new JEditorPane();
 		titleComponent.setBackground(Color.WHITE);
 		
@@ -290,14 +300,19 @@ public class Wizard {
 		
 		mainPanel.setLayout(new BorderLayout());
 		mainPanel.setBackground(Color.WHITE);
-		mainPanel.setBorder(lineBorder);
+		//mainPanel.setBorder(lineBorder);
+		mainPanel.setBorder(new CompoundBorder(
+						new CompoundBorder(
+							new CompoundBorder(
+								new CompoundBorder(new LineBorder(new Color(0x10000000, true), 1),new LineBorder(new Color(0x20000000, true), 1)),new LineBorder(new Color(0x30000000, true), 1)),new LineBorder(new Color(0x40000000, true), 1))
+		, lineBorder));
 		
 		headPanel.setLayout(new BorderLayout());
 		headPanel.setBackground(Color.WHITE);
 		headPanel.setPreferredSize(new Dimension(0, 60));
 		headPanel.setBorder(new EmptyBorder(0, 10, 5, 10));
-		headPanel.addMouseMotionListener(getDragHandler());
-		headPanel.addMouseListener(getDragHandler());
+		headPanel.addMouseMotionListener(mAdapter);
+		headPanel.addMouseListener(mAdapter);
 		closeButton = new JButton(new ImageIcon(Wizard.class.getResource("/images/window-close.png")));
 		closeButton.setPreferredSize(new Dimension(35, 25));
 		closeButton.setMargin(new Insets(10, 10, 7, 10));
@@ -308,8 +323,8 @@ public class Wizard {
 		headControls.add(closeButton, BorderLayout.NORTH);
 		titlePanel.setBackground(Color.WHITE);
 		titlePanel.setBorder(null);
-		titlePanel.addMouseMotionListener(getDragHandler());
-		titlePanel.addMouseListener(getDragHandler());
+		titlePanel.addMouseMotionListener(mAdapter);
+		titlePanel.addMouseListener(mAdapter);
 		titlePanel.setLayout(new FormLayout(new ColumnSpec[] {
 				ColumnSpec.decode("388px:grow"),},
 			new RowSpec[] {
@@ -317,9 +332,27 @@ public class Wizard {
 		
 		titleComponent.setEditable(false);
 		titleComponent.setFont(titleComponent.getFont().deriveFont(Font.BOLD, 14f));
-		titleComponent.addMouseMotionListener(getDragHandler());
-		titleComponent.addMouseListener(getDragHandler());
+		titleComponent.addMouseMotionListener(mAdapter);
+		titleComponent.addMouseListener(mAdapter);
 		titlePanel.add(titleComponent, "1, 1, fill, center");
+		
+		mAdapter.addComponentDragListener(new ComponentDragListener() {
+			
+			@Override
+			public void componentDragged(ComponentDragEvent event) {
+				if(event.getComponent() == titleComponent 
+						|| event.getComponent() == headPanel 
+						|| event.getComponent() == titlePanel ) {
+					Point nuPoint = wizard.getLocation();
+					nuPoint.x += event.deltaX;
+					nuPoint.y += event.deltaY;
+					wizard.setLocation(nuPoint);
+					event.consume();
+				}
+			}
+			
+			public void componentAdjustResizeCursor(AdjustResizeCursorEvent event) { }
+		});
 		
 		headPanel.add(headControls, BorderLayout.EAST);
 		headPanel.add(titlePanel, BorderLayout.CENTER);
@@ -360,38 +393,84 @@ public class Wizard {
 		
 		contentPanel.add(cardPanel, BorderLayout.CENTER);
 		contentPanel.add(buttonPanel, BorderLayout.SOUTH);
+		
+		mainPanel.addMouseListener(mAdapter);
+		mainPanel.addMouseMotionListener(mAdapter);
+		
+		mAdapter.addComponentDragListener(new ComponentDragListener() {
+			
+			@Override
+			public void componentDragged(ComponentDragEvent event) {
+				if(event.getComponent() == mainPanel) {
+					if(isResizable() && event.isResizeEvent()) {
+						Dimension pageDim = wizardModel.getCurrentPageDescriptor().getPage().getPreferredSize();
+						Dimension cardDim = cardPanel.getPreferredSize();
+						Dimension wizardDim = wizard.getPreferredSize();
+						if(event.resizeDirection(ComponentDragEvent.DIRECTION_HORIZONTAL)) {
+							pageDim.width += event.deltaX;
+							cardDim.width += event.deltaX;
+							wizardDim.width += event.deltaX;
+						}
+						if(event.resizeDirection(ComponentDragEvent.DIRECTION_VERTICAL)) {
+							pageDim.height += event.deltaY;
+							cardDim.height += event.deltaY;
+							wizardDim.height += event.deltaY;
+						}
+						wizardModel.getCurrentPageDescriptor().getPage().setPreferredSize(pageDim);
+						cardPanel.setPreferredSize(cardDim);
+						wizard.setPreferredSize(wizardDim);
+						wizard.pack();
+						System.out.println(pageDim+"     event: "+ event);
+						event.consume();
+					}
+				}
+			}
+
+			@Override
+			public void componentAdjustResizeCursor(AdjustResizeCursorEvent event) {
+				if(event.getComponent() == mainPanel) {
+					adjustCursor(mainPanel, event.getResizeSensor());
+				}
+				
+			}
+		});
 	}
 	
-	private MouseAdapter getDragHandler() {
-		if(dragHandler == null) {
-			dragHandler = new MouseAdapter() {
-				@Override
-				public void mouseMoved(MouseEvent e) {
-					Point tempPoint = e.getPoint();
-					SwingUtilities.convertPointToScreen(tempPoint, e.getComponent());
-					point = tempPoint;
-				}
-				
-				private Point point;
-				@Override
-				public void mouseDragged(MouseEvent e) {
-					Point nuPoint = wizard.getLocation();
-					Point tempPoint = e.getPoint();
-					SwingUtilities.convertPointToScreen(tempPoint, e.getComponent());
-					if(point != null) {
-						nuPoint.x += tempPoint.x-point.x;
-						nuPoint.y += tempPoint.y-point.y;
-						wizard.setLocation(nuPoint);
-					}
-					point = tempPoint;
-					e.consume();
-				}
-				
-			};
+	private void adjustCursor(Component component, int resizeSensor) {
+		if((resizeSensor & WizardMouseAdapter.BORDER_LEFT) > 0) {
+			if((resizeSensor & WizardMouseAdapter.BORDER_TOP) > 0) {
+				component.setCursor(Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
+			}
+			else if((resizeSensor & WizardMouseAdapter.BORDER_BOTTOM) > 0) {
+				component.setCursor(Cursor.getPredefinedCursor(Cursor.SW_RESIZE_CURSOR));
+			}
+			else {
+				component.setCursor(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));
+			}
 		}
-		return dragHandler;
+		else if((resizeSensor & WizardMouseAdapter.BORDER_RIGHT) > 0) {
+			if((resizeSensor & WizardMouseAdapter.BORDER_TOP) > 0) {
+				component.setCursor(Cursor.getPredefinedCursor(Cursor.NE_RESIZE_CURSOR));
+			}
+			else if((resizeSensor & WizardMouseAdapter.BORDER_BOTTOM) > 0) {
+				component.setCursor(Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR));
+			}
+			else {
+				component.setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
+			}
+		}
+		else if((resizeSensor & WizardMouseAdapter.BORDER_TOP) > 0) {
+			component.setCursor(Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR));
+			
+		}
+		else if((resizeSensor & WizardMouseAdapter.BORDER_BOTTOM) > 0) {
+			component.setCursor(Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR));
+		}
+		else {
+			component.setCursor(Cursor.getDefaultCursor());
+		}
 	}
-
+	
 	private void buildButtonBar() {
 		buttonPanel.removeAll();
 		if(isButtonBarSeparatorEnabled()) {
