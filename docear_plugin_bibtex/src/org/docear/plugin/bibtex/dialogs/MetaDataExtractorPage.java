@@ -132,6 +132,8 @@ public class MetaDataExtractorPage extends AWizardPage {
 				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
 				RowSpec.decode("default:grow"),
+				RowSpec.decode("4dlu:grow"),
+				RowSpec.decode("default:grow"),
 				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
@@ -255,7 +257,7 @@ public class MetaDataExtractorPage extends AWizardPage {
 		
 		JPanel panel_FetchedResults = new JPanel();
 		panel_FetchedResults.setBackground(Color.WHITE);
-		add(panel_FetchedResults, "2, 6, fill, fill");
+		add(panel_FetchedResults, "2, 6, 1, 3, fill, fill");
 		panel_FetchedResults.setLayout(new FormLayout(new ColumnSpec[] {
 				ColumnSpec.decode("13dlu"),
 				ColumnSpec.decode("default:grow"),},
@@ -269,7 +271,7 @@ public class MetaDataExtractorPage extends AWizardPage {
 		
 		JPanel panel_SearchSettings = new JPanel();
 		panel_SearchSettings.setBackground(Color.WHITE);
-		add(panel_SearchSettings, "2, 7, fill, fill");
+		add(panel_SearchSettings, "2, 9, fill, fill");
 		panel_SearchSettings.setLayout(new FormLayout(new ColumnSpec[] {
 				ColumnSpec.decode("13dlu"),
 				FormFactory.DEFAULT_COLSPEC,
@@ -289,6 +291,7 @@ public class MetaDataExtractorPage extends AWizardPage {
 		});
 		
 		listFetchedResults = new JList();		
+		listFetchedResults.setVisibleRowCount(10);
 		listFetchedResults.setModel(listModelFetchedResults);
 		listFetchedResults.setCellRenderer(new BibtexEntryListCellRenderer());
 		listFetchedResults.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -312,11 +315,11 @@ public class MetaDataExtractorPage extends AWizardPage {
 			}
 		});
 		radioButton_CreateXmp.setBackground(Color.WHITE);
-		add(radioButton_CreateXmp, "2, 9");
+		add(radioButton_CreateXmp, "2, 11");
 		
 		JPanel panel_XmpData = new JPanel();
 		panel_XmpData.setBackground(Color.WHITE);
-		add(panel_XmpData, "2, 10, fill, fill");
+		add(panel_XmpData, "2, 12, fill, fill");
 		panel_XmpData.setLayout(new FormLayout(new ColumnSpec[] {
 				ColumnSpec.decode("13dlu"),
 				ColumnSpec.decode("default:grow"),},
@@ -328,6 +331,7 @@ public class MetaDataExtractorPage extends AWizardPage {
 		panel_XmpData.add(scrollPaneXmpData, "2, 2, fill, fill");
 		
 		listXmpData = new JList();
+		listXmpData.setVisibleRowCount(6);
 		listXmpData.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		listXmpData.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		scrollPaneXmpData.setViewportView(listXmpData);	
@@ -342,13 +346,13 @@ public class MetaDataExtractorPage extends AWizardPage {
 			}
 		});
 		radioButtonAttachOnly.setBackground(Color.WHITE);
-		add(radioButtonAttachOnly, "2, 12");
+		add(radioButtonAttachOnly, "2, 14");
 		
 		labelWarning = new JLabel();
 		labelWarning.setFont(new Font("Tahoma", Font.BOLD, 13));
 		labelWarning.setForeground(Color.RED);
 		labelWarning.setHorizontalAlignment(SwingConstants.CENTER);
-		add(labelWarning, "2, 14");
+		add(labelWarning, "2, 16");
 	}
 
 	protected void callOptionsPage(ActionEvent e) {
