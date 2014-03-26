@@ -42,7 +42,7 @@ public class FilePathValidatorAction implements PostOpenAction {
 			// path linked in jabref
 			for (String filePath : JabRefAttributes.extractPaths(jabrefFiles)) {
 				File file = new File(filePath);
-				if (!filePath.startsWith("/") && !file.exists()) {
+				if (filePath.length()>0 && !filePath.startsWith("/") && !file.exists()) {
 					File fileCorrected = new File("/" + filePath);
 					if (fileCorrected.exists()) {
 						changes = true;
