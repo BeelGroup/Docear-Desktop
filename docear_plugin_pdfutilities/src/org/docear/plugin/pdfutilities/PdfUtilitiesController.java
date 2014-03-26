@@ -40,6 +40,7 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
@@ -104,6 +105,7 @@ import org.freeplane.core.resources.IFreeplanePropertyListener;
 import org.freeplane.core.resources.OptionPanelController;
 import org.freeplane.core.resources.OptionPanelController.PropertyLoadListener;
 import org.freeplane.core.resources.ResourceController;
+import org.freeplane.core.resources.components.BooleanProperty;
 import org.freeplane.core.resources.components.IPropertyControl;
 import org.freeplane.core.resources.components.RadioButtonProperty;
 import org.freeplane.core.ui.AFreeplaneAction;
@@ -176,6 +178,7 @@ public class PdfUtilitiesController extends ALanguageController {
 	public static final String REMOVE_LINEBREAKS_COMMENTS_KEY = "docear_remove_linebreaks_comments"; //$NON-NLS-1$
 	public static final String REMOVE_LINEBREAKS_HIGHLIGHTED_KEY = "docear_remove_linebreaks_highlighted_text"; //$NON-NLS-1$
 	public static final String KEEP_DOUBLE_LINEBREAKS_KEY = "docear_keep_double_linebreaks"; //$NON-NLS-1$
+	public static final String REMOVE_LINEBREAKS_KEY = "docear_remove_linebreaks"; //$NON-NLS-1$
 	public static final String ADD_SPACES_KEY = "docear_add_spaces"; //$NON-NLS-1$
 	public static final String REMOVE_DASHES_KEY = "docear_remove_dashes"; //$NON-NLS-1$
 	public static final String IMPORT_HIGHLIGHTED_TEXTS_KEY = "docear_import_highlighted_text"; //$NON-NLS-1$
@@ -1132,6 +1135,19 @@ public class PdfUtilitiesController extends ALanguageController {
 						opc.getPropertyControl("docear.show_install_pdf_readers").setEnabled(true);
 					}
 				}
+				else if(source != null && source instanceof JCheckBox) {
+					JCheckBox chkBox = (JCheckBox) source;
+					boolean checked = chkBox.isSelected();
+					if (chkBox.getName().equals(REMOVE_LINEBREAKS_KEY)) {
+						((BooleanProperty) opc.getPropertyControl(REMOVE_DASHES_KEY)).setEnabled(checked);
+						((BooleanProperty) opc.getPropertyControl(KEEP_DOUBLE_LINEBREAKS_KEY)).setEnabled(checked);
+						((BooleanProperty) opc.getPropertyControl(ADD_SPACES_KEY)).setEnabled(checked);
+						
+//						((BooleanProperty) opc.getPropertyControl(REMOVE_LINEBREAKS_BOOKMARKS_KEY)).setEnabled(checked);
+//						((BooleanProperty) opc.getPropertyControl(REMOVE_LINEBREAKS_COMMENTS_KEY)).setEnabled(checked);
+//						((BooleanProperty) opc.getPropertyControl(REMOVE_LINEBREAKS_HIGHLIGHTED_KEY)).setEnabled(checked);
+					}
+				}
 			}
 		});
 
@@ -1175,6 +1191,27 @@ public class PdfUtilitiesController extends ALanguageController {
 								}
 							}
 						});
+				((BooleanProperty) opc.getPropertyControl(REMOVE_LINEBREAKS_KEY))
+				.addPropertyChangeListener(new PropertyChangeListener() {
+					public void propertyChange(PropertyChangeEvent evt) {
+						boolean checked = false;
+						if (evt.getNewValue().equals("true")) {
+							checked = true;
+						}
+						changeLinebreakOptions(checked);
+					}
+				});
+				changeLinebreakOptions(((BooleanProperty) opc.getPropertyControl(REMOVE_LINEBREAKS_KEY)).getBooleanValue());
+			}
+			
+			private void changeLinebreakOptions(boolean checked) {
+				((BooleanProperty) opc.getPropertyControl(REMOVE_DASHES_KEY)).setEnabled(checked);
+				((BooleanProperty) opc.getPropertyControl(KEEP_DOUBLE_LINEBREAKS_KEY)).setEnabled(checked);
+				((BooleanProperty) opc.getPropertyControl(ADD_SPACES_KEY)).setEnabled(checked);
+				
+//				((BooleanProperty) opc.getPropertyControl(REMOVE_LINEBREAKS_BOOKMARKS_KEY)).setEnabled(checked);
+//				((BooleanProperty) opc.getPropertyControl(REMOVE_LINEBREAKS_COMMENTS_KEY)).setEnabled(checked);
+//				((BooleanProperty) opc.getPropertyControl(REMOVE_LINEBREAKS_HIGHLIGHTED_KEY)).setEnabled(checked);
 			}
 		});
 
