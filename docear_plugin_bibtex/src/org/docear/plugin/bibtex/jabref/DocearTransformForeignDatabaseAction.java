@@ -15,7 +15,12 @@ public class DocearTransformForeignDatabaseAction implements PostOpenAction {
 
 	private final static Pattern COLON_PATTERN = Pattern.compile("(?<!\\\\):", Pattern.MULTILINE);
 	private final static Pattern SEMICOLON_PATTERN = Pattern.compile("(?<!\\\\);", Pattern.MULTILINE);
+	
 	private final static Pattern BACKSLASH_PATTERN = Pattern.compile("(?<!\\\\)\\\\(?![\\\\:])");
+	
+	// single # is not allowed in JabRef (except in file or url fields), ## or \# is however 
+	// --> uneven numbers of # are also not allowed, but we ignore that - the user will get a JabRef warning anyway
+	private final static Pattern HASH_PATTERN = Pattern.compile("(?<![#\\\\])#(?!#)");
 	
 	@Override
 	public boolean isActionNecessary(ParserResult pr) {
@@ -27,15 +32,27 @@ public class DocearTransformForeignDatabaseAction implements PostOpenAction {
 		BibtexDatabase db = pr.getDatabase();
 		
 		for (BibtexEntry entry : db.getEntries()) {
-			String fileFieldContent = entry.getField("file");
-			if (fileFieldContent != null && fileFieldContent.length()>0) {
-				try {
-					entry.setField("file", convertFileField(fileFieldContent));
-				}
-				catch(Exception e) {
-					LogUtils.severe("file-field content not well formed: "+fileFieldContent);
+			for (String field : entry.getAllFields()) {
+				String content = entry.getField(field);
+				if (content != null && content.length()>0) {
+					if (field.equalsIgnoreCase("file")) {
+						try {
+							content = convertFileField(content);							
+						}
+						catch(Exception e) {
+							LogUtils.severe("file-field content not well formed: "+content);
+						}
+					}
+					else if (!field.equalsIgnoreCase("url")){
+						content = HASH_PATTERN.matcher(content).replaceAll("\\\\#");
+					}
+					
+					entry.setField(field, content);
 				}
 			}
+			
+			
+			
 		}
 	}
 	
