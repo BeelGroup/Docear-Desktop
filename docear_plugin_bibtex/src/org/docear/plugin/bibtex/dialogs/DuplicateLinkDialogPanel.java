@@ -13,13 +13,14 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
+import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 
 import net.sf.jabref.BibtexEntry;
@@ -30,6 +31,7 @@ import org.docear.plugin.bibtex.jabref.JabrefWrapper;
 import org.docear.plugin.core.ui.MultiLineActionLabel;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
 import org.docear.plugin.pdfutilities.pdf.PdfFileFilter;
+import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
@@ -44,7 +46,7 @@ public class DuplicateLinkDialogPanel extends JPanel {
 	private JTable table;
 	private URI uri;
 	private File file;
-	private URL url;
+	private URL url;	
 
 	public DuplicateLinkDialogPanel(final List<BibtexEntry> entries, Object link) {
 		this.entries = entries;
@@ -132,8 +134,7 @@ public class DuplicateLinkDialogPanel extends JPanel {
 		
 		JPanel p = new JPanel();
 		p.setLayout(new BorderLayout());
-				
-//		p.add(new JLabel(TextUtils.format("docear.reference.duplicate_file.message", this.fileName)), BorderLayout.NORTH);
+
 		p.add(message, BorderLayout.NORTH);
 		p.add(mail, BorderLayout.SOUTH);
 
@@ -141,17 +142,36 @@ public class DuplicateLinkDialogPanel extends JPanel {
 		add(p, BorderLayout.NORTH);
 		add(scrollPane);
 		
-		JPanel doAlwaysIPanel = new JPanel();
-//		alwaysIgnorePanel.setLayout(new BorderLayout());		
-		JCheckBox doAlwaysCheckbox = new JCheckBox();		
-		doAlwaysCheckbox.setSelected(false);
-		doAlwaysIPanel.add(doAlwaysCheckbox);
+		JPanel alwaysIgnorePanel = new JPanel();
+		alwaysIgnorePanel.setLayout(new BorderLayout());
+		add(alwaysIgnorePanel, BorderLayout.SOUTH);
 		
-		JLabel doAlwaysLabel = new JLabel();
-		doAlwaysLabel.setText(TextUtils.getText("docear.reference.duplicate.doAlways"));
-		doAlwaysIPanel.add(doAlwaysLabel);
+		MultiLineActionLabel alwaysIgnoreLabel = new MultiLineActionLabel();
+		alwaysIgnoreLabel.setText(TextUtils.getText("docear.reference.duplicate_always_ignore.title"));
+		alwaysIgnorePanel.add(alwaysIgnoreLabel, BorderLayout.WEST);
+		alwaysIgnoreLabel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {				
+				if("open_uri".equals(e.getActionCommand())) {
+					try {
+						Controller.getCurrentController().getViewController().openDocument(URI.create("http://www.docear.org/faqs/How-to-resolve-duplicated-references"));
+					}					
+					catch (Exception ex) {
+						LogUtils.warn(ex.getMessage());
+					}
+				}
+			}
+		});
 		
-		add(doAlwaysIPanel, BorderLayout.SOUTH);
+		JButton alwaysIgnoreButton = new JButton(TextUtils.getText("docear.reference.duplicate_always_ignore.button"));
+		alwaysIgnoreButton.setHorizontalAlignment(SwingConstants.RIGHT);
+		alwaysIgnorePanel.add(alwaysIgnoreButton, BorderLayout.EAST);
+		alwaysIgnoreButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ResourceController.getResourceController().setProperty("docear.reference.duplicate_always_ignore", true);
+				closeDialog();
+			}
+		});
 	}
 
 	private AbstractTableModel getTableModel() {
@@ -209,6 +229,25 @@ public class DuplicateLinkDialogPanel extends JPanel {
 	public BibtexEntry getSelectedEntry() {
 		int index = table.getSelectedRow();
 		return entries.get(index);
+	}
+	
+	public boolean isDoAlways() {
+		return false;
+	}
+	
+	private void closeDialog() {
+		Component dialog = this;
+		while (true) {
+			dialog = dialog.getParent();
+			if (dialog == null) {
+				// should not happen
+				break;
+			}
+			if (dialog instanceof JDialog) {
+				((JDialog) dialog).dispose();
+				break;
+			}			
+		}
 	}
 
 }

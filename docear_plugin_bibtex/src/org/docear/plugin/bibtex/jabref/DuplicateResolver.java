@@ -16,6 +16,7 @@ import net.sf.jabref.GUIGlobals;
 
 import org.docear.plugin.bibtex.ReferencesController;
 import org.docear.plugin.bibtex.dialogs.DuplicateLinkDialogPanel;
+import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
@@ -78,24 +79,35 @@ public class DuplicateResolver {
     		}
 		}
 
-		if (entries.size() == 1) {
+		Boolean ignoreAlways = ResourceController.getResourceController().getBooleanProperty("docear.reference.duplicate_always_ignore");
+		if (entries.size() == 1 || ignoreAlways) {
 			return entries.get(0);
 		}
 		else if (entries.size() == 0) {
 			return null;
 		}
-		
+				
 		DuplicateLinkDialogPanel panel = new DuplicateLinkDialogPanel(entries, link);		
 		int answer = getDuplicateLinkDialogAnswer(panel);
-
+		
+		BibtexEntry entry = panel.getSelectedEntry();
+		if (panel.isDoAlways()) {
+			if (answer == JOptionPane.OK_OPTION ) {
+				ResourceController.getResourceController().setProperty("docear.reference.duplicate.doAlways", "resolve");
+			}
+			else {
+				ResourceController.getResourceController().setProperty("docear.reference.duplicate.doAlways", "ignore");
+			}
+		}			
+		
+		
 		if (answer == JOptionPane.OK_OPTION) {
-			BibtexEntry entry = panel.getSelectedEntry();
 			removeDuplicateLinks(file, entry);
 			ReferencesController.getController().getJabrefWrapper().getBasePanel().runCommand("save");
 			ReferencesController.getController().getJabRefAttributes().setNodeDirty(true);
 			return entry;
 		}
-		else {
+		else {			
 			throw new ResolveDuplicateEntryAbortedException(file);
 		}
 	}	
@@ -103,10 +115,11 @@ public class DuplicateResolver {
 	private int getDuplicateLinkDialogAnswer(DuplicateLinkDialogPanel panel) {		
 		String ok = TextUtils.getText("ok");	
 		String ignore = TextUtils.getText("docear.reference.duplicate.ignore");
+		
 		String[] options = {ok, ignore};
 			
 		int answer = JOptionPane.showOptionDialog(UITools.getFrame(), panel, TextUtils.getText("docear.reference.duplicate_url.title"),
-				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+				JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 		
 		return answer;
 	}
