@@ -35,9 +35,11 @@ public class DuplicateResolver {
 	public BibtexEntry resolveDuplicateLinks(Object link) throws ResolveDuplicateEntryAbortedException, IllegalArgumentException {
 		if (link instanceof File) {
 			file = (File) link;
+			url = null;
 		}
 		else if (link instanceof URL) {
 			url = (URL) link;
+			file = null;
 		}
 		else {
 			throw new IllegalArgumentException("link has to be either of type java.io.File or java.net.URL!");
@@ -90,17 +92,7 @@ public class DuplicateResolver {
 		DuplicateLinkDialogPanel panel = new DuplicateLinkDialogPanel(entries, link);		
 		int answer = getDuplicateLinkDialogAnswer(panel);
 		
-		BibtexEntry entry = panel.getSelectedEntry();
-		if (panel.isDoAlways()) {
-			if (answer == JOptionPane.OK_OPTION ) {
-				ResourceController.getResourceController().setProperty("docear.reference.duplicate.doAlways", "resolve");
-			}
-			else {
-				ResourceController.getResourceController().setProperty("docear.reference.duplicate.doAlways", "ignore");
-			}
-		}			
-		
-		
+		BibtexEntry entry = panel.getSelectedEntry();		
 		if (answer == JOptionPane.OK_OPTION) {
 			removeDuplicateLinks(file, entry);
 			ReferencesController.getController().getJabrefWrapper().getBasePanel().runCommand("save");
