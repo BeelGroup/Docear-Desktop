@@ -80,6 +80,7 @@ import com.jgoodies.forms.layout.RowSpec;
 
 public class MetaDataExtractorPage extends AWizardPage {
 	
+	private static final String DOCEAR_METADATA_CREATE_ATTACH_ONLY = "docear_metadata_createAttachOnly";
 	public static final String DOCEAR_METADATA_SEARCH_BY_FILE = "docear_metadata_searchByFile";
 	public static final String DOCEAR_METADATA_SEARCH_BY_TITLE = "docear_metadata_searchByTitle";
 	public static final String DOCEAR_METADATA_SEARCH_OPTION = "docear_metadata_searchOption";
@@ -499,6 +500,9 @@ public class MetaDataExtractorPage extends AWizardPage {
 		else if(createXmp){
 			Controller.getCurrentController().getResourceController().setProperty(DOCEAR_METADATA_CREATE_ENTRY_OPTION, DOCEAR_METADATA_CREATE_XMP_DATA_ENTRY);
 		}
+		else if(attachOnly){
+			Controller.getCurrentController().getResourceController().setProperty(DOCEAR_METADATA_CREATE_ENTRY_OPTION, DOCEAR_METADATA_CREATE_ATTACH_ONLY);
+		}
 	}
 
 	@Override
@@ -590,6 +594,14 @@ public class MetaDataExtractorPage extends AWizardPage {
 					setCreateSelection(new ActionEvent(this.radioButton_createFetched, 0, ""));
 				}
 			}
+			else if (createEntryOption.equals(DOCEAR_METADATA_CREATE_ATTACH_ONLY)){
+				if(data.getResult().get(pdfFile).isShowattachOnlyOption()){
+					setCreateSelection(new ActionEvent(this.radioButtonAttachOnly, 0, ""));
+				}
+				else{
+					setCreateSelection(new ActionEvent(this.radioButton_createFetched, 0, ""));
+				}
+			}
 		}
 		
 		String searchOption = Controller.getCurrentController().getResourceController().getProperty(DOCEAR_METADATA_SEARCH_OPTION, DOCEAR_METADATA_SEARCH_BY_TITLE);
@@ -621,7 +633,10 @@ public class MetaDataExtractorPage extends AWizardPage {
 					if(row >= 0 && row < listXmpData.getModel().getSize()){
 						result.getResult().get(pdfFile).setResultEntry( ((BibtexEntryListModel)listXmpData.getModel()).getEntry(row).p);							
 					}
-				}				
+				}
+				if(radioButtonAttachOnly.isSelected()){
+					result.getResult().get(pdfFile).setAttachOnly(true);
+				}
 			}
 		});
 		

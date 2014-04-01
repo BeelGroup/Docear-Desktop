@@ -21,7 +21,7 @@ import org.freeplane.plugin.workspace.nodes.LinkTypeFileNode;
 
 public class DocearProjectModelListener implements IProjectModelListener {
 	
-	private void updateMaps(AWorkspaceProject project, File newFile, File oldFile, boolean renamed) {
+	public static void updateMaps(AWorkspaceProject project, File newFile, File oldFile, boolean renamed) {
 		Map<File, File> fileMap = new HashMap<File, File>();
 		if(!newFile.isDirectory()) {
 			fileMap.put(oldFile, newFile);
@@ -37,7 +37,7 @@ public class DocearProjectModelListener implements IProjectModelListener {
 		updateMaps(project, fileMap, renamed); 
 	}
 
-	private void updateMaps(AWorkspaceProject project, Map<File, File> fileMap, boolean renamed) {
+	public static void updateMaps(AWorkspaceProject project, Map<File, File> fileMap, boolean renamed) {
 		ArrayList<AWorkspaceProject> projects = new ArrayList<AWorkspaceProject>();
 		projects.add(project);
 		MindmapUpdateController mindmapUpdateController = new MindmapUpdateController(false);
