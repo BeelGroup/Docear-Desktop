@@ -8,6 +8,7 @@
 				<boolean name="docear_import_highlighted_text" />
 			</separator>
 			<separator name="remove_linebreaks">
+			     <boolean name="docear_remove_linebreaks" />
 			     <!--boolean name="docear_remove_linebreaks_bookmarks" /-->
 			     <!--boolean name="docear_remove_linebreaks_comments" /-->
 			     <!--boolean name="docear_remove_linebreaks_highlighted_text" /-->

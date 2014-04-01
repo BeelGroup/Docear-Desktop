@@ -103,8 +103,9 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		Collection<AnnotationModel> importedAnnotations = new ArrayList<AnnotationModel>();
 		try{
 			importedAnnotations = importAnnotations(uri);
-		} catch(IOException e){
+		} catch(RuntimeException e){
 			LogUtils.info("IOexception during update file: "+ uri); //$NON-NLS-1$
+			LogUtils.warn(e);
 		}
 		URI absoluteUri = URIUtils.getAbsoluteURI(uri);
 		AnnotationModel root = new AnnotationModel(0, AnnotationType.PDF_FILE);
@@ -295,9 +296,24 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 	
 	public void removeLinebreaks(IAnnotation annotation, Object annotationObject, PDDocument document) {
 		if(this.removeLinebreaksDialogResult == JOptionPane.CANCEL_OPTION) return;
+		
 		String oldText = annotation.getTitle();
 		String text = removeLinebreaks(annotation.getTitle());
-		if(text.equals(annotation.getTitle())) return;
+		
+		if(text.equals(annotation.getTitle())) {
+			return;
+		}
+		
+		boolean removeFromBookmarks = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.REMOVE_LINEBREAKS_BOOKMARKS_KEY);
+		boolean removeFromComments = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.REMOVE_LINEBREAKS_COMMENTS_KEY);
+		boolean removeFromHighlights = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.REMOVE_LINEBREAKS_HIGHLIGHTED_KEY);
+		if((annotation.getAnnotationType() == AnnotationType.BOOKMARK && !removeFromBookmarks)
+				|| (annotation.getAnnotationType() == AnnotationType.COMMENT && !removeFromComments)
+				|| (annotation.getAnnotationType() == AnnotationType.HIGHLIGHTED_TEXT && !removeFromHighlights)
+				) {
+			return;
+		}
+		
 		if(annotationObject != null && annotationObject instanceof PDOutlineItem){
 			((PDOutlineItem)annotationObject).setTitle(text);
 			annotation.setTitle(text);
@@ -358,38 +374,42 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 	}
 	
 	public static String removeLinebreaks(String text) {
-		boolean keepDoubleLinebreaks = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.KEEP_DOUBLE_LINEBREAKS_KEY);
-		boolean addSpaces = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.ADD_SPACES_KEY);
-		boolean removeDashes = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.REMOVE_DASHES_KEY);
-		
-		String lines[] = text.split("\\r?\\n");
-		if(lines.length < 2) return text;
-		StringBuilder sb = new StringBuilder();			
-		for(int i = 0; i < lines.length; i++){
-			if(keepDoubleLinebreaks && (i + 1 < lines.length) && lines[i + 1].isEmpty()){
-				lines[i] = lines[i] + "\n\n";
-				sb.append(lines[i]);
-				i = i + 1;
-				continue;
-			}
-			if(removeDashes && lines[i].endsWith("-")){
-				lines[i] = lines[i].substring(0, lines[i].length() - 1);
-				if(i + 1 < lines.length && lines[i + 1].startsWith(" ")){
-					lines[i] = CharMatcher.WHITESPACE.trimFrom(lines[i]);
-				}
-				sb.append(lines[i]);
-				continue;
-			}
-			if(addSpaces){				
-				if((i + 1 < lines.length) && (!lines[i].endsWith(" ") && !lines[i + 1].startsWith(" "))){				
-					lines[i] = CharMatcher.WHITESPACE.trimFrom(lines[i]) + " ";
-					sb.append(lines[i]);					
+		boolean removeLinebreaks = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.REMOVE_LINEBREAKS_KEY);
+		if(removeLinebreaks) {
+			boolean keepDoubleLinebreaks = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.KEEP_DOUBLE_LINEBREAKS_KEY);
+			boolean addSpaces = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.ADD_SPACES_KEY);
+			boolean removeDashes = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.REMOVE_DASHES_KEY);
+			
+			String lines[] = text.split("\\r?\\n");
+			if(lines.length < 2) return text;
+			StringBuilder sb = new StringBuilder();			
+			for(int i = 0; i < lines.length; i++){
+				if(keepDoubleLinebreaks && (i + 1 < lines.length) && lines[i + 1].isEmpty()){
+					lines[i] = lines[i] + "\n\n";
+					sb.append(lines[i]);
+					i = i + 1;
 					continue;
 				}
+				if(removeDashes && lines[i].endsWith("-")){
+					lines[i] = lines[i].substring(0, lines[i].length() - 1);
+					if(i + 1 < lines.length && lines[i + 1].startsWith(" ")){
+						lines[i] = CharMatcher.WHITESPACE.trimFrom(lines[i]);
+					}
+					sb.append(lines[i]);
+					continue;
+				}
+				if(addSpaces){				
+					if((i + 1 < lines.length) && (!lines[i].endsWith(" ") && !lines[i + 1].startsWith(" "))){				
+						lines[i] = CharMatcher.WHITESPACE.trimFrom(lines[i]) + " ";
+						sb.append(lines[i]);					
+						continue;
+					}
+				}
+				sb.append(lines[i]);				
 			}
-			sb.append(lines[i]);				
+			return sb.toString();
 		}
-		return sb.toString();
+		return text;
 	}
 	
 	

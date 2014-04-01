@@ -338,6 +338,10 @@ public class MultiLineActionLabel extends JPanel implements SwingConstants, Acce
 		int index = partSub.lastIndexOf(" ");
 		while((rect.x + fmDefault.stringWidth(partSub)) > maxWidth) {
 			index = partSub.lastIndexOf(" ");
+			if(index == -1) {
+				break;
+			}
+			
 			partSub = sub.substring(0, index);
 		}
 		rect.width = fmDefault.stringWidth(partSub);

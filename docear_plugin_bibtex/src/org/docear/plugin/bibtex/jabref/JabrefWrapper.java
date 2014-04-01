@@ -1,19 +1,14 @@
 package org.docear.plugin.bibtex.jabref;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Scanner;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -40,8 +35,6 @@ import net.sf.jabref.imports.PostOpenAction;
 
 import org.docear.plugin.bibtex.ReferencesController;
 import org.docear.plugin.bibtex.actions.DocearHandleDuplicateWarning;
-import org.docear.plugin.bibtex.actions.DocearTransformZoteroFile;
-import org.docear.plugin.bibtex.actions.DocearTransformZoteroPathsAction;
 import org.docear.plugin.bibtex.actions.FilePathValidatorAction;
 import org.docear.plugin.bibtex.actions.HandleDuplicateKeys;
 import org.docear.plugin.bibtex.actions.IPreOpenAction;
@@ -54,13 +47,10 @@ import org.docear.plugin.core.logging.DocearLogger;
 import org.docear.plugin.core.util.WinRegistry;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.components.OneTouchCollapseResizer;
-import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.Compat;
 import org.freeplane.core.util.LogUtils;
-import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.Controller;
 import org.freeplane.features.ui.IMapViewChangeListener;
-import org.swingplus.JHyperlink;
 
 public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 
@@ -68,15 +58,15 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 
 	private static ArrayList<IPreOpenAction> preOpenActions = new ArrayList<IPreOpenAction>();
 	private static ArrayList<PostOpenAction> postOpenActions = new ArrayList<PostOpenAction>();
+	private static ArrayList<PostOpenAction> postParseActions = new ArrayList<PostOpenAction>();
 
 	static {
-		preOpenActions.add(new DocearTransformZoteroFile());
-		
-		postOpenActions.add(new DocearTransformZoteroPathsAction());
+		//escape colons and semicolons (not done by Zotero		
+		postParseActions.add(new DocearTransformForeignDatabaseAction());		
 		// bibtex files exported by mendeley do not contain leading "/" for
 		// absolute paths so we do not know if
-		// the file contaions relative paths or absolute paths
-		postOpenActions.add(new FilePathValidatorAction());
+		// the file contains relative paths or absolute paths
+		postParseActions.add(new FilePathValidatorAction());
 		// Add the action for checking for new custom entry types loaded from
 		// the bib file:
 		postOpenActions.add(new CheckForNewEntryTypesAction());
@@ -165,6 +155,7 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 		File file = base.getAbsoluteFile();
 		String fileName = file.getPath();
 		BibtexDatabase database = pr.getDatabase();
+		
 		database.addDatabaseChangeListener(ReferencesController.getJabRefChangeListener());
 		
 		BasePanel bp;
@@ -300,21 +291,21 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 			}
 		}
 		if ((file != null) && (file.exists())) {
-			if (!isCompatibleToJabref(file)) {
-				JHyperlink hyperlink = new JHyperlink("http://www.docear.org/faqs/how-to-use-mendeley-together-with-docear/",
-						"http://www.docear.org/faqs/how-to-use-mendeley-together-with-docear/");
-				JPanel panel = new JPanel(new BorderLayout());
-				panel.add(new JLabel(TextUtils.getText("jabref_mendeley_incompatible_1")), BorderLayout.NORTH);
-				panel.add(hyperlink, BorderLayout.CENTER);
-				panel.add(new JLabel(TextUtils.getText("jabref_mendeley_incompatible_2")), BorderLayout.SOUTH);
-
-				int option = JOptionPane.showConfirmDialog(UITools.getFrame(), panel,
-
-				TextUtils.getText("jabref_mendeley_incompatible_title"), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-				if (option == JOptionPane.YES_OPTION) {
-					return handle;
-				}
-			}
+//			if (!isCompatibleToJabref(file)) {
+//				JHyperlink hyperlink = new JHyperlink("http://www.docear.org/faqs/how-to-use-mendeley-together-with-docear/",
+//						"http://www.docear.org/faqs/how-to-use-mendeley-together-with-docear/");
+//				JPanel panel = new JPanel(new BorderLayout());
+//				panel.add(new JLabel(TextUtils.getText("jabref_mendeley_incompatible_1")), BorderLayout.NORTH);
+//				panel.add(hyperlink, BorderLayout.CENTER);
+//				panel.add(new JLabel(TextUtils.getText("jabref_mendeley_incompatible_2")), BorderLayout.SOUTH);
+//
+//				int option = JOptionPane.showConfirmDialog(UITools.getFrame(), panel,
+//
+//				TextUtils.getText("jabref_mendeley_incompatible_title"), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+//				if (option == JOptionPane.YES_OPTION) {
+//					return handle;
+//				}
+//			}
 			File fileToLoad = file;
 			LogUtils.info(Globals.lang("Opening References") + ": '" + file.getPath() + "'");
 
@@ -357,6 +348,14 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 				try {
 					String source = resourceController.getProperty("docear_bibtex_source", "Jabref");
 					pr = OpenDatabaseAction.loadDataBase(fileToLoad, encoding, source);
+					for (PostOpenAction action : postParseActions) {
+						if (action.isActionNecessary(pr)) {
+							long time = System.currentTimeMillis();
+							action.performAction(null, pr);
+							System.out.println(action.getClass().toString()+" time: "+(System.currentTimeMillis()-time)+"ms");
+							System.out.println();
+						}						
+					}
 				}
 				catch (Exception ex) {
 					//__DOCEAR_
@@ -401,74 +400,76 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 	// JabRef does not use character escaping of "{" and "}"
 	// unfortunately all other escapings are not unambiguously or might be set
 	// in jabref-preferences too
-	public boolean isCompatibleToJabref(File f) {
-		int escapeCount = 0;
-		int allCount = 0;
-
-		ArrayList<Character> allowedCharsBeforeSlash = new ArrayList<Character>();
-		allowedCharsBeforeSlash.add('\"');
-		allowedCharsBeforeSlash.add('\'');
-		allowedCharsBeforeSlash.add('`');
-		allowedCharsBeforeSlash.add('^');
-		allowedCharsBeforeSlash.add('~');
-
-		Scanner in = null;
-		try {
-			in = new Scanner(new FileReader(f));
-			while (in.hasNextLine()) {
-				String line = in.nextLine();
-
-				String normalized = line.trim().toLowerCase();
-				if (Compat.isWindowsOS() && normalized.startsWith("file")) {
-					if (normalized.contains("backslash$:")) {
-						return false;
-					}
-				}
-				if (normalized.startsWith("journal") || normalized.startsWith("title") || normalized.startsWith("booktitle")) {
-					int pos = 0;
-					int i = 0;
-
-					String s = normalized.substring(normalized.indexOf("=") + 1).trim();
-					while (s.charAt(pos) == '{') {
-						pos++;
-					}
-					while ((i = s.indexOf("{", pos)) >= 0) {
-						pos = (i + 1);
-						if (allowedCharsBeforeSlash.contains(s.charAt(i - 1))) {
-							continue;
-						}
-						allCount++;
-
-					}
-
-					pos = 0;
-					i = 0;
-					while ((i = s.indexOf("\\{", pos)) >= 0) {
-						escapeCount++;
-						pos = (i + 1);
-					}
-				}
-			}
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-		finally {
-			try {
-				in.close();
-			}
-			catch (Exception e) {
-				LogUtils.warn(e);
-			}
-		}
-
-		// if no escaped and no unescaped char sequence was found in the whole
-		// file we assume it to be ok for usage in jabref
-		if (allCount / 2 >= escapeCount) {
-			return true;
-		}
-		return false;
-	}
+//	public boolean isCompatibleToJabref(File f) {
+//		int escapeCount = 0;
+//		int allCount = 0;
+//
+//		ArrayList<Character> allowedCharsBeforeSlash = new ArrayList<Character>();
+//		allowedCharsBeforeSlash.add('\"');
+//		allowedCharsBeforeSlash.add('\'');
+//		allowedCharsBeforeSlash.add('`');
+//		allowedCharsBeforeSlash.add('^');
+//		allowedCharsBeforeSlash.add('~');
+//
+//		RandomAccessFile raf = null;
+//		try {
+//			//in = new Scanner(new FileReader(f));
+//			raf = new RandomAccessFile(f, "r");
+//			boolean isWin = Compat.isWindowsOS();
+//			String line = null;
+//			while ((line = raf.readLine()) != null) {
+//				String normalized = line.trim().toLowerCase();
+//				if (isWin && normalized.startsWith("file")) {
+//					if (normalized.contains("backslash$:")) {
+//						return false;
+//					}
+//				}
+//				if (normalized.startsWith("journal") || normalized.startsWith("title") || normalized.startsWith("booktitle")) {
+//					int pos = 0;
+//					int i = 0;
+//
+//					String s = normalized.substring(normalized.indexOf("=") + 1).trim();
+//					while (s.charAt(pos) == '{') {
+//						pos++;
+//					}
+//					while ((i = s.indexOf("{", pos)) >= 0) {
+//						pos = (i + 1);
+//						if (allowedCharsBeforeSlash.contains(s.charAt(i - 1))) {
+//							continue;
+//						}
+//						allCount++;
+//
+//					}
+//
+//					pos = 0;
+//					i = 0;
+//					while ((i = s.indexOf("\\{", pos)) >= 0) {
+//						escapeCount++;
+//						pos = (i + 1);
+//					}
+//				}
+//			}
+//		}
+//		catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//		finally {
+//			try {
+//				//in.close();
+//				raf.close();
+//			}
+//			catch (Exception e) {
+//				LogUtils.warn(e);
+//			}
+//		}
+//
+//		// if no escaped and no unescaped char sequence was found in the whole
+//		// file we assume it to be ok for usage in jabref
+//		if (allCount / 2 >= escapeCount) {
+//			return true;
+//		}
+//		return false;
+//	}
 
 	/**
 	 * Go through the list of post open actions, and perform those that need to

@@ -25,7 +25,7 @@ public class DocearEventQueue {
 	 * METHODS
 	 **********************************************************************************/
 	private Thread getDispatcherThread() {
-		return new Thread() {
+		return new Thread("Docear-EventQueue") {
 			public void run() {
 				while(!stopDispatcher) {
 					DocearEvent event = null;
