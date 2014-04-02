@@ -489,9 +489,14 @@ public class UrlManager implements IExtension {
 			sb.append('#');
 			sb.append(fragment);
 		}
+		final String scheme = uri.getScheme();
+		if("file".equals(scheme)) {
+			if(sb.toString().startsWith("//") && !sb.toString().startsWith("////")) {
+				sb.insert(0, "//");
+			}
+		}
 		if (!uri.isAbsolute() || uri.isOpaque() || uri.getScheme().length()>0) {
 			final URL mapUrl = map.getURL();
-			final String scheme = uri.getScheme();
 			if (scheme == null || mapUrl.getProtocol().equals(scheme)) {
 				final URL url = new URL(mapUrl, sb.toString());
 				return url;
@@ -514,9 +519,14 @@ public class UrlManager implements IExtension {
 			sb.append('#');
 			sb.append(fragment);
 		}
+		final String scheme = uri.getScheme();
+		if("file".equals(scheme)) {
+			if(sb.toString().startsWith("//") && !sb.toString().startsWith("////")) {
+				sb.insert(0, "//");
+			}
+		}
 		if (!uri.isAbsolute() || uri.isOpaque() || uri.getScheme().length()>0) {
 			final URL baseUrl = base.toURL();
-			final String scheme = uri.getScheme();
 			if (scheme == null || baseUrl.getProtocol().equals(scheme)) {
 				final URL url = new URL(baseUrl, sb.toString());
 				return url;
