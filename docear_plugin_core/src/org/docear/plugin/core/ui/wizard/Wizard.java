@@ -11,6 +11,7 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.Window;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 
 import javax.swing.AbstractButton;
@@ -23,6 +24,7 @@ import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
 import javax.swing.JSeparator;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -75,6 +77,7 @@ public class Wizard {
 	private JEditorPane titleComponent;
 	private WizardPageDescriptor startPageIdentifier;
 	private boolean isResizable;
+	private IPageKeyBindingProcessor pageKeyBindingProcessor;
 
 	/***********************************************************************************
 	 * CONSTRUCTORS
@@ -118,6 +121,7 @@ public class Wizard {
 		wizardModel.setCurrentPage(id);
 		wizardModel.getCurrentPageDescriptor().aboutToDisplayPage(getContext());
 		if(wizardModel.getCurrentPageDescriptor().getPage().isPageDisplayable()) {
+			this.pageKeyBindingProcessor = wizardModel.getCurrentPageDescriptor().getKeyBindingProcessor();
 			cardLayout.show(cardPanel, id.toString());
 			wizardModel.getCurrentPageDescriptor().displayingPage(getContext());
 		}
@@ -283,10 +287,27 @@ public class Wizard {
 		}
 	}
 	
+
+
+	private boolean processPageKeyBindings(KeyStroke ks, KeyEvent e, boolean pressed) {
+		if(this.pageKeyBindingProcessor != null) {
+			return pageKeyBindingProcessor.processKeyEvent(e);
+		}
+		return false;
+	}
+	
 	private void initComponents() {
 		WizardMouseAdapter mAdapter = new WizardMouseAdapter(this);
 		
-		final JPanel mainPanel = new JPanel(true);
+		final JPanel mainPanel = new JPanel(true) {
+			@Override
+			protected boolean processKeyBinding(final KeyStroke ks, final KeyEvent e, final int condition, final boolean pressed) {
+				if(!processPageKeyBindings(ks, e, pressed)) {
+					return super.processKeyBinding(ks, e, condition, pressed);
+				}
+				return true;
+			}
+		};
 		JPanel contentPanel = new JPanel();
 		final JPanel headPanel = new JPanel();
 		JPanel headControls = new JPanel();
@@ -393,7 +414,7 @@ public class Wizard {
 		
 		contentPanel.add(cardPanel, BorderLayout.CENTER);
 		contentPanel.add(buttonPanel, BorderLayout.SOUTH);
-		
+
 		mainPanel.addMouseListener(mAdapter);
 		mainPanel.addMouseMotionListener(mAdapter);
 		

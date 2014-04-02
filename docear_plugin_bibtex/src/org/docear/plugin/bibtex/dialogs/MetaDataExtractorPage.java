@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
@@ -64,6 +65,7 @@ import org.docear.plugin.bibtex.ReferencesController;
 import org.docear.plugin.bibtex.actions.MetaDataAction.MetaDataActionObject;
 import org.docear.plugin.core.ui.MultiLineActionLabel;
 import org.docear.plugin.core.ui.wizard.AWizardPage;
+import org.docear.plugin.core.ui.wizard.IPageKeyBindingProcessor;
 import org.docear.plugin.core.ui.wizard.WizardContext;
 import org.docear.plugin.core.util.CoreUtils;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
@@ -80,6 +82,7 @@ import com.jgoodies.forms.layout.RowSpec;
 
 public class MetaDataExtractorPage extends AWizardPage {
 	
+	private static final String DOCEAR_METADATA_CREATE_ATTACH_ONLY = "docear_metadata_createAttachOnly";
 	public static final String DOCEAR_METADATA_SEARCH_BY_FILE = "docear_metadata_searchByFile";
 	public static final String DOCEAR_METADATA_SEARCH_BY_TITLE = "docear_metadata_searchByTitle";
 	public static final String DOCEAR_METADATA_SEARCH_OPTION = "docear_metadata_searchOption";
@@ -101,8 +104,8 @@ public class MetaDataExtractorPage extends AWizardPage {
 	private String pdfFileName;
 	private String pdfTitle;
 	private List<Pair<BibtexEntry,MetaDataSource>> xmpData = new ArrayList<Pair<BibtexEntry,MetaDataSource>>();
-	private JLabel lblSearchBy;
-	private MultiLineActionLabel actionLabel_Title;
+	private JLabel labelSearchBy;
+	private JLabel actionLabel_Title;
 	private JRadioButton radioButton_searchTitle;
 	private JPanel panel;
 	private JScrollPane scrollPaneXmpData;
@@ -118,6 +121,7 @@ public class MetaDataExtractorPage extends AWizardPage {
 	private JLabel labelSpinner;
 	private JLabel labelStatustext;
 	private int requestCount;
+	private JLabel labelSearch;
 
 	public MetaDataExtractorPage() {		
 		setBackground(Color.WHITE);
@@ -179,19 +183,19 @@ public class MetaDataExtractorPage extends AWizardPage {
 				ColumnSpec.decode("13dlu"),
 				FormFactory.DEFAULT_COLSPEC,
 				FormFactory.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("default:grow"),
+				ColumnSpec.decode("min(300dlu;pref):grow"),
 				FormFactory.RELATED_GAP_COLSPEC,
 				FormFactory.DEFAULT_COLSPEC,},
 			new RowSpec[] {
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
-				RowSpec.decode("default:grow"),
+				RowSpec.decode("15dlu"),
 				FormFactory.RELATED_GAP_ROWSPEC,
 				RowSpec.decode("default:grow"),}));
 		
-		lblSearchBy = new JLabel("Search by");
-		panel_Search.add(lblSearchBy, "2, 2");
+		labelSearchBy = new JLabel("Search by");
+		panel_Search.add(labelSearchBy, "2, 2");
 		
 		radioButton_searchFile = new JRadioButton(TextUtils.getText("docear.metadata.extraction.lookup.filename"));
 		radioButton_searchFile.addActionListener(new ActionListener() {
@@ -220,8 +224,8 @@ public class MetaDataExtractorPage extends AWizardPage {
 		radioButton_searchTitle.setBackground(Color.WHITE);
 		panel_Search.add(radioButton_searchTitle, "2, 6");
 		
-		actionLabel_Title = new MultiLineActionLabel();
-		actionLabel_Title.setBackground(Color.WHITE);
+		actionLabel_Title = new JLabel();
+		actionLabel_Title.setBackground(Color.WHITE);	
 		panel_Search.add(actionLabel_Title, "4, 6, fill, fill");
 		
 		panel = new JPanel();
@@ -238,7 +242,7 @@ public class MetaDataExtractorPage extends AWizardPage {
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,}));
 		
-		JLabel labelSearch = new JLabel(TextUtils.getText("docear.metadata.extraction.lookup.search"));
+		labelSearch = new JLabel(TextUtils.getText("docear.metadata.extraction.lookup.search"));
 		panel.add(labelSearch, "2, 2");
 		
 		textFieldSearch = new JTextField();
@@ -454,7 +458,7 @@ public class MetaDataExtractorPage extends AWizardPage {
 			Controller.getCurrentController().getResourceController().setProperty(DOCEAR_METADATA_SEARCH_OPTION, DOCEAR_METADATA_SEARCH_BY_TITLE);
 		}
 		if(searchFile){
-			this.textFieldSearch.setText(this.pdfFileName);
+			this.textFieldSearch.setText(this.pdfFileName.substring(0, CoreUtils.resolveURI(pdfFile).getName().lastIndexOf(".")));
 			Controller.getCurrentController().getResourceController().setProperty(DOCEAR_METADATA_SEARCH_OPTION, DOCEAR_METADATA_SEARCH_BY_FILE);
 		}
 	}
@@ -475,13 +479,19 @@ public class MetaDataExtractorPage extends AWizardPage {
 		this.listFetchedResults.setEnabled(createFetched);		
 		this.button_Settings.setEnabled(createFetched);
 		this.radioButton_searchFile.setEnabled(createFetched);
-		this.radioButton_searchTitle.setEnabled(createFetched);
+		if(this.pdfTitle != null && !this.pdfTitle.isEmpty()){
+			this.radioButton_searchTitle.setEnabled(createFetched);
+		}		
 		this.actionLabel_File.setEnabled(createFetched);
 		this.actionLabel_Title.setEnabled(createFetched);
 		this.scrollPaneFetchedResults.setEnabled(createFetched);
 		this.scrollPaneFetchedResults.getHorizontalScrollBar().setEnabled(createFetched);		
 		this.scrollPaneFetchedResults.getVerticalScrollBar().setEnabled(createFetched);
 		this.scrollPaneFetchedResults.getViewport().getView().setEnabled(createFetched);
+		this.labelStatustext.setEnabled(createFetched);
+		this.labelSpinner.setEnabled(createFetched);
+		this.labelSearchBy.setEnabled(createFetched);
+		this.labelSearch.setEnabled(createFetched);
 		
 		this.listXmpData.setEnabled(createXmp);
 		this.scrollPaneXmpData.setEnabled(createXmp);
@@ -503,6 +513,9 @@ public class MetaDataExtractorPage extends AWizardPage {
 		else if(createXmp){
 			Controller.getCurrentController().getResourceController().setProperty(DOCEAR_METADATA_CREATE_ENTRY_OPTION, DOCEAR_METADATA_CREATE_XMP_DATA_ENTRY);
 		}
+		else if(attachOnly){
+			Controller.getCurrentController().getResourceController().setProperty(DOCEAR_METADATA_CREATE_ENTRY_OPTION, DOCEAR_METADATA_CREATE_ATTACH_ONLY);
+		}
 	}
 
 	@Override
@@ -521,12 +534,12 @@ public class MetaDataExtractorPage extends AWizardPage {
 		
 		MetaDataActionObject data = context.get(MetaDataActionObject.class);
 		this.pdfFile = data.getCurrentPDF();
-		this.pdfFileName = CoreUtils.resolveURI(pdfFile).getName().substring(0, CoreUtils.resolveURI(pdfFile).getName().lastIndexOf("."));
+		this.pdfFileName = CoreUtils.resolveURI(pdfFile).getName();
 		this.pdfTitle = AnnotationController.getDocumentTitle(pdfFile);
 		this.xmpData = this.readXmpData(CoreUtils.resolveURI(pdfFile));
 		this.searchHub.registerSearchEngine(new GoogleScholarSearchEngine(null));
 		this.labelSpinner.setVisible(false);
-		
+				
 		if(data.getResult().get(pdfFile).getEntryToUpdate() != null || data.getResult().get(pdfFile).isDuplicatePdf()){
 			labelWarning.setVisible(true);
 			if(data.getResult().get(pdfFile).isDuplicatePdf()){
@@ -594,13 +607,25 @@ public class MetaDataExtractorPage extends AWizardPage {
 					setCreateSelection(new ActionEvent(this.radioButton_createFetched, 0, ""));
 				}
 			}
+			else if (createEntryOption.equals(DOCEAR_METADATA_CREATE_ATTACH_ONLY)){
+				if(data.getResult().get(pdfFile).isShowattachOnlyOption()){
+					setCreateSelection(new ActionEvent(this.radioButtonAttachOnly, 0, ""));
+				}
+				else{
+					setCreateSelection(new ActionEvent(this.radioButton_createFetched, 0, ""));
+				}
+			}
 		}
 		
 		String searchOption = Controller.getCurrentController().getResourceController().getProperty(DOCEAR_METADATA_SEARCH_OPTION, DOCEAR_METADATA_SEARCH_BY_TITLE);
-		if(searchOption.equals(DOCEAR_METADATA_SEARCH_BY_TITLE)){
-			setSearchSelection(new ActionEvent(this.radioButton_searchTitle, 0, ""));
+		if(searchOption.equals(DOCEAR_METADATA_SEARCH_BY_TITLE)){			
+			setSearchSelection(new ActionEvent(this.radioButton_searchTitle, 0, ""));			
 		}
 		else if (searchOption.equals(DOCEAR_METADATA_SEARCH_BY_FILE)){
+			setSearchSelection(new ActionEvent(this.radioButton_searchFile, 0, ""));
+		}
+		if(this.pdfTitle == null || this.pdfTitle.isEmpty()){
+			this.radioButton_searchTitle.setEnabled(false);
 			setSearchSelection(new ActionEvent(this.radioButton_searchFile, 0, ""));
 		}
 		
@@ -625,7 +650,22 @@ public class MetaDataExtractorPage extends AWizardPage {
 					if(row >= 0 && row < listXmpData.getModel().getSize()){
 						result.getResult().get(pdfFile).setResultEntry( ((BibtexEntryListModel)listXmpData.getModel()).getEntry(row).p);							
 					}
-				}				
+				}
+				if(radioButtonAttachOnly.isSelected()){
+					result.getResult().get(pdfFile).setAttachOnly(true);
+				}
+			}
+		});
+		
+		context.getModel().getCurrentPageDescriptor().setKeyBindingProcessor(new IPageKeyBindingProcessor() {
+			
+			@Override
+			public boolean processKeyEvent(KeyEvent e) {				
+				if(e.getID() == KeyEvent.KEY_RELEASED && e.getKeyCode() == KeyEvent.VK_ESCAPE){
+					context.getBackButton().doClick();
+					return true;
+				}
+				return false;
 			}
 		});
 		
@@ -638,7 +678,9 @@ public class MetaDataExtractorPage extends AWizardPage {
 			}
 		});
 		
-		searchMetadata();
+		if(radioButton_createFetched.isSelected()){
+			searchMetadata();
+		}		
 	}
 	
 	private boolean hasXmpData(){

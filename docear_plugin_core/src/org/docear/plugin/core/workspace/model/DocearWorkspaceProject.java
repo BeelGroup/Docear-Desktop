@@ -228,8 +228,7 @@ public class DocearWorkspaceProject extends AWorkspaceProject {
 			}
 			return LinkController.createURI(WorkspaceController.PROJECT_RESOURCE_URL_PROTOCOL + "://"+ getProjectID() +"/"+relativeUri.getRawPath());
 		}
-		catch (Exception e) {
-			LogUtils.warn(e);
+		catch (Exception ignore) {			
 		}
 		return null;
 	}

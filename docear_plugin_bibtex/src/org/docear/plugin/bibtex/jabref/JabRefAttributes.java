@@ -462,7 +462,7 @@ public class JabRefAttributes {
 		}
 		try {
 			if (ignores != null) {
-				if (nodeUrl != null) {
+				if (nodeUrl != null && !nodeUrl.toExternalForm().isEmpty()) {
 					if (ignores.contains(nodeUrl.toExternalForm())) {
 						throw new ResolveDuplicateEntryAbortedException(nodeUrl);
 					}
@@ -474,7 +474,7 @@ public class JabRefAttributes {
 
 			for (BibtexEntry entry : database.getEntries()) {
 				String entryUrlField = entry.getField("url");
-				if (entryUrlField != null) {
+				if (entryUrlField != null && !entryUrlField.isEmpty()) {
 					URI entryUri = null;
 					try {
 						entryUri = URI.create(entryUrlField);
@@ -508,7 +508,7 @@ public class JabRefAttributes {
 		}
 		catch (ResolveDuplicateEntryAbortedException e) {
 			if (ignores != null) {
-				if (nodeUrl != null) {
+				if (nodeUrl != null && !nodeUrl.toExternalForm().isEmpty()) {
 					ignores.add(nodeUrl.toExternalForm());
 				}
 			}
@@ -543,7 +543,7 @@ public class JabRefAttributes {
 		}
 		// file name linked in a node
 		File nodeFile = UrlManager.getController().getAbsoluteFile(map, uri);
-		if (nodeFile == null) {
+		if (nodeFile == null || nodeFile.getAbsolutePath().isEmpty()) {
 			return null;
 		}
 		String nodeFileName = nodeFile.getName();

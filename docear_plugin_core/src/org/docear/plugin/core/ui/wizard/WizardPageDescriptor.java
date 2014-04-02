@@ -1,11 +1,14 @@
 package org.docear.plugin.core.ui.wizard;
 
+import org.freeplane.core.ui.components.IKeyBindingManager;
+
 
 
 public class WizardPageDescriptor {
 
 	private final AWizardPage targetPage;
 	private final Object pageIdentifier;
+	private IPageKeyBindingProcessor keyBindingProcessor;
 
 	/***********************************************************************************
 	 * CONSTRUCTORS
@@ -51,7 +54,14 @@ public class WizardPageDescriptor {
 	public void aboutToHidePage(WizardContext context) {
 		getPage().setVisible(false);
 	}
+
+	public IPageKeyBindingProcessor getKeyBindingProcessor() {
+		return this.keyBindingProcessor;
+	}
 	
+	public void setKeyBindingProcessor(IPageKeyBindingProcessor proc) {
+		this.keyBindingProcessor = proc;
+	}
 	
 
 	/***********************************************************************************

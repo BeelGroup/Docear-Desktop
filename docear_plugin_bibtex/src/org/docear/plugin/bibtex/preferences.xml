@@ -3,8 +3,9 @@
     <tabbed_pane>
         <tab name="docear.reference_manager.title" >
             <separator name="docear.reference_manager.docear" >
-                <boolean name="docear.reference_manager.resolve_duplicate_keys" />
-            </separator>
+                <boolean name="docear.reference_manager.resolve_duplicate_keys" />            
+                <boolean name="docear.reference.duplicate_always_ignore" />
+            </separator>            
             <separator name="docear.reference_manager.jabref" >
                 <action name="show_jabref_preferences"/>
             </separator>
