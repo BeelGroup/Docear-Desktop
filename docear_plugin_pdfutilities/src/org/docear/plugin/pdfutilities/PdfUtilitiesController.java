@@ -394,122 +394,127 @@ public class PdfUtilitiesController extends ALanguageController {
 			return this.pdfViewerList;
 		}
 		List<PDFReaderHandle> handles = new ArrayList<PDFReaderHandle>();
-
-		// Map<Name, List<String>{Version, InstallDir>
-		Map<String, PDFReaderHandle> viewers = new HashMap<String, PDFReaderHandle>();		
-
-		if(Compat.isMacOsX()) {
-			lookForReadersMacOs(viewers, new File("/Applications"));
-		}
-		else {
-			File winFile = new File(ResourceController.getResourceController().getFreeplaneUserDirectory(), "win_uninstall.reg");
-			try {
-				exportRegistryKey("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall", winFile);
-				parseExportedRegistryFile(viewers, winFile, RegistryBranch.DEFAULT);
-			}
-			catch (IOException e1) {
-				LogUtils.info("Read registry (default): "+ e1.toString());
-			}
+		try {
+			// Map<Name, List<String>{Version, InstallDir>
+			Map<String, PDFReaderHandle> viewers = new HashMap<String, PDFReaderHandle>();		
 	
-			File winWOW6432NODEFile = new File(ResourceController.getResourceController().getFreeplaneUserDirectory(), "win_wow64_uninstall.reg");
-			try {
-				exportRegistryKey("HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall", winWOW6432NODEFile);
-				parseExportedRegistryFile(viewers, winWOW6432NODEFile, RegistryBranch.WOW6432NODE);
+			if(Compat.isMacOsX()) {
+				lookForReadersMacOs(viewers, new File("/Applications"));
 			}
-			catch (IOException e1) {
-				LogUtils.info("Read registry (wow6432): "+ e1.toString());
-			}
-			if(!viewers.containsKey("PDF-Viewer") && Compat.isWindowsOS()){
-				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-				try {					
-					WinRegistry.exportKey(WinRegistry.HKEY_CURRENT_USER, "Software\\Tracker Software\\PDFViewer", outputStream);
-					String trackerSettings = outputStream.toString();
-					BufferedReader reader = new BufferedReader(new StringReader(trackerSettings));
-					String line;
-					try{
-						while ((line = reader.readLine()) != null) {
-							if (line.startsWith("\"InstallPath")) {
-								PDFReaderHandle handle = new PDFReaderHandle(RegistryBranch.DEFAULT);
-								handle.setName("PDF-Viewer");
-								String installPath = line.substring(15, line.length() - 1);
-								handle.setExecFile(installPath);
-								handle.setVersion("0");
-								if(!Compat.isWindowsOS() || new File(handle.getExecFile()).exists()) {
-									viewers.put(handle.getName(),handle);
+			else {
+				File winFile = new File(ResourceController.getResourceController().getFreeplaneUserDirectory(), "win_uninstall.reg");
+				try {
+					exportRegistryKey("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall", winFile);
+					parseExportedRegistryFile(viewers, winFile, RegistryBranch.DEFAULT);
+				}
+				catch (IOException e1) {
+					LogUtils.info("Read registry (default): "+ e1.toString());
+				}
+		
+				File winWOW6432NODEFile = new File(ResourceController.getResourceController().getFreeplaneUserDirectory(), "win_wow64_uninstall.reg");
+				try {
+					exportRegistryKey("HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall", winWOW6432NODEFile);
+					parseExportedRegistryFile(viewers, winWOW6432NODEFile, RegistryBranch.WOW6432NODE);
+				}
+				catch (IOException e1) {
+					LogUtils.info("Read registry (wow6432): "+ e1.toString());
+				}
+				if(!viewers.containsKey("PDF-Viewer") && Compat.isWindowsOS()){
+					ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+					try {					
+						WinRegistry.exportKey(WinRegistry.HKEY_CURRENT_USER, "Software\\Tracker Software\\PDFViewer", outputStream);
+						String trackerSettings = outputStream.toString();
+						BufferedReader reader = new BufferedReader(new StringReader(trackerSettings));
+						String line;
+						try{
+							while ((line = reader.readLine()) != null) {
+								if (line.startsWith("\"InstallPath")) {
+									PDFReaderHandle handle = new PDFReaderHandle(RegistryBranch.DEFAULT);
+									handle.setName("PDF-Viewer");
+									String installPath = line.substring(15, line.length() - 1);
+									handle.setExecFile(installPath);
+									handle.setVersion("0");
+									if(!Compat.isWindowsOS() || new File(handle.getExecFile()).exists()) {
+										viewers.put(handle.getName(),handle);
+									}
+									break;
 								}
-								break;
+							}
+						}
+						finally{
+							reader.close();
+						}
+						if(!viewers.containsKey("PDF-Viewer")){
+							File currentUserClassesFile = new File(ResourceController.getResourceController().getFreeplaneUserDirectory(), "current_user_classes.reg");
+							try {
+								exportRegistryKey("HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID", currentUserClassesFile);
+								parseExportedRegistryFile(viewers, currentUserClassesFile, RegistryBranch.DEFAULT);
+							}
+							catch (IOException e1) {
+								LogUtils.info("Read registry (default): "+ e1.toString());
+								LogUtils.warn(e1);
 							}
 						}
 					}
-					finally{
-						reader.close();
-					}
-					if(!viewers.containsKey("PDF-Viewer")){
-						File currentUserClassesFile = new File(ResourceController.getResourceController().getFreeplaneUserDirectory(), "current_user_classes.reg");
-						try {
-							exportRegistryKey("HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID", currentUserClassesFile);
-							parseExportedRegistryFile(viewers, currentUserClassesFile, RegistryBranch.DEFAULT);
-						}
-						catch (IOException e1) {
-							LogUtils.info("Read registry (default): "+ e1.toString());
-							LogUtils.warn(e1);
-						}
-					}
-				}
-				catch (IOException e) {
-					LogUtils.info("Could not read PDF X-Change Viewer settings.");
-				}
-				finally{
-					try {
-						outputStream.close();
-					}
 					catch (IOException e) {
-						LogUtils.info("Could not close Tracker Software settings stream.");
+						LogUtils.info("Could not read PDF X-Change Viewer settings.");
 					}
-				}
-			}			
-		}
-		PDFReaderHandle handle;
-		if ((handle = viewers.get("PDF-Viewer")) != null) {
-			handle.setName("PDF-XChange Viewer");
-			if(!handle.getExecFile().endsWith("PDFXCview.exe")) {
-				if(!(handle.getExecFile().endsWith("PDF Viewer") || handle.getExecFile().endsWith("PDF Viewer\\"))) {
-					handle.setExecFile(handle.getExecFile()+"\\PDF Viewer\\");
-				}
-				handle.setExecFile(handle.getExecFile()+"PDFXCview.exe");
+					finally{
+						try {
+							outputStream.close();
+						}
+						catch (IOException e) {
+							LogUtils.info("Could not close Tracker Software settings stream.");
+						}
+					}
+				}			
 			}
-			handle.setExecFile(convertPath(handle.getExecFile()));
-			handles.add(handle);
+			PDFReaderHandle handle;
+			if ((handle = viewers.get("PDF-Viewer")) != null) {
+				handle.setName("PDF-XChange Viewer");
+				if(!handle.getExecFile().endsWith("PDFXCview.exe")) {
+					if(!(handle.getExecFile().endsWith("PDF Viewer") || handle.getExecFile().endsWith("PDF Viewer\\"))) {
+						handle.setExecFile(handle.getExecFile()+"\\PDF Viewer\\");
+					}
+					handle.setExecFile(handle.getExecFile()+"PDFXCview.exe");
+				}
+				handle.setExecFile(convertPath(handle.getExecFile()));
+				handles.add(handle);
+			}
+			if ((handle = viewers.get("Foxit Reader")) != null) {
+				handle.setName("Foxit Reader");
+				handle.setExecFile(convertPath(handle.getExecFile() + "Foxit Reader.exe"));
+				handles.add(handle);
+			}
+			if ((handle = viewers.get("Adobe Reader")) != null) {
+				handle.setName("Adobe Reader");
+				handle.setExecFile(convertPath(handle.getExecFile() + "AcroRd32.exe"));
+				handles.add(handle);
+			}
+			if ((handle = viewers.get("Acrobat")) != null) {
+				handle.setName("Acrobat");
+				handle.setExecFile(convertPath(handle.getExecFile() + "Acrobat\\Acrobat.exe"));
+				handles.add(handle);
+			}
+			if ((handle = viewers.get("Adobe Reader.app")) != null) {
+				handles.add(handle);
+			}
+			if ((handle = viewers.get("Adobe Acrobat Pro.app")) != null) {
+				handles.add(handle);
+			}
+			if ((handle = viewers.get("Skim.app")) != null) {
+				handles.add(handle);
+			}
+			if ((handle = viewers.get("Preview.app")) != null) {
+				handles.add(handle);
+			}		
+		
+			checkForDefaultReader(handles);
+			this.pdfViewerList = handles;
 		}
-		if ((handle = viewers.get("Foxit Reader")) != null) {
-			handle.setName("Foxit Reader");
-			handle.setExecFile(convertPath(handle.getExecFile() + "Foxit Reader.exe"));
-			handles.add(handle);
+		catch (RuntimeException ignore) {
+			LogUtils.info("Unable to retrieve pdf viewer information: "+ ignore.getMessage());
 		}
-		if ((handle = viewers.get("Adobe Reader")) != null) {
-			handle.setName("Adobe Reader");
-			handle.setExecFile(convertPath(handle.getExecFile() + "AcroRd32.exe"));
-			handles.add(handle);
-		}
-		if ((handle = viewers.get("Acrobat")) != null) {
-			handle.setName("Acrobat");
-			handle.setExecFile(convertPath(handle.getExecFile() + "Acrobat\\Acrobat.exe"));
-			handles.add(handle);
-		}
-		if ((handle = viewers.get("Adobe Reader.app")) != null) {
-			handles.add(handle);
-		}
-		if ((handle = viewers.get("Adobe Acrobat Pro.app")) != null) {
-			handles.add(handle);
-		}
-		if ((handle = viewers.get("Skim.app")) != null) {
-			handles.add(handle);
-		}
-		if ((handle = viewers.get("Preview.app")) != null) {
-			handles.add(handle);
-		}		
-		checkForDefaultReader(handles);
-		this.pdfViewerList = handles;
 		return handles;
 	}
 

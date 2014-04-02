@@ -79,9 +79,10 @@ public class MModeWorkspaceUrlManager extends MFileManager {
 				return null;
 			}
 			else {
-				URI absoluteUri = urlConnection.getURL().toURI().normalize();
-				if("file".equalsIgnoreCase(absoluteUri.getScheme())){
-					return new File(absoluteUri);
+				URL url = urlConnection.getURL();
+				URI absoluteUri = url.toURI();
+				if("file".equalsIgnoreCase(absoluteUri.getScheme())) {
+					return new File(absoluteUri).getCanonicalFile();
 				}				
 			}
 		}

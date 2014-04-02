@@ -16,7 +16,7 @@ public class DocearTransformForeignDatabaseAction implements PostOpenAction {
 	private final static Pattern COLON_PATTERN = Pattern.compile("(?<!\\\\):", Pattern.MULTILINE);
 	private final static Pattern SEMICOLON_PATTERN = Pattern.compile("(?<!\\\\);", Pattern.MULTILINE);
 	
-	private final static Pattern BACKSLASH_PATTERN = Pattern.compile("(?<!\\\\)\\\\(?![\\\\:])");
+	private final static Pattern BACKSLASH_PATTERN = Pattern.compile("(?<!\\\\)\\\\(?![\\\\:;])");
 	
 	// single # is not allowed in JabRef (except in file or url fields), ## or \# is however 
 	// --> uneven numbers of # are also not allowed, but we ignore that - the user will get a JabRef warning anyway
@@ -69,7 +69,7 @@ public class DocearTransformForeignDatabaseAction implements PostOpenAction {
 				sb.append(convertSingleFileContent(fileContents[i]));
 			}
  			catch(IOException e) {
-				fileContents[i+1] = fileContents[i]+"\\\\;"+fileContents[i+1];
+				fileContents[i+1] = fileContents[i]+"\\;"+fileContents[i+1];
 			}
 		}
 		
