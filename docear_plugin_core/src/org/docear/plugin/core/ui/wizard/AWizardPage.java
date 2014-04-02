@@ -29,6 +29,11 @@ public abstract class AWizardPage extends JPanel {
 	public boolean skipOnBack() {
 		return this.skipOnBack;
 	}
+	
+	public boolean forceResize() {		
+		return false;
+	}
+	
 	/***********************************************************************************
 	 * REQUIRED METHODS FOR INTERFACES
 	 **********************************************************************************/
@@ -36,4 +41,6 @@ public abstract class AWizardPage extends JPanel {
 	public abstract String getTitle();
 	
 	public abstract void preparePage(WizardContext context);
+
+	
 }

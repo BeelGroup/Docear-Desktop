@@ -43,13 +43,16 @@ public class MetaDataAction/* extends AWorkspaceAction */{
 			@Override
 			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
 				MetaDataActionObject data = context.get(MetaDataActionObject.class);
-				if(data.getResultIterator().hasNext()){
+				while(data.getResultIterator().hasNext()){
 					data.setCurrentPDF(data.getResultIterator().next());
-					return context.getModel().getPage("metadata");
+					if(data.getResult().get(data.getCurrentPDF()).isDuplicatePdf()){
+						MetaDataDuplicatePage.showDuplicateMessage(context);
+					}
+					else{
+						return context.getModel().getPage("metadata");
+					}
 				}
-				else{
-					return Wizard.FINISH_PAGE;
-				}
+				return Wizard.FINISH_PAGE;				
 			}
 
 			@Override
@@ -71,15 +74,34 @@ public class MetaDataAction/* extends AWorkspaceAction */{
 			public WizardPageDescriptor getBackPageDescriptor(WizardContext context) {				
 				return context.getModel().getPage("metadata");
 			}
-		};			
+		};
+					
 		
 		wiz.registerWizardPanel(metadataDescriptor);
-		wiz.registerWizardPanel(optionsDescriptor);
-		wiz.setStartPage(metadataDescriptor.getIdentifier());
-		wiz.show();
+		wiz.registerWizardPanel(optionsDescriptor);		
+		
+		MetaDataActionObject data = wiz.getContext().get(MetaDataActionObject.class);
+		while(data.getResultIterator().hasNext()){
+			data.setCurrentPDF(data.getResultIterator().next());
+			if(data.getResult().get(data.getCurrentPDF()).isDuplicatePdf()){
+				MetaDataDuplicatePage.showDuplicateMessage(wiz.getContext());
+			}
+			else{
+				wiz.setStartPage(metadataDescriptor.getIdentifier());
+				wiz.show();
+				break;
+			}
+		}				
 		return wiz.getContext().get(MetaDataActionObject.class);
 	}
 	
+	
+
+	private static WizardPageDescriptor getBackMetaDataPageDescriptor(final Wizard wiz) {
+		wiz.cancel();
+		return Wizard.FINISH_PAGE;
+	}
+
 	public class MetaDataActionObject{
 		
 		private HashMap<URI, MetaDataActionResult> result = new HashMap<URI, MetaDataActionResult>();

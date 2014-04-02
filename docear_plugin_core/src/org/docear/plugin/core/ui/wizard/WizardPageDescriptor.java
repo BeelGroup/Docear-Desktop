@@ -62,6 +62,10 @@ public class WizardPageDescriptor {
 	public void setKeyBindingProcessor(IPageKeyBindingProcessor proc) {
 		this.keyBindingProcessor = proc;
 	}
+
+	public boolean resizeWizard() {		
+		return getPage().forceResize();
+	}
 	
 
 	/***********************************************************************************

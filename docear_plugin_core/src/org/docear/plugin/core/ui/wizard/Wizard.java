@@ -124,6 +124,9 @@ public class Wizard {
 			this.pageKeyBindingProcessor = wizardModel.getCurrentPageDescriptor().getKeyBindingProcessor();
 			cardLayout.show(cardPanel, id.toString());
 			wizardModel.getCurrentPageDescriptor().displayingPage(getContext());
+			if(wizardModel.getCurrentPageDescriptor().resizeWizard()) {
+				wizard.pack();
+			}
 		}
 		else {
 			nextButton.doClick();
