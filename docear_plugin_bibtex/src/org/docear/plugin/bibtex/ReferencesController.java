@@ -446,7 +446,7 @@ public class ReferencesController extends ALanguageController implements IDocear
 				WorkspacePopupMenu popupMenu = new DefaultFileNode("temp", new File("temp.tmp")).getContextMenu();
 				WorkspacePopupMenuBuilder.insertAction(popupMenu, "workspace.action.addOrUpdateReferenceEntry", 0);
 				WorkspacePopupMenuBuilder.insertAction(popupMenu, WorkspacePopupMenuBuilder.SEPARATOR, 1);
-				WorkspacePopupMenuBuilder.insertAction(popupMenu, "workspace.action.renameByMetaData", 7);
+				//WorkspacePopupMenuBuilder.insertAction(popupMenu, "workspace.action.renameByMetaData", 7);
 				
 //				popupMenu = new LinkTypeFileNode().getContextMenu();
 //				WorkspacePopupMenuBuilder.insertAction(popupMenu, "workspace.action.addOrUpdateReferenceEntry", 0);

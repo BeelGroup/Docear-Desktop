@@ -124,7 +124,7 @@ public abstract class HtmlDataExtractor implements MetaDataExtractor{
 		        try{ 
 		            fos.close();
 		        } catch (IOException e) {
-		        	logger.error("Could not write cookie data to " + path, e);
+		        	logger.info("Could not write cookie data to " + path);
 		        	correctSaved = false;
 		        }
 		    }		    
@@ -134,7 +134,10 @@ public abstract class HtmlDataExtractor implements MetaDataExtractor{
 
 	
 	protected Map<String, String> readCookies(String cookieFileName) {
-		String path = getPath(cookieFileName);		
+		String path = getPath(cookieFileName);	
+		if(!new File(path).exists()){
+			return null;
+		}
 		XStream xStream = new XStream(new DomDriver());
 		xStream.alias("map", java.util.Map.class);
 		try{
@@ -142,7 +145,7 @@ public abstract class HtmlDataExtractor implements MetaDataExtractor{
 			Map<String,String> cookies = (Map<String,String>)xStream.fromXML(new File(path));
 			return cookies;
 		}catch(Exception e){
-			logger.error("Could not read cookie data from " + path, e);
+			logger.info("Could not read cookie data from " + path);
 		}
 		return null;
 	}
