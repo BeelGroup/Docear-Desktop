@@ -303,17 +303,18 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		if(text.equals(annotation.getTitle())) {
 			return;
 		}
-		
-		boolean removeFromBookmarks = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.REMOVE_LINEBREAKS_BOOKMARKS_KEY);
-		boolean removeFromComments = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.REMOVE_LINEBREAKS_COMMENTS_KEY);
-		boolean removeFromHighlights = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.REMOVE_LINEBREAKS_HIGHLIGHTED_KEY);
-		if((annotation.getAnnotationType() == AnnotationType.BOOKMARK && !removeFromBookmarks)
-				|| (annotation.getAnnotationType() == AnnotationType.COMMENT && !removeFromComments)
-				|| (annotation.getAnnotationType() == AnnotationType.HIGHLIGHTED_TEXT && !removeFromHighlights)
-				) {
-			return;
-		}
-		
+
+		// Existing properties are not used yet --> help for Marcel  :)
+//		boolean removeFromBookmarks = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.REMOVE_LINEBREAKS_BOOKMARKS_KEY);
+//		boolean removeFromComments = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.REMOVE_LINEBREAKS_COMMENTS_KEY);
+//		boolean removeFromHighlights = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.REMOVE_LINEBREAKS_HIGHLIGHTED_KEY);
+//		if((annotation.getAnnotationType() == AnnotationType.BOOKMARK && !removeFromBookmarks)
+//				|| (annotation.getAnnotationType() == AnnotationType.COMMENT && !removeFromComments)
+//				|| (annotation.getAnnotationType() == AnnotationType.HIGHLIGHTED_TEXT && !removeFromHighlights)
+//				) {
+//			return;
+//		}
+
 		if(annotationObject != null && annotationObject instanceof PDOutlineItem){
 			((PDOutlineItem)annotationObject).setTitle(text);
 			annotation.setTitle(text);
