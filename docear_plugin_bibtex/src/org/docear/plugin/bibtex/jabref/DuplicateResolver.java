@@ -82,7 +82,7 @@ public class DuplicateResolver {
 		}
 
 		Boolean ignoreAlways = ResourceController.getResourceController().getBooleanProperty("docear.reference.duplicate_always_ignore");
-		if (entries.size() == 1 || ignoreAlways) {
+		if (entries.size() == 1 || (ignoreAlways && entries.size()>0)) {
 			return entries.get(0);
 		}
 		else if (entries.size() == 0) {
