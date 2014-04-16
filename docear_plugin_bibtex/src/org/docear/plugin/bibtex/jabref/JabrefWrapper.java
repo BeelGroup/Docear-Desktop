@@ -61,6 +61,8 @@ public class JabrefWrapper extends JabRef implements IMapViewChangeListener {
 	private static ArrayList<PostOpenAction> postParseActions = new ArrayList<PostOpenAction>();
 
 	static {
+		preOpenActions.add(new ZoteroAnnoteFieldRemoverAction());
+		
 		//escape colons and semicolons (not done by Zotero		
 		postParseActions.add(new DocearTransformForeignDatabaseAction());		
 		// bibtex files exported by mendeley do not contain leading "/" for
