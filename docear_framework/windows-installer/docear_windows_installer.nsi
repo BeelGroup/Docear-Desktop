@@ -21,10 +21,6 @@ Name Docear
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
 
 
-# JRE Detection Definitions
-!define JRE_VERSION "1.6"
-!define JRE_URL_32 "http://javadl.sun.com/webapps/download/AutoDL?BundleId=58124"
-!define JRE_URL_64 "http://javadl.sun.com/webapps/download/AutoDL?BundleId=58126"
 !ifndef VERSION
     !define VERSION "1.0"
 !endif
@@ -43,7 +39,6 @@ Name Docear
 !include "Sections.nsh"
 !include "InstallOptions.nsh"
 !include FileAssociation.nsh
-!include JRECheck.nsh
 
 Function FinishedInstall
 ExecShell "open" "http://www.docear.org/support/welcome/?version=build${BUILD}"
@@ -65,7 +60,6 @@ ReserveFile "docear-setup.ini"
 # Installer pages
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE ..\..\docear_plugin_core\src\license.txt
-!insertmacro CUSTOM_PAGE_JREINFO
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_STARTMENU Application $StartMenuGroup
 Page Custom OptionPageNS OptionPageProcess
@@ -109,7 +103,6 @@ ShowUninstDetails show
 # Installer sections
 Section -Main SEC0000
     RmDir /r $INSTDIR
-    call DownloadAndInstallJREIfNecessary
     ${If} ${RunningX64}
         SetRegView 64
     ${Else}
@@ -128,10 +121,17 @@ Section -Main SEC0000
     CreateShortcut $SMPROGRAMS\$StartMenuGroup\Docear.lnk $INSTDIR\docear.exe    
     !insertmacro "CreateURLShortCut" "$SMPROGRAMS\$StartMenuGroup\Docear Website" "http://www.docear.org" "Visit Docear Website"    
     WriteRegStr HKLM "${REGKEY}\Components" Main 1
-    ${registerExtension} "$INSTDIR\docear.exe" ".mm" "Docear Mindmap"    
+    ${If} "$R9" == 1
+        ${registerExtension} "$INSTDIR\docear.exe" ".mm" "Docear Mindmap"    
+    ${EndIf}
 SectionEnd
 
 Section -post SEC0001
+    ${If} ${RunningX64}
+        SetRegView 64
+    ${Else}
+        SetRegView 32
+    ${EndIf}
     SetShellVarContext all
     WriteRegStr HKLM "${REGKEY}" Path $INSTDIR
     SetOutPath $INSTDIR
@@ -148,21 +148,6 @@ Section -post SEC0001
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" UninstallString $INSTDIR\uninstall.exe
     WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoModify 1
     WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoRepair 1
-    
-    ReadRegStr $R9 HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment" "Path"
-    Call GetJreInstallPath
-    Pop $R7    ; get JRE path    
-    ${If} ${RunningX64}
-        SetRegView 64
-    ${Else}
-        SetRegView 32
-    ${EndIf}
-    
-    ${WordFind} "$R9" "$R7" "*" $R6
-    ${IF} $R6 <= 0 
-        WriteRegStr HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment" "Path" "$R9;$R7\bin"
-        SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
-    ${EndIf}
 SectionEnd
 
 # Macro for selecting uninstaller sections
@@ -181,6 +166,11 @@ done${UNSECTION_ID}:
 
 # Uninstaller sections
 Section /o -un.Main UNSEC0000
+    ${If} ${RunningX64}
+        SetRegView 64
+    ${Else}
+        SetRegView 32
+    ${EndIf}
     RmDir /r /REBOOTOK $PROFILE\.docear
     SetShellVarContext all
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Docear Website.URL"
@@ -200,6 +190,11 @@ Section /o -un.Main UNSEC0000
 SectionEnd
 
 Section -un.post UNSEC0001
+    ${If} ${RunningX64}
+        SetRegView 64
+    ${Else}
+        SetRegView 32
+    ${EndIf}
     SetShellVarContext all
     DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^UninstallLink).lnk"
@@ -242,6 +237,7 @@ Function OptionPageNS
    
    process:   
     ReadINIStr $R8 $R0 "Field 1" "State"
+    ReadINIStr $R9 $R0 "Field 2" "State"
    done:
 FunctionEnd
 
