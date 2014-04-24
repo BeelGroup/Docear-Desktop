@@ -123,36 +123,35 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		boolean ret = false;
 		this.currentFile = annotation.getSource();
 		PDDocument document = getPDDocument(annotation.getSource());
-		if(document == null){
-			ret = false;
-		}
-		try{
-			this.setImportAll(true);
-			this.setPDObject(true);
-			
-			this.importAnnotations(document, annotations);
-			this.importBookmarks(document, annotations);
-			
-		} catch(Exception e){
-			LogUtils.warn(e);
-		} finally {
-			this.setImportAll(true);
-			this.setPDObject(false);
-			AnnotationModel result = this.searchAnnotation(annotations, annotation);
-			if(result != null){
-				Object annotationObject = result.getAnnotationObject();
-				if(annotationObject != null && annotationObject instanceof PDOutlineItem){
-					((PDOutlineItem)annotationObject).setTitle(newTitle);
-					ret = true;
+		if(document != null){
+			try{
+				this.setImportAll(true);
+				this.setPDObject(true);
+				
+				this.importAnnotations(document, annotations);
+				this.importBookmarks(document, annotations);
+				
+			} catch(Exception e){
+				LogUtils.warn(e);
+			} finally {
+				this.setImportAll(true);
+				this.setPDObject(false);
+				AnnotationModel result = this.searchAnnotation(annotations, annotation);
+				if(result != null){
+					Object annotationObject = result.getAnnotationObject();
+					if(annotationObject != null && annotationObject instanceof PDOutlineItem){
+						((PDOutlineItem)annotationObject).setTitle(newTitle);
+						ret = true;
+					}
+					if(annotationObject != null && annotationObject instanceof PDAnnotation){
+						((PDAnnotation)annotationObject).setContents(newTitle);
+						ret = true;
+					}
+					document.save();
 				}
-				if(annotationObject != null && annotationObject instanceof PDAnnotation){
-					((PDAnnotation)annotationObject).setContents(newTitle);
-					ret = true;
+				if(document != null) {
+					document.close();
 				}
-				document.save();
-			}
-			if(document != null) {
-				document.close();
 			}
 		}
 		return ret;
