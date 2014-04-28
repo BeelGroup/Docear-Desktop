@@ -297,7 +297,7 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		if(this.removeLinebreaksDialogResult == JOptionPane.CANCEL_OPTION) return;
 		
 		String oldText = annotation.getTitle();
-		String text = removeLinebreaks(annotation.getTitle());
+		String text = removeLinebreaks(annotation.getTitle(), false);
 		
 		if(text.equals(annotation.getTitle())) {
 			return;
@@ -373,9 +373,9 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		}
 	}
 	
-	public static String removeLinebreaks(String text) {
+	public static String removeLinebreaks(String text, boolean forced) {
 		boolean removeLinebreaks = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.REMOVE_LINEBREAKS_KEY);
-		if(removeLinebreaks) {
+		if(removeLinebreaks || forced) {
 			boolean keepDoubleLinebreaks = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.KEEP_DOUBLE_LINEBREAKS_KEY);
 			boolean addSpaces = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.ADD_SPACES_KEY);
 			boolean removeDashes = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.REMOVE_DASHES_KEY);

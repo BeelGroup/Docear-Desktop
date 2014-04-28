@@ -61,8 +61,8 @@ public class RemoveLinebreaksAction extends ImportAnnotationsAction {
 		}
 	}
 
-	public void removeLinebreaks(NodeModel selected) {
-		String text = PdfAnnotationImporter.removeLinebreaks(selected.getText());
+	private void removeLinebreaks(NodeModel selected) {
+		String text = PdfAnnotationImporter.removeLinebreaks(selected.getText(), true);
 		if(text.equals(selected.getText())) return;
 		AnnotationNodeModel model = AnnotationController.getAnnotationNodeModel(selected);
 		if(model != null){
