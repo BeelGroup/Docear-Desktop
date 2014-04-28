@@ -8,7 +8,7 @@ import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.ui.wizard.Wizard;
-import org.docear.plugin.core.ui.wizard.WizardContext;
+import org.docear.plugin.core.ui.wizard.WizardSession;
 import org.docear.plugin.core.ui.wizard.WizardPageDescriptor;
 import org.docear.plugin.services.DocearServiceException;
 import org.docear.plugin.services.ServiceController;
@@ -43,13 +43,13 @@ public class DocearUserRegistrationAction extends AWorkspaceAction {
 		Object startId;
 		//registration page
 		WizardPageDescriptor desc = new WizardPageDescriptor("page.registration", new RegistrationPagePanel()) {
-			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
+			public WizardPageDescriptor getNextPageDescriptor(WizardSession context) {
 				((RegistrationPagePanel)getPage()).getUser();
 				return context.getModel().getPage("page.verify.registration");
 			}
 
 			@Override
-			public void aboutToDisplayPage(WizardContext context) {
+			public void aboutToDisplayPage(WizardSession context) {
 				super.aboutToDisplayPage(context);
 				context.getBackButton().setVisible(false);
 			}
@@ -62,7 +62,7 @@ public class DocearUserRegistrationAction extends AWorkspaceAction {
 		//registration verification
 		final DocearServiceTestTask task = getRegistrationVerificationTask();
 		desc = new WizardPageDescriptor("page.verify.registration", new VerifyServicePagePanel("Registration", task, false)) {
-			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
+			public WizardPageDescriptor getNextPageDescriptor(WizardSession context) {
 					context.getTraversalLog().getPreviousPage(context);
 					if(DocearUserController.getActiveUser() instanceof DocearLocalUser) {
 						return context.getModel().getPage("page.registration.keep_workspace");
@@ -73,7 +73,7 @@ public class DocearUserRegistrationAction extends AWorkspaceAction {
 			}
 
 			@Override
-			public void aboutToDisplayPage(WizardContext context) {
+			public void aboutToDisplayPage(WizardSession context) {
 				super.aboutToDisplayPage(context);
 				if(DocearUserController.getActiveUser() instanceof DocearLocalUser) {
 					context.getNextButton().setText(TextUtils.getText("docear.setup.wizard.controls.next"));
@@ -92,7 +92,7 @@ public class DocearUserRegistrationAction extends AWorkspaceAction {
 		wizard.registerWizardPanel(desc);
 		
 		desc = new WizardPageDescriptor("page.registration.keep_workspace", new KeepWorkspaceSettingsPagePanel()) {
-			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
+			public WizardPageDescriptor getNextPageDescriptor(WizardSession context) {
 					WorkspaceController.save();
 					if(((KeepWorkspaceSettingsPagePanel) getPage()).isKeepSettingsEnabled()) {
 						try {
@@ -163,7 +163,7 @@ public class DocearUserRegistrationAction extends AWorkspaceAction {
 	}
 	
 	public static void useRegisteredUser(final Wizard wizard) {
-		DocearUser user = wizard.getContext().get(DocearUser.class);
+		DocearUser user = wizard.getSession().get(DocearUser.class);
 		DocearUser clone = user.clone();
 		user.activate();
 		user.setBackupEnabled(clone.isBackupEnabled());

@@ -38,7 +38,7 @@ import com.jgoodies.forms.layout.RowSpec;
 
 /***
  * 
- * @author mag
+ * @author genzmehr@docear.org
  *
  * @see http://www.oracle.com/technetwork/articles/javase/wizard-136789.html <br>http://docs.oracle.com/javase/tutorial/uiswing/layout/card.html
  */
@@ -69,7 +69,7 @@ public class Wizard {
 
 	private volatile int returnCode = NOT_DEFINED;
 	private Thread returnCodeObserver;
-	private WizardContext context;
+	private WizardSession context;
 	private boolean cancelEnabled = true;
 	private boolean cancelButtonEnabled = false;
 	private boolean skipEnabled = false;
@@ -115,15 +115,15 @@ public class Wizard {
 		WizardPageDescriptor oldPageDescriptor = wizardModel.getCurrentPageDescriptor();
 
 		if (oldPageDescriptor != null) {
-			oldPageDescriptor.aboutToHidePage(getContext());
+			oldPageDescriptor.aboutToHidePage(getSession());
 		}
 
 		wizardModel.setCurrentPage(id);
-		wizardModel.getCurrentPageDescriptor().aboutToDisplayPage(getContext());
+		wizardModel.getCurrentPageDescriptor().aboutToDisplayPage(getSession());
 		if(wizardModel.getCurrentPageDescriptor().getPage().isPageDisplayable()) {
 			this.pageKeyBindingProcessor = wizardModel.getCurrentPageDescriptor().getKeyBindingProcessor();
 			cardLayout.show(cardPanel, id.toString());
-			wizardModel.getCurrentPageDescriptor().displayingPage(getContext());
+			wizardModel.getCurrentPageDescriptor().displayingPage(getSession());
 			if(wizardModel.getCurrentPageDescriptor().resizeWizard()) {
 				wizard.pack();
 			}
@@ -173,9 +173,9 @@ public class Wizard {
 	}
 	
 	
-	public WizardContext getContext() {
+	public WizardSession getSession() {
 		if(context == null) {
-			context = new WizardContext() {				
+			context = new WizardSession() {				
 				@Override
 				public WizardPageDescriptor getCurrentDescriptor() {
 					return wizardModel.getCurrentPageDescriptor();
@@ -303,6 +303,8 @@ public class Wizard {
 		WizardMouseAdapter mAdapter = new WizardMouseAdapter(this);
 		
 		final JPanel mainPanel = new JPanel(true) {
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			protected boolean processKeyBinding(final KeyStroke ks, final KeyEvent e, final int condition, final boolean pressed) {
 				if(!processPageKeyBindings(ks, e, pressed)) {

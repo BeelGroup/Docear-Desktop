@@ -66,7 +66,7 @@ import org.docear.plugin.bibtex.actions.MetaDataAction.MetaDataActionObject;
 import org.docear.plugin.core.ui.MultiLineActionLabel;
 import org.docear.plugin.core.ui.wizard.AWizardPage;
 import org.docear.plugin.core.ui.wizard.IPageKeyBindingProcessor;
-import org.docear.plugin.core.ui.wizard.WizardContext;
+import org.docear.plugin.core.ui.wizard.WizardSession;
 import org.docear.plugin.core.util.CoreUtils;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
 import org.docear.plugin.services.ServiceController;
@@ -113,7 +113,7 @@ public class MetaDataExtractorPage extends AWizardPage {
 	private JScrollPane scrollPaneFetchedResults;
 	private JList listFetchedResults;
 	private BibtexEntryListModel listModelFetchedResults;
-	private WizardContext context;
+	private WizardSession session;
 	private MetaDataSearchHub searchHub = new MetaDataSearchHub();
 	private String searchValue = "";
 	private JLabel labelWarning;
@@ -360,7 +360,7 @@ public class MetaDataExtractorPage extends AWizardPage {
 	}
 
 	protected void callOptionsPage(ActionEvent e) {
-		context.getWizard().setCurrentPage("metadataOptions");		
+		session.getWizard().setCurrentPage("metadataOptions");		
 	}
 
 	protected void searchMetadata() {
@@ -524,15 +524,15 @@ public class MetaDataExtractorPage extends AWizardPage {
 	}
 
 	@Override
-	public void preparePage(final WizardContext context) {		
-		this.context = context;		
-		context.setWizardTitle(getTitle());
-		context.getBackButton().setVisible(true);
-		getRootPane().setDefaultButton((JButton)context.getNextButton());
-		context.getNextButton().setText(TextUtils.getText("ok"));
-		context.getBackButton().setText(TextUtils.getText("cancel"));	
+	public void preparePage(final WizardSession session) {		
+		this.session = session;		
+		session.setWizardTitle(getTitle());
+		session.getBackButton().setVisible(true);
+		getRootPane().setDefaultButton((JButton)session.getNextButton());
+		session.getNextButton().setText(TextUtils.getText("ok"));
+		session.getBackButton().setText(TextUtils.getText("cancel"));	
 		
-		MetaDataActionObject data = context.get(MetaDataActionObject.class);
+		MetaDataActionObject data = session.get(MetaDataActionObject.class);
 		this.pdfFile = data.getCurrentPDF();
 		this.pdfFileName = CoreUtils.resolveURI(pdfFile).getName();
 		this.pdfTitle = AnnotationController.getDocumentTitle(pdfFile);
@@ -629,11 +629,11 @@ public class MetaDataExtractorPage extends AWizardPage {
 			setSearchSelection(new ActionEvent(this.radioButton_searchFile, 0, ""));
 		}
 		
-		context.getNextButton().addActionListener(new ActionListener() {
+		session.getNextButton().addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				MetaDataActionObject result = context.get(MetaDataActionObject.class);
+				MetaDataActionObject result = session.get(MetaDataActionObject.class);
 				if(radioButton_createBlank.isSelected()){
 					result.getResult().get(pdfFile).setSelectedBlank(true);
 				}
@@ -657,23 +657,23 @@ public class MetaDataExtractorPage extends AWizardPage {
 			}
 		});
 		
-		context.getModel().getCurrentPageDescriptor().setKeyBindingProcessor(new IPageKeyBindingProcessor() {
+		session.getModel().getCurrentPageDescriptor().setKeyBindingProcessor(new IPageKeyBindingProcessor() {
 			
 			@Override
 			public boolean processKeyEvent(KeyEvent e) {				
 				if(e.getID() == KeyEvent.KEY_RELEASED && e.getKeyCode() == KeyEvent.VK_ESCAPE){
-					context.getBackButton().doClick();
+					session.getBackButton().doClick();
 					return true;
 				}
 				return false;
 			}
 		});
 		
-		context.getBackButton().addActionListener(new ActionListener() {
+		session.getBackButton().addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				MetaDataActionObject result = context.get(MetaDataActionObject.class);
+				MetaDataActionObject result = session.get(MetaDataActionObject.class);
 				result.getResult().get(pdfFile).setSelectedCancel(true);				
 			}
 		});

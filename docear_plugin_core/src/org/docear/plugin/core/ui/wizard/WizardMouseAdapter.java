@@ -8,6 +8,10 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
+/**
+ * @author genzmehr@docear.org
+ *
+ */
 public class WizardMouseAdapter extends MouseAdapter {
 	
 	public static final int BORDER_RIGHT = 0x1;

@@ -5,7 +5,7 @@ import java.awt.Color;
 import javax.swing.JLabel;
 
 import org.docear.plugin.core.ui.wizard.AWizardPage;
-import org.docear.plugin.core.ui.wizard.WizardContext;
+import org.docear.plugin.core.ui.wizard.WizardSession;
 import org.freeplane.core.util.TextUtils;
 
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -48,14 +48,14 @@ public class MetadataErrorPage extends AWizardPage {
 	}
 
 	@Override
-	public void preparePage(WizardContext context) {
-		context.setWizardTitle(getTitle());
+	public void preparePage(WizardSession session) {
+		session.setWizardTitle(getTitle());
 		
-		context.getNextButton().setText(TextUtils.getText("docear.metadata.import.error.close"));
+		session.getNextButton().setText(TextUtils.getText("docear.metadata.import.error.close"));
 		
-		context.getBackButton().setText(TextUtils.getText("docear.metadata.import.error.register"));
-		context.getBackButton().setVisible(showRegistration);
-		context.getBackButton().setEnabled(showRegistration);
+		session.getBackButton().setText(TextUtils.getText("docear.metadata.import.error.register"));
+		session.getBackButton().setVisible(showRegistration);
+		session.getBackButton().setEnabled(showRegistration);
 		
 		
 	}

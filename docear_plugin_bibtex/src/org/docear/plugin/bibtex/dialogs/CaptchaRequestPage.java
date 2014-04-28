@@ -2,7 +2,7 @@ package org.docear.plugin.bibtex.dialogs;
 
 import org.docear.metadata.events.CaptchaEvent;
 import org.docear.plugin.core.ui.wizard.AWizardPage;
-import org.docear.plugin.core.ui.wizard.WizardContext;
+import org.docear.plugin.core.ui.wizard.WizardSession;
 import org.freeplane.core.util.TextUtils;
 
 import java.awt.Color;
@@ -74,14 +74,14 @@ public class CaptchaRequestPage extends AWizardPage {
 	}
 
 	@Override
-	public void preparePage(WizardContext context) {
-		final CaptchaEvent event = context.get(CaptchaEvent.class);
+	public void preparePage(WizardSession session) {
+		final CaptchaEvent event = session.get(CaptchaEvent.class);
 		this.labelImage.setIcon(new ImageIcon(event.getCaptcha()));
-		context.setWizardTitle(getTitle());
-		context.getBackButton().setVisible(true);
-		context.getNextButton().setText(TextUtils.getText("ok"));
-		context.getBackButton().setText(TextUtils.getText("cancel"));	
-		context.getNextButton().addActionListener(new ActionListener() {
+		session.setWizardTitle(getTitle());
+		session.getBackButton().setVisible(true);
+		session.getNextButton().setText(TextUtils.getText("ok"));
+		session.getBackButton().setText(TextUtils.getText("cancel"));	
+		session.getNextButton().addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -89,7 +89,7 @@ public class CaptchaRequestPage extends AWizardPage {
 			}
 		});
 		
-		context.getBackButton().addActionListener(new ActionListener() {
+		session.getBackButton().addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {

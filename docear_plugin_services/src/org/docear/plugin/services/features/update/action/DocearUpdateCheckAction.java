@@ -6,7 +6,7 @@ import java.net.URI;
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.Version;
 import org.docear.plugin.core.ui.wizard.Wizard;
-import org.docear.plugin.core.ui.wizard.WizardContext;
+import org.docear.plugin.core.ui.wizard.WizardSession;
 import org.docear.plugin.core.ui.wizard.WizardPageDescriptor;
 import org.docear.plugin.services.ServiceController;
 import org.docear.plugin.services.features.update.UpdateCheck;
@@ -73,18 +73,18 @@ public class DocearUpdateCheckAction extends AFreeplaneAction {
 		WizardPageDescriptor desc = new WizardPageDescriptor("page", page) {
 
 			@Override
-			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
+			public WizardPageDescriptor getNextPageDescriptor(WizardSession context) {
 				return Wizard.FINISH_PAGE;
 			}
 
 			@Override
-			public WizardPageDescriptor getBackPageDescriptor(WizardContext context) {
+			public WizardPageDescriptor getBackPageDescriptor(WizardSession context) {
 				wizard.skipAll();
 				return null;
 			}
 
 			@Override
-			public WizardPageDescriptor getSkipPageDescriptor(WizardContext context) {
+			public WizardPageDescriptor getSkipPageDescriptor(WizardSession context) {
 				wizard.cancel();
 				return null;
 			}

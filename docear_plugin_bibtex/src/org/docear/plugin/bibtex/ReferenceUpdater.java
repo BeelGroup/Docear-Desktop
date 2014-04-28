@@ -122,7 +122,7 @@ public class ReferenceUpdater extends AMindmapUpdater {
 				continue;
 			}
 
-			for (String path : jabRefAttributes.parsePathNames(entry, paths)) {
+			for (String path : JabRefAttributes.parsePathNames(entry, paths)) {
 				if (path.isEmpty()) {
 					continue;
 				}

@@ -11,7 +11,7 @@ import javax.swing.SwingConstants;
 
 import org.docear.plugin.core.Version;
 import org.docear.plugin.core.ui.wizard.AWizardPage;
-import org.docear.plugin.core.ui.wizard.WizardContext;
+import org.docear.plugin.core.ui.wizard.WizardSession;
 import org.docear.plugin.services.features.update.UpdateCheck;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
@@ -118,7 +118,7 @@ public class UpdateCheckerDialogPanel extends AWizardPage {
 	}
 
 	@Override
-	public void preparePage(WizardContext context) {
+	public void preparePage(WizardSession context) {
 		context.getNextButton().setText(TextUtils.getText("docear.version.check.download"));
 		context.getNextButton().setEnabled(true);
 		context.getNextButton().setVisible(true);

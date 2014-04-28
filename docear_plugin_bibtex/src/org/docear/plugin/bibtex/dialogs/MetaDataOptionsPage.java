@@ -13,7 +13,7 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
 import org.docear.plugin.core.ui.wizard.AWizardPage;
-import org.docear.plugin.core.ui.wizard.WizardContext;
+import org.docear.plugin.core.ui.wizard.WizardSession;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.Controller;
@@ -114,19 +114,19 @@ public class MetaDataOptionsPage extends AWizardPage {
 	}
 
 	@Override
-	public void preparePage(WizardContext context) {
-		context.setWizardTitle(getTitle());
-		context.getBackButton().setVisible(true);
-		getRootPane().setDefaultButton((JButton)context.getNextButton());
-		context.getNextButton().setText(TextUtils.getText("ok"));
-		context.getBackButton().setText(TextUtils.getText("cancel"));
+	public void preparePage(WizardSession session) {
+		session.setWizardTitle(getTitle());
+		session.getBackButton().setVisible(true);
+		getRootPane().setDefaultButton((JButton)session.getNextButton());
+		session.getNextButton().setText(TextUtils.getText("ok"));
+		session.getBackButton().setText(TextUtils.getText("cancel"));
 		this.checkBoxDocear.setVisible(false);
 		final ResourceController properties = Controller.getCurrentController().getResourceController();
 		this.checkBoxScholar.setSelected(properties.getBooleanProperty(DOCEAR_METADATA_SEARCH_SCHOLAR));
 		this.checkBoxDocear.setSelected(properties.getBooleanProperty(DOCEAR_METADATA_SEARCH_DOCEAR));
 		this.spinnerMaxResult.setModel(new SpinnerNumberModel(properties.getIntProperty(DOCEAR_METADATA_MAX_RESULT, 3), 1, 50, 1));
 		
-		context.getNextButton().addActionListener(new ActionListener() {			
+		session.getNextButton().addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				properties.setProperty(DOCEAR_METADATA_SEARCH_SCHOLAR, checkBoxScholar.isSelected());

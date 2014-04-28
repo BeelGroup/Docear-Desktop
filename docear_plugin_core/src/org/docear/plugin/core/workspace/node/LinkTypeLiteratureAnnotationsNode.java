@@ -21,9 +21,7 @@ import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.map.MapModel;
-import org.freeplane.features.mapio.MapIO;
 import org.freeplane.features.mode.Controller;
-import org.freeplane.features.mode.mindmapmode.MModeController;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.actions.WorkspaceNewMapAction;
@@ -34,7 +32,6 @@ import org.freeplane.plugin.workspace.event.WorkspaceActionEvent;
 import org.freeplane.plugin.workspace.io.annotation.ExportAsAttribute;
 import org.freeplane.plugin.workspace.model.AWorkspaceTreeNode;
 import org.freeplane.plugin.workspace.model.IMutableLinkNode;
-import org.freeplane.plugin.workspace.model.project.AWorkspaceProject;
 import org.freeplane.plugin.workspace.nodes.ALinkNode;
 
 /**
@@ -113,7 +110,7 @@ public class LinkTypeLiteratureAnnotationsNode extends ALinkNode implements IWor
 	public void handleAction(WorkspaceActionEvent event) {
 		if (event.getType() == WorkspaceActionEvent.MOUSE_LEFT_DBLCLICK) {
 			try {
-				AWorkspaceProject project = WorkspaceController.getSelectedProject(this);
+//				AWorkspaceProject project = WorkspaceController.getSelectedProject(this);
 				File f = URIUtils.getAbsoluteFile(getLinkURI());
 //				if(f == null) {
 //					return;

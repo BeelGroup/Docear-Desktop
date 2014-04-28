@@ -43,7 +43,7 @@ import org.docear.plugin.bibtex.jabref.JabRefCommons;
 import org.docear.plugin.bibtex.jabref.JabRefCommons.MetadataCallableResult;
 import org.docear.plugin.core.ui.MultiLineActionLabel;
 import org.docear.plugin.core.ui.wizard.Wizard;
-import org.docear.plugin.core.ui.wizard.WizardContext;
+import org.docear.plugin.core.ui.wizard.WizardSession;
 import org.docear.plugin.core.ui.wizard.WizardPageDescriptor;
 import org.docear.plugin.services.ServiceController;
 import org.docear.plugin.services.features.io.DocearServiceResponse.Status;
@@ -231,13 +231,13 @@ private static final long serialVersionUID = -627410651667772600L;
 		WizardPageDescriptor desc = new WizardPageDescriptor("error_message", page) {
 
 			@Override
-			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
+			public WizardPageDescriptor getNextPageDescriptor(WizardSession context) {
 				wizard.cancel();
 				return null;
 			}
 
 			@Override
-			public WizardPageDescriptor getBackPageDescriptor(WizardContext context) {
+			public WizardPageDescriptor getBackPageDescriptor(WizardSession context) {
 				return context.getModel().getPage(regId);
 			}
 			

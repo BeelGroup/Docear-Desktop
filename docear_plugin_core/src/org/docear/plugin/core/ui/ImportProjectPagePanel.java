@@ -35,7 +35,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.docear.plugin.core.ui.wizard.AWizardPage;
-import org.docear.plugin.core.ui.wizard.WizardContext;
+import org.docear.plugin.core.ui.wizard.WizardSession;
 import org.docear.plugin.core.workspace.controller.DocearConversionDescriptor;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.freeplane.core.io.ReadManager;
@@ -66,7 +66,7 @@ public class ImportProjectPagePanel extends AWizardPage {
 	private ProjectVersionsModel versionModel;
 	private JList lstVersions;
 
-	private WizardContext cachedContext;
+	private WizardSession cachedContext;
 
 	private JLabel lblWarning;
 
@@ -194,7 +194,7 @@ public class ImportProjectPagePanel extends AWizardPage {
 		return new File(txtImportHome.getText()).toURI();
 	}
 
-	private void enableControls(WizardContext context) {
+	private void enableControls(WizardSession context) {
 		chckbxDeleteOldSettings.setEnabled(false);
 		if(context != null) {
 			boolean enabled = getModel().getSize() > 0;
@@ -334,7 +334,7 @@ public class ImportProjectPagePanel extends AWizardPage {
 	}
 
 	@Override
-	public void preparePage(WizardContext context) {
+	public void preparePage(WizardSession context) {
 		this.cachedContext = context;
 		context.setWizardTitle(getTitle());
 		context.getNextButton().setText(TextUtils.getText("docear.setup.wizard.controls.finish"));

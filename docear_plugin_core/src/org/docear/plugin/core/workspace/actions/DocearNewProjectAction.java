@@ -11,7 +11,7 @@ import javax.swing.SwingUtilities;
 import org.docear.plugin.core.logging.DocearLogger;
 import org.docear.plugin.core.ui.CreateProjectPagePanel;
 import org.docear.plugin.core.ui.wizard.Wizard;
-import org.docear.plugin.core.ui.wizard.WizardContext;
+import org.docear.plugin.core.ui.wizard.WizardSession;
 import org.docear.plugin.core.ui.wizard.WizardPageDescriptor;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.freeplane.core.ui.components.UITools;
@@ -41,7 +41,7 @@ public class DocearNewProjectAction extends AWorkspaceAction {
 			public void run() {
 				int ret = wiz.show();
 				if(ret == Wizard.OK_OPTION) {
-					AWorkspaceProject project = wiz.getContext().get(DocearWorkspaceProject.class);
+					AWorkspaceProject project = wiz.getSession().get(DocearWorkspaceProject.class);
 					createProject(project);
 				}
 			}
@@ -51,19 +51,19 @@ public class DocearNewProjectAction extends AWorkspaceAction {
 	private void initWizard(Wizard wizard) {
 		//new project page
 		WizardPageDescriptor desc = new WizardPageDescriptor("page.project.create", new CreateProjectPagePanel()) {
-			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
+			public WizardPageDescriptor getNextPageDescriptor(WizardSession context) {
 				context.set(DocearWorkspaceProject.class, ((CreateProjectPagePanel)getPage()).getProject());
 				return Wizard.FINISH_PAGE;
 			}
 
 			@Override
-			public void aboutToDisplayPage(WizardContext context) {
+			public void aboutToDisplayPage(WizardSession context) {
 				super.aboutToDisplayPage(context);
 				context.getNextButton().setText(TextUtils.getText("docear.setup.wizard.controls.finish"));
 			}
 
 			@Override
-			public void displayingPage(WizardContext context) {
+			public void displayingPage(WizardSession context) {
 				super.displayingPage(context);
 				context.setWizardTitle(TextUtils.getText("workspace.action.node.new.project.dialog.title"));
 				context.getBackButton().setVisible(false);

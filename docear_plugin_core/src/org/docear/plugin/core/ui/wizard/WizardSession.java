@@ -5,7 +5,11 @@ import java.util.Map;
 
 import javax.swing.AbstractButton;
 
-public abstract class WizardContext {
+/**
+ * @author genzmehr@docear.org
+ *
+ */
+public abstract class WizardSession {
 	private Map<Class<? extends Object>, Object> properties = new LinkedHashMap<Class<? extends Object>, Object>();
 	private WizardTraverseLog traversalLog;
 

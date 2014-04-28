@@ -34,6 +34,7 @@ import org.freeplane.features.mode.Controller;
 
 import spl.PdfImporter;
 
+@SuppressWarnings("deprecation")
 public class ExistingReferencesDialog extends JDialog {
 
 	/**

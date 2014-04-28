@@ -30,7 +30,7 @@ import org.docear.plugin.core.ui.components.DocearLicencePanel;
 import org.docear.plugin.core.ui.components.LabeledPasswordField;
 import org.docear.plugin.core.ui.components.LabeledTextField;
 import org.docear.plugin.core.ui.wizard.AWizardPage;
-import org.docear.plugin.core.ui.wizard.WizardContext;
+import org.docear.plugin.core.ui.wizard.WizardSession;
 import org.docear.plugin.services.features.user.DocearUser;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.plugin.workspace.components.dialog.NewProjectDialogPanel;
@@ -50,7 +50,7 @@ public class RegistrationPagePanel extends AWizardPage {
 	private JCheckBox chckbxAcceptTOS;
 	private JCheckBox chckbxNewsletter;
 	private JCheckBox chckbxAcceptUsageTerms;
-	private WizardContext cachedContext;
+	private WizardSession cachedContext;
 	private JLabel lblPwdWarning;
 	private JLabel lblRetypeWarning;
 	private JCheckBox chckbxCollaboration;
@@ -436,7 +436,7 @@ public class RegistrationPagePanel extends AWizardPage {
 	 * METHODS
 	 **********************************************************************************/
 
-	private void enableControls(WizardContext context) {
+	private void enableControls(WizardSession context) {
 		if(context != null) {
 			if(comparePasswords() 
 					&& chckbxAcceptUsageTerms.isSelected() 
@@ -588,7 +588,7 @@ public class RegistrationPagePanel extends AWizardPage {
 	}
 
 	@Override
-	public void preparePage(WizardContext context) {
+	public void preparePage(WizardSession context) {
 		this.cachedContext = context;
 		initFields(context.get(DocearUser.class));
 		setSkipOnBack(false);

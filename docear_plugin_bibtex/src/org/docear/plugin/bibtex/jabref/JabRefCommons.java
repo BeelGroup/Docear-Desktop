@@ -213,7 +213,7 @@ public abstract class JabRefCommons {
 	
 	public static List<String> addOrUpdateRefenceEntry(String[] fileNames, int dropRow, JabRefFrame jabRefFrame, BasePanel basePanel, MainTable entryTable, boolean chooseFirst) {
 		
-		MetaDataActionObject result =  new MetaDataAction().new MetaDataActionObject();
+		MetaDataActionObject result =  new MetaDataAction.MetaDataActionObject();
 		if(fileNames == null) return new ArrayList<String>();
 		BibtexDatabase database = ReferencesController.getController().getJabrefWrapper().getDatabase();		
 		BibtexEntry dropEntry = null;
@@ -247,7 +247,7 @@ public abstract class JabRefCommons {
 					}
 					if(existingEntry != null) break;
 				}
-				MetaDataActionResult fileResult = new MetaDataAction().new MetaDataActionResult();
+				MetaDataActionResult fileResult = new MetaDataAction.MetaDataActionResult();
 				if(dropEntry != null && existingEntry != null){
 					fileResult.setDuplicatePdf(true);
 					fileResult.setShowattachOnlyOption(true);

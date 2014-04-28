@@ -14,7 +14,7 @@ import org.docear.plugin.bibtex.actions.MetaDataAction.MetaDataActionObject;
 import org.docear.plugin.core.ui.MultiLineActionLabel;
 import org.docear.plugin.core.ui.wizard.AWizardPage;
 import org.docear.plugin.core.ui.wizard.Wizard;
-import org.docear.plugin.core.ui.wizard.WizardContext;
+import org.docear.plugin.core.ui.wizard.WizardSession;
 import org.docear.plugin.core.ui.wizard.WizardPageDescriptor;
 import org.docear.plugin.core.util.CoreUtils;
 import org.freeplane.core.ui.components.UITools;
@@ -66,33 +66,33 @@ public class MetaDataDuplicatePage extends AWizardPage {
 	}
 
 	@Override
-	public void preparePage(WizardContext context) {
-		context.getBackButton().setVisible(false);
-		context.getNextButton().setText(TextUtils.getText("ok"));
+	public void preparePage(WizardSession session) {
+		session.getBackButton().setVisible(false);
+		session.getNextButton().setText(TextUtils.getText("ok"));
 		
-		MetaDataActionObject data = context.get(MetaDataActionObject.class);
+		MetaDataActionObject data = session.get(MetaDataActionObject.class);
 		this.pdfFile = data.getCurrentPDF();
 		this.pdfFileName = CoreUtils.resolveURI(pdfFile).getName();
 		BibtexEntry duplicateEntry = data.getResult().get(data.getCurrentPDF()).getEntryToUpdate();
-		context.setWizardTitle(getTitle());
+		session.setWizardTitle(getTitle());
 		labelMessage.setText(TextUtils.getText("docear.metadata.extraction.dublicate.message.1")+ this.pdfFileName +TextUtils.getText("docear.metadata.extraction.dublicate.message.2")+ duplicateEntry.getCiteKey() +TextUtils.getText("docear.metadata.extraction.dublicate.message.3"));
 	}
 	
-	public static void showDuplicateMessage(WizardContext context){
+	public static void showDuplicateMessage(WizardSession context){
 		MetaDataActionObject data = context.get(MetaDataActionObject.class);
 		final Wizard wiz = new Wizard(UITools.getFrame());
 		wiz.setResizable(false);
-		wiz.getContext().set(data.getClass(), data);
+		wiz.getSession().set(data.getClass(), data);
 		
 		WizardPageDescriptor duplicatePdfDescriptor = new WizardPageDescriptor("duplicate", new MetaDataDuplicatePage()) {
 			
 			@Override
-			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
+			public WizardPageDescriptor getNextPageDescriptor(WizardSession context) {
 				return Wizard.FINISH_PAGE;
 			}
 
 			@Override
-			public WizardPageDescriptor getBackPageDescriptor(WizardContext context) {			
+			public WizardPageDescriptor getBackPageDescriptor(WizardSession context) {			
 				wiz.cancel();
 				return Wizard.FINISH_PAGE;
 			}

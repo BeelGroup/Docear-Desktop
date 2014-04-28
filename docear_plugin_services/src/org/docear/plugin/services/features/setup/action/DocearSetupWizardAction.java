@@ -7,7 +7,7 @@ import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.ui.CreateProjectPagePanel;
 import org.docear.plugin.core.ui.ImportProjectPagePanel;
 import org.docear.plugin.core.ui.wizard.Wizard;
-import org.docear.plugin.core.ui.wizard.WizardContext;
+import org.docear.plugin.core.ui.wizard.WizardSession;
 import org.docear.plugin.core.ui.wizard.WizardPageDescriptor;
 import org.docear.plugin.core.workspace.actions.DocearImportProjectAction;
 import org.docear.plugin.core.workspace.actions.DocearNewProjectAction;
@@ -63,18 +63,18 @@ public class DocearSetupWizardAction extends AFreeplaneAction {
 		}
 		int ret = wiz.show();
 		if(ret == Wizard.OK_OPTION) {
-			if(wiz.getContext().get(DocearLocalUser.class) != null) {
+			if(wiz.getSession().get(DocearLocalUser.class) != null) {
 				DocearUserController.LOCAL_USER.activate();
 			}
 			else {
-				wiz.getContext().get(DocearUser.class).activate();
+				wiz.getSession().get(DocearUser.class).activate();
 			}
-			DocearWorkspaceProject project = wiz.getContext().get(DocearWorkspaceProject.class);
+			DocearWorkspaceProject project = wiz.getSession().get(DocearWorkspaceProject.class);
 			if(project != null) {
-				if(wiz.getContext().get(START_OPTION.class) == START_OPTION.REGISTRATION || wiz.getContext().get(DATA_OPTION.class) == DATA_OPTION.CREATE) {
+				if(wiz.getSession().get(START_OPTION.class) == START_OPTION.REGISTRATION || wiz.getSession().get(DATA_OPTION.class) == DATA_OPTION.CREATE) {
 					DocearNewProjectAction.createProject(project);
 				}
-				else if(wiz.getContext().get(DATA_OPTION.class) == DATA_OPTION.IMPORT) {
+				else if(wiz.getSession().get(DATA_OPTION.class) == DATA_OPTION.IMPORT) {
 					DocearImportProjectAction.importProject(project);
 				}
 			}
@@ -91,7 +91,7 @@ public class DocearSetupWizardAction extends AFreeplaneAction {
 	private static void initWizard(final Wizard wizard) {
 		//first page
 		WizardPageDescriptor desc = new WizardPageDescriptor("page.first", new StartPagePanel()) {
-			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
+			public WizardPageDescriptor getNextPageDescriptor(WizardSession context) {
 				if(StartPagePanel.START_OPTION.LOGIN.equals(context.get(StartPagePanel.START_OPTION.class))) {
 					return context.getModel().getPage("page.verify.login");
 				}
@@ -100,7 +100,7 @@ public class DocearSetupWizardAction extends AFreeplaneAction {
 			}
 
 			@Override
-			public WizardPageDescriptor getBackPageDescriptor(WizardContext context) {
+			public WizardPageDescriptor getBackPageDescriptor(WizardSession context) {
 				context.set(DocearLocalUser.class, DocearUserController.LOCAL_USER);
 				context.getTraversalLog().add(this);
 				return context.getModel().getPage("page.second");
@@ -109,12 +109,12 @@ public class DocearSetupWizardAction extends AFreeplaneAction {
 		desc.getPage().setPreferredSize(new Dimension(640,480));
 		wizard.registerWizardPanel(desc);
 		DocearUser user = ServiceController.getCurrentUser();
-		wizard.getContext().set(DocearUser.class, user);
+		wizard.getSession().set(DocearUser.class, user);
 		wizard.setStartPage(desc.getIdentifier());
 		
 		//login verification
 		desc = new WizardPageDescriptor("page.verify.login", new VerifyServicePagePanel("Log-In", DocearUserLoginAction.getLoginVerificationTask(), true)) {
-			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
+			public WizardPageDescriptor getNextPageDescriptor(WizardSession context) {
 				return context.getModel().getPage("page.second");
 			}
 		};
@@ -125,7 +125,7 @@ public class DocearSetupWizardAction extends AFreeplaneAction {
 		
 		//registration page
 		desc = new WizardPageDescriptor("page.registration", new RegistrationPagePanel()) {
-			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
+			public WizardPageDescriptor getNextPageDescriptor(WizardSession context) {
 				((RegistrationPagePanel)getPage()).getUser();
 				return context.getModel().getPage("page.verify.registration");
 			}
@@ -135,13 +135,13 @@ public class DocearSetupWizardAction extends AFreeplaneAction {
 		
 		//registration verification
 		desc = new WizardPageDescriptor("page.verify.registration", new VerifyServicePagePanel("Registration", DocearUserRegistrationAction.getRegistrationVerificationTask(), false)) {
-			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
+			public WizardPageDescriptor getNextPageDescriptor(WizardSession context) {
 					context.getTraversalLog().getPreviousPage(context);
 					return context.getModel().getPage("page.project.create");
 			}
 
 			@Override
-			public WizardPageDescriptor getBackPageDescriptor(WizardContext context) {
+			public WizardPageDescriptor getBackPageDescriptor(WizardSession context) {
 				if(context.get(DocearUser.class).isNew()) {
 					context.getTraversalLog().getPreviousPage(context);
 				}
@@ -156,7 +156,7 @@ public class DocearSetupWizardAction extends AFreeplaneAction {
 		
 		//choose further actions page
 		desc = new WizardPageDescriptor("page.second", new SecondPagePanel()) {
-			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
+			public WizardPageDescriptor getNextPageDescriptor(WizardSession context) {
 				((SecondPagePanel)getPage()).getUser();
 				if(DATA_OPTION.SYNCH.equals(context.get(DATA_OPTION.class))) {
 					return context.getModel().getPage("page.project.synch");
@@ -175,13 +175,13 @@ public class DocearSetupWizardAction extends AFreeplaneAction {
 		
 		//new project page
 		desc = new WizardPageDescriptor("page.project.create", new CreateProjectPagePanel()) {
-			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
+			public WizardPageDescriptor getNextPageDescriptor(WizardSession context) {
 				context.set(DocearWorkspaceProject.class, ((CreateProjectPagePanel)getPage()).getProject());
 				return Wizard.FINISH_PAGE;
 			}
 
 			@Override
-			public void aboutToDisplayPage(WizardContext context) {
+			public void aboutToDisplayPage(WizardSession context) {
 				context.getNextButton().setText(TextUtils.getText("docear.setup.wizard.controls.finish"));
 				super.aboutToDisplayPage(context);
 			}
@@ -193,13 +193,13 @@ public class DocearSetupWizardAction extends AFreeplaneAction {
 		
 		//import project page
 		desc = new WizardPageDescriptor("page.project.import", new ImportProjectPagePanel()) {
-			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
+			public WizardPageDescriptor getNextPageDescriptor(WizardSession context) {
 				context.set(DocearWorkspaceProject.class, ((ImportProjectPagePanel)getPage()).getProject());
 				return Wizard.FINISH_PAGE;
 			}
 
 			@Override
-			public void aboutToDisplayPage(WizardContext context) {
+			public void aboutToDisplayPage(WizardSession context) {
 				context.getNextButton().setText(TextUtils.getText("docear.setup.wizard.controls.finish"));
 				super.aboutToDisplayPage(context);
 			}

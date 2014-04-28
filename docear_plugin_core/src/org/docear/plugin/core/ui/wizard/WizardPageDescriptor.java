@@ -1,9 +1,10 @@
 package org.docear.plugin.core.ui.wizard;
 
-import org.freeplane.core.ui.components.IKeyBindingManager;
 
-
-
+/**
+ * @author genzmehr@docear.org
+ *
+ */
 public class WizardPageDescriptor {
 
 	private final AWizardPage targetPage;
@@ -31,27 +32,27 @@ public class WizardPageDescriptor {
 		return pageIdentifier;
 	}
 
-	public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
+	public WizardPageDescriptor getNextPageDescriptor(WizardSession context) {
 		return null;
 	}
 
-	public WizardPageDescriptor getBackPageDescriptor(WizardContext context) {
+	public WizardPageDescriptor getBackPageDescriptor(WizardSession context) {
 		return context.getTraversalLog().getPreviousPage(context);
 	}
 	
-	public WizardPageDescriptor getSkipPageDescriptor(WizardContext context) {
+	public WizardPageDescriptor getSkipPageDescriptor(WizardSession context) {
 		return null;
 	}
 
-	public void aboutToDisplayPage(WizardContext context) {
+	public void aboutToDisplayPage(WizardSession context) {
 		getPage().preparePage(context);
 	}
 
-	public void displayingPage(WizardContext context) {
+	public void displayingPage(WizardSession context) {
 		getPage().setVisible(true);
 	}
 
-	public void aboutToHidePage(WizardContext context) {
+	public void aboutToHidePage(WizardSession context) {
 		getPage().setVisible(false);
 	}
 

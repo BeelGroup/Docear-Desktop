@@ -12,8 +12,8 @@ import org.docear.plugin.core.logging.DocearLogger;
 
 public class ZoteroAnnoteFieldRemoverAction implements IPreOpenAction {
 	
-	private final static Pattern FIELD_END_1 = Pattern.compile("\\},$");
-	private final static Pattern FIELD_END_2 = Pattern.compile("\\}$");
+	public final static Pattern FIELD_END_1 = Pattern.compile("\\},$");
+	public final static Pattern FIELD_END_2 = Pattern.compile("\\}$");
 	
 	@Override
 	public boolean isActionNecessary(File file) {
