@@ -78,7 +78,7 @@ public class DocearNodeDropListener extends MNodeDropListener {
 
     		final DataFlavor fileListFlavor = new DataFlavor("application/x-java-file-list; class=java.util.List"); //$NON-NLS-1$
 			final DataFlavor uriListFlavor = new DataFlavor("text/uri-list; class=java.lang.String"); //$NON-NLS-1$
-			//TODO: DOCEAR - why restrict to !dtde.isLocalTransfer only?
+			
 			if(dtde.isDataFlavorSupported(MindMapNodesSelection.mindMapNodesFlavor) ) {
 				super.drop(dtde);
 				return;
@@ -208,6 +208,11 @@ public class DocearNodeDropListener extends MNodeDropListener {
 							            }
 							        }
 							   );
+		            		try {
+		            			Thread.sleep(150);
+							} catch (Exception e) {
+							}
+		            		
 		            	}
 		            	
 		            }

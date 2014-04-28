@@ -307,7 +307,7 @@ public class JabRefAttributes {
 				try {
 					AttributeController.getController(MModeController.getMModeController()).performInsertRow(attributeTable, i, item.getName(), item.getValue());
 				}
-				catch (Exception ignore) {
+				catch (Throwable ignore) {
 					// probably just another swing with threading issue that can (hopefully) be ignored
 				}
 				i++;
