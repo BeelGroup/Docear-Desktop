@@ -199,7 +199,7 @@ public class ImportProjectPagePanel extends AWizardPage {
 		if(context != null) {
 			boolean enabled = getModel().getSize() > 0;
 			lblWarning.setText(TextUtils.getText("docear.setup.wizard.import.warn1"));
-			lblWarning.setVisible(!enabled);
+			lblWarning.setVisible(false);
 			lstVersions.setEnabled(enabled);
 			
 			if(lstVersions.getSelectedValue() == null) {
