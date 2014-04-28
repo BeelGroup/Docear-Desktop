@@ -905,11 +905,13 @@ public class JabRefFrame extends JPanel implements OutputPrinter {
 		this.add(status);
 
 		// Drag and drop for tabbedPane:
-		TransferHandler xfer = new EntryTableTransferHandler(null, this, null);
-		tabbedPane.setTransferHandler(xfer);
-		tlb.setTransferHandler(xfer);
-		mb.setTransferHandler(xfer);
-		sidePaneManager.getPanel().setTransferHandler(xfer);
+		if (this.isTopLevel) {
+			TransferHandler xfer = new EntryTableTransferHandler(null, this, null);
+			tabbedPane.setTransferHandler(xfer);
+			tlb.setTransferHandler(xfer);
+			mb.setTransferHandler(xfer);
+			sidePaneManager.getPanel().setTransferHandler(xfer);
+		}
 	}
 
 	private void initLabelMaker() {
