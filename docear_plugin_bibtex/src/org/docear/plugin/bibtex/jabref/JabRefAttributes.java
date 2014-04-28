@@ -304,7 +304,12 @@ public class JabRefAttributes {
 			int i = attributes.size();
 			for (Item item : inserts) {
 				changes = true;
-				AttributeController.getController(MModeController.getMModeController()).performInsertRow(attributeTable, i, item.getName(), item.getValue());
+				try {
+					AttributeController.getController(MModeController.getMModeController()).performInsertRow(attributeTable, i, item.getName(), item.getValue());
+				}
+				catch (Exception ignore) {
+					// probably just another swing with threading issue that can (hopefully) be ignored
+				}
 				i++;
 			}
 		}
