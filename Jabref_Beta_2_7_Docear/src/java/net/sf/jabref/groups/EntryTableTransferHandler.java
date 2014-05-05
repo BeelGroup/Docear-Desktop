@@ -56,7 +56,6 @@ import net.sf.jabref.imports.OpenDatabaseAction;
 import net.sf.jabref.imports.ParserResult;
 import net.sf.jabref.net.URLDownload;
 import spl.JabRefDraggedFilesEvent;
-import spl.listener.PdfImportListener;
 
 public class EntryTableTransferHandler extends TransferHandler {
 
@@ -70,8 +69,6 @@ public class EntryTableTransferHandler extends TransferHandler {
 
 	protected DataFlavor stringFlavor;
 	
-	private static final PdfImportListener pdfImportListener = new PdfImportListener();
-
 	protected static boolean DROP_ALLOWED = true;
 
 	/**
@@ -100,9 +97,6 @@ public class EntryTableTransferHandler extends TransferHandler {
 			Globals.logger("Unable to configure drag and drop for main table");
 			e.printStackTrace();
 		}
-		//DOCEAR - add default spl pdfImportListener
-		// frame.removeJabRefEventListener(pdfImportListener);
-		frame.addJabRefEventListener(pdfImportListener);
 	}
 
 	/**
