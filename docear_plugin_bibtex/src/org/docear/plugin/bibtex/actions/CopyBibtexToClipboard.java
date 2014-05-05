@@ -76,19 +76,18 @@ public class CopyBibtexToClipboard extends AFreeplaneAction{
 	}
 	
 	public void setEnabled() {
-		NodeModel node = Controller.getCurrentModeController().getMapController().getSelectedNode();
-		if (node == null) {
-			setEnabled(false);
-			return;
+		setEnabled(true);
+	}
+	
+	public static boolean hasReferences(Collection<NodeModel> nodes) {
+		if (nodes != null) {
+			for(NodeModel node : nodes) {		
+				final String bibtexKey = ReferencesController.getController().getJabRefAttributes().getBibtexKey(node);
+				if (bibtexKey != null && bibtexKey.length()>0) {
+					return true;
+				}
+			}
 		}
-		final String bibtexKey = ReferencesController.getController().getJabRefAttributes().getBibtexKey(node);
-		
-		if (bibtexKey != null && bibtexKey.length()>0) {
-			setEnabled(true);
-		}
-		else {
-			setEnabled(false);
-		}
-		
+		return false;
 	}
 }
