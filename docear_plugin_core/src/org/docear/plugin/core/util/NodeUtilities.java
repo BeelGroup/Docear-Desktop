@@ -50,8 +50,12 @@ public class NodeUtilities {
 
 		return node;
 	}
-
+	
 	public static boolean setAttributeValue(NodeModel target, String attributeKey, Object value) {
+		return setAttributeValue(target, attributeKey, value, false);
+	}
+
+	public static boolean setAttributeValue(NodeModel target, String attributeKey, Object value, boolean blind) {
 		try {
 			if (target == null || attributeKey == null || value == null) return false;
 			for (INodeView nodeView : target.getViewers()) {
@@ -73,10 +77,9 @@ public class NodeUtilities {
 							// Attribute(attributeKey, value));
 						}
 
-						AttributeView attributeView = (((MapView) Controller.getCurrentController().getMapViewManager().getMapViewComponent()).getSelected())
-								.getAttributeView();
-						attributeView.getContainer().invalidate();
-						attributeView.update();
+						if (!blind) {
+							updateAttributeList();
+						}
 						return true;
 					}
 				}
@@ -86,6 +89,13 @@ public class NodeUtilities {
 			LogUtils.warn("org.docear.plugin.pdfutilities.util.NodeUtils.setAttributeValue(1): " + e.getMessage());
 		}
 		return false;
+	}
+	
+	public static void updateAttributeList() {
+		AttributeView attributeView = (((MapView) Controller.getCurrentController().getMapViewManager().getMapViewComponent()).getSelected())
+				.getAttributeView();
+		attributeView.getContainer().invalidate();
+		attributeView.update();
 	}
 	
 	public static void setAttribute(NodeModel node, String key, Object value) {

@@ -118,7 +118,7 @@ public class PdfReaderDefinitionDialog extends JPanel {
 				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
 				RowSpec.decode("default:grow"),}));
-		JLabel sampleLabel1 = new JLabel("C:\\Program Files\\Tracker Software\\PDF Viewer\\PDFXCview.exe*/A*page=$PAGE&nameddest=$TITLE*$FILE");
+		JLabel sampleLabel1 = new JLabel("C:\\Program Files\\Tracker Software\\PDF Viewer\\PDFXCview.exe*/A*page=$PAGE*$FILE");
 		panel.add(sampleLabel1, "1, 1, 3, 1, fill, fill");
 		sampleLabel1.setFont(font);
 		
