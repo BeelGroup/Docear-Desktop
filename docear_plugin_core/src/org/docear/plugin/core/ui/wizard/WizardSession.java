@@ -54,9 +54,15 @@ public abstract class WizardSession {
 	
 	public abstract void setWizardTitle(String title);
 	
+	public abstract void gotoPage(String identifier);
+	
+	
 	public abstract AbstractButton getNextButton();
 	public abstract AbstractButton getBackButton();
 	public abstract AbstractButton getSkipButton();
 
-	public abstract Wizard getWizard();
+	public abstract void finish();
+	
+	public abstract void cancel();
+	
 }

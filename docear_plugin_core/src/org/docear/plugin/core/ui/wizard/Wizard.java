@@ -21,6 +21,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
 import javax.swing.JSeparator;
@@ -30,6 +31,7 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
+import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.TextUtils;
 
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -207,9 +209,20 @@ public class Wizard {
 				}
 
 				@Override
-				public Wizard getWizard() {
-					return Wizard.this;
+				public void gotoPage(String identifier) {
+					Wizard.this.setCurrentPage(identifier);
 				}
+
+				@Override
+				public void finish() {
+					Wizard.this.finish();					
+				}
+
+				@Override
+				public void cancel() {
+					Wizard.this.cancel();
+				}
+
 			};
 		}
 		return context;
@@ -575,8 +588,73 @@ public class Wizard {
 	}
 
 	
+	public static int showConfirmDialog(String message) {
+		Wizard wiz = new Wizard(UITools.getFrame());
+		try {
+			wiz.setResizable(true);
+			wiz.registerWizardPanel(new ConfirmDialogPanel(message));
+			wiz.setCancelEnabled(true);
+			return wiz.show();
+		}
+		catch (Exception ignore) {
+		}
+		return CANCEL_OPTION;
+	}
 
-	/***********************************************************************************
-	 * REQUIRED METHODS FOR INTERFACES
-	 **********************************************************************************/
+	
+	static class ConfirmDialogPanel extends WizardPageDescriptor {
+		
+		//***********************************************************************************
+		// CONSTRUCTORS
+		//***********************************************************************************
+
+		public ConfirmDialogPanel(final String message) {
+			super("confirm_page", new AWizardPage() {
+	
+				private static final long serialVersionUID = 1L;
+				private boolean initialized = false;
+				
+				@Override
+				public void preparePage(WizardSession session) {
+					if(!initialized) {
+						this.setLayout(new BorderLayout());
+						this.setBackground(Color.WHITE);
+						this.add(new JLabel(message), BorderLayout.CENTER);
+					}
+					session.setWizardTitle(getTitle());
+					session.getBackButton().setEnabled(true);
+					session.getBackButton().setVisible(true);
+					session.getNextButton().setEnabled(true);
+					session.getBackButton().setText(TextUtils.getText("wizard.dialog.default.confirm.back.text"));
+					session.getNextButton().setText(TextUtils.getText("wizard.dialog.default.confirm.next.text"));
+				}
+				
+				@Override
+				public String getTitle() {
+					return TextUtils.getText("wizard.dialog.default.confirm.title");
+				}
+			});
+		}
+
+		@Override
+		public WizardPageDescriptor getNextPageDescriptor(WizardSession context) {
+			context.finish();
+			return Wizard.FINISH_PAGE;
+		}
+
+		@Override
+		public WizardPageDescriptor getBackPageDescriptor(WizardSession context) {
+			context.cancel();
+			return Wizard.FINISH_PAGE;
+		}
+		
+		//***********************************************************************************
+		// METHODS
+		//***********************************************************************************
+
+		
+		//***********************************************************************************
+		// REQUIRED METHODS FOR INTERFACES
+		//***********************************************************************************
+	}
 }

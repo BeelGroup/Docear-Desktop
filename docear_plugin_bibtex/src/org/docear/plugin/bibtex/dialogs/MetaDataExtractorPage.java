@@ -360,7 +360,7 @@ public class MetaDataExtractorPage extends AWizardPage {
 	}
 
 	protected void callOptionsPage(ActionEvent e) {
-		session.getWizard().setCurrentPage("metadataOptions");		
+		session.gotoPage("metadataOptions");		
 	}
 
 	protected void searchMetadata() {

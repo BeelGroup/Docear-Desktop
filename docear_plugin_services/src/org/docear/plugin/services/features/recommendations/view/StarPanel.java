@@ -46,6 +46,7 @@ public class StarPanel extends JPanel {
 		JLabel lblQuestion = new JLabel(label);
 		lblQuestion.setFont(lblQuestion.getFont().deriveFont(Font.BOLD, 20));
 		lblQuestion.setAlignmentY(CENTER_ALIGNMENT);
+		lblQuestion.setForeground(Color.RED);
 		add(lblQuestion);
 		add(starOverlay);
 		
