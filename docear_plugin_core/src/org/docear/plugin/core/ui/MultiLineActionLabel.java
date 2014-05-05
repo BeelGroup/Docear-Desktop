@@ -315,8 +315,10 @@ public class MultiLineActionLabel extends JPanel implements SwingConstants, Acce
 				
 				// check whether the action label fits into one line
 				sub = item.getText();
+				String lastSub;
 				while((rect.x+rect.width) > maxWidth) {
-					sub = fitIntoWidth(sub, rect, fmDefault, maxWidth);
+					lastSub = sub;
+					sub = fitIntoWidth(sub, rect, fmDefault, maxWidth);					
 					if(sub != null) {
 						int lastY = rect.y;
 						rect = item.getNewBox();
@@ -324,6 +326,9 @@ public class MultiLineActionLabel extends JPanel implements SwingConstants, Acce
 						rect.y = lastY + fmDefault.getHeight();
 						rect.width = fmDefault.stringWidth(sub);
 						rect.height = fmDefault.getHeight();
+					}
+					if (lastSub != null && lastSub.equals(sub)) {
+						break;
 					}
 				}
 				
@@ -335,7 +340,7 @@ public class MultiLineActionLabel extends JPanel implements SwingConstants, Acce
 
 	private String fitIntoWidth(String sub, Rectangle rect, FontMetrics fmDefault, int maxWidth) {
 		String partSub = sub.substring(0);
-		int index = partSub.lastIndexOf(" ");
+		int index = partSub.lastIndexOf(" ");		
 		while((rect.x + fmDefault.stringWidth(partSub)) > maxWidth) {
 			index = partSub.lastIndexOf(" ");
 			if(index == -1) {
