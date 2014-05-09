@@ -122,7 +122,7 @@ public class PdfReaderDefinitionDialog extends JPanel {
 		panel.add(sampleLabel1, "1, 1, 3, 1, fill, fill");
 		sampleLabel1.setFont(font);
 		
-		JLabel sampleLabel2 = new JLabel("wine*/home/stefan/.wine/drive_c/Program Files/Tracker Software/PDF Viewer/PDFXCview.exe*/A*page=$PAGE&nameddest=$TITLE*$FILE");
+		JLabel sampleLabel2 = new JLabel("wine*/home/stefan/.wine/drive_c/Program Files/Tracker Software/PDF Viewer/PDFXCview.exe*/A*page=$PAGE*$FILE");
 		panel.add(sampleLabel2, "1, 3, 3, 1, fill, fill");
 		sampleLabel2.setFont(font);
 		
