@@ -208,6 +208,9 @@ public class ImportProjectPagePanel extends AWizardPage {
 					lblWarning.setText(TextUtils.getText("docear.setup.wizard.import.warn2"));
 					lblWarning.setVisible(true);
 				}
+				else if(!txtImportHome.getText().isEmpty()) {
+					lblWarning.setVisible(true);
+				}
 			}
 			else {
 				if(WorkspaceController.getCurrentModel().getProject(((VersionItem) lstVersions.getSelectedValue()).getProject().getProjectID()) != null) {
