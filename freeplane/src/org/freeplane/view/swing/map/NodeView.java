@@ -1296,7 +1296,7 @@ public class NodeView extends JComponent implements INodeView {
 		revalidate();
 	}
 
-	public void update() {
+	public synchronized void update() {
 		//DOCEAR: update the nodemodel without repainting, to greatly enhance speed when inserting references
 		if (NodeView.modifyModelWithoutRepaint) {
 			return;
@@ -1463,7 +1463,7 @@ public class NodeView extends JComponent implements INodeView {
 		}
 	}
 
-	public void addContent(JComponent component, int pos) {
+	public synchronized void addContent(JComponent component, int pos) {
 		component.putClientProperty("NODE_VIEW_CONTENT_POSITION", pos);
 		final Container contentPane = getContentPane();
 		for (int i = 0; i < contentPane.getComponentCount(); i++) {

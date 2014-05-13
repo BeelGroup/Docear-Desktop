@@ -2,6 +2,7 @@ package org.docear.plugin.core.util;
 
 import java.net.URI;
 
+import org.docear.plugin.core.logging.DocearLogger;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.attribute.Attribute;
 import org.freeplane.features.attribute.AttributeController;
@@ -91,11 +92,11 @@ public class NodeUtilities {
 		return false;
 	}
 	
-	public static void updateAttributeList() {
+	public static void updateAttributeList() {		
 		AttributeView attributeView = (((MapView) Controller.getCurrentController().getMapViewManager().getMapViewComponent()).getSelected())
 				.getAttributeView();
 		attributeView.getContainer().invalidate();
-		attributeView.update();
+		attributeView.update();		
 	}
 	
 	public static void setAttribute(NodeModel node, String key, Object value) {
