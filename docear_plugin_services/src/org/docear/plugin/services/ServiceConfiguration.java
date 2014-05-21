@@ -42,13 +42,16 @@ public class ServiceConfiguration extends ALanguageController {
 						((IPropertyControl) optionController.getPropertyControl(DocearProxyAuthenticator.DOCEAR_PROXY_PORT)).setEnabled(((BooleanProperty)property).getBooleanValue());						
 					}
 				}
-				((BooleanProperty) optionController.getPropertyControl(DocearProxyAuthenticator.DOCEAR_USE_PROXY))
-						.addPropertyChangeListener(new PropertyChangeListener() {
-							public void propertyChange(PropertyChangeEvent evt) {
-								((IPropertyControl) optionController.getPropertyControl(DocearProxyAuthenticator.DOCEAR_PROXY_HOST)).setEnabled(Boolean.parseBoolean(evt.getNewValue().toString()));			
-								((IPropertyControl) optionController.getPropertyControl(DocearProxyAuthenticator.DOCEAR_PROXY_PORT)).setEnabled(Boolean.parseBoolean(evt.getNewValue().toString()));								
-							}
-						});				
+				try {
+    				((BooleanProperty) optionController.getPropertyControl(DocearProxyAuthenticator.DOCEAR_USE_PROXY))
+    						.addPropertyChangeListener(new PropertyChangeListener() {
+    							public void propertyChange(PropertyChangeEvent evt) {
+    								((IPropertyControl) optionController.getPropertyControl(DocearProxyAuthenticator.DOCEAR_PROXY_HOST)).setEnabled(Boolean.parseBoolean(evt.getNewValue().toString()));			
+    								((IPropertyControl) optionController.getPropertyControl(DocearProxyAuthenticator.DOCEAR_PROXY_PORT)).setEnabled(Boolean.parseBoolean(evt.getNewValue().toString()));								
+    							}
+    						});
+				}
+				catch(Exception ignore) {}
 			}
 		});
 	

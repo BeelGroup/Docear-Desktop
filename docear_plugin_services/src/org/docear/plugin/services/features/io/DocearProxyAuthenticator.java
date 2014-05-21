@@ -67,7 +67,9 @@ public class DocearProxyAuthenticator extends Authenticator {
 	}
 	
 	public static boolean useProxyServer() {
-		return Boolean.parseBoolean(ResourceController.getResourceController().getProperty(DOCEAR_USE_PROXY, "false"));
+		return false;
+		// proxy seems not to work properly
+//		return Boolean.parseBoolean(ResourceController.getResourceController().getProperty(DOCEAR_USE_PROXY, "false"));
 	}
 
 	public static String getHost() {

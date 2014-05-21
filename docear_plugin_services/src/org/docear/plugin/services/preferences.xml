@@ -28,11 +28,11 @@
 				</combo>
 				<action name="docear.update_checker.show" />
 			</separator>
-			<separator name="docear.proxy_settings">
+			<!-- separator name="docear.proxy_settings">
 				<boolean name="docear.use_proxy" />
 				<string name="docear.proxy_host" />
 				<string name="docear.proxy_port" />
-			</separator>
+			</separator-->
 		</tab>
 	</tabbed_pane>
 </preferences_structure>

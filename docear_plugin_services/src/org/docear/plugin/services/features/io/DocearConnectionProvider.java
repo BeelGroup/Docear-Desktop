@@ -456,18 +456,20 @@ public class DocearConnectionProvider extends ADocearServiceFeature {
 	}
 
 	private boolean raiseProxyCredentialsDialog(Exception e) throws Exception {
-		if (e instanceof ClientHandlerException 
-				&& e.getCause() != null 
-				&& e.getCause().getCause() != null 
-				&& e.getCause().getCause() instanceof IOException 
-				&& DocearProxyAuthenticator.useProxyServer()) {
-			
-			if(!DocearProxyAuthenticator.requestAuthenticationData()) {
-				throw e;
-			}
-			return true;
-		}
 		return false;
+		//does not work currently
+//		if (e instanceof ClientHandlerException 
+//				&& e.getCause() != null 
+//				&& e.getCause().getCause() != null 
+//				&& e.getCause().getCause() instanceof IOException 
+//				&& DocearProxyAuthenticator.useProxyServer()) {
+//			
+//			if(!DocearProxyAuthenticator.requestAuthenticationData()) {
+//				throw e;
+//			}
+//			return true;
+//		}
+//		return false;
 	}
 
 	public InputStream getDownloadStream(URI uri) throws IOException, DocearServiceException {
