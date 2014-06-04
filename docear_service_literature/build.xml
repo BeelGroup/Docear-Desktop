@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<project name="org.docear.service.literature" default="dist" basedir=".">
+
+	<property name="workspace" location=".." />
+	<property name="docear.core" location="${workspace}/freeplane_plugin_docear" />
+	<property name="src" value="src" />
+	<property name="resources" value="resources" />
+	<property name="root" value="." />
+	<property name="manifest.dir" value="${src}/META-INF" />
+	<property file="${workspace}/freeplane_framework/ant/ant.properties" />
+	<property file="${workspace}/freeplane/ant/ant.properties" />
+	<property file="${docear.core}/ant/services.properties" />
+	<property name="external.jars" value="${docear.jars}" />
+	<property name="build" value="${root}/build" />
+	<property name="build" value="${root}/build" />
+	<property name="dist" value="${root}/dist" />
+	<property name="docearservice.jar" value="${dist}/${ant.project.name}.jar" />
+	<property name="debug" value="on" />
+	<property name="java_source_version" value="1.6" />
+	<property name="java_target_version" value="1.6" />
+	<property name="build.compiler" value="modern" />
+	<property name="classpath" value="${freeplane.jars}:${docear.bin}:${external.jars}" />
+
+	<target name="clean">
+		<delete dir="build" />
+		<delete dir="dist" />
+	</target>
+
+	<target name="build" description="Compile docear_service_literature">
+		<mkdir dir="build" />
+		<javac srcdir="${src}" destdir="${build}" classpath="${classpath}" debug="${debug}" source="${java_source_version}" target="${java_target_version}" encoding="utf8">
+			<compilerarg value="-g" />
+			<compilerarg value="-Xlint:overrides" />
+			<compilerarg value="-Xlint:unchecked" />
+		</javac>
+
+		<mkdir dir="build/META-INF" />
+		<copy file="${manifest.dir}/org.docear.services.desc" todir="build/META-INF" />
+
+		<mkdir dir="build/META-INF/services" />
+		<copy todir="build/META-INF/services">
+			<fileset dir="${manifest.dir}/services">
+				<include name="**" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="dist" depends="build">
+		<mkdir dir="${dist}" />
+		<jar jarfile="${docearservice.jar}">
+			<fileset dir="${build}" />
+			<fileset dir="${resources}" />
+			<fileset dir="${src}">
+				<include name="**/*.xml" />
+				<include name="**/*.properties" />
+			</fileset>
+		</jar>
+		<copy todir="${dist}">
+			<fileset dir="${root}">
+				<include name="lib/**" />
+			</fileset>
+		</copy>
+	</target>
+
+
+</project>
