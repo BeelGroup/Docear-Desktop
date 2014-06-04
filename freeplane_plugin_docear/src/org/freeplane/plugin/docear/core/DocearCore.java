@@ -37,7 +37,13 @@ public class DocearCore {
 
 	public void start(BundleContext context) {
 		loadServices();
-		
+		try {
+			Class<?> cls = Class.forName("org.docear.desktop.service.literature.LiteratureService", true, servicesClassLoader);
+			System.out.println(cls);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 		startServices(newServiceContext(context));
 		
 		context.registerService(IControllerExtensionProvider.class.getName(), new IControllerExtensionProvider() {
@@ -64,9 +70,10 @@ public class DocearCore {
             Iterator<DocearService> services = loader.iterator();
             while (services.hasNext()) {
             	DocearService ds = services.next();
-                ds.start(context);            }
+                ds.start(context);            
+            }
         } catch (ServiceConfigurationError serviceError) {
-            LogUtils.warn(serviceError); 
+            serviceError.printStackTrace();
         }
 	}
 	
@@ -82,7 +89,7 @@ public class DocearCore {
 	}
 
 	private void loadServices() {
-		if (null == System.getProperty("org.docear.core.dir.services", null)) {
+		if (null == System.getProperty("org.docear.core.services.dir", null)) {
 			final File root = new File(FreeplaneGUIStarter.getResourceBaseDir()).getAbsoluteFile().getParentFile();
 			try {
 				String rootUrl = root.toURI().toURL().toString();
@@ -90,14 +97,14 @@ public class DocearCore {
 					rootUrl = rootUrl + "/";
 				}
 				final String servicesDir = rootUrl + "services/";
-				System.setProperty("org.docear.core.dir.services", servicesDir);
+				System.setProperty("org.docear.core.services.dir", servicesDir);
 			} catch (MalformedURLException ignore) {
 			}
 		}
 
-		File serviceDir = new File(System.getProperty("org.docear.core.dir.services", null));
+		File serviceDir = new File(System.getProperty("org.docear.core.services.dir", null));
+		System.out.println(serviceDir.getAbsolutePath());
 		if (serviceDir.exists() && serviceDir.isDirectory()) {
-			//System.out.println(serviceDir.getAbsolutePath());
 			final File[] childFiles = serviceDir.listFiles();
 			for (int i = 0; i < childFiles.length; i++) {
 				final File child = childFiles[i];

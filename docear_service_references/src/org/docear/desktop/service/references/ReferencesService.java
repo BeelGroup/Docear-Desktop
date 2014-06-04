@@ -5,7 +5,7 @@ import org.freeplane.plugin.docear.core.spi.DocearService;
 
 public class ReferencesService implements DocearService {
 
-	protected ReferencesService() {
+	public ReferencesService() {
 	}
 	
 	public void start(DocearServiceContext context) {

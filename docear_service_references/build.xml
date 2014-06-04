@@ -29,12 +29,11 @@
 
 	<target name="build" description="Compile docear_service_literature">
 		<mkdir dir="build" />
-		<javac srcdir="${src}" destdir="${build}" classpath="${classpath}" debug="${debug}" source="${java_source_version}" target="${java_target_version}" encoding="utf8">
+		<javac includeantruntime="no" srcdir="${src}" destdir="${build}" classpath="${classpath}" debug="${debug}" source="${java_source_version}" target="${java_target_version}" encoding="utf8">
 			<compilerarg value="-g" />
 			<compilerarg value="-Xlint:overrides" />
 			<compilerarg value="-Xlint:unchecked" />
-		</javac>
-
+		</javac>		
 		<mkdir dir="build/META-INF" />
 		<copy file="${manifest.dir}/org.docear.services.desc" todir="build/META-INF" />
 

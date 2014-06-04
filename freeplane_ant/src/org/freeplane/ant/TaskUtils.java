@@ -120,7 +120,7 @@ public class TaskUtils {
 		return (s.toString());
 	}
 
-	static String readFile(final File inputFile) throws IOException {
+	public static String readFile(final File inputFile) throws IOException {
 		InputStreamReader in = null;
 		try {
 			in = new InputStreamReader(new FileInputStream(inputFile), "US-ASCII");
@@ -198,7 +198,7 @@ public class TaskUtils {
 		return project;
 	}
 
-	static String firstToUpper(String string) {
+	public static String firstToUpper(String string) {
     	if (string == null || string.length() < 2)
     		return string;
     	return string.substring(0, 1).toUpperCase() + string.substring(1);
@@ -223,7 +223,7 @@ public class TaskUtils {
     	return value;
     }
 
-	static String ask(Project project, String message, String defaultValue) {
+	public static String ask(Project project, String message, String defaultValue) {
     	return multipleChoice(project, message, defaultValue, null);
     }
 }

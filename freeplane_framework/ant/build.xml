@@ -1,9 +1,12 @@
-<project name="freeplane" default="dist" basedir="..">
+<project name="Freeplane" default="dist" basedir="..">
+	<property name="application.name" value="${ant.project.name}" />
+	<property name="application.name.lower" value="docear" />
+	<property name="root" value="." />
 	<property name="workspace" location=".." />
 	<property file="${workspace}/freeplane/viewer-resources/version.properties" />
 	<property file="ant/ant.properties" />
 	<property name="freeplaneant.jar" value="${workspace}/freeplane_ant/dist/freeplaneant.jar" />
-	<property name="root" value="." />
+	
 	<property name="build" value="${root}/build" />
 	<property name="build4mac" value="${root}/build4mac" />
 	<property name="build.plugins" value="${build}/plugins" />
@@ -35,8 +38,6 @@
 	<property name="build.scripts" value="${build}/scripts" />
 	<property name="script" value="${root}/script" />
 
-	<property name="skip_workspace" value="true" />
-
 	<!-- Mac OS X -->
 	<condition property="isMacOs">
 		<os family="mac"/>
@@ -61,7 +62,7 @@
 
 
 	<target name="build_core">
-		<echo>Freeplane Version = ${ver}.</echo>
+		<echo>${application.name} Version = ${ver}.</echo>
 
 		<mkdir dir="${build}" />
 		<antcall target="makePlugin" inheritall="false">
@@ -144,15 +145,6 @@
 		</antcall>
 	</target>
 
-	<target name="build_workspace" unless="skip_workspace">
-		<antcall target="makePlugin" inheritall="false">
-			<param name="anttarget" value="dist"/>
-			<param name="targetdir" value="plugins"/>
-			<param name="plugindir" value="freeplane_plugin_workspace"/>
-			<param name="pluginname" value="org.freeplane.plugin.workspace"/>
-		</antcall>
-	</target>
-
 	<target name="build_launcher" depends="build_core">
 		<mkdir dir="${launcher_build}" />
 		<javac srcdir="${launcher_src}" destdir="${launcher_build}" classpath="${launcher_classpath}" 
@@ -174,7 +166,7 @@
 		<chmod file="${build}/freeplane.sh" perm="ugo+rx" />
 	</target>
 
-	<target name="build" depends="build_core, build_latex, build_svg, build_script, build_formula, build_bugreport, build_openmaps, build_workspace, build_launcher, git_version_info">
+	<target name="build" depends="build_core, build_latex, build_svg, build_script, build_formula, build_bugreport, build_openmaps, build_launcher, git_version_info">
 		<mkdir dir="${build.resources}" />
 		<copy todir="${build.resources}">
 			<fileset dir="${workspace}/freeplane/dist/resources" />
@@ -603,8 +595,6 @@
 			  dir="${workspace}/freeplane_plugin_bugreport"/>
 		<ant antfile="ant/build.xml" target="clean" inheritall="false"
 			  dir="${workspace}/freeplane_plugin_openmaps"/>
-		<ant antfile="ant/build.xml" target="clean" inheritall="false"
-              dir="${workspace}/freeplane_plugin_workspace"/>
 	</target>
 
 </project>

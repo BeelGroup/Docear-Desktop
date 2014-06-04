@@ -5,7 +5,7 @@ import org.freeplane.plugin.docear.core.spi.DocearService;
 
 public class LiteratureService implements DocearService {
 
-	protected LiteratureService() {
+	public LiteratureService() {
 	}
 	
 	public void start(DocearServiceContext context) {
