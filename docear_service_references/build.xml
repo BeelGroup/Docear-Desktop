@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<project name="org.docear.service.literature" default="dist" basedir=".">
+<project name="org.docear.service.references" default="dist" basedir=".">
 
 	<property name="workspace" location=".." />
 	<property name="docear.core" location="${workspace}/freeplane_plugin_docear" />
