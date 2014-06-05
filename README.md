@@ -1,16 +1,15 @@
-Freeplane
+Docear
 =========
 
-[Freeplane](http://freeplane.sourceforge.net) is a free and open source software application that supports thinking, sharing information and getting things done at work, in school and at home. The core of the software is tools for mind mapping (also known as concept mapping or information mapping) and using mapped information. Freeplane is written in Java using OSGi and Java Swing. It runs on any operating system that has a current version of Java installed. It can be run locally or portably from removable storage like a USB drive. 
+[Docear](https://www.docear.org/) is a unique solution to academic literature management, i.e. it helps you organizing, creating, and discovering academic literature. Among others, Docear offers:
 
-We use github only as the main code repository, all other project parts are hosted at the [source forge](https://sourceforge.net/projects/freeplane/). So all bugs and feature requests are managed in a [separate issue tracker](https://sourceforge.net/apps/mantisbt/freeplane/view_all_bug_page.php). There is a drop-down box for selecting different types of issues. Another source of inspiration is our [forum](https://sourceforge.net/apps/phpbb/freeplane/viewforum.php?f=1). Some users write their ideas there. Every contributor and every team member freely decides what task he is going to work on, but for making the best decision we can communicate our self set goals in the above forum. It is supposed to enable early discussions and community feedback and also to motivate you and other people. 
+- single-section user-interface that allows the most comprehensive organization of your literature. With Docear, you can sort documents into categories; you can sort annotations (comments, bookmarks, and highlighted text from PDFs) into categories; you can sort annotations within PDFs; and you can view multiple annotations of multiple documents, in multiple categories – at once.
+- ‘literature suite concept‘ that combines several tools in a single application (pdf management, reference management, mind mapping, …). This allows you to draft your own papers, assignments, thesis, etc. directly in Docear and copy annotations and references from your collection directly into your draft.
+- A recommender system that helps you to discover new literature: Docear recommends papers which are free, in full-text, instantly to download, and tailored to your information needs.
 
-People new to the project can start with implementing a new small feature or doing some refactoring or documentation and not with the bug fixing. Not all bug reports seem to be equally important, and if there are important bugs they usually get fixed by people who broke the functionality. I think you should first get there :) . 
+Docear is based on the [Freeplane](https://github.com/freeplane/freeplane) framework as its mind mapping core
 
-For internal developer discussions there is a private mailing list. It is held private to avoid spam mails. If you want to be subscribed let us know what mail address you are going to use with it. This list is the preferred way to ask all code related questions because they usually get answered soon and by the most competent team member.
+Instructions
+--------
 
-In the project wiki there is also some documentation for new developers [here](http://freeplane.sourceforge.net/wiki/index.php/Category:Coding) and [here](http://freeplane.sourceforge.net/wiki/index.php/Category:Developer). It is written for new guys and should also be maintained by the new guys to stay up to date.
-
-Looking forward to any questions and contributions,
-
-Freeplane development team
+first run the 'build' target from docear_framework/ant/build.xml
