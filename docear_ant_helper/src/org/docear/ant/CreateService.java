@@ -2,22 +2,26 @@ package org.docear.ant;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Writer;
-import java.util.Scanner;
-import java.util.regex.Pattern;
+import java.util.Vector;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
-import org.freeplane.ant.TaskUtils;
+import org.apache.tools.ant.input.InputHandler;
+import org.apache.tools.ant.input.InputRequest;
+import org.apache.tools.ant.input.MultipleChoiceInputRequest;
+import org.apache.tools.ant.util.StringUtils;
 
 public class CreateService extends Task {
 	private static final String DOCEAR_SERVICE_PREFIX = "docear_service_";
 	private String serviceName;
 	private File newServiceDir;
-	private File serviceTemplateDir;
 	private File baseDir;
 
 	@Override
@@ -29,8 +33,7 @@ public class CreateService extends Task {
 			fatal("won't overwrite output directory " + newServiceDir + " - please remove it first");
 		createDirs();
 		try {
-			createSources();
-			createOtherFiles();
+			copyTemplateFiles();
 		}
 		catch (IOException e) {
 			throw new BuildException("error creating files: " + e.getMessage(), e);
@@ -40,70 +43,60 @@ public class CreateService extends Task {
 
 	private void readAndValidateParameters() {
 		if (serviceName == null) {
-			serviceName = TaskUtils.ask(getProject(), "=> Please enter required service name:", null);
+			serviceName = ask(getProject(), "=> Please enter required service name:", null);
 			assertNotNull(serviceName, "property 'serviceName' is required");
 		}
 		serviceName = serviceName.replaceAll(DOCEAR_SERVICE_PREFIX, "").toLowerCase();
-		if (!serviceName.matches("[a-z]+"))
+		if (!serviceName.matches("[a-z]+")) {
 			fatal("plugin name may only contain letters from the range [a-z]");
+		}
 	}
 
 	private void createDirs() {
 		String[] subdirs = { ".settings" //
-		        , "ant" //
 		        , "lib" //
+		        , "resources" //
 		        , "META-INF" //
+		        , "META-INF/services" //
 		        , "src" //
 		        , "src/org" //
-		        , "src/org/freeplane" //
-		        , "src/org/freeplane/plugin" //
-		        , "src/org/freeplane/plugin/" + serviceName //
+		        , "src/org/docear" //
+		        , "src/org/docear/desktop" //
+		        , "src/org/docear/desktop/service" //
+		        , "src/org/docear/desktop/service/" + serviceName //
 		};
+		log("create docear service dir: "+ newServiceDir);
 		mkdir(newServiceDir);
 		for (String dir : subdirs) {
 			mkdir(new File(newServiceDir, dir));
 		}
 	}
 
-	private void createSources() throws IOException {
-		createService();
-	}
-
-	private void createService() throws IOException {
-		String source = "package " + packageName() + ";\n" + new Scanner(getClass().getResourceAsStream("/Service.java"), "UTF-8").useDelimiter("\\A").next().replaceAll(Pattern.quote("$$$$"), TaskUtils.firstToUpper(serviceName));
-		write(new File(sourceDir(), TaskUtils.firstToUpper(serviceName)+"Service.java"), source);
-	}
-
-	private void createOtherFiles() throws IOException {
+	private void copyTemplateFiles() throws IOException {
 		String[] files = { //
-		".classpath" //
+				".classpath" //
 		        , ".project" //
-		        , ".settings/org.eclipse.core.resources.prefs" //
-		        , ".settings/org.eclipse.core.runtime.prefs" //
 		        , ".settings/org.eclipse.jdt.core.prefs" //
-		        , ".settings/org.eclipse.pde.core.prefs" //
-		        , "ant/ant.properties" //
-		        , "ant/build.xml" //
-		        , "META-INF/MANIFEST.MF" //
+		        , "build.properties" //
+		        , "build.xml" //
+		        , "META-INF/org.docear.services.desc" //
+		        , "META-INF/services/org.freeplane.plugin.docear.core.spi.DocearService" //
+		        , "src/org/docear/desktop/service/servicename/ServiceNameService.java" //
 		};
 		for (String fileName : files) {
-			final String content = TaskUtils.readFile(new File(serviceTemplateDir, fileName));
-			final File newFile = new File(newServiceDir, fileName);
+			String template = "/template/" + fileName;
+			final String content = readFile(getClass().getResourceAsStream(template), "UTF-8"/*"US-ASCII"*/);
+			final File newFile = new File(newServiceDir, transform(fileName));
+			log("creating file: " + newFile);
 			write(newFile, transform(content));
 		}
-		// build.properties were missing in 1_0_x so don't try to copy them
-		write(new File(newServiceDir, "build.properties"), "source.lib/plugin.jar = src/\n");
 	}
 
 	private String transform(String content) {
 		return content //
-		    .replaceAll("<classpathentry kind=\"lib\"[^>]*>\\s*", "") // .classpath special
-		    .replaceAll("(jlatexmath.jar = )", "# $1") // ant.properties special
-		    .replaceAll("lib/jlatexmath.jar,\\s*(lib/plugin.jar)", "$1") // MANIFEST.MF special
-		    .replace("${commons-lang.jar}:${forms.jar}:${SimplyHTML.jar}:${jlatexmath.jar}", "") // build.xml special
-		    .replaceAll("latex", serviceName) //
-		    .replaceAll("Latex", TaskUtils.firstToUpper(serviceName)) //
-		    .replaceAll("LATEX", serviceName.toUpperCase()) //
+		    .replaceAll("servicename", serviceName) //
+		    .replaceAll("ServiceName", firstToUpper(serviceName)) //
+		    .replaceAll("SERVICE_NAME", serviceName.toUpperCase()) //
 		;
 	}
 
@@ -120,24 +113,13 @@ public class CreateService extends Task {
 
 	private void finalWords() {
 		String buildFragment = "  <antcall target=\"makeService\" inheritall=\"false\">\n" //
-		        + "    <param name=\"anttarget\" value=\"dist\"/>\n" //
-		        + "    <param name=\"plugindir\" value=\"docear_service_" + serviceName + "\"/>\n" //
-		        + "    <param name=\"pluginname\" value=\"org.docear.service." + serviceName + "\"/>\n" //
+		        + "    <param name=\"servicedir\" value=\"docear_service_" + serviceName + "\"/>\n" //
 		        + "  </antcall>\n";
-		log("New service created in " + newServiceDir);
-		log("What next?");
+		log("\n\nNew service created in " + newServiceDir);
+		log("\nWhat next?");
 		log("* import plugin into Eclipse via Import... -> Existing Projects into Workspace");
 		log("* add required external jars to " + new File(newServiceDir, "lib"));
-		log("* search for \"TODO\" in the project and fill the gaps");
-		log("* add the following element to docear_framework/ant/build.xml target \"build_docear\":\n" + buildFragment);
-	}
-
-	private File sourceDir() {
-		return new File(newServiceDir, "src/org/docear/desktop/service/" + serviceName.toLowerCase());
-	}
-
-	private String packageName() {
-		return "org.docear.desktop.service." + serviceName.toLowerCase();
+		log("* add the following element to docear_framework/ant/build.xml -> target \"build_services\":\n" + buildFragment);
 	}
 
 	private void mkdir(File dir) {
@@ -175,6 +157,68 @@ public class CreateService extends Task {
 	public void setBaseDir(String baseDir) {
 		setBaseDir(new File(baseDir));
 	}
+	
+	public static String readFile(final InputStream input, String encoding) throws IOException {
+		if(input == null) {
+			throw new IOException("null input passed to CreateService.readFile()");
+		}
+		InputStreamReader in = null;
+		try {
+			in = new InputStreamReader(input, encoding);
+			StringBuilder builder = new StringBuilder();
+			final char[] buf = new char[1024];
+			int len;
+			while ((len = in.read(buf)) > 0) {
+				builder.append(buf, 0, len);
+			}
+			return builder.toString();
+		}
+		finally {
+			if (in != null) {
+				try {
+					in.close();
+				}
+				catch (IOException e) {
+					// can't help it
+				}
+			}
+		}
+	}
+	
+	public static String readFile(final File inputFile, String encoding) throws IOException {
+		return readFile(new FileInputStream(inputFile), encoding);
+	}
+
+	
+
+	String firstToUpper(String string) {
+    	if (string == null || string.length() < 2)
+    		return string;
+    	return string.substring(0, 1).toUpperCase() + string.substring(1);
+    }
+
+	@SuppressWarnings("unchecked")
+    String multipleChoice(Project project, String message, String validValues, String defaultValue) {
+    	InputRequest request = null;
+    	if (validValues != null) {
+    		Vector<String> accept = StringUtils.split(validValues, ',');
+    		request = new MultipleChoiceInputRequest(message, accept);
+    	}
+    	else {
+    		request = new InputRequest(message);
+    	}
+    	InputHandler handler = project.getInputHandler();
+    	handler.handleInput(request);
+    	final String value = request.getInput();
+    	if ((value == null || value.trim().length() == 0) && defaultValue != null) {
+    		return defaultValue;
+    	}
+    	return value;
+    }
+
+	String ask(Project project, String message, String defaultValue) {
+    	return multipleChoice(project, message, defaultValue, null);
+    }
 	
 
 }

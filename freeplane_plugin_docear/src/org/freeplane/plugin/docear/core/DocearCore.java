@@ -17,6 +17,10 @@ import org.freeplane.main.osgi.IModeControllerExtensionProvider;
 import org.freeplane.plugin.docear.core.spi.DocearService;
 import org.osgi.framework.BundleContext;
 
+/**
+ * @author genzmehr@docear.org
+ *
+ */
 public class DocearCore {
 	private static DocearCore core;
 
@@ -68,6 +72,7 @@ public class DocearCore {
 	private void startServices(DocearServiceContext context) {
 		try {
             Iterator<DocearService> services = loader.iterator();
+            //TODO - determine order by dependencies
             while (services.hasNext()) {
             	DocearService ds = services.next();
                 ds.start(context);            

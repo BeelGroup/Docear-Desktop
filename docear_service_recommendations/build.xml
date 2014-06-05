@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<project name="org.docear.service.literature" default="dist" basedir=".">
+<project name="org.docear.service.recommendations" default="dist" basedir=".">
 
 	<property name="workspace" location=".." />
 	<property name="docear.core" location="${workspace}/freeplane_plugin_docear" />
@@ -28,7 +28,7 @@
 		<delete dir="dist" />
 	</target>
 
-	<target name="build" description="Compile docear_service_literature">
+	<target name="build" description="Compile docear_service_recommendations">
 		<mkdir dir="build" />
 		<javac includeantruntime="no" srcdir="${src}" destdir="${build}" classpath="${classpath}" debug="${debug}" source="${java_source_version}" target="${java_target_version}" encoding="utf8">
 			<compilerarg value="-g" />

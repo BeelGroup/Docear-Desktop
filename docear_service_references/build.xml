@@ -11,7 +11,8 @@
 	<property file="${workspace}/freeplane_framework/ant/ant.properties" />
 	<property file="${workspace}/freeplane/ant/ant.properties" />
 	<property file="${docear.core}/ant/services.properties" />
-	<property name="external.jars" value="${docear.jars}" />
+	<property file="${root}/build.properties" />
+	<property name="external.jars" value="${docear.jars}:${lib}" />
 	<property name="build" value="${root}/build" />
 	<property name="build" value="${root}/build" />
 	<property name="dist" value="${root}/dist" />
@@ -27,13 +28,14 @@
 		<delete dir="dist" />
 	</target>
 
-	<target name="build" description="Compile docear_service_literature">
+	<target name="build" description="Compile docear_service_references">
 		<mkdir dir="build" />
 		<javac includeantruntime="no" srcdir="${src}" destdir="${build}" classpath="${classpath}" debug="${debug}" source="${java_source_version}" target="${java_target_version}" encoding="utf8">
 			<compilerarg value="-g" />
 			<compilerarg value="-Xlint:overrides" />
 			<compilerarg value="-Xlint:unchecked" />
-		</javac>		
+		</javac>
+
 		<mkdir dir="build/META-INF" />
 		<copy file="${manifest.dir}/org.docear.services.desc" todir="build/META-INF" />
 

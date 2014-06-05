@@ -45,9 +45,13 @@
 
 	<target name="makeService">
 		<mkdir dir="${services}" />
-		<ant antfile="build.xml" target="${anttarget}" dir="${workspace}/${servicedir}" inheritall="false" >
+		<ant antfile="build.xml" target="dist" dir="${workspace}/${servicedir}" inheritall="false" >
 			<property name="dist" location="${services}"/>
 		</ant>
+	</target>
+	
+	<target name="create_service">
+		   <create-service basedir="${workspace}" />
 	</target>
 
 	<target name="build_docear_ant">
@@ -65,7 +69,7 @@
 		</ant>
 	</target>
 
-	<target name="build_docear" depends="build_freeplane">
+	<target name="build_docear" depends="build_freeplane" unless="skip_docear">
 		<mkdir dir="${build}" />
 		<ant antfile="ant/build.xml" target="makePlugin" dir="${ant.freeplane}" inheritall="false">
 			<property name="application.name" value="${application.name}" />
@@ -75,18 +79,23 @@
 			<property name="plugindir" value="freeplane_plugin_docear" />
 			<property name="pluginname" value="org.freeplane.plugin.docear" />
 		</ant>
+	    <antcall target="build_services" inheritall="true" inheritrefs="true" />
 
+	</target>
+
+	<target name="build_services" unless="skip_services">
 		<antcall target="makeService" inheritall="false">
-			<param name="anttarget" value="dist" />
 			<param name="servicedir" value="docear_service_literature" />
 		</antcall>
 		<antcall target="makeService" inheritall="false">
-			<param name="anttarget" value="dist" />
 			<param name="servicedir" value="docear_service_references" />
 		</antcall>
+        <antcall target="makeService" inheritall="false">
+            <param name="servicedir" value="docear_service_recommendations" />
+        </antcall>
 	</target>
 
-	<target name="build_launcher" depends="build_docear">
+	<target name="build_launcher" depends="build_docear" unless="skip_launcher">
 		<mkdir dir="${launcher_build}" />
 		<javac srcdir="${launcher_src}" destdir="${launcher_build}" classpath="${launcher_classpath}" 
 			debug="${debug}" source="${java_source_version}" target="${java_target_version}" encoding="utf8"/>
