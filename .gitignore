@@ -34,6 +34,5 @@ freeplane_plugin_script/build-nodehighlighter
 freeplane_plugin_script/lib/jsyntaxpane/nodehighlighter.jar
 freeplane_framework/temp
 freeplane/resources/xml/mindmapmodemenu.xml
-docear_framework/lib/docear.ant.helper.jar
 docear_framework/services
 docear_ant_helper/lib

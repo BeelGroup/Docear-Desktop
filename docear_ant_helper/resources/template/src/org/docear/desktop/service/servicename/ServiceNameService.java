@@ -18,7 +18,6 @@ public class ServiceNameService implements DocearService {
 	}
 
 	public void stop(DocearServiceContext context) {
-		// TODO Auto-generated method stub
 		
 	}
 
