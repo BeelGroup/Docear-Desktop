@@ -53,8 +53,8 @@ import com.jgoodies.forms.layout.RowSpec;
 public class RecommendationsView extends JPanel {	
 
 	private static final long serialVersionUID = 1L;
-	private static JTabbedPane tabPane;
-	private static RecommendationsView view;
+	protected static JTabbedPane tabPane;
+	protected static RecommendationsView view;
 	private String evaluationLabel = "";
 	private int recSetId = 0;
 
@@ -63,7 +63,7 @@ public class RecommendationsView extends JPanel {
 		setModel(model);
 	}
 
-	private RecommendationsView() {
+	protected RecommendationsView() {
 		this.setLayout(new BorderLayout());
 		updateTitle();
 		this.setBackground(Color.WHITE);
@@ -85,7 +85,7 @@ public class RecommendationsView extends JPanel {
 		return view;
 	}
 
-	private static JTabbedPane findTabbedPane(Container cont) throws NoSuchElementException {
+	protected static JTabbedPane findTabbedPane(Container cont) throws NoSuchElementException {
 		JTabbedPane tabPane = null;
 		for(Component comp : cont.getComponents()) {
 			if(comp instanceof JTabbedPane) {
@@ -274,7 +274,7 @@ public class RecommendationsView extends JPanel {
 		return comp;
 	}
 
-	private Container getNewRecommandationContainerComponent(String title) {
+	protected Container getNewRecommandationContainerComponent(String title) {
 		JPanel containerPanel = new JPanel();
 		containerPanel.setLayout(new BorderLayout());
 		containerPanel.setBackground(Color.WHITE);
@@ -298,11 +298,11 @@ public class RecommendationsView extends JPanel {
 		return panel;
 	}
 	
-	private Component getStarBar() {
+	protected Component getStarBar() {
 		return new StarPanel(evaluationLabel, recSetId);
 	}
 
-	private Component getNewButtonBar() {
+	protected Component getNewButtonBar() {
 		JPanel panel = new JPanel(new LayoutManager() {
 			
 			public void removeLayoutComponent(Component comp) {				
@@ -496,7 +496,10 @@ public class RecommendationsView extends JPanel {
 	
 	
 	
-	private final class ListLayoutManager implements LayoutManager {
+	protected final class ListLayoutManager implements LayoutManager {
+		public ListLayoutManager() {
+		}
+
 		public void removeLayoutComponent(Component comp) {				
 		}
 

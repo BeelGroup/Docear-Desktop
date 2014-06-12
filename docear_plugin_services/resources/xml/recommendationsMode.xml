@@ -49,7 +49,7 @@
 			<menu_action action="CloseAction" />
 		</menu_category>
 		<menu_category name="refresh">
-            <menu_action action="RecommendationsRefreshAction" />
+            <menu_action action="RecommendationsRefreshAction" />            
 		</menu_category>
 	</menu_category>
 </menu_structure>

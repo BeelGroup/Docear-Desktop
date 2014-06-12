@@ -26,6 +26,7 @@ import org.docear.plugin.core.logging.DocearLogger;
 import org.docear.plugin.core.util.CoreUtils;
 import org.docear.plugin.services.ADocearServiceFeature;
 import org.docear.plugin.services.ServiceController;
+import org.docear.plugin.services.features.documentsearch.workspace.ShowDocumentSearchNode;
 import org.docear.plugin.services.features.io.DocearConnectionProvider;
 import org.docear.plugin.services.features.io.DocearServiceResponse;
 import org.docear.plugin.services.features.io.DocearServiceResponse.Status;
@@ -109,7 +110,7 @@ public class RecommendationsController extends ADocearServiceFeature {
 		}
 	}
 	
-	private static RecommendationsModel requestRecommendations() throws AlreadyInUseException {
+	protected static RecommendationsModel requestRecommendations() throws AlreadyInUseException {
 		RecommendationsModel model = null;		
 		if (ServiceController.getCurrentUser().isRecommendationsEnabled()) {
 			final ProgressMonitor monitor = new ProgressMonitor(UITools.getFrame(), TextUtils.getText("recommendations.request.wait.text"), null, 0, 100);
@@ -167,7 +168,7 @@ public class RecommendationsController extends ADocearServiceFeature {
 		});
 	}
 	
-	private static RecommendationsModel getExceptionModel(Exception e) {
+	protected static RecommendationsModel getExceptionModel(Exception e) {
 		RecommendationsModel model = new RecommendationsModel();
 		String message = "";
 		if (e instanceof UnknownHostException) {
@@ -360,6 +361,7 @@ public class RecommendationsController extends ADocearServiceFeature {
 	protected void installDefaults(ModeController modeController) {
 		AWorkspaceTreeNode wsRoot = WorkspaceController.getModeExtension(modeController).getModel().getRoot();
 		wsRoot.insertChildNode(new ShowRecommendationsNode(), 0);
+		wsRoot.insertChildNode(new ShowDocumentSearchNode(), 0);
 		downloadsNode = new DownloadFolderNode();
 		updateDownloadNode();
 		wsRoot.insertChildNode(downloadsNode, 1);

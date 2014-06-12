@@ -12,6 +12,7 @@ import org.docear.plugin.core.event.DocearEventType;
 import org.docear.plugin.core.event.IDocearEventListener;
 import org.docear.plugin.core.features.DocearFileBackupController;
 import org.docear.plugin.core.ui.OverlayViewport;
+import org.docear.plugin.services.features.documentsearch.actions.ShowDocumentSearchAction;
 import org.docear.plugin.services.features.io.DocearConnectionProvider;
 import org.docear.plugin.services.features.payment.DocearPaymentController;
 import org.docear.plugin.services.features.recommendations.RecommendationsController;
@@ -59,6 +60,7 @@ public class ServiceController {
 		Controller.getCurrentController().addAction(new DocearClearUserDataAction());
 		Controller.getCurrentController().addAction(new DocearCheckForUpdatesAction());
 		Controller.getCurrentController().addAction(new ShowRecommendationsAction());
+		Controller.getCurrentController().addAction(new ShowDocumentSearchAction());
 		Controller.getCurrentController().addAction(new DocearBackupOpenLocation());
 	}
 
