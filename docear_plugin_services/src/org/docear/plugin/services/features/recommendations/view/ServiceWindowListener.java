@@ -47,7 +47,7 @@ public class ServiceWindowListener implements WindowListener {
 	private void getRecommendations(final WindowListener wl) {		
 		if (ServiceController.getFeature(RecommendationsController.class).getAutoRecommendations() != null) {
 			UITools.getFrame().removeWindowListener(wl);
-			RecommendationsController.refreshRecommendations(ServiceController.getFeature(RecommendationsController.class).getAutoRecommendations());
+			RecommendationsController.getController().refreshRecommendations(ServiceController.getFeature(RecommendationsController.class).getAutoRecommendations());
 			ServiceController.getFeature(RecommendationsController.class).setAutoRecommendations(null);
 		}
 	}

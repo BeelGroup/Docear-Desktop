@@ -12,18 +12,18 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
+import org.docear.plugin.services.features.recommendations.DocumentView;
 import org.docear.plugin.services.features.recommendations.model.RecommendationsModel;
-import org.docear.plugin.services.features.recommendations.view.RecommendationsView;
 import org.freeplane.features.mode.Controller;
 
-public class DocumentSearchView extends RecommendationsView {
+public class DocumentSearchView extends DocumentView {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	protected static DocumentSearchView view;
+	private static DocumentSearchView view = new DocumentSearchView();
 
 	public DocumentSearchView(RecommendationsModel model) {
 		super(model);
@@ -32,8 +32,8 @@ public class DocumentSearchView extends RecommendationsView {
 	public DocumentSearchView() {
 		super();
 	}
-	
-	public static DocumentSearchView getView() throws NoSuchElementException {
+		
+	public static DocumentView getView() throws NoSuchElementException {
 		Container cont = Controller.getCurrentController().getViewController().getContentPane();
 		if(tabPane == null) {
 			tabPane = findTabbedPane(cont);
@@ -48,6 +48,7 @@ public class DocumentSearchView extends RecommendationsView {
 		return view;
 	}
 	
+	@Override
 	protected Container getNewRecommandationContainerComponent(String title) {
 		JPanel containerPanel = new JPanel();
 		containerPanel.setLayout(new BorderLayout());
@@ -73,7 +74,13 @@ public class DocumentSearchView extends RecommendationsView {
 		return panel;
 	}
 
-	private Component getSearchPanel() {		
+	private Component getSearchPanel() {
+		System.out.println("++++++++++++++++++++++++++test++++++++++++++++++++++++++++++++++++");
+		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 		JLabel label = new JLabel("test");
 		
 		return label;

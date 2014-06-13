@@ -34,7 +34,7 @@ public class RecommendationsRefreshAction extends AFreeplaneAction {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		RecommendationsController.refreshRecommendations();
+		RecommendationsController.getController().refreshRecommendations();
 	}
 
 }
