@@ -41,7 +41,6 @@ import org.docear.plugin.services.features.recommendations.view.RecommendationsV
 import org.docear.plugin.services.features.recommendations.view.RecommendationsViewListener;
 import org.docear.plugin.services.features.recommendations.view.StarPanel;
 import org.docear.plugin.services.features.user.action.DocearUserServicesAction;
-import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.Controller;
@@ -57,6 +56,7 @@ public abstract class DocumentView extends JPanel {
 	protected static JTabbedPane tabPane;	
 	private String evaluationLabel = "";
 	private int recSetId = 0;
+	private DocumentView view;
 
 	public DocumentView(final RecommendationsModel model) {
 		this();
@@ -72,6 +72,7 @@ public abstract class DocumentView extends JPanel {
 	
 	protected abstract Container getNewRecommandationContainerComponent(String title);
 	protected abstract Container getNewEmptyContainerComponent();
+	public abstract void close() throws NoSuchElementException;
 //	public abstract void close();
 	
 	protected static JTabbedPane findTabbedPane(Container cont) throws NoSuchElementException {
@@ -87,15 +88,6 @@ public abstract class DocumentView extends JPanel {
 			throw new NoSuchElementException("could not find tabbed pane"); 
 		}
 		return tabPane;
-	}
-
-	public void close() throws NoSuchElementException {
-		Container cont = Controller.getCurrentController().getViewController().getContentPane();
-		
-		cont.remove(this);
-		cont.add(tabPane, BorderLayout.CENTER, 0);
-		((JComponent) cont).revalidate();
-		UITools.getFrame().repaint();
 	}
 
 	public void setModel(RecommendationsModel model) {

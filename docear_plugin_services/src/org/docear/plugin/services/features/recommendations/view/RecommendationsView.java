@@ -6,12 +6,14 @@ import java.awt.Container;
 import java.awt.Font;
 import java.util.NoSuchElementException;
 
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import org.docear.plugin.services.features.recommendations.DocumentView;
+import org.freeplane.core.ui.components.UITools;
 import org.freeplane.features.mode.Controller;
 
 public class RecommendationsView extends DocumentView {	
@@ -21,7 +23,7 @@ public class RecommendationsView extends DocumentView {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private static DocumentView view = new RecommendationsView(); 
+	private static DocumentView view = null; 
 
 	public static DocumentView getView() throws NoSuchElementException {
 		Container cont = Controller.getCurrentController().getViewController().getContentPane();
@@ -73,5 +75,19 @@ public class RecommendationsView extends DocumentView {
 		this.add(panel, BorderLayout.CENTER);
 		//this.add(panel);
 		return panel;
+	}
+
+	@Override
+	public void close() throws NoSuchElementException {
+		Container cont = Controller.getCurrentController().getViewController().getContentPane();
+		if(view == null) {
+		return;
+		}
+
+		cont.remove(view);
+		cont.add(tabPane, BorderLayout.CENTER, 0);
+		view = null;
+		((JComponent) cont).revalidate();
+		UITools.getFrame().repaint();
 	}	
 }
