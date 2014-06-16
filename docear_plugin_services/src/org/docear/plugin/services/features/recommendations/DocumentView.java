@@ -41,6 +41,7 @@ import org.docear.plugin.services.features.recommendations.view.RecommendationsV
 import org.docear.plugin.services.features.recommendations.view.RecommendationsViewListener;
 import org.docear.plugin.services.features.recommendations.view.StarPanel;
 import org.docear.plugin.services.features.user.action.DocearUserServicesAction;
+import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.Controller;
@@ -56,23 +57,41 @@ public abstract class DocumentView extends JPanel {
 	protected static JTabbedPane tabPane;	
 	private String evaluationLabel = "";
 	private int recSetId = 0;
-	private DocumentView view;
-
+	
 	public DocumentView(final RecommendationsModel model) {
 		this();
 		setModel(model);
 	}
 
 	protected DocumentView() {
+		Container cont = Controller.getCurrentController().getViewController().getContentPane();
 		this.setLayout(new BorderLayout());
-		updateTitle();
+		updateTitle();		
 		this.setBackground(Color.WHITE);
 		this.setBorder(new LineBorder(Color.LIGHT_GRAY, 1));
+		
+		if(tabPane == null) {
+			tabPane = findTabbedPane(cont);			
+		}
+		cont.remove(tabPane);
+		cont.add(this, BorderLayout.CENTER, 0);
 	}
 	
 	protected abstract Container getNewRecommandationContainerComponent(String title);
 	protected abstract Container getNewEmptyContainerComponent();
-	public abstract void close() throws NoSuchElementException;
+	
+	public void close() throws NoSuchElementException {
+		Container cont = Controller.getCurrentController().getViewController().getContentPane();
+		if (DocumentRetriever.getView() == null) {
+			return;
+		}
+
+		cont.remove(DocumentRetriever.getView());
+		cont.add(tabPane, BorderLayout.CENTER, 0);
+		DocumentRetriever.destroyView();
+		((JComponent) cont).revalidate();
+		UITools.getFrame().repaint();	
+	}
 //	public abstract void close();
 	
 	protected static JTabbedPane findTabbedPane(Container cont) throws NoSuchElementException {

@@ -25,6 +25,7 @@ import org.docear.plugin.core.logging.DocearLogger;
 import org.docear.plugin.core.util.CoreUtils;
 import org.docear.plugin.services.ADocearServiceFeature;
 import org.docear.plugin.services.ServiceController;
+import org.docear.plugin.services.features.documentsearch.model.view.DocumentSearchView;
 import org.docear.plugin.services.features.documentsearch.workspace.ShowDocumentSearchNode;
 import org.docear.plugin.services.features.io.DocearConnectionProvider;
 import org.docear.plugin.services.features.io.DocearServiceResponse;
@@ -33,6 +34,7 @@ import org.docear.plugin.services.features.io.UnauthorizedException;
 import org.docear.plugin.services.features.recommendations.model.RecommendationEntry;
 import org.docear.plugin.services.features.recommendations.model.RecommendationsModel;
 import org.docear.plugin.services.features.recommendations.model.RecommendationsModelNode;
+import org.docear.plugin.services.features.recommendations.view.RecommendationsView;
 import org.docear.plugin.services.features.recommendations.workspace.DownloadFolderNode;
 import org.docear.plugin.services.features.recommendations.workspace.ShowRecommendationsNode;
 import org.docear.plugin.services.features.user.DocearUser;
@@ -71,8 +73,30 @@ public abstract class DocumentRetriever extends ADocearServiceFeature {
 	private Collection<RecommendationEntry> autoRecommendations;
 	protected Boolean AUTO_RECOMMENDATIONS_LOCK = false;
 	
+	protected static DocumentView view;
+	
 	protected abstract DocearServiceResponse getRequestResponse(String userName, boolean userRequest);
-	public abstract DocumentView getView() throws NoSuchElementException;	
+	public abstract void refreshRecommendations();
+	
+	public static void initializeDocumentSearcher() {
+		if(view == null) {
+			view = new DocumentSearchView();		
+		}
+	}
+	
+	public static void initializeRecommendations() {
+		if(view == null) {
+			view = new RecommendationsView();
+		}
+	}
+	
+	public static void destroyView() {
+		view = null;
+	}
+	
+	public static DocumentView getView() {
+		return view;
+	}
 	
 	public Collection<RecommendationEntry> getNewDocuments(boolean userRequest) throws UnknownHostException, UnauthorizedException, UnexpectedException, AlreadyInUseException {		
 		synchronized (mutex ) {
@@ -163,11 +187,7 @@ public abstract class DocumentRetriever extends ADocearServiceFeature {
 			LogUtils.info("finished recommendation request");
 		}
 	}
-	
-	public void refreshRecommendations() {
-		refreshRecommendations(null);
-	}
-			
+				
 	public void refreshRecommendations(Collection<RecommendationEntry> recommendations) {
 		RecommendationsModel model = null;
 		if(recommendations == null) {
@@ -189,7 +209,6 @@ public abstract class DocumentRetriever extends ADocearServiceFeature {
 		}
 		
 		try {
-			DocumentView view = getView();
 			view.setModel(model);
 		} catch (NoSuchElementException e) {
 			LogUtils.severe(e);
@@ -268,7 +287,7 @@ public abstract class DocumentRetriever extends ADocearServiceFeature {
 	}
 	
 	public void closeRecommendationView() {
-		getView().close();
+		view.close();
 	}
 	
 	public void setAutoRecommendations(Collection<RecommendationEntry> autoRecommendations) {

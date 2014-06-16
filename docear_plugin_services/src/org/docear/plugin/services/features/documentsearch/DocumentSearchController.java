@@ -1,14 +1,10 @@
 package org.docear.plugin.services.features.documentsearch;
 
-import java.util.NoSuchElementException;
-
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.docear.plugin.services.ServiceController;
-import org.docear.plugin.services.features.documentsearch.model.view.DocumentSearchView;
 import org.docear.plugin.services.features.io.DocearServiceResponse;
 import org.docear.plugin.services.features.recommendations.DocumentRetriever;
-import org.docear.plugin.services.features.recommendations.DocumentView;
 
 import com.sun.jersey.core.util.StringKeyStringValueIgnoreCaseMultivaluedMap;
 
@@ -33,7 +29,8 @@ public class DocumentSearchController extends DocumentRetriever {
 	}
 
 	@Override
-	public DocumentView getView() throws NoSuchElementException {
-		return DocumentSearchView.getView();
-	}
+	public void refreshRecommendations() {
+		initializeDocumentSearcher();
+		refreshRecommendations(null);
+	}	
 }

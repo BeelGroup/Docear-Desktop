@@ -5,9 +5,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Font;
-import java.util.NoSuchElementException;
 
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -15,8 +13,6 @@ import javax.swing.border.LineBorder;
 
 import org.docear.plugin.services.features.recommendations.DocumentView;
 import org.docear.plugin.services.features.recommendations.model.RecommendationsModel;
-import org.freeplane.core.ui.components.UITools;
-import org.freeplane.features.mode.Controller;
 
 public class DocumentSearchView extends DocumentView {
 
@@ -25,29 +21,12 @@ public class DocumentSearchView extends DocumentView {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private static DocumentView view = null;
-
 	public DocumentSearchView(RecommendationsModel model) {
 		super(model);
 	}
 	
 	public DocumentSearchView() {
 		super();
-	}
-		
-	public static DocumentView getView() throws NoSuchElementException {
-		Container cont = Controller.getCurrentController().getViewController().getContentPane();
-		if(tabPane == null) {
-			tabPane = findTabbedPane(cont);
-		}
-		
-		if(view == null) {
-			view = new DocumentSearchView();
-			cont.remove(tabPane);
-			cont.add(view, BorderLayout.CENTER, 0);
-		}
-		
-		return view;
 	}
 	
 	@Override
@@ -112,20 +91,6 @@ public class DocumentSearchView extends DocumentView {
 		JLabel label = new JLabel("test");
 		
 		return label;
-	}
-
-	@Override
-	public void close() throws NoSuchElementException {
-		Container cont = Controller.getCurrentController().getViewController().getContentPane();
-		if(view == null) {
-		return;
-		}
-
-		cont.remove(view);
-		cont.add(tabPane, BorderLayout.CENTER, 0);
-		view = null;
-		((JComponent) cont).revalidate();
-		UITools.getFrame().repaint();	
 	}
 
 }

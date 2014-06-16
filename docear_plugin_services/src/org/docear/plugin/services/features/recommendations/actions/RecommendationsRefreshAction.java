@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.ImageIcon;
 
 import org.docear.plugin.services.ServiceController;
+import org.docear.plugin.services.features.recommendations.DocumentRetriever;
 import org.docear.plugin.services.features.recommendations.RecommendationsController;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.util.TextUtils;
@@ -33,7 +34,7 @@ public class RecommendationsRefreshAction extends AFreeplaneAction {
 		setEnabled();
 	}
 
-	public void actionPerformed(ActionEvent e) {
+	public void actionPerformed(ActionEvent e) {		
 		RecommendationsController.getController().refreshRecommendations();
 	}
 

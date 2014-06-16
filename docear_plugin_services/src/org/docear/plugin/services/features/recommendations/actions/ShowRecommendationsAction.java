@@ -3,7 +3,9 @@ package org.docear.plugin.services.features.recommendations.actions;
 import java.awt.event.ActionEvent;
 
 import org.docear.plugin.services.ServiceController;
+import org.docear.plugin.services.features.recommendations.DocumentView;
 import org.docear.plugin.services.features.recommendations.RecommendationsController;
+import org.docear.plugin.services.features.recommendations.view.RecommendationsView;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.plugin.workspace.components.menu.CheckEnableOnPopup;
 
@@ -28,7 +30,8 @@ public class ShowRecommendationsAction extends AFreeplaneAction {
 
 	public void actionPerformed(ActionEvent e) {
 //		ModeController modeController = Controller.getCurrentController().getModeController(DocearRecommendationsModeController.MODENAME);
-//		Controller.getCurrentController().selectMode(modeController);
+//		Controller.getCurrentController().selectMode(modeController);	
+		RecommendationsController.initializeRecommendations();
 		RecommendationsController.getController().refreshRecommendations();
 
 	}
