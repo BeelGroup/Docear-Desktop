@@ -30,8 +30,7 @@ public class ShowRecommendationsAction extends AFreeplaneAction {
 
 	public void actionPerformed(ActionEvent e) {
 //		ModeController modeController = Controller.getCurrentController().getModeController(DocearRecommendationsModeController.MODENAME);
-//		Controller.getCurrentController().selectMode(modeController);	
-		RecommendationsController.initializeRecommendations();
+//		Controller.getCurrentController().selectMode(modeController);		
 		RecommendationsController.getController().refreshRecommendations();
 
 	}

@@ -40,13 +40,12 @@ public class DocumentSearchView extends DocumentView {
 		JLabel containerTitle = new JLabel("<html><b>"+title+"</b></html>");
 		containerTitle.setFont(containerTitle.getFont().deriveFont(Font.BOLD, 18));
 		
-		containerPanel.add(getSearchPanel(), BorderLayout.NORTH);
-		containerPanel.add(containerTitle, BorderLayout.CENTER);
+		containerPanel.add(containerTitle, BorderLayout.NORTH);
 		
 		panel.setBackground(Color.WHITE);
 		panel.setBorder(new LineBorder(Color.LIGHT_GRAY, 1, true));
 		panel.setLayout(new ListLayoutManager());		
-		containerPanel.add(panel, BorderLayout.SOUTH);
+		containerPanel.add(panel, BorderLayout.CENTER);
 		
 		this.add(getNewButtonBar(), BorderLayout.NORTH);
 		this.add(containerPanel, BorderLayout.CENTER);
@@ -57,27 +56,19 @@ public class DocumentSearchView extends DocumentView {
 	
 	@Override
 	protected Container getNewEmptyContainerComponent() {
-		JPanel containerPanel = new JPanel();
-		containerPanel.setLayout(new BorderLayout());
-		containerPanel.setBackground(Color.WHITE);
-		containerPanel.setBorder(new EmptyBorder(0, 10, 0, 0));
 		JPanel panel = new JPanel();
-				
-		JLabel containerTitle = new JLabel("<html><b>BLAAAA</b></html>");
-		containerTitle.setFont(containerTitle.getFont().deriveFont(Font.BOLD, 18));
+		panel.setLayout(new ListLayoutManager()); 
+		panel.add(getSearchPanel());
 		
-		containerPanel.add(getSearchPanel(), BorderLayout.NORTH);
-		containerPanel.add(containerTitle, BorderLayout.CENTER);
-		
-		panel.setBackground(Color.WHITE);
-		panel.setBorder(new LineBorder(Color.LIGHT_GRAY, 1, true));
-		panel.setLayout(new ListLayoutManager());		
-		containerPanel.add(panel, BorderLayout.SOUTH);
-		
+		JPanel documentListPanel = new JPanel();
+		documentListPanel.setBackground(Color.white);
+		documentListPanel.setLayout(new ListLayoutManager());
+		documentListPanel.setBorder(new LineBorder(Color.GRAY, 1));
 		this.add(getNewButtonBar(), BorderLayout.NORTH);
-		this.add(containerPanel, BorderLayout.CENTER);
-		this.add(getStarBar(), BorderLayout.SOUTH);
+		this.add(panel, BorderLayout.CENTER);
+		panel.add(documentListPanel);
 		
+		//this.add(panel);
 		return panel;
 	}
 
