@@ -28,7 +28,6 @@ public class ShowDocumentSearchAction extends AFreeplaneAction {
 
 	public void actionPerformed(ActionEvent e) {
 		DocumentSearchController.getController().refreshRecommendations();
-
 	}
 
 }

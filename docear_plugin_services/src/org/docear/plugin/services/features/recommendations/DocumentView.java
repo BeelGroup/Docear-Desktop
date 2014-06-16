@@ -71,6 +71,7 @@ public abstract class DocumentView extends JPanel {
 	}
 	
 	protected abstract Container getNewRecommandationContainerComponent(String title);
+	protected abstract Container getNewEmptyContainerComponent();
 //	public abstract void close();
 	
 	protected static JTabbedPane findTabbedPane(Container cont) throws NoSuchElementException {
@@ -93,7 +94,6 @@ public abstract class DocumentView extends JPanel {
 		
 		cont.remove(this);
 		cont.add(tabPane, BorderLayout.CENTER, 0);
-//		this = null;
 		((JComponent) cont).revalidate();
 		UITools.getFrame().repaint();
 	}
@@ -341,19 +341,7 @@ public abstract class DocumentView extends JPanel {
 		panel.add(closeButton);
 		return panel;
 	}
-
-	private Container getNewEmptyContainerComponent() {
-		JPanel panel = new JPanel();
-		panel.setBackground(Color.white);
-		panel.setLayout(new ListLayoutManager());
-		panel.setBorder(new LineBorder(Color.GRAY, 1));
-		this.add(getNewButtonBar(), BorderLayout.NORTH);
-		this.add(panel, BorderLayout.CENTER);
-		//this.add(panel);
-		return panel;
-	}
-
-	
+		
 	private Component getNoRecommendationsComponent(String message) {
 		return new NoRecommendations(message);
 		}

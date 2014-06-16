@@ -62,6 +62,16 @@ public class RecommendationsView extends DocumentView {
 		
 		return panel;
 	}
-
 	
+	@Override
+	protected Container getNewEmptyContainerComponent() {
+		JPanel panel = new JPanel();
+		panel.setBackground(Color.white);
+		panel.setLayout(new ListLayoutManager());
+		panel.setBorder(new LineBorder(Color.GRAY, 1));
+		this.add(getNewButtonBar(), BorderLayout.NORTH);
+		this.add(panel, BorderLayout.CENTER);
+		//this.add(panel);
+		return panel;
+	}	
 }
