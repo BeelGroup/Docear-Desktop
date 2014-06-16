@@ -31,9 +31,9 @@ import org.docear.plugin.services.features.documentretrieval.model.DocumentEntry
 import org.docear.plugin.services.features.documentretrieval.model.DocumentModelNode;
 import org.docear.plugin.services.features.documentretrieval.model.DocumentsModel;
 import org.docear.plugin.services.features.documentretrieval.recommendations.view.RecommendationsView;
+import org.docear.plugin.services.features.documentretrieval.recommendations.workspace.ShowRecommendationsNode;
 import org.docear.plugin.services.features.documentretrieval.view.DocumentView;
 import org.docear.plugin.services.features.documentretrieval.workspace.DownloadFolderNode;
-import org.docear.plugin.services.features.documentretrieval.workspace.ShowRecommendationsNode;
 import org.docear.plugin.services.features.io.DocearConnectionProvider;
 import org.docear.plugin.services.features.io.DocearServiceResponse;
 import org.docear.plugin.services.features.io.DocearServiceResponse.Status;

@@ -1,4 +1,4 @@
-package org.docear.plugin.services.features.documentretrieval.workspace;
+package org.docear.plugin.services.features.documentretrieval.recommendations.workspace;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
