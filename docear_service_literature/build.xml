@@ -22,7 +22,13 @@
 	<property name="java_target_version" value="1.6" />
 	<property name="build.compiler" value="modern" />
 	<property name="classpath" value="${freeplane.jars}:${docear.bin}:${external.jars}" />
-
+	
+	<path id="build.classpath">
+	  <fileset dir="${basedir}">
+	     <include name="lib/*.jar"/>
+	  </fileset>
+	</path>
+	
 	<target name="clean">
 		<delete dir="build" />
 		<delete dir="dist" />
@@ -31,6 +37,7 @@
 	<target name="build" description="Compile docear_service_literature">
 		<mkdir dir="build" />
 		<javac includeantruntime="no" srcdir="${src}" destdir="${build}" classpath="${classpath}" debug="${debug}" source="${java_source_version}" target="${java_target_version}" encoding="utf8">
+			<classpath refid="build.classpath"></classpath>
 			<compilerarg value="-g" />
 			<compilerarg value="-Xlint:overrides" />
 			<compilerarg value="-Xlint:unchecked" />

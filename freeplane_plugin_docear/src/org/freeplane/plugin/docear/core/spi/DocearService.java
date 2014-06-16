@@ -12,12 +12,12 @@ public interface DocearService {
 	 * 
 	 * @param context
 	 */
-	public void start(DocearServiceContext context);
+	public void install(DocearServiceContext context);
 	
 	/**
 	 * 
 	 * @param context
 	 */
-	public void stop(DocearServiceContext context);
+	public void uninstall(DocearServiceContext context);
 
 }

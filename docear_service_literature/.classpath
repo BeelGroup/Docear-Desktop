@@ -4,5 +4,6 @@
 	<classpathentry kind="src" path="resources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/freeplane_plugin_docear"/>
+	<classpathentry kind="lib" path="lib/docear.pdf.inspector.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
