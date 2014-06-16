@@ -25,7 +25,7 @@ import org.docear.plugin.core.event.IDocearEventListener;
 import org.docear.plugin.core.util.FileUtilities;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.docear.plugin.services.ServiceController;
-import org.docear.plugin.services.features.recommendations.RecommendationsController;
+import org.docear.plugin.services.features.documentretrieval.recommendations.RecommendationsController;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;

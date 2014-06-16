@@ -6,8 +6,8 @@ import java.net.URL;
 import java.util.Collection;
 
 import org.docear.plugin.core.ALanguageController;
+import org.docear.plugin.services.features.documentretrieval.view.DocumentDownloadObserver;
 import org.docear.plugin.services.features.io.DocearProxyAuthenticator;
-import org.docear.plugin.services.features.recommendations.view.RecommendationDownloadObserver;
 import org.freeplane.core.resources.OptionPanelController;
 import org.freeplane.core.resources.OptionPanelController.PropertyLoadListener;
 import org.freeplane.core.resources.components.BooleanProperty;
@@ -20,7 +20,7 @@ public class ServiceConfiguration extends ALanguageController {
 	
 	public ServiceConfiguration(ModeController modeController) {
 		super();
-		RecommendationDownloadObserver.install();
+		DocumentDownloadObserver.install();
 		addPropertiesToOptionPanel(modeController);
 	}
 
