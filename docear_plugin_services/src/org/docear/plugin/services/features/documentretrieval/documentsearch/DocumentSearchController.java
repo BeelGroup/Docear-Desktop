@@ -11,25 +11,33 @@ import com.sun.jersey.core.util.StringKeyStringValueIgnoreCaseMultivaluedMap;
 public class DocumentSearchController extends DocumentRetrievalController {
 	
 	private final static DocumentSearchController controller = new DocumentSearchController();
+	private String query = null;
 	
 	public final static DocumentSearchController getController() {
 		return controller;
 	}
 	
+	public void setQuery(String query) {
+		this.query = query;
+	}
+	
 	@Override
 	protected DocearServiceResponse getRequestResponse(String userName, boolean userRequest) {
-		String query = "docear";
-		
 		MultivaluedMap<String,String> params = new StringKeyStringValueIgnoreCaseMultivaluedMap();
 		
 		params.add("userName", userName);
 		params.add("number", "10");
 		
-		return ServiceController.getConnectionController().get("/documents/" + query + "/", params);
+		if (this.query != null) {
+			return ServiceController.getConnectionController().get("/documents/" + query + "/", params);
+		}
+		else {
+			return null;
+		}
 	}
 
 	@Override
-	public void refreshRecommendations() {
+	public void refreshDocuments() {
 		initializeDocumentSearcher();
 		refreshDocuments(null);
 	}	

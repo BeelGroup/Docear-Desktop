@@ -74,7 +74,7 @@ public class RecommendationsController extends DocumentRetrievalController {
 	}
 
 	@Override
-	public void refreshRecommendations() {
+	public void refreshDocuments() {
 		initializeRecommendations();
 		refreshDocuments(null);
 	}

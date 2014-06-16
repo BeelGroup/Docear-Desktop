@@ -77,7 +77,7 @@ public abstract class DocumentRetrievalController extends ADocearServiceFeature 
 	protected static DocumentView view;
 	
 	protected abstract DocearServiceResponse getRequestResponse(String userName, boolean userRequest);
-	public abstract void refreshRecommendations();
+	public abstract void refreshDocuments();
 	
 	public static void initializeDocumentSearcher() {
 		if(view == null) {
@@ -112,6 +112,7 @@ public abstract class DocumentRetrievalController extends ADocearServiceFeature 
 			String userName = user.getUsername();
 			if (!CoreUtils.isEmpty(userName)) {
 				DocearServiceResponse response = getRequestResponse(userName, userRequest);
+				
 				if (response.getStatus() == Status.OK) {
 					try {
 						DocearXmlBuilder xmlBuilder = new DocearXmlBuilder();
@@ -234,6 +235,7 @@ public abstract class DocumentRetrievalController extends ADocearServiceFeature 
 						long l = System.currentTimeMillis();
 						Collection<DocumentEntry> recommendations = getNewDocuments(true);
 						LogUtils.info("recommendation request time: "+(System.currentTimeMillis()-l));
+						
 						model = new DocumentsModel(recommendations);
 						return model;
 					}
@@ -265,7 +267,7 @@ public abstract class DocumentRetrievalController extends ADocearServiceFeature 
 
 	public void sendReceiveConfirmation(final DocumentsModel model) {
 		DocearController.getController().getEventQueue().invoke(new Runnable() {
-			public void run() {
+			public void run() {				
 				DocearServiceResponse resp = ServiceController.getConnectionController().put("user/"+ServiceController.getCurrentUser().getName()+"/recommendations/"+ String.valueOf(model.getSetId())+"/", null);
 				if(resp.getStatus() != Status.OK) {
 					DocearLogger.info(resp.getContentAsString());
