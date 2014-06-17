@@ -333,11 +333,11 @@ public abstract class DocumentRetrievalController extends ADocearServiceFeature 
 	@Override
 	protected void installDefaults(ModeController modeController) {
 		AWorkspaceTreeNode wsRoot = WorkspaceController.getModeExtension(modeController).getModel().getRoot();
-		wsRoot.insertChildNode(new ShowRecommendationsNode(), 0);
 		wsRoot.insertChildNode(new ShowDocumentSearchNode(), 0);
+		wsRoot.insertChildNode(new ShowRecommendationsNode(), 1);		
 		downloadsNode = new DownloadFolderNode();
 		updateDownloadNode();
-		wsRoot.insertChildNode(downloadsNode, 1);
+		wsRoot.insertChildNode(downloadsNode,2);
 		UserAccountController.getController().addUserAccountChangeListener(new IUserAccountChangeListener() {
 			
 			public void activated(UserAccountChangeEvent event) {
