@@ -112,7 +112,9 @@ public abstract class DocumentRetrievalController extends ADocearServiceFeature 
 			String userName = user.getUsername();
 			if (!CoreUtils.isEmpty(userName)) {
 				DocearServiceResponse response = getRequestResponse(userName, userRequest);
-				
+				if (response == null) {
+					return null;
+				}
 				if (response.getStatus() == Status.OK) {
 					try {
 						DocearXmlBuilder xmlBuilder = new DocearXmlBuilder();

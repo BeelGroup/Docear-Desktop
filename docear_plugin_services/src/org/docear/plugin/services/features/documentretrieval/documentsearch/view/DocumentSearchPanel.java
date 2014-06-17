@@ -9,7 +9,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 
-import org.docear.plugin.services.features.documentretrieval.DocumentRetrievalController;
 import org.docear.plugin.services.features.documentretrieval.documentsearch.DocumentSearchController;
 import org.freeplane.core.util.TextUtils;
 
@@ -19,6 +18,8 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
 public class DocumentSearchPanel extends JPanel {
+	final private JTextArea searchQueryArea = new JTextArea();
+	
 	public DocumentSearchPanel() {
 		setLayout(new FormLayout(new ColumnSpec[] {
 				FormFactory.RELATED_GAP_COLSPEC,
@@ -34,14 +35,13 @@ public class DocumentSearchPanel extends JPanel {
 		setBackground(Color.WHITE);
 		setBorder(new EmptyBorder(0, 10, 0, 0));
 		
-		final JTextArea searchQueryArea = new JTextArea();
 		add(searchQueryArea, "2, 2, fill, fill");
 		
-		JButton searchButton = new JButton(TextUtils.getText("search"));
+		JButton searchButton = new JButton(TextUtils.getText("documentsearch.search"));
 		searchButton.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent e) {
-				String query = searchQueryArea.getText();
+				String query = getQueryText();
 				if (query == null) {
 					return;
 				}
@@ -58,6 +58,10 @@ public class DocumentSearchPanel extends JPanel {
 		});
 		add(searchButton, "4, 2");
 		
+	}
+	
+	public String getQueryText() {
+		return searchQueryArea.getText();
 	}
 
 	/**

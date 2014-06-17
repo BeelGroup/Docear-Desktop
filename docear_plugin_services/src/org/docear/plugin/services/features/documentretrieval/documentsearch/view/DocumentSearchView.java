@@ -18,6 +18,7 @@ public class DocumentSearchView extends DocumentView {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	final private DocumentSearchPanel documentSearchPanel = new DocumentSearchPanel();
 	
 	public DocumentSearchView(DocumentsModel model) {
 		super(model);
@@ -72,13 +73,17 @@ public class DocumentSearchView extends DocumentView {
 		return panel;
 	}
 
-	private Component getSearchPanel() {
+	public Component getSearchPanel() {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
-		panel.add(getNewButtonBar(), BorderLayout.NORTH);
-		panel.add(new DocumentSearchPanel(), BorderLayout.CENTER);
+		panel.add(getNewButtonBar(), BorderLayout.NORTH);		
+		panel.add(documentSearchPanel, BorderLayout.CENTER);
 //		return new DocumentSearchPanel();
 		return panel;
+	}
+	
+	public String getQueryText() {
+		return this.documentSearchPanel.getQueryText();
 	}
 
 }

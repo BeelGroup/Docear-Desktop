@@ -6,6 +6,9 @@ import java.util.Iterator;
 import javax.swing.event.TreeModelListener;
 
 import org.docear.plugin.services.ServiceController;
+import org.docear.plugin.services.features.documentretrieval.DocumentRetrievalController;
+import org.docear.plugin.services.features.documentretrieval.documentsearch.view.DocumentSearchView;
+import org.docear.plugin.services.features.documentretrieval.view.DocumentView;
 import org.freeplane.core.util.TextUtils;
 
 public class DocumentsModel {
@@ -26,7 +29,17 @@ public class DocumentsModel {
 	private void parseRecommendations(Collection<DocumentEntry> recommendations) {
 		if(recommendations == null) {
 			if(ServiceController.getCurrentUser().isRecommendationsEnabled()) {
-				setRoot(DocumentModelNode.createNoRecommendationsNode(TextUtils.getText("recommendations.error.no_recommendations")));
+				if (DocumentRetrievalController.getView() != null && DocumentRetrievalController.getView() instanceof DocumentSearchView) {
+					if (((DocumentSearchView) DocumentRetrievalController.getView()).getQueryText().trim().length() == 0) {
+						setRoot(DocumentModelNode.createNoRecommendationsNode(TextUtils.getText("documentsearch.error.no_search_terms")));
+					}
+					else {
+						setRoot(DocumentModelNode.createNoRecommendationsNode(TextUtils.getText("documentsearch.error.no_search_documents")));
+					}
+				}
+				else {
+					setRoot(DocumentModelNode.createNoRecommendationsNode(TextUtils.getText("recommendations.error.no_recommendations")));
+				}
 			}
 			else {
 				setRoot(DocumentModelNode.createNoServiceNode());
@@ -51,7 +64,13 @@ public class DocumentsModel {
 		}
 		
 		if(recommendations.isEmpty()) {
-			getRootNode().insert(DocumentModelNode.createNoRecommendationsNode(TextUtils.getText("recommendations.error.no_recommendations")));
+			DocumentView view = DocumentRetrievalController.getView();
+			if (DocumentRetrievalController.getView() != null && DocumentRetrievalController.getView() instanceof DocumentSearchView) {
+				getRootNode().insert(DocumentModelNode.createNoRecommendationsNode(TextUtils.getText("documentsearch.error.no_search_terms")));
+			}
+			else {
+				getRootNode().insert(DocumentModelNode.createNoRecommendationsNode(TextUtils.getText("recommendations.error.no_recommendations")));
+			}
 		} 
 		else {
 			while (entries.hasNext()) {
