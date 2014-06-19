@@ -4,13 +4,31 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.io.InputStreamReader;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
+import org.docear.plugin.services.ServiceController;
 import org.docear.plugin.services.features.documentretrieval.model.DocumentsModel;
 import org.docear.plugin.services.features.documentretrieval.view.DocumentView;
+import org.docear.plugin.services.features.io.DocearConnectionProvider;
+import org.docear.plugin.services.features.io.DocearServiceResponse;
+import org.docear.plugin.services.features.user.DocearUser;
+import org.docear.plugin.services.xml.DocearXmlBuilder;
+import org.docear.plugin.services.xml.DocearXmlElement;
+import org.docear.plugin.services.xml.DocearXmlRootElement;
+import org.freeplane.core.util.LogUtils;
+import org.freeplane.n3.nanoxml.IXMLParser;
+import org.freeplane.n3.nanoxml.IXMLReader;
+import org.freeplane.n3.nanoxml.StdXMLReader;
+import org.freeplane.n3.nanoxml.XMLParserFactory;
 
 public class DocumentSearchView extends DocumentView {
 
@@ -18,7 +36,7 @@ public class DocumentSearchView extends DocumentView {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	final private DocumentSearchPanel documentSearchPanel = new DocumentSearchPanel();
+	private DocumentSearchPanel documentSearchPanel;
 	
 	public DocumentSearchView(DocumentsModel model) {
 		super(model);
@@ -76,13 +94,54 @@ public class DocumentSearchView extends DocumentView {
 	public Component getSearchPanel() {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
-		panel.add(getNewButtonBar(), BorderLayout.NORTH);		
+		panel.add(getNewButtonBar(), BorderLayout.NORTH);
+		documentSearchPanel = new DocumentSearchPanel(getSearchModel());
 		panel.add(documentSearchPanel, BorderLayout.CENTER);
-//		return new DocumentSearchPanel();
 		return panel;
 	}
 	
+	private String[] getSearchModel() {
+		final DocearUser user = ServiceController.getCurrentUser();		
+		if (user == null) {
+			return null;
+		}
+		
+		ExecutorService executor = Executors.newSingleThreadExecutor();
+		Future<String> task = executor.submit(new Callable<String>() {
+			public String call() throws Exception {
+				try {
+    				DocearServiceResponse response = ServiceController.getConnectionController().get("/user/"+user.getUsername()+"/searchmodel/");
+    				
+    				DocearXmlBuilder xmlBuilder = new DocearXmlBuilder();
+    				IXMLReader reader = new StdXMLReader(new InputStreamReader(response.getContent(), "UTF8"));
+    				IXMLParser parser = XMLParserFactory.createDefaultXMLParser();
+    				parser.setBuilder(xmlBuilder);
+    				parser.setReader(reader);
+    				parser.parse();
+    				DocearXmlRootElement result = (DocearXmlRootElement) xmlBuilder.getRoot();
+    				
+    				DocearXmlElement element = result.find("searchmodel");
+					return element.getContent().trim();
+				}
+				catch(NullPointerException ignore) {}
+				return "";
+			}
+		});
+		try {
+			String model = task.get(DocearConnectionProvider.CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
+			return model.split(" ");
+		}
+		catch(Exception e) {
+			LogUtils.warn(e);
+		}
+		
+		return null;
+	}
+	
 	public String getQueryText() {
+		if (this.documentSearchPanel == null) {
+			return "";
+		}
 		return this.documentSearchPanel.getQueryText();
 	}
 

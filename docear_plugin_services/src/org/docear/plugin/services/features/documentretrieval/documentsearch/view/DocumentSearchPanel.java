@@ -1,6 +1,7 @@
 package org.docear.plugin.services.features.documentretrieval.documentsearch.view;
 
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -20,7 +21,7 @@ import com.jgoodies.forms.layout.RowSpec;
 public class DocumentSearchPanel extends JPanel {
 	final private JTextArea searchQueryArea = new JTextArea();
 	
-	public DocumentSearchPanel() {
+	public DocumentSearchPanel(String[] searchModel) {
 		setLayout(new FormLayout(new ColumnSpec[] {
 				FormFactory.RELATED_GAP_COLSPEC,
 				ColumnSpec.decode("default:grow"),
@@ -30,7 +31,7 @@ public class DocumentSearchPanel extends JPanel {
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,}));
+				RowSpec.decode("min:grow"),}));
 		
 		setBackground(Color.WHITE);
 		setBorder(new EmptyBorder(0, 10, 0, 0));
@@ -58,8 +59,32 @@ public class DocumentSearchPanel extends JPanel {
 		});
 		add(searchButton, "4, 2");
 		
+		if (searchModel != null) {
+    		JPanel panel = getButtonPanel(searchModel);
+    		add(panel, "2, 4, 3, 1, fill, fill");
+		}
 	}
 	
+	private JPanel getButtonPanel(String[] searchModel) {
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+		buttonPanel.setBorder(new EmptyBorder(0, 10, 10, 10));	
+		buttonPanel.setBackground(Color.WHITE);
+
+		for (String s : searchModel) {
+			JButton searchTermButton = new JButton(s);
+			searchTermButton.addActionListener(new ActionListener() {				
+				public void actionPerformed(ActionEvent e) {
+					searchQueryArea.setText(searchQueryArea.getText()+" "+e.getActionCommand());
+				}
+			});			
+			buttonPanel.add(searchTermButton);
+		}
+		return buttonPanel;
+	}
+
+
+
 	public String getQueryText() {
 		return searchQueryArea.getText();
 	}
