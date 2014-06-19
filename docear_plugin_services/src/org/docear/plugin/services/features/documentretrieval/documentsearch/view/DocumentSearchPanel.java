@@ -1,6 +1,7 @@
 package org.docear.plugin.services.features.documentretrieval.documentsearch.view;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -80,6 +81,7 @@ public class DocumentSearchPanel extends JPanel {
 			});			
 			buttonPanel.add(searchTermButton);
 		}
+		buttonPanel.setMinimumSize(new Dimension(0, 100));
 		return buttonPanel;
 	}
 

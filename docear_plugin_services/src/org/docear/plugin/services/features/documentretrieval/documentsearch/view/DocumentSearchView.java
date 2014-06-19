@@ -124,11 +124,14 @@ public class DocumentSearchView extends DocumentView {
 					return element.getContent().trim();
 				}
 				catch(NullPointerException ignore) {}
-				return "";
+				return null;
 			}
 		});
 		try {
 			String model = task.get(DocearConnectionProvider.CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
+			if (model == null) {
+				return null;
+			}
 			return model.split(" ");
 		}
 		catch(Exception e) {
