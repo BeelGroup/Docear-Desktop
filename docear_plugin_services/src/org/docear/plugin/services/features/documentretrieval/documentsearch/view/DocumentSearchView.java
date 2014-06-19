@@ -94,7 +94,7 @@ public class DocumentSearchView extends DocumentView {
 	public Component getSearchPanel() {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
-		panel.add(getNewButtonBar(), BorderLayout.NORTH);
+		panel.add(getNewButtonBar(false), BorderLayout.NORTH);
 		documentSearchPanel = new DocumentSearchPanel(getSearchModel());
 		panel.add(documentSearchPanel, BorderLayout.CENTER);
 		return panel;

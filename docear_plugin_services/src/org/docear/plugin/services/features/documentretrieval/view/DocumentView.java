@@ -274,7 +274,7 @@ public abstract class DocumentView extends JPanel {
 		return new StarPanel(evaluationLabel, recSetId);
 	}
 
-	protected Component getNewButtonBar() {
+	protected Component getNewButtonBar(boolean showRefreshButton) {
 		JPanel panel = new JPanel(new LayoutManager() {
 			
 			public void removeLayoutComponent(Component comp) {				
@@ -320,18 +320,20 @@ public abstract class DocumentView extends JPanel {
 		});
 		panel.setBackground(Color.white);
 		panel.setBorder(new EmptyBorder(5, 5, 0, 5));
-		JButton refreshButton = new JButton(new ImageIcon(DocumentEntryComponent.class.getResource("/icons/view-refresh-7_32x32.png")));
-		refreshButton.setMinimumSize(new Dimension(50, 50));
-		refreshButton.setPreferredSize(new Dimension(50, 50));
-		refreshButton.addActionListener(new ActionListener() {			
-			public void actionPerformed(ActionEvent e) {
-				RecommendationsController.getController().refreshDocuments();
-			}
-		});
-		refreshButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		refreshButton.setToolTipText(TextUtils.getText("recommendations.refresh.title"));
-		panel.add(refreshButton);
 		
+		if (showRefreshButton) {
+    		JButton refreshButton = new JButton(new ImageIcon(DocumentEntryComponent.class.getResource("/icons/view-refresh-7_32x32.png")));
+    		refreshButton.setMinimumSize(new Dimension(50, 50));
+    		refreshButton.setPreferredSize(new Dimension(50, 50));
+    		refreshButton.addActionListener(new ActionListener() {			
+    			public void actionPerformed(ActionEvent e) {
+    				RecommendationsController.getController().refreshDocuments();
+    			}
+    		});
+    		refreshButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    		refreshButton.setToolTipText(TextUtils.getText("recommendations.refresh.title"));
+    		panel.add(refreshButton);
+		}
 		
 		JButton closeButton = new JButton(new ImageIcon(DocumentEntryComponent.class.getResource("/icons/window-close-2_32x32.png")));
 		closeButton.setMinimumSize(new Dimension(50, 50));

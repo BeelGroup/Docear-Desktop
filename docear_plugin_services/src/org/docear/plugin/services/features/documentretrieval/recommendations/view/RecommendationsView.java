@@ -37,7 +37,7 @@ public class RecommendationsView extends DocumentView {
 		panel.setLayout(new ListLayoutManager());		
 		containerPanel.add(panel, BorderLayout.CENTER);
 		
-		this.add(getNewButtonBar(), BorderLayout.NORTH);
+		this.add(getNewButtonBar(true), BorderLayout.NORTH);
 		this.add(containerPanel, BorderLayout.CENTER);
 		this.add(getStarBar(), BorderLayout.SOUTH);
 		
@@ -50,7 +50,7 @@ public class RecommendationsView extends DocumentView {
 		panel.setBackground(Color.white);
 		panel.setLayout(new ListLayoutManager());
 		panel.setBorder(new LineBorder(Color.GRAY, 1));		
-		this.add(getNewButtonBar(), BorderLayout.NORTH);
+		this.add(getNewButtonBar(true), BorderLayout.NORTH);
 		this.add(panel, BorderLayout.CENTER);
 		//this.add(panel);
 		return panel;
