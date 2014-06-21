@@ -16,6 +16,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import org.docear.plugin.services.ServiceController;
+import org.docear.plugin.services.features.documentretrieval.documentsearch.SearchModel;
 import org.docear.plugin.services.features.documentretrieval.model.DocumentsModel;
 import org.docear.plugin.services.features.documentretrieval.view.DocumentView;
 import org.docear.plugin.services.features.io.DocearConnectionProvider;
@@ -95,20 +96,26 @@ public class DocumentSearchView extends DocumentView {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
 		panel.add(getNewButtonBar(false), BorderLayout.NORTH);
-		documentSearchPanel = new DocumentSearchPanel(getSearchModel());
+		SearchModel searchModel = getSearchModel();
+		if (searchModel != null && searchModel.getId() != null) {
+			documentSearchPanel = new DocumentSearchPanel(searchModel.getModel().split(" "), searchModel.getId());
+		}
+		else {
+			documentSearchPanel = new DocumentSearchPanel();
+		}
 		panel.add(documentSearchPanel, BorderLayout.CENTER);
 		return panel;
 	}
 	
-	private String[] getSearchModel() {
+	private SearchModel getSearchModel() {
 		final DocearUser user = ServiceController.getCurrentUser();		
 		if (user == null) {
 			return null;
 		}
 		
 		ExecutorService executor = Executors.newSingleThreadExecutor();
-		Future<String> task = executor.submit(new Callable<String>() {
-			public String call() throws Exception {
+		Future<SearchModel> task = executor.submit(new Callable<SearchModel>() {
+			public SearchModel call() throws Exception {
 				try {
     				DocearServiceResponse response = ServiceController.getConnectionController().get("/user/"+user.getUsername()+"/searchmodel/");
     				
@@ -121,18 +128,15 @@ public class DocumentSearchView extends DocumentView {
     				DocearXmlRootElement result = (DocearXmlRootElement) xmlBuilder.getRoot();
     				
     				DocearXmlElement element = result.find("searchmodel");
-					return element.getContent().trim();
+    				SearchModel searchModel = new SearchModel(Long.valueOf(element.getAttributeValue("id")), element.getContent().trim());
+					return searchModel;
 				}
 				catch(NullPointerException ignore) {}
 				return null;
 			}
 		});
 		try {
-			String model = task.get(DocearConnectionProvider.CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
-			if (model == null) {
-				return null;
-			}
-			return model.split(" ");
+			return task.get(DocearConnectionProvider.CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);		
 		}
 		catch(Exception e) {
 			LogUtils.warn(e);

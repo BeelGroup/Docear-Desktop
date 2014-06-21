@@ -22,7 +22,11 @@ import com.jgoodies.forms.layout.RowSpec;
 public class DocumentSearchPanel extends JPanel {
 	final private JTextArea searchQueryArea = new JTextArea();
 	
-	public DocumentSearchPanel(String[] searchModel) {
+	public DocumentSearchPanel() {
+		this(null, null);
+	}
+	
+	public DocumentSearchPanel(String[] searchModel, final Long searchModelId) {
 		setLayout(new FormLayout(new ColumnSpec[] {
 				FormFactory.RELATED_GAP_COLSPEC,
 				ColumnSpec.decode("default:grow"),
@@ -53,6 +57,7 @@ public class DocumentSearchPanel extends JPanel {
 					return;
 				}
 				
+				DocumentSearchController.getController().setsearchModelId(searchModelId);
 				DocumentSearchController.getController().setQuery(query);
 				DocumentSearchController.getController().refreshDocuments();
 				
@@ -65,7 +70,7 @@ public class DocumentSearchPanel extends JPanel {
     		add(panel, "2, 4, 3, 1, fill, fill");
 		}
 	}
-	
+
 	private JPanel getButtonPanel(String[] searchModel) {
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));

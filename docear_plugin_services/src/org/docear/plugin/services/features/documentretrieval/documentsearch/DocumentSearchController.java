@@ -12,6 +12,7 @@ public class DocumentSearchController extends DocumentRetrievalController {
 	
 	private final static DocumentSearchController controller = new DocumentSearchController();
 	private String query = null;
+	private Long searchModelId = null;
 	
 	public final static DocumentSearchController getController() {
 		return controller;
@@ -21,10 +22,17 @@ public class DocumentSearchController extends DocumentRetrievalController {
 		this.query = query;
 	}
 	
+	public void setsearchModelId(long searchModelId) {
+		this.searchModelId = searchModelId;
+	}
+	
 	@Override
 	protected DocearServiceResponse getRequestResponse(String userName, boolean userRequest) {
 		MultivaluedMap<String,String> params = new StringKeyStringValueIgnoreCaseMultivaluedMap();
 		
+		if (searchModelId != null) {
+			params.add("searchModelId", String.valueOf(this.searchModelId));
+		}
 		params.add("userName", userName);
 		params.add("number", "10");
 		
