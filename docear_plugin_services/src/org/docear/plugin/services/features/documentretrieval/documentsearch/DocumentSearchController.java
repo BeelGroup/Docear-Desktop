@@ -11,6 +11,7 @@ import javax.ws.rs.core.MultivaluedMap;
 
 import org.docear.plugin.services.ServiceController;
 import org.docear.plugin.services.features.documentretrieval.DocumentRetrievalController;
+import org.docear.plugin.services.features.documentretrieval.documentsearch.actions.ShowDocumentSearchAction;
 import org.docear.plugin.services.features.io.DocearConnectionProvider;
 import org.docear.plugin.services.features.io.DocearServiceResponse;
 import org.docear.plugin.services.features.user.DocearUser;
@@ -36,7 +37,14 @@ public class DocumentSearchController extends DocumentRetrievalController {
 			controller = new DocumentSearchController();
 		}
 		
-		return (DocumentSearchController) controller;
+		if (controller instanceof DocumentSearchController) {
+			return (DocumentSearchController) controller;
+		}
+		else {
+			controller.closeDocumentView();
+			new ShowDocumentSearchAction().actionPerformed(null);
+			return (DocumentSearchController) controller;
+		}
 	}
 	
 	public void setQuery(String query) {

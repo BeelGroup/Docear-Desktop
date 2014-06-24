@@ -345,7 +345,7 @@ public abstract class DocumentView extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				SwingUtilities.invokeLater(new  Runnable() {
 					public void run() {
-						DocumentRetrievalController.getController().closeRecommendationView();
+						DocumentRetrievalController.getController().closeDocumentView();
 					}
 				});
 			}

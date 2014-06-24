@@ -302,8 +302,9 @@ public abstract class DocumentRetrievalController extends ADocearServiceFeature 
 		return model;
 	}
 	
-	public void closeRecommendationView() {
+	public void closeDocumentView() {
 		shutdown();
+		controller = null;
 		view.close();
 	}
 	

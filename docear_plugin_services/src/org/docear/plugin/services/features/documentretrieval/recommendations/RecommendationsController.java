@@ -8,6 +8,7 @@ import org.docear.plugin.core.logging.DocearLogger;
 import org.docear.plugin.services.ServiceController;
 import org.docear.plugin.services.features.documentretrieval.DocumentRetrievalController;
 import org.docear.plugin.services.features.documentretrieval.model.DocumentEntry;
+import org.docear.plugin.services.features.documentretrieval.recommendations.actions.ShowRecommendationsAction;
 import org.docear.plugin.services.features.documentretrieval.view.ServiceWindowListener;
 import org.docear.plugin.services.features.io.DocearServiceResponse;
 import org.docear.plugin.services.features.user.DocearUser;
@@ -24,7 +25,14 @@ public class RecommendationsController extends DocumentRetrievalController {
 			controller = new RecommendationsController();
 		}
 		
-		return (RecommendationsController) controller;
+		if (controller instanceof RecommendationsController) {
+			return (RecommendationsController) controller;
+		}
+		else {
+			controller.closeDocumentView();
+			new ShowRecommendationsAction().actionPerformed(null);
+			return (RecommendationsController) controller;
+		}
 	}
 
 	public void startRecommendationsRequest() {
