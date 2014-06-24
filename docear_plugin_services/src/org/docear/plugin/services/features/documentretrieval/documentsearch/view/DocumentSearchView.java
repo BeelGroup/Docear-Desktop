@@ -107,9 +107,9 @@ public class DocumentSearchView extends DocumentView {
 			page.setBackground(Color.WHITE);
 			page.addActionListener(new ActionListener() {
 				
-				public void actionPerformed(ActionEvent arg0) {
-					// TODO Auto-generated method stub
-					
+				public void actionPerformed(ActionEvent e) {
+					DocumentSearchController.getController().setPage(Integer.valueOf(e.getActionCommand()));
+					DocumentSearchController.getController().search(DocumentSearchController.getController().getQuery());
 				}
 			});
 			paginator.add(page);

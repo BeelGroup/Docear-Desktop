@@ -117,6 +117,32 @@ public class DocumentSearchController extends DocumentRetrievalController {
 		
 		return null;
 	}
+	
+	public void search(String query) {
+		this.query = query;
+
+		if (query == null) {
+			return;
+		}
+			
+		query = query.trim().toLowerCase();
+		if (query.length() == 0) {
+			return;
+		}
+		
+		DocumentSearchController.getController().setsearchModelId(searchModelId);
+		DocumentSearchController.getController().setQuery(query);
+		DocumentSearchController.getController().refreshDocuments();
+	}
+
+
+	public int getPage() {
+		return page;
+	}
+
+	public void setPage(int page) {
+		this.page = page;
+	}
 
 	@Override
 	public void shutdown() {
