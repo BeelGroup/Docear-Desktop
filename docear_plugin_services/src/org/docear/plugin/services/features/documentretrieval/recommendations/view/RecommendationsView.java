@@ -56,4 +56,10 @@ public class RecommendationsView extends DocumentView {
 		return panel;
 	}
 
+	@Override
+	protected void addComponendAfterDocumentList(Container documentList) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

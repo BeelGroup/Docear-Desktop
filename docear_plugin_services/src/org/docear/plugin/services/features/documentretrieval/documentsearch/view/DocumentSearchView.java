@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.InputStreamReader;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -11,6 +13,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -86,7 +91,7 @@ public class DocumentSearchView extends DocumentView {
 		containerPanel.add(panel, BorderLayout.CENTER);
 		
 		this.add(getSearchPanel(), BorderLayout.NORTH);
-		this.add(containerPanel, BorderLayout.CENTER);
+		this.add(containerPanel, BorderLayout.CENTER);		
 		this.add(getStarBar(), BorderLayout.SOUTH);
 		
 		return panel;
@@ -150,6 +155,34 @@ public class DocumentSearchView extends DocumentView {
 			return "";
 		}
 		return this.documentSearchPanel.getQueryText();
+	}
+
+	
+	private Container getPaginator() {
+		JPanel paginator = new JPanel();		
+		paginator.setLayout(new BoxLayout(paginator,BoxLayout.X_AXIS));
+		paginator.setBackground(Color.WHITE);
+		paginator.add(Box.createHorizontalGlue());
+		for (int i=1; i<=10; i++) {
+			JButton page = new JButton(String.valueOf(i));
+			page.setBackground(Color.WHITE);
+			page.addActionListener(new ActionListener() {
+				
+				public void actionPerformed(ActionEvent arg0) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
+			paginator.add(page);
+		}
+		paginator.add(Box.createHorizontalGlue());
+		
+		return paginator;
+	}
+
+	@Override
+	protected void addComponendAfterDocumentList(Container documentList) {
+		documentList.add(getPaginator());
 	}
 
 }

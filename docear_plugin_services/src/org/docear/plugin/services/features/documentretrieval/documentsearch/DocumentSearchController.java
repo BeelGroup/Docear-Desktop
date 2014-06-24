@@ -22,7 +22,7 @@ public class DocumentSearchController extends DocumentRetrievalController {
 		this.query = query;
 	}
 	
-	public void setsearchModelId(long searchModelId) {
+	public void setsearchModelId(Long searchModelId) {
 		this.searchModelId = searchModelId;
 	}
 	

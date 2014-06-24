@@ -46,7 +46,7 @@ public class DocumentSearchPanel extends JPanel {
 		JButton searchButton = new JButton(TextUtils.getText("documentsearch.search"));
 		searchButton.addActionListener(new ActionListener() {
 			
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e) {	
 				String query = getQueryText();
 				if (query == null) {
 					return;

@@ -77,6 +77,7 @@ public abstract class DocumentView extends JPanel {
 	
 	protected abstract Container getNewRecommandationContainerComponent(String title);
 	protected abstract Container getNewEmptyContainerComponent();
+	protected abstract void addComponendAfterDocumentList(Container documentList);
 	
 	public void close() throws NoSuchElementException {
 		Container cont = Controller.getCurrentController().getViewController().getContentPane();
@@ -189,7 +190,9 @@ public abstract class DocumentView extends JPanel {
 				for (DocumentModelNode child : node.getChildren()) {
 					layoutModel(child, container);
 				}
-			}
+				
+				addComponendAfterDocumentList(container);
+			}			
 		}
 	}
 
