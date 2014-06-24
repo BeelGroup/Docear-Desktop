@@ -6,12 +6,6 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.InputStreamReader;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -20,21 +14,10 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import org.docear.plugin.services.ServiceController;
+import org.docear.plugin.services.features.documentretrieval.documentsearch.DocumentSearchController;
 import org.docear.plugin.services.features.documentretrieval.documentsearch.SearchModel;
 import org.docear.plugin.services.features.documentretrieval.model.DocumentsModel;
 import org.docear.plugin.services.features.documentretrieval.view.DocumentView;
-import org.docear.plugin.services.features.io.DocearConnectionProvider;
-import org.docear.plugin.services.features.io.DocearServiceResponse;
-import org.docear.plugin.services.features.user.DocearUser;
-import org.docear.plugin.services.xml.DocearXmlBuilder;
-import org.docear.plugin.services.xml.DocearXmlElement;
-import org.docear.plugin.services.xml.DocearXmlRootElement;
-import org.freeplane.core.util.LogUtils;
-import org.freeplane.n3.nanoxml.IXMLParser;
-import org.freeplane.n3.nanoxml.IXMLReader;
-import org.freeplane.n3.nanoxml.StdXMLReader;
-import org.freeplane.n3.nanoxml.XMLParserFactory;
 
 public class DocumentSearchView extends DocumentView {
 
@@ -91,7 +74,8 @@ public class DocumentSearchView extends DocumentView {
 		containerPanel.add(panel, BorderLayout.CENTER);
 		
 		this.add(getSearchPanel(), BorderLayout.NORTH);
-		this.add(containerPanel, BorderLayout.CENTER);		
+		this.add(containerPanel, BorderLayout.CENTER);
+		
 		this.add(getStarBar(), BorderLayout.SOUTH);
 		
 		return panel;
@@ -101,7 +85,8 @@ public class DocumentSearchView extends DocumentView {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
 		panel.add(getNewButtonBar(false), BorderLayout.NORTH);
-		SearchModel searchModel = getSearchModel();
+		
+		SearchModel searchModel = DocumentSearchController.getController().getSearchModel();
 		if (searchModel != null && searchModel.getId() != null) {
 			documentSearchPanel = new DocumentSearchPanel(searchModel.getModel().split(" "), searchModel.getId());
 		}
@@ -111,53 +96,7 @@ public class DocumentSearchView extends DocumentView {
 		panel.add(documentSearchPanel, BorderLayout.CENTER);
 		return panel;
 	}
-	
-	private SearchModel getSearchModel() {
-		final DocearUser user = ServiceController.getCurrentUser();		
-		if (user == null) {
-			return null;
-		}
 		
-		ExecutorService executor = Executors.newSingleThreadExecutor();
-		Future<SearchModel> task = executor.submit(new Callable<SearchModel>() {
-			public SearchModel call() throws Exception {
-				try {
-    				DocearServiceResponse response = ServiceController.getConnectionController().get("/user/"+user.getUsername()+"/searchmodel/");
-    				
-    				DocearXmlBuilder xmlBuilder = new DocearXmlBuilder();
-    				IXMLReader reader = new StdXMLReader(new InputStreamReader(response.getContent(), "UTF8"));
-    				IXMLParser parser = XMLParserFactory.createDefaultXMLParser();
-    				parser.setBuilder(xmlBuilder);
-    				parser.setReader(reader);
-    				parser.parse();
-    				DocearXmlRootElement result = (DocearXmlRootElement) xmlBuilder.getRoot();
-    				
-    				DocearXmlElement element = result.find("searchmodel");
-    				SearchModel searchModel = new SearchModel(Long.valueOf(element.getAttributeValue("id")), element.getContent().trim());
-					return searchModel;
-				}
-				catch(NullPointerException ignore) {}
-				return null;
-			}
-		});
-		try {
-			return task.get(DocearConnectionProvider.CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);		
-		}
-		catch(Exception e) {
-			LogUtils.warn(e);
-		}
-		
-		return null;
-	}
-	
-	public String getQueryText() {
-		if (this.documentSearchPanel == null) {
-			return "";
-		}
-		return this.documentSearchPanel.getQueryText();
-	}
-
-	
 	private Container getPaginator() {
 		JPanel paginator = new JPanel();		
 		paginator.setLayout(new BoxLayout(paginator,BoxLayout.X_AXIS));

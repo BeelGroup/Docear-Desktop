@@ -71,6 +71,8 @@ public abstract class DocumentRetrievalController extends ADocearServiceFeature 
 	private File downloadsFolder;
 	private FolderLinkNode downloadsNode;
 	
+	protected static DocumentRetrievalController controller;
+	
 	private Collection<DocumentEntry> autoRecommendations;
 	protected Boolean AUTO_RECOMMENDATIONS_LOCK = false;
 	
@@ -78,6 +80,15 @@ public abstract class DocumentRetrievalController extends ADocearServiceFeature 
 	
 	protected abstract DocearServiceResponse getRequestResponse(String userName, boolean userRequest);
 	public abstract void refreshDocuments();
+	
+
+	public static void setController(DocumentRetrievalController ctrl) {
+		controller = ctrl;
+	}
+	
+	public static DocumentRetrievalController getController() {
+		return controller;
+	}
 	
 	public static void initializeDocumentSearcher() {
 		if(view == null) {
@@ -292,6 +303,7 @@ public abstract class DocumentRetrievalController extends ADocearServiceFeature 
 	}
 	
 	public void closeRecommendationView() {
+		shutdown();
 		view.close();
 	}
 	
@@ -370,8 +382,5 @@ public abstract class DocumentRetrievalController extends ADocearServiceFeature 
 		}
 		downloadsNode.setPath(downloadsFolder.toURI());
 	}
-
-	@Override
-	public void shutdown() {
-	}
+	
 }

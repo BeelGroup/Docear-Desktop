@@ -42,12 +42,15 @@ public class DocumentSearchPanel extends JPanel {
 		setBorder(new EmptyBorder(0, 10, 0, 0));
 		
 		add(searchQueryArea, "2, 2, fill, fill");
+		searchQueryArea.setText(DocumentSearchController.getController().getQuery());
 		
 		JButton searchButton = new JButton(TextUtils.getText("documentsearch.search"));
 		searchButton.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent e) {	
-				String query = getQueryText();
+				String query = searchQueryArea.getText();
+				DocumentSearchController.getController().setQuery(query);
+				
 				if (query == null) {
 					return;
 				}
@@ -89,13 +92,7 @@ public class DocumentSearchPanel extends JPanel {
 		buttonPanel.setMinimumSize(new Dimension(0, 100));
 		return buttonPanel;
 	}
-
-
-
-	public String getQueryText() {
-		return searchQueryArea.getText();
-	}
-
+	
 	/**
 	 * 
 	 */

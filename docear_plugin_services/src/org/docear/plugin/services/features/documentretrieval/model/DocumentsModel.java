@@ -7,8 +7,8 @@ import javax.swing.event.TreeModelListener;
 
 import org.docear.plugin.services.ServiceController;
 import org.docear.plugin.services.features.documentretrieval.DocumentRetrievalController;
+import org.docear.plugin.services.features.documentretrieval.documentsearch.DocumentSearchController;
 import org.docear.plugin.services.features.documentretrieval.documentsearch.view.DocumentSearchView;
-import org.docear.plugin.services.features.documentretrieval.view.DocumentView;
 import org.freeplane.core.util.TextUtils;
 
 public class DocumentsModel {
@@ -30,7 +30,7 @@ public class DocumentsModel {
 		if(recommendations == null) {
 			if(ServiceController.getCurrentUser().isRecommendationsEnabled()) {
 				if (DocumentRetrievalController.getView() != null && DocumentRetrievalController.getView() instanceof DocumentSearchView) {
-					if (((DocumentSearchView) DocumentRetrievalController.getView()).getQueryText().trim().length() == 0) {
+					if (DocumentSearchController.getController().getQuery().trim().length() == 0) {
 						setRoot(DocumentModelNode.createNoRecommendationsNode(TextUtils.getText("documentsearch.error.no_search_terms")));
 					}
 					else {
@@ -63,8 +63,7 @@ public class DocumentsModel {
 			setRoot(DocumentModelNode.createRecommendationContainerNode());
 		}
 		
-		if(recommendations.isEmpty()) {
-			DocumentView view = DocumentRetrievalController.getView();
+		if(recommendations.isEmpty()) {			
 			if (DocumentRetrievalController.getView() != null && DocumentRetrievalController.getView() instanceof DocumentSearchView) {
 				getRootNode().insert(DocumentModelNode.createNoRecommendationsNode(TextUtils.getText("documentsearch.error.no_search_terms")));
 			}

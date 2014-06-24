@@ -330,7 +330,7 @@ public abstract class DocumentView extends JPanel {
     		refreshButton.setPreferredSize(new Dimension(50, 50));
     		refreshButton.addActionListener(new ActionListener() {			
     			public void actionPerformed(ActionEvent e) {
-    				RecommendationsController.getController().refreshDocuments();
+    				DocumentRetrievalController.getController().refreshDocuments();
     			}
     		});
     		refreshButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -345,7 +345,7 @@ public abstract class DocumentView extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				SwingUtilities.invokeLater(new  Runnable() {
 					public void run() {
-						RecommendationsController.getController().closeRecommendationView();
+						DocumentRetrievalController.getController().closeRecommendationView();
 					}
 				});
 			}

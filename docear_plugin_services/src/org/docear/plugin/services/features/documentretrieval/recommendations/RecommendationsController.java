@@ -19,10 +19,12 @@ import com.sun.jersey.core.util.StringKeyStringValueIgnoreCaseMultivaluedMap;
 
 public class RecommendationsController extends DocumentRetrievalController {
 
-	private final static RecommendationsController controller = new RecommendationsController();
-
 	public final static RecommendationsController getController() {
-		return controller;
+		if (controller == null) {
+			controller = new RecommendationsController();
+		}
+		
+		return (RecommendationsController) controller;
 	}
 
 	public void startRecommendationsRequest() {
@@ -77,6 +79,10 @@ public class RecommendationsController extends DocumentRetrievalController {
 	public void refreshDocuments() {
 		initializeRecommendations();
 		refreshDocuments(null);
+	}
+
+	@Override
+	public void shutdown() {
 	}
 
 }
