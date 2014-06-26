@@ -1,13 +1,11 @@
 package org.docear.plugin.services.features.documentretrieval.recommendations;
 
-import java.util.Collection;
-
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.docear.plugin.core.logging.DocearLogger;
 import org.docear.plugin.services.ServiceController;
 import org.docear.plugin.services.features.documentretrieval.DocumentRetrievalController;
-import org.docear.plugin.services.features.documentretrieval.model.DocumentEntry;
+import org.docear.plugin.services.features.documentretrieval.model.DocumentEntries;
 import org.docear.plugin.services.features.documentretrieval.recommendations.actions.ShowRecommendationsAction;
 import org.docear.plugin.services.features.documentretrieval.view.ServiceWindowListener;
 import org.docear.plugin.services.features.io.DocearServiceResponse;
@@ -48,8 +46,8 @@ public class RecommendationsController extends DocumentRetrievalController {
 			new Thread() {
 				public void run() {
 					try {
-						Collection<DocumentEntry> recommendations = RecommendationsController.getController().getNewDocuments(false);
-						if (recommendations.isEmpty()) {
+						DocumentEntries recommendations = RecommendationsController.getController().getNewDocuments(false);
+						if (recommendations.getDocumentEntries().isEmpty()) {
 							setAutoRecommendations(null);
 						}
 						else {

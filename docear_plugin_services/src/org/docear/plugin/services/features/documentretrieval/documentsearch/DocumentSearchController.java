@@ -29,7 +29,7 @@ import com.sun.jersey.core.util.StringKeyStringValueIgnoreCaseMultivaluedMap;
 public class DocumentSearchController extends DocumentRetrievalController {
 	private String query = "";
 	private int page = 1;
-	private Long searchModelId = null;
+	private Long searchModelId = null;	
 	private SearchModel searchModel = null;
 	
 	public final static DocumentSearchController getController() {
@@ -61,6 +61,9 @@ public class DocumentSearchController extends DocumentRetrievalController {
 		
 		if (searchModelId != null) {
 			params.add("searchModelId", String.valueOf(this.searchModelId));
+		}
+		if (getDocumentsSetId() != null) {
+			params.add("searchDocumentsSetId", String.valueOf(getDocumentsSetId()));
 		}
 		params.add("page", String.valueOf(page));
 		params.add("userName", userName);

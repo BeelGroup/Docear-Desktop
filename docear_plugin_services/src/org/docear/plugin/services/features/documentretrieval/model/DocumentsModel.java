@@ -1,6 +1,5 @@
 package org.docear.plugin.services.features.documentretrieval.model;
 
-import java.util.Collection;
 import java.util.Iterator;
 
 import javax.swing.event.TreeModelListener;
@@ -17,17 +16,17 @@ public class DocumentsModel {
 	private String evaluationLabel = "";
 	private int id = 0;
 	
-	public DocumentsModel(Collection<DocumentEntry> recommendations) {
+	public DocumentsModel(DocumentEntries documentEntries) {
 		new DocumentsModel();
-		parseRecommendations(recommendations);
+		parseRecommendations(documentEntries);
 	}
 	
 	public DocumentsModel() {
 		
 	}
 	
-	private void parseRecommendations(Collection<DocumentEntry> recommendations) {
-		if(recommendations == null) {
+	private void parseRecommendations(DocumentEntries documentEntries) {
+		if(documentEntries == null) {
 			if(ServiceController.getCurrentUser().isRecommendationsEnabled()) {
 				if (DocumentRetrievalController.getView() != null && DocumentRetrievalController.getView() instanceof DocumentSearchView) {
 					if (DocumentSearchController.getController().getQuery().trim().length() == 0) {
@@ -48,7 +47,7 @@ public class DocumentsModel {
 		}
 		
 		
-		Iterator<DocumentEntry> entries = recommendations.iterator();
+		Iterator<DocumentEntry> entries = documentEntries.getDocumentEntries().iterator();
 		// small hack: first element in collection is xml-element "recommendations"
 		DocumentEntry recommendationsElement = entries.next();
 		String rootTitle = recommendationsElement.getTitle();
@@ -63,7 +62,7 @@ public class DocumentsModel {
 			setRoot(DocumentModelNode.createRecommendationContainerNode());
 		}
 		
-		if(recommendations.isEmpty()) {			
+		if(documentEntries.getDocumentEntries().isEmpty()) {			
 			if (DocumentRetrievalController.getView() != null && DocumentRetrievalController.getView() instanceof DocumentSearchView) {
 				getRootNode().insert(DocumentModelNode.createNoRecommendationsNode(TextUtils.getText("documentsearch.error.no_search_terms")));
 			}

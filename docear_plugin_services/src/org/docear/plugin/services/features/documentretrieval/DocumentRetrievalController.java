@@ -5,10 +5,7 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.rmi.UnexpectedException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -27,7 +24,7 @@ import org.docear.plugin.services.ADocearServiceFeature;
 import org.docear.plugin.services.ServiceController;
 import org.docear.plugin.services.features.documentretrieval.documentsearch.view.DocumentSearchView;
 import org.docear.plugin.services.features.documentretrieval.documentsearch.workspace.ShowDocumentSearchNode;
-import org.docear.plugin.services.features.documentretrieval.model.DocumentEntry;
+import org.docear.plugin.services.features.documentretrieval.model.DocumentEntries;
 import org.docear.plugin.services.features.documentretrieval.model.DocumentModelNode;
 import org.docear.plugin.services.features.documentretrieval.model.DocumentsModel;
 import org.docear.plugin.services.features.documentretrieval.recommendations.view.RecommendationsView;
@@ -71,9 +68,12 @@ public abstract class DocumentRetrievalController extends ADocearServiceFeature 
 	private File downloadsFolder;
 	private FolderLinkNode downloadsNode;
 	
+	protected int documentsAvailable;
+	private Integer documentsSetId;
+	
 	protected static DocumentRetrievalController controller;
 	
-	private Collection<DocumentEntry> autoRecommendations;
+	private DocumentEntries autoRecommendations;
 	protected Boolean AUTO_RECOMMENDATIONS_LOCK = false;
 	
 	protected static DocumentView view;
@@ -110,7 +110,7 @@ public abstract class DocumentRetrievalController extends ADocearServiceFeature 
 		return view;
 	}
 	
-	public Collection<DocumentEntry> getNewDocuments(boolean userRequest) throws UnknownHostException, UnauthorizedException, UnexpectedException, AlreadyInUseException {		
+	public DocumentEntries getNewDocuments(boolean userRequest) throws UnknownHostException, UnauthorizedException, UnexpectedException, AlreadyInUseException {		
 		synchronized (mutex ) {
 			if(isRequesting) {
 				throw new AlreadyInUseException();
@@ -138,19 +138,22 @@ public abstract class DocumentRetrievalController extends ADocearServiceFeature 
 						DocearXmlRootElement result = (DocearXmlRootElement) xmlBuilder.getRoot();
 						
 						Collection<DocearXmlElement> documents = result.findAll("document");
-						List<DocumentEntry> recommendations = new ArrayList<DocumentEntry>();
+						DocumentEntries documentEntries = new DocumentEntries(documents.size());						
 						
 						java.util.Iterator<DocearXmlElement> iterator = documents.iterator();
 						int id = 0;
 						if (iterator.hasNext()) {
 							DocearXmlElement document = iterator.next();
 							//"recommendations" element
-							DocearXmlElement recommendationsElement = document.getParent().getParent();
-							String evaluationLabel = recommendationsElement.getAttributeValue("evaluationLabel");
+							DocearXmlElement documentsElement = document.getParent().getParent();
+							this.setDocumentsSetId(Integer.valueOf(documentsElement.getAttributeValue("id")));
+							this.documentsAvailable = Integer.valueOf(documentsElement.getAttributeValue("documentsAvailable"));
+							
+							String evaluationLabel = documentsElement.getAttributeValue("evaluationLabel");
 							evaluationLabel = ((evaluationLabel == null || evaluationLabel.trim().isEmpty()) ? "How good are these recommendations?" : evaluationLabel);
-							String strId = recommendationsElement.getAttributeValue("id");
+							String strId = documentsElement.getAttributeValue("id");
 							id = ((strId == null || strId.trim().isEmpty()) ? 0 : Integer.parseInt(strId));
-							recommendations.add(new DocumentEntry(id, null, recommendationsElement.getAttributeValue("descriptor"), evaluationLabel, null, null, false));
+							documentEntries.addDocumentEntry(id, null, documentsElement.getAttributeValue("descriptor"), evaluationLabel, null, null, false);
 						}
 						
 						for (DocearXmlElement document : documents) {
@@ -163,7 +166,7 @@ public abstract class DocumentRetrievalController extends ADocearServiceFeature 
 									String prefix = recommendationElement.getAttributeValue("prefix");
 									String click = recommendationElement.getAttributeValue("fulltext");
 									boolean highlighted = ("true".equals(recommendationElement.getAttributeValue("highlighted")) ? true:false);
-									recommendations.add(new DocumentEntry(id, prefix, title, "", url, click, highlighted));
+									documentEntries.addDocumentEntry(id, prefix, title, "", url, click, highlighted);
 								}
 							}
 							catch (Exception e) {
@@ -171,7 +174,7 @@ public abstract class DocumentRetrievalController extends ADocearServiceFeature 
 							}
 						}
 	
-						return recommendations;
+						return documentEntries;
 					}
 					catch (Exception e) {
 						LogUtils.severe(e);
@@ -193,7 +196,7 @@ public abstract class DocumentRetrievalController extends ADocearServiceFeature 
 			else {
 				throw new IllegalStateException("no username set");
 			}
-			return Collections.emptyList();
+			return null;
 		}
 		finally {
 			synchronized (mutex ) {
@@ -203,9 +206,9 @@ public abstract class DocumentRetrievalController extends ADocearServiceFeature 
 		}
 	}
 				
-	public void refreshDocuments(Collection<DocumentEntry> recommendations) {
+	public void refreshDocuments(DocumentEntries documentEntries) {
 		DocumentsModel model = null;
-		if(recommendations == null) {
+		if(documentEntries == null) {
 			try {
 				model = requestDocuments();
 			} catch (AlreadyInUseException e) {
@@ -213,7 +216,7 @@ public abstract class DocumentRetrievalController extends ADocearServiceFeature 
 			}			
 		}
 		else {
-			model = new DocumentsModel(recommendations);
+			model = new DocumentsModel(documentEntries);
 		}		
 		updateDocumentView(model);
 	}
@@ -246,10 +249,10 @@ public abstract class DocumentRetrievalController extends ADocearServiceFeature 
 						monitor.setProgress(1);
 						((JProgressBar)monitor.getAccessibleContext().getAccessibleChild(1)).setIndeterminate(true);
 						long l = System.currentTimeMillis();
-						Collection<DocumentEntry> recommendations = getNewDocuments(true);
+						DocumentEntries documentEntries = getNewDocuments(true);
 						LogUtils.info("recommendation request time: "+(System.currentTimeMillis()-l));
 						
-						model = new DocumentsModel(recommendations);
+						model = new DocumentsModel(documentEntries);
 						return model;
 					}
 					
@@ -308,11 +311,11 @@ public abstract class DocumentRetrievalController extends ADocearServiceFeature 
 		view.close();
 	}
 	
-	public void setAutoRecommendations(Collection<DocumentEntry> autoRecommendations) {
-		this.autoRecommendations = autoRecommendations;
+	public void setAutoRecommendations(DocumentEntries recommendations) {
+		this.autoRecommendations = recommendations;
 	}
 
-	public Collection<DocumentEntry> getAutoRecommendations() {		
+	public DocumentEntries getAutoRecommendations() {		
 			while(isLocked()) {
 				try {
 					Thread.sleep(100);
@@ -384,4 +387,13 @@ public abstract class DocumentRetrievalController extends ADocearServiceFeature 
 		downloadsNode.setPath(downloadsFolder.toURI());
 	}
 	
+	public int getDocumentsAvailable() {
+		return documentsAvailable;
+	}
+	public Integer getDocumentsSetId() {
+		return documentsSetId;
+	}
+	public void setDocumentsSetId(Integer documentsSetId) {
+		this.documentsSetId = documentsSetId;
+	}
 }

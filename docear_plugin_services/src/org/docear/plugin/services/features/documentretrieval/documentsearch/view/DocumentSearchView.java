@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
+import org.docear.plugin.services.features.documentretrieval.DocumentRetrievalController;
 import org.docear.plugin.services.features.documentretrieval.documentsearch.DocumentSearchController;
 import org.docear.plugin.services.features.documentretrieval.documentsearch.SearchModel;
 import org.docear.plugin.services.features.documentretrieval.model.DocumentsModel;
@@ -36,28 +37,8 @@ public class DocumentSearchView extends DocumentView {
 	}
 	
 	@Override
+	// not used for document search engine
 	protected Container getNewRecommandationContainerComponent(String title) {
-//		JPanel containerPanel = new JPanel();
-//		containerPanel.setLayout(new BorderLayout());
-//		containerPanel.setBackground(Color.WHITE);
-//		containerPanel.setBorder(new EmptyBorder(0, 10, 0, 0));
-//		JPanel panel = new JPanel();
-//				
-//		JLabel containerTitle = new JLabel("<html><b>"+title+"</b></html>");
-//		containerTitle.setFont(containerTitle.getFont().deriveFont(Font.BOLD, 18));
-//		
-//		containerPanel.add(containerTitle, BorderLayout.NORTH);
-//		
-//		panel.setBackground(Color.WHITE);
-//		panel.setBorder(new LineBorder(Color.LIGHT_GRAY, 1, true));
-//		panel.setLayout(new ListLayoutManager());		
-//		containerPanel.add(panel, BorderLayout.CENTER);
-//		
-//		this.add(getNewButtonBar(), BorderLayout.NORTH);
-//		this.add(containerPanel, BorderLayout.CENTER);
-//		this.add(getStarBar(), BorderLayout.SOUTH);
-		
-//		return panel
 		return new JPanel();
 	}
 	
@@ -102,7 +83,16 @@ public class DocumentSearchView extends DocumentView {
 		paginator.setLayout(new BoxLayout(paginator,BoxLayout.X_AXIS));
 		paginator.setBackground(Color.WHITE);
 		paginator.add(Box.createHorizontalGlue());
-		for (int i=1; i<=10; i++) {
+		
+		int documentsavailable = DocumentRetrievalController.getController().getDocumentsAvailable();
+		int pages = (int) Math.ceil(Float.valueOf(documentsavailable) / 10F);
+		
+		// paginator buttons not necessary for only one page
+		if (pages <= 1) {
+			return null;
+		}
+		
+		for (int i=1; i<=pages; i++) {
 			JButton page = new JButton(String.valueOf(i));
 			page.setBackground(Color.WHITE);
 			page.addActionListener(new ActionListener() {
@@ -121,7 +111,10 @@ public class DocumentSearchView extends DocumentView {
 
 	@Override
 	protected void addComponendAfterDocumentList(Container documentList) {
-		documentList.add(getPaginator());
+		Container container = getPaginator();
+		if (container != null) {
+			documentList.add(getPaginator());
+		}
 	}
 
 }

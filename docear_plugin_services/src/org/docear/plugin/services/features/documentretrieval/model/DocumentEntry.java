@@ -55,5 +55,5 @@ public class DocumentEntry {
 	public String toString() {		
 		return title;
 	}
-
+	
 }
