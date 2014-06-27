@@ -306,9 +306,11 @@ public abstract class DocumentRetrievalController extends ADocearServiceFeature 
 	}
 	
 	public void closeDocumentView() {
-		shutdown();
-		controller = null;
-		view.close();
+		if (controller != null) {
+    		shutdown();
+    		controller = null;
+    		view.close();
+		}
 	}
 	
 	public void setAutoRecommendations(DocumentEntries recommendations) {
