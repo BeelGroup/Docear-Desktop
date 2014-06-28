@@ -9,11 +9,15 @@ import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.docear.plugin.core.DocearController;
+import org.docear.plugin.core.logging.DocearLogger;
 import org.docear.plugin.services.ServiceController;
 import org.docear.plugin.services.features.documentretrieval.DocumentRetrievalController;
 import org.docear.plugin.services.features.documentretrieval.documentsearch.actions.ShowDocumentSearchAction;
+import org.docear.plugin.services.features.documentretrieval.model.DocumentsModel;
 import org.docear.plugin.services.features.io.DocearConnectionProvider;
 import org.docear.plugin.services.features.io.DocearServiceResponse;
+import org.docear.plugin.services.features.io.DocearServiceResponse.Status;
 import org.docear.plugin.services.features.user.DocearUser;
 import org.docear.plugin.services.xml.DocearXmlBuilder;
 import org.docear.plugin.services.xml.DocearXmlElement;
@@ -29,7 +33,6 @@ import com.sun.jersey.core.util.StringKeyStringValueIgnoreCaseMultivaluedMap;
 public class DocumentSearchController extends DocumentRetrievalController {
 	private String query = "";
 	private int page = 1;
-	private Long searchModelId = null;	
 	private SearchModel searchModel = null;
 	
 	public final static DocumentSearchController getController() {
@@ -49,24 +52,20 @@ public class DocumentSearchController extends DocumentRetrievalController {
 	
 	public void setQuery(String query) {
 		this.query = query;
-	}
-	
-	public void setsearchModelId(Long searchModelId) {
-		this.searchModelId = searchModelId;
-	}
+	}	
 	
 	@Override
-	protected DocearServiceResponse getRequestResponse(String userName, boolean userRequest) {
+	protected DocearServiceResponse getRequestResponse(boolean userRequest) {
 		MultivaluedMap<String,String> params = new StringKeyStringValueIgnoreCaseMultivaluedMap();
 		
-		if (searchModelId != null) {
-			params.add("searchModelId", String.valueOf(this.searchModelId));
+		if (searchModel != null) {
+			params.add("searchModelId", String.valueOf(searchModel.getId()));
 		}
 		if (getDocumentsSetId() != null) {
 			params.add("searchDocumentsSetId", String.valueOf(getDocumentsSetId()));
 		}
 		params.add("page", String.valueOf(page));
-		params.add("userName", userName);
+		params.add("userName", ServiceController.getCurrentUser().getName());
 		params.add("number", "10");
 		
 		if (this.query.trim().length() > 0) {
@@ -113,10 +112,31 @@ public class DocumentSearchController extends DocumentRetrievalController {
     				
     				DocearXmlElement element = result.find("searchmodel");
     				searchModel = new SearchModel(Long.valueOf(element.getAttributeValue("id")), element.getContent().trim());
+    				
+    				if (searchModel != null) {
+    					sendModelReceivedConfirmation();
+    				}
 					return searchModel;
 				}
 				catch(NullPointerException ignore) {}
 				return null;
+			}
+			
+			private void sendModelReceivedConfirmation() {				
+				try {
+    				MultivaluedMap<String,String> params = new StringKeyStringValueIgnoreCaseMultivaluedMap();
+    				params.add("searchModelId", String.valueOf(searchModel.getId()));    				
+    				
+    				DocearServiceResponse resp = ServiceController.getConnectionController().put("/user/"+ServiceController.getCurrentUser().getUsername()+"/searchmodel/", params);
+    				
+    				if(resp.getStatus() != Status.OK) {
+    					DocearLogger.info(resp.getContentAsString());
+    				}
+				}
+				catch (Exception e) {
+					System.out.println("exception in DocumentSearchController.getSearchModel().new Callable() {...}.sendModelReceivedConfirmation(): "
+							+ e.getMessage());
+				}
 			}
 		});
 		try {
@@ -125,7 +145,6 @@ public class DocumentSearchController extends DocumentRetrievalController {
 		catch(Exception e) {
 			LogUtils.warn(e);
 		}
-		
 		return null;
 	}
 	
@@ -141,7 +160,6 @@ public class DocumentSearchController extends DocumentRetrievalController {
 			return;
 		}
 		
-		DocumentSearchController.getController().setsearchModelId(searchModelId);
 		DocumentSearchController.getController().setQuery(query);
 		DocumentSearchController.getController().refreshDocuments();
 	}
@@ -159,5 +177,29 @@ public class DocumentSearchController extends DocumentRetrievalController {
 	public void shutdown() {
 		this.query = "";
 		this.searchModel = null;
+	}
+
+	@Override
+	public void sendReceiveConfirmation(final DocumentsModel model) {
+		DocearController.getController().getEventQueue().invoke(new Runnable() {
+			public void run() {
+				try {
+    				MultivaluedMap<String,String> params = new StringKeyStringValueIgnoreCaseMultivaluedMap();
+    				
+    				params.add("page", String.valueOf(page));
+    				params.add("userName", ServiceController.getCurrentUser().getName());
+    				params.add("searchDocumentsSetId", String.valueOf(getDocumentsSetId()));
+    				
+    				DocearServiceResponse resp = ServiceController.getConnectionController().put("/documents/" + query + "/", params);
+    				
+    				if(resp.getStatus() != Status.OK) {
+    					DocearLogger.info(resp.getContentAsString());
+    				}
+				}
+				catch (Exception e) {
+					LogUtils.warn("exception in DocumentSearchController.sendReceiveConfirmation(...).new Runnable() {...}.run(): " + e.getMessage());
+				}
+			}
+		});
 	}
 }

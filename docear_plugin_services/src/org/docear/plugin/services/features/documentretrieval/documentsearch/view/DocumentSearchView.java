@@ -67,9 +67,9 @@ public class DocumentSearchView extends DocumentView {
 		panel.setLayout(new BorderLayout());
 		panel.add(getNewButtonBar(false), BorderLayout.NORTH);
 		
-		SearchModel searchModel = DocumentSearchController.getController().getSearchModel();
+		SearchModel searchModel = DocumentSearchController.getController().getSearchModel();		
 		if (searchModel != null && searchModel.getId() != null) {
-			documentSearchPanel = new DocumentSearchPanel(searchModel.getModel().split(" "), searchModel.getId());
+			documentSearchPanel = new DocumentSearchPanel(searchModel.getModel().split(" "), searchModel.getId());			
 		}
 		else {
 			documentSearchPanel = new DocumentSearchPanel();

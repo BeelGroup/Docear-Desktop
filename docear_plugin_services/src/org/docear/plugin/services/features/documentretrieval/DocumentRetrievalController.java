@@ -17,8 +17,6 @@ import javax.swing.JProgressBar;
 import javax.swing.ProgressMonitor;
 
 import org.apache.commons.lang.NullArgumentException;
-import org.docear.plugin.core.DocearController;
-import org.docear.plugin.core.logging.DocearLogger;
 import org.docear.plugin.core.util.CoreUtils;
 import org.docear.plugin.services.ADocearServiceFeature;
 import org.docear.plugin.services.ServiceController;
@@ -78,7 +76,9 @@ public abstract class DocumentRetrievalController extends ADocearServiceFeature 
 	
 	protected static DocumentView view;
 	
-	protected abstract DocearServiceResponse getRequestResponse(String userName, boolean userRequest);
+	protected abstract DocearServiceResponse getRequestResponse(boolean userRequest);
+	protected abstract void sendReceiveConfirmation(final DocumentsModel model);
+	
 	public abstract void refreshDocuments();
 	
 
@@ -122,7 +122,7 @@ public abstract class DocumentRetrievalController extends ADocearServiceFeature 
 			DocearUser user = ServiceController.getCurrentUser();
 			String userName = user.getUsername();
 			if (!CoreUtils.isEmpty(userName)) {
-				DocearServiceResponse response = getRequestResponse(userName, userRequest);
+				DocearServiceResponse response = getRequestResponse(userRequest);
 				if (response == null) {
 					return null;
 				}
@@ -280,18 +280,7 @@ public abstract class DocumentRetrievalController extends ADocearServiceFeature 
 		}		
 		return model;
 	}
-
-	public void sendReceiveConfirmation(final DocumentsModel model) {
-		DocearController.getController().getEventQueue().invoke(new Runnable() {
-			public void run() {				
-				DocearServiceResponse resp = ServiceController.getConnectionController().put("user/"+ServiceController.getCurrentUser().getName()+"/recommendations/"+ String.valueOf(model.getSetId())+"/", null);
-				if(resp.getStatus() != Status.OK) {
-					DocearLogger.info(resp.getContentAsString());
-				}
-			}
-		});
-	}
-	
+		
 	protected DocumentsModel getExceptionModel(Exception e) {
 		DocumentsModel model = new DocumentsModel();
 		String message = "";

@@ -2,13 +2,16 @@ package org.docear.plugin.services.features.documentretrieval.recommendations;
 
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.logging.DocearLogger;
 import org.docear.plugin.services.ServiceController;
 import org.docear.plugin.services.features.documentretrieval.DocumentRetrievalController;
 import org.docear.plugin.services.features.documentretrieval.model.DocumentEntries;
+import org.docear.plugin.services.features.documentretrieval.model.DocumentsModel;
 import org.docear.plugin.services.features.documentretrieval.recommendations.actions.ShowRecommendationsAction;
 import org.docear.plugin.services.features.documentretrieval.view.ServiceWindowListener;
 import org.docear.plugin.services.features.io.DocearServiceResponse;
+import org.docear.plugin.services.features.io.DocearServiceResponse.Status;
 import org.docear.plugin.services.features.user.DocearUser;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;
@@ -73,12 +76,12 @@ public class RecommendationsController extends DocumentRetrievalController {
 	}
 
 	@Override
-	protected DocearServiceResponse getRequestResponse(String userName, boolean userRequest) {
+	protected DocearServiceResponse getRequestResponse(boolean userRequest) {
 		MultivaluedMap<String, String> params = new StringKeyStringValueIgnoreCaseMultivaluedMap();
 		if (!userRequest) {
 			params.add("auto", "true");
 		}
-		return ServiceController.getConnectionController().get("/user/" + userName + "/recommendations/documents", params);
+		return ServiceController.getConnectionController().get("/user/" + ServiceController.getCurrentUser().getName() + "/recommendations/documents", params);
 	}
 
 	@Override
@@ -89,6 +92,18 @@ public class RecommendationsController extends DocumentRetrievalController {
 
 	@Override
 	public void shutdown() {
+	}
+
+	@Override
+	public void sendReceiveConfirmation(final DocumentsModel model) {
+		DocearController.getController().getEventQueue().invoke(new Runnable() {
+			public void run() {				
+				DocearServiceResponse resp = ServiceController.getConnectionController().put("user/"+ServiceController.getCurrentUser().getName()+"/recommendations/"+ String.valueOf(model.getSetId())+"/", null);
+				if(resp.getStatus() != Status.OK) {
+					DocearLogger.info(resp.getContentAsString());
+				}
+			}
+		});
 	}
 
 }
