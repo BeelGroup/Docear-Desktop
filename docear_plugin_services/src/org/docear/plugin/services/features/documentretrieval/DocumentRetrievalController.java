@@ -147,7 +147,11 @@ public abstract class DocumentRetrievalController extends ADocearServiceFeature 
 							//"recommendations" element
 							DocearXmlElement documentsElement = document.getParent().getParent();
 							this.setDocumentsSetId(Integer.valueOf(documentsElement.getAttributeValue("id")));
-							this.documentsAvailable = Integer.valueOf(documentsElement.getAttributeValue("documentsAvailable"));
+							
+							try {
+								this.documentsAvailable = Integer.valueOf(documentsElement.getAttributeValue("documentsAvailable"));
+							}
+							catch(NumberFormatException ignore) {}
 							
 							String evaluationLabel = documentsElement.getAttributeValue("evaluationLabel");
 							evaluationLabel = ((evaluationLabel == null || evaluationLabel.trim().isEmpty()) ? "How good are these recommendations?" : evaluationLabel);

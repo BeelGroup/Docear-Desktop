@@ -181,6 +181,7 @@ public class DocumentSearchController extends DocumentRetrievalController {
 			return;
 		}
 		
+		setPage(1);
 		DocumentSearchController.getController().setDocumentsSetId(null);
 		DocumentSearchController.getController().setQuery(query);
 		DocumentSearchController.getController().refreshDocuments();
