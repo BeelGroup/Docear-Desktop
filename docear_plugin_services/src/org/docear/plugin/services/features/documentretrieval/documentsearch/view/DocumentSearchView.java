@@ -57,7 +57,7 @@ public class DocumentSearchView extends DocumentView {
 		this.add(getSearchPanel(), BorderLayout.NORTH);
 		this.add(containerPanel, BorderLayout.CENTER);
 		
-		this.add(getStarBar(), BorderLayout.SOUTH);
+//		this.add(getStarBar(), BorderLayout.SOUTH);
 		
 		return panel;
 	}
