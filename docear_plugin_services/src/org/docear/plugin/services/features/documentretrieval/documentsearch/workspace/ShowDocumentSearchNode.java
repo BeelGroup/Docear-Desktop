@@ -13,7 +13,7 @@ import org.freeplane.plugin.workspace.nodes.AActionNode;
 public class ShowDocumentSearchNode extends AActionNode {
 
 	//private static final Icon DEFAULT_ICON = new ImageIcon(ShowRecommendationsNode.class.getResource("/icons/books.png"));
-	private static final Icon DEFAULT_ICON = new ImageIcon(ShowDocumentSearchNode.class.getResource("/icons/star.png"));
+	private static final Icon DEFAULT_ICON = new ImageIcon(ShowDocumentSearchNode.class.getResource("/icons/document_search_small.png"));
 
 	private static final long serialVersionUID = 1L;
 	

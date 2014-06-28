@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- REFERENCES -->
+<menu_structure>
+	<menu_category name="ribbon">
+		<ribbon_task name="search_and_filter">
+			<ribbon_band name="documents" resize_policies="Mirror" orderPriority="last" >
+				<ribbon_action action="ShowRecommendationsAction" priority="TOP" />
+				<ribbon_action action="ShowDocumentSearchAction" priority="TOP" />
+			</ribbon_band>
+		</ribbon_task>
+	</menu_category>
+</menu_structure>

@@ -48,7 +48,7 @@ public class ServiceController {
 
 	private final Map<Class<? extends ADocearServiceFeature>, ADocearServiceFeature> features = new LinkedHashMap<Class<? extends ADocearServiceFeature>, ADocearServiceFeature>();
 	
-	private ServiceController(ModeController modeController) {
+	private ServiceController(ModeController modeController) {		
 		DocearFileBackupController.setFileBackupHandler(new UserFileBackupHandler());
 		WorkspaceController.getModeExtension(modeController).setModel(new DocearWorkspaceModel());
 		initListeners(modeController);
@@ -60,8 +60,14 @@ public class ServiceController {
 		Controller.getCurrentController().addAction(new DocearClearUserDataAction());
 		Controller.getCurrentController().addAction(new DocearCheckForUpdatesAction());
 		Controller.getCurrentController().addAction(new ShowRecommendationsAction());
-		Controller.getCurrentController().addAction(new ShowDocumentSearchAction());
+		Controller.getCurrentController().addAction(new ShowDocumentSearchAction());		
 		Controller.getCurrentController().addAction(new DocearBackupOpenLocation());
+	}
+	
+	private void initializeRibbon(ModeController modeController) {
+		modeController.getUserInputListenerFactory().getRibbonBuilder().updateRibbon(ServiceController.class.getResource("/xml/ribbons.xml"));
+		Controller.getCurrentController().getResourceController().setDefaultProperty(ShowRecommendationsAction.TYPE+".icon", "/images/docear/services/star.png");
+		Controller.getCurrentController().getResourceController().setDefaultProperty(ShowDocumentSearchAction.TYPE+".icon", "/images/docear/services/document_search.png");
 	}
 
 	protected static void initialize(ModeController modeController) {
@@ -131,6 +137,7 @@ public class ServiceController {
 		final URL defaults = this.getClass().getResource(ResourceController.PLUGIN_DEFAULTS_RESOURCE);
 		if (defaults == null) throw new RuntimeException("cannot open " + ResourceController.PLUGIN_DEFAULTS_RESOURCE);
 		Controller.getCurrentController().getResourceController().addDefaults(defaults);
+		initializeRibbon(modeController);
 		
 		DocearController.getController().getEventQueue().addEventListener(new IDocearEventListener() {		
 			public void handleEvent(DocearEvent event) {
