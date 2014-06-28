@@ -8,7 +8,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import org.docear.plugin.services.features.documentretrieval.documentsearch.DocumentSearchController;
@@ -20,7 +20,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
 public class DocumentSearchPanel extends JPanel {
-	final private JTextArea searchQueryArea = new JTextArea();
+	final private JTextField searchQueryField = new JTextField();
 	
 	public DocumentSearchPanel() {
 		this(null, null);
@@ -38,17 +38,26 @@ public class DocumentSearchPanel extends JPanel {
 				FormFactory.RELATED_GAP_ROWSPEC,
 				RowSpec.decode("min:grow"),}));
 		
+		
+		
 		setBackground(Color.WHITE);
 		setBorder(new EmptyBorder(0, 10, 0, 0));
 		
-		add(searchQueryArea, "2, 2, fill, fill");
-		searchQueryArea.setText(DocumentSearchController.getController().getQuery());
+		searchQueryField.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent arg0) {
+				DocumentSearchController.getController().search(searchQueryField.getText());
+			}
+		});
+		
+		add(searchQueryField, "2, 2, fill, fill");
+		searchQueryField.setText(DocumentSearchController.getController().getQuery());
 		
 		JButton searchButton = new JButton(TextUtils.getText("documentsearch.search"));
 		searchButton.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent e) {
-				DocumentSearchController.getController().search(searchQueryArea.getText());
+				DocumentSearchController.getController().search(searchQueryField.getText());
 				
 			}
 		});
@@ -70,7 +79,7 @@ public class DocumentSearchPanel extends JPanel {
 			JButton searchTermButton = new JButton(s);
 			searchTermButton.addActionListener(new ActionListener() {				
 				public void actionPerformed(ActionEvent e) {
-					searchQueryArea.setText(searchQueryArea.getText()+" "+e.getActionCommand());
+					searchQueryField.setText(searchQueryField.getText()+" "+e.getActionCommand());
 				}
 			});			
 			buttonPanel.add(searchTermButton);
