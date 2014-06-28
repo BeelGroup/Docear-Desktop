@@ -26,7 +26,7 @@ public class DocumentsModel {
 	}
 	
 	private void parseRecommendations(DocumentEntries documentEntries) {
-		if(documentEntries == null) {
+		if(documentEntries == null || documentEntries.getDocumentEntries().size()==0) {
 			if(ServiceController.getCurrentUser().isRecommendationsEnabled()) {
 				if (DocumentRetrievalController.getView() != null && DocumentRetrievalController.getView() instanceof DocumentSearchView) {
 					if (DocumentSearchController.getController().getQuery().trim().length() == 0) {

@@ -69,11 +69,32 @@ public class DocumentSearchController extends DocumentRetrievalController {
 		params.add("number", "10");
 		
 		if (this.query.trim().length() > 0) {
-			return ServiceController.getConnectionController().get("/documents/" + query + "/", params);
+			return ServiceController.getConnectionController().get("/documents/" + createLuceneSearchString(query) + "/", params);
 		}
 		else {
 			return null;
 		}
+	}
+
+	private String createLuceneSearchString(String query) {
+		query = query.toLowerCase().trim();
+		if (query.contains("and") || query.contains("or")) {
+			return query;
+		}
+		
+		StringBuilder sb = new StringBuilder();
+		
+		String[] terms = query.split(" ");
+		sb.append(terms[0]);
+		for (int i=1; i<terms.length; i++) {
+			sb.append(" AND ");
+			sb.append(terms[i]);
+		}
+		
+		String queryString = sb.toString();
+		LogUtils.info("using query string: "+queryString);
+		
+		return queryString;
 	}
 
 	@Override
