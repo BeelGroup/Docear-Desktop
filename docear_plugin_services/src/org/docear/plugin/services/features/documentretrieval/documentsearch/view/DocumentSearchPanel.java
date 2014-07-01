@@ -57,6 +57,7 @@ public class DocumentSearchPanel extends JPanel {
 		searchButton.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent e) {
+				DocumentSearchController.getController().setPage(1);
 				DocumentSearchController.getController().search(searchQueryField.getText());
 				
 			}

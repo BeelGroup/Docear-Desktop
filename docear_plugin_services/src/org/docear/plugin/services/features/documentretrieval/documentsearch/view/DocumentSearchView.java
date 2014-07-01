@@ -94,6 +94,10 @@ public class DocumentSearchView extends DocumentView {
 		
 		for (int i=1; i<=pages; i++) {
 			JButton page = new JButton(String.valueOf(i));
+			if (i == DocumentSearchController.getController().getPage()) {
+				page.setEnabled(false);
+			}
+			
 			page.setBackground(Color.WHITE);
 			page.addActionListener(new ActionListener() {
 				
