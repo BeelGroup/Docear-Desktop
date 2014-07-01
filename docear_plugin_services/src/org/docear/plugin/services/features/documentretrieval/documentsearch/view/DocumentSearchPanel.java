@@ -46,7 +46,7 @@ public class DocumentSearchPanel extends JPanel {
 		searchQueryField.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent arg0) {
-				DocumentSearchController.getController().search(searchQueryField.getText());
+				newSearch();
 			}
 		});
 		
@@ -57,9 +57,7 @@ public class DocumentSearchPanel extends JPanel {
 		searchButton.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent e) {
-				DocumentSearchController.getController().setPage(1);
-				DocumentSearchController.getController().search(searchQueryField.getText());
-				
+				newSearch();
 			}
 		});
 		add(searchButton, "4, 2");
@@ -68,6 +66,12 @@ public class DocumentSearchPanel extends JPanel {
     		JPanel panel = getButtonPanel(searchModel);
     		add(panel, "2, 4, 3, 1, fill, fill");
 		}
+	}
+	
+	private void newSearch() {
+		DocumentSearchController.getController().setPage(1);
+		DocumentSearchController.getController().setDocumentsSetId(null);
+		DocumentSearchController.getController().search(searchQueryField.getText());
 	}
 
 	private JPanel getButtonPanel(String[] searchModel) {

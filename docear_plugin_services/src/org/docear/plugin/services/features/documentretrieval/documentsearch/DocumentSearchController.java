@@ -180,8 +180,7 @@ public class DocumentSearchController extends DocumentRetrievalController {
 		if (query.length() == 0) {
 			return;
 		}
-				
-		DocumentSearchController.getController().setDocumentsSetId(null);
+		
 		DocumentSearchController.getController().setQuery(query);
 		DocumentSearchController.getController().refreshDocuments();
 	}
