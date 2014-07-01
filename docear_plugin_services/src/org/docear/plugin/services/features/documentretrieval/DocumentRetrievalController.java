@@ -302,7 +302,9 @@ public abstract class DocumentRetrievalController extends ADocearServiceFeature 
 		if (controller != null) {
     		shutdown();
     		controller = null;
-    		view.close();
+    		if (view != null) {
+    			view.close();
+    		}
 		}
 	}
 	
