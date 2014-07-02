@@ -82,15 +82,21 @@ public class FontStyleContributorFactory implements IRibbonContributorFactory {
 				addDefaultToggleHandler(context, sizeComboWrapper);
 				band.addFlowComponent(sizeComboWrapper);
 
-				final Container styleBox = uiFactory.createStyleBox();
-				JRibbonComponent styleComboWrapper = new JRibbonComponent((JComponent) styleBox);
-				styleComboWrapper.setKeyTip("SD");
-				addDefaultToggleHandler(context, styleComboWrapper);
-				band.addFlowComponent(styleComboWrapper);
-
+				JCommandButtonStrip fontResizeStrip = new JCommandButtonStrip();
+				AFreeplaneAction action = context.getBuilder().getMode().getAction("IncreaseNodeFontAction");				
+				final JCommandToggleButton fontIncreaseButton = RibbonActionContributorFactory.createCommandToggleButton(action);
+				addDefaultToggleHandler(context, action, fontIncreaseButton);
+				fontResizeStrip.add(fontIncreaseButton);
+				
+				action = context.getBuilder().getMode().getAction("DecreaseNodeFontAction");				
+				final JCommandToggleButton fontDecreaseButton = RibbonActionContributorFactory.createCommandToggleButton(action);
+				addDefaultToggleHandler(context, action, fontDecreaseButton);				
+				fontResizeStrip.add(fontDecreaseButton);
+				band.addFlowComponent(fontResizeStrip);
+				
 				JCommandButtonStrip styleStrip = new JCommandButtonStrip();
 
-				AFreeplaneAction action = context.getBuilder().getMode().getAction("BoldAction");
+				action = context.getBuilder().getMode().getAction("BoldAction");
 				final JCommandToggleButton boldButton = RibbonActionContributorFactory.createCommandToggleButton(action);
 				addDefaultToggleHandler(context, action, boldButton);				
 				styleStrip.add(boldButton);
@@ -126,6 +132,12 @@ public class FontStyleContributorFactory implements IRibbonContributorFactory {
 				styleStrip.add(button);
 								
 				band.addFlowComponent(styleStrip);
+				
+				final Container styleBox = uiFactory.createStyleBox();
+				JRibbonComponent styleComboWrapper = new JRibbonComponent((JComponent) styleBox);
+				styleComboWrapper.setKeyTip("SD");
+				addDefaultToggleHandler(context, styleComboWrapper);
+				band.addFlowComponent(styleComboWrapper);
 				
 				action = context.getBuilder().getMode().getAction("RemoveFormatAction");				
 				button = RibbonActionContributorFactory.createCommandButton(action);
