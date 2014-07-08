@@ -231,8 +231,11 @@ public abstract class DocumentRetrievalController extends ADocearServiceFeature 
 		}
 		
 		try {
-			view.setModel(model);
-		} catch (NoSuchElementException e) {
+			if (view != null) {
+				view.setModel(model);
+			}
+		} 
+		catch (NoSuchElementException e) {
 			LogUtils.severe(e);
 		}
 	}
