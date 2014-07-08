@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import org.docear.plugin.core.ui.wizard.Wizard;
 import org.docear.plugin.core.ui.wizard.WizardSession;
 import org.docear.plugin.core.ui.wizard.WizardPageDescriptor;
+import org.docear.plugin.services.features.documentretrieval.DocumentRetrievalController;
 import org.docear.plugin.services.features.user.DocearLocalUser;
 import org.docear.plugin.services.features.user.DocearUser;
 import org.docear.plugin.services.features.user.DocearUserController;
@@ -62,6 +63,10 @@ public class DocearUserServicesAction extends AWorkspaceAction {
 				int ret = wiz.show();
 				if(ret == Wizard.OK_OPTION) {
 					WorkspaceController.save();
+					
+					if (DocumentRetrievalController.getController() != null && DocumentRetrievalController.getView() != null) {
+						DocumentRetrievalController.getController().refreshDocuments();
+					}
 				}
 			}
 		}).start();
