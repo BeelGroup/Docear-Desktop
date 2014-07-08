@@ -122,22 +122,23 @@ public class DocumentSearchController extends DocumentRetrievalController {
 			public SearchModel call() throws Exception {
 				try {
     				DocearServiceResponse response = ServiceController.getConnectionController().get("/user/"+user.getUsername()+"/searchmodel/");
-    				
-    				DocearXmlBuilder xmlBuilder = new DocearXmlBuilder();
-    				IXMLReader reader = new StdXMLReader(new InputStreamReader(response.getContent(), "UTF8"));
-    				IXMLParser parser = XMLParserFactory.createDefaultXMLParser();
-    				parser.setBuilder(xmlBuilder);
-    				parser.setReader(reader);
-    				parser.parse();
-    				DocearXmlRootElement result = (DocearXmlRootElement) xmlBuilder.getRoot();
-    				
-    				DocearXmlElement element = result.find("searchmodel");
-    				searchModel = new SearchModel(Long.valueOf(element.getAttributeValue("id")), element.getContent().trim());
-    				
-    				if (searchModel != null) {
-    					sendModelReceivedConfirmation();
+    				if (response != null && response.getStatus() == Status.OK) {    					
+        				DocearXmlBuilder xmlBuilder = new DocearXmlBuilder();
+        				IXMLReader reader = new StdXMLReader(new InputStreamReader(response.getContent(), "UTF8"));
+        				IXMLParser parser = XMLParserFactory.createDefaultXMLParser();
+        				parser.setBuilder(xmlBuilder);
+        				parser.setReader(reader);
+        				parser.parse();
+        				DocearXmlRootElement result = (DocearXmlRootElement) xmlBuilder.getRoot();
+        				
+        				DocearXmlElement element = result.find("searchmodel");
+        				searchModel = new SearchModel(Long.valueOf(element.getAttributeValue("id")), element.getContent().trim());
+        				
+        				if (searchModel != null) {
+        					sendModelReceivedConfirmation();
+        				}
+    					return searchModel;
     				}
-					return searchModel;
 				}
 				catch(NullPointerException ignore) {}
 				return null;
