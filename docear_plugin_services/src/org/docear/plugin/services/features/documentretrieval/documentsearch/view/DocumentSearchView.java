@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
+import org.docear.plugin.services.ServiceController;
 import org.docear.plugin.services.features.documentretrieval.DocumentRetrievalController;
 import org.docear.plugin.services.features.documentretrieval.documentsearch.DocumentSearchController;
 import org.docear.plugin.services.features.documentretrieval.documentsearch.SearchModel;
@@ -62,19 +63,23 @@ public class DocumentSearchView extends DocumentView {
 		return panel;
 	}
 
-	public Component getSearchPanel() {
+	public Component getSearchPanel() {		
 		JPanel panel = new JPanel();
+				
 		panel.setLayout(new BorderLayout());
 		panel.add(getNewButtonBar(false), BorderLayout.NORTH);
 		
-		SearchModel searchModel = DocumentSearchController.getController().getSearchModel();		
-		if (searchModel != null && searchModel.getId() != null) {
-			documentSearchPanel = new DocumentSearchPanel(searchModel.getModel().split(" "), searchModel.getId());			
+		if (ServiceController.getCurrentUser().isRecommendationsEnabled())  {
+			SearchModel searchModel = DocumentSearchController.getController().getSearchModel();		
+    		if (searchModel != null && searchModel.getId() != null) {
+    			documentSearchPanel = new DocumentSearchPanel(searchModel.getModel().split(" "), searchModel.getId());			
+    		}
+    		else {
+    			documentSearchPanel = new DocumentSearchPanel();
+    		}
+    		panel.add(documentSearchPanel, BorderLayout.CENTER);
 		}
-		else {
-			documentSearchPanel = new DocumentSearchPanel();
-		}
-		panel.add(documentSearchPanel, BorderLayout.CENTER);
+		
 		return panel;
 	}
 		
