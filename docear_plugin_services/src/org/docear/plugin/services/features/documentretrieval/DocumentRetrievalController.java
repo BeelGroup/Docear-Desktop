@@ -265,8 +265,11 @@ public abstract class DocumentRetrievalController extends ADocearServiceFeature 
 					
 				});
 				model = task.get(DocearConnectionProvider.CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
-				//handshake -> send receive confirmation
-				sendReceiveConfirmation(model);
+				
+				if (model.getChildCount(model.getRootNode()) > 0) { 
+					//handshake -> send receive confirmation
+					sendReceiveConfirmation(model);
+				}
 				
 			}
 			catch (Exception e) {
