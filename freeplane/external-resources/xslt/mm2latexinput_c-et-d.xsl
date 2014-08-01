@@ -26,19 +26,54 @@
 	version="1.0">
 	<xsl:output omit-xml-declaration="yes"  method="text"/>
 
+	<!-- BEGIN OPTION XSLT 2 / extensions -->
+	<!-- this should be called as follows (user selected base file name with or without .tex [e.g. content] ) -->
+	<!-- saxonb-xslt -w1 -ext:on -s:<mindmap.mm> -xsl:mm2atexinput.xsl output-base=<filename> -->
+	<xsl:param name="output-base" select="''" />
+	
 	<xsl:template match="map">
-		<!-- recursively process all subnodes of the root node -->
-		<xsl:for-each select="node/node">
-			<xsl:variable name="id" select="concat(position(),'-',substring(@TEXT, 1, 5))" />
-			<xsl:text>\input{inhalt_</xsl:text>
-			<xsl:value-of select="$id" />
-			<xsl:text>}
+		<xsl:variable name="filename">
+			<xsl:choose>
+				<!-- parameter given with trailing .tex -->
+				<xsl:when test="($output-base != '') and (substring($output-base, string-length($output-base)-3, 4) = '.tex')">
+					<xsl:value-of select="substring($output-base, 1, string-length($output-base)-4)" />
+				</xsl:when>
+				<!-- parameter given -->
+				<xsl:when test="$output-base != ''">
+					<xsl:value-of select="$output-base" />
+				</xsl:when>
+				<!-- else -->
+				<xsl:otherwise>content</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+			
+		<xsl:result-document method="text" href="{$filename}.tex">
+			<!-- recursively process all subnodes of the root node -->
+			<xsl:for-each select="node/node">
+				<xsl:variable name="id" select="replace(concat(position(),'-',substring(@TEXT, 1, 5)), ' ', '_')" />
+				<xsl:text>\input{</xsl:text>
+				<xsl:value-of select="$filename" />
+				<xsl:text>_</xsl:text>
+				<xsl:value-of select="$id" />
+				<xsl:text>}
 </xsl:text>
-			<xsl:result-document method="text" href="inhalt_{$id}.tex">
-				<xsl:apply-templates select="." />
-			</xsl:result-document>
-		</xsl:for-each>
+				<xsl:result-document method="text" href="{$filename}_{$id}.tex">
+					<xsl:apply-templates select="." />
+				</xsl:result-document>
+			</xsl:for-each>
+		</xsl:result-document>
 	</xsl:template>
+	<!-- BEGIN OPTION XSLT 2 / extensions -->
+	
+	<!-- BEGIN OPTION XSLT 1 / no extensions -->
+	<!-- this should be called as follows (user selected file name with .tex [e.g. content] ) -->
+	<!-- saxonb-xslt -w1 -s:<mindmap.mm> -xsl:mm2atexinput.xsl -o:<filename.tex> -->
+	<!--
+	<xsl:template match="map">
+		<xsl:apply-templates select="node/node" />
+	</xsl:template>
+	-->
+	<!-- END OPTION XSLT 1 / no extensions -->
 
 
 	<!-- ======= Body ====== -->
