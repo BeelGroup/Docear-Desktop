@@ -62,6 +62,17 @@ public class UploadController extends ADocearServiceFeature {
 	
 	private final Set<File> uploadFiles = new HashSet<File>();
 	
+	private final DirectoryObserver defaultObserver = new DirectoryObserver() {
+		
+		public void fileRemoved(File file) {
+			uploadFiles.remove(file);
+		}
+		
+		public void fileCreated(File file) {
+			uploadFiles.add(file);
+		}
+	};
+	
 	public UploadController() {
 		DocearController.getController().getEventQueue().addEventListener(new IDocearEventListener() {		
 			public void handleEvent(DocearEvent event) {
@@ -73,6 +84,8 @@ public class UploadController extends ADocearServiceFeature {
 				}
 			}
 		});
+		
+		this.addUploadDirectoryObserver(defaultObserver);
 	}
 	
 	/**
@@ -140,7 +153,7 @@ public class UploadController extends ADocearServiceFeature {
 
 			public void remove() {
 				synchronized (uploadFiles) {
-					uploadFiles.remove(files[i]);
+					uploadFiles.remove(files[i-1]);
 				}
 				
 			}
