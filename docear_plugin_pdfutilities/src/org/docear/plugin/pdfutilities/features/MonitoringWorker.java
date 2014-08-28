@@ -43,6 +43,7 @@ import org.docear.plugin.pdfutilities.pdf.ReadOnlyExceptionWarningHandler;
 import org.docear.plugin.pdfutilities.util.CustomFileFilter;
 import org.docear.plugin.pdfutilities.util.CustomFileListFilter;
 import org.docear.plugin.pdfutilities.util.MonitoringUtils;
+import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.ui.components.UITools;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
@@ -398,7 +399,10 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 				LogUtils.warn(e);
 			}
 		}
-		if (orphanedNodes.size() > 0) {
+		
+		Boolean alwaysKeepOrphanedNodes = ResourceController.getResourceController().getBooleanProperty("docear.reference.keep_orphaned_nodes");
+		
+		if (!alwaysKeepOrphanedNodes && orphanedNodes.size() > 0) {
 			if (canceled()) return false;
 			try {
 				int result = UITools.showConfirmDialog(target, TextUtils.getText("AbstractMonitoringAction.18"), TextUtils.getText("AbstractMonitoringAction.18"), JOptionPane.YES_NO_OPTION); //$NON-NLS-1$ //$NON-NLS-2$
