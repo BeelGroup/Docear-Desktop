@@ -476,7 +476,7 @@ public class LinkController extends SelectionController implements IExtension {
 	}
 	
 	public URI createRelativeURI(final File map, final File input, final int linkType) {
-		if (linkType == LINK_ABSOLUTE) {
+		if (linkType == LINK_ABSOLUTE || input == null) {
 			return null;
 		}
 		try {

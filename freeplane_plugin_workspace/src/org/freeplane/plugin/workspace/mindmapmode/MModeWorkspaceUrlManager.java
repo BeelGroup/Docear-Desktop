@@ -130,7 +130,14 @@ public class MModeWorkspaceUrlManager extends MFileManager {
 		URI preResolved = getAbsoluteURI(uri);
 		if(base == null || preResolved == null) {
 			if(preResolved != null) {
-				return preResolved.toURL();
+				try {
+					if (uri.isAbsolute()) {
+						return preResolved.toURL();
+					}
+				}
+				catch(Exception e) {
+					LogUtils.warn(e);
+				}
 			}
 			return null;
 		}
