@@ -9,7 +9,7 @@ import javax.swing.SwingUtilities;
 
 import org.docear.plugin.core.ui.ImportProjectPagePanel;
 import org.docear.plugin.core.ui.wizard.Wizard;
-import org.docear.plugin.core.ui.wizard.WizardContext;
+import org.docear.plugin.core.ui.wizard.WizardSession;
 import org.docear.plugin.core.ui.wizard.WizardPageDescriptor;
 import org.docear.plugin.core.workspace.compatible.DocearWorkspaceToProjectConverter;
 import org.docear.plugin.core.workspace.controller.DocearConversionDescriptor;
@@ -41,7 +41,7 @@ public class DocearImportProjectAction extends AWorkspaceAction {
 			public void run() {
 				int ret = wiz.show();
 				if(ret == Wizard.OK_OPTION) {
-					AWorkspaceProject project = wiz.getContext().get(DocearWorkspaceProject.class);
+					AWorkspaceProject project = wiz.getSession().get(DocearWorkspaceProject.class);
 					importProject(project);
 				}
 			}
@@ -51,20 +51,20 @@ public class DocearImportProjectAction extends AWorkspaceAction {
 	private void initWizard(Wizard wizard) {
 		//new project page
 		WizardPageDescriptor desc = new WizardPageDescriptor("page.project.import", new ImportProjectPagePanel()) {
-			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
+			public WizardPageDescriptor getNextPageDescriptor(WizardSession context) {
 				AWorkspaceProject project = ((ImportProjectPagePanel)getPage()).getProject();
 				context.set(DocearWorkspaceProject.class, project);
 				return Wizard.FINISH_PAGE;
 			}
 
 			@Override
-			public void aboutToDisplayPage(WizardContext context) {
+			public void aboutToDisplayPage(WizardSession context) {
 				context.getNextButton().setText(TextUtils.getText("docear.setup.wizard.controls.finish"));
 				super.aboutToDisplayPage(context);
 			}
 			
 			@Override
-			public void displayingPage(WizardContext context) {
+			public void displayingPage(WizardSession context) {
 				super.displayingPage(context);
 				context.setWizardTitle(TextUtils.getText("workspace.action.node.import.project.dialog.title"));
 				context.getBackButton().setVisible(false);

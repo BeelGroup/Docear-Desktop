@@ -2,6 +2,10 @@ package org.docear.plugin.core.ui.wizard;
 
 import java.awt.Component;
 
+/**
+ * @author genzmehr@docear.org
+ *
+ */
 public class ComponentDragEvent {
 	
 	public static final int DIRECTION_HORIZONTAL = 0x1;

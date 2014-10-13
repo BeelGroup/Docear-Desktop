@@ -2,6 +2,10 @@ package org.docear.plugin.core.ui.wizard;
 
 import javax.swing.JPanel;
 
+/**
+ * @author genzmehr@docear.org
+ *
+ */
 public abstract class AWizardPage extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private boolean displayable = true;
@@ -40,7 +44,7 @@ public abstract class AWizardPage extends JPanel {
 	
 	public abstract String getTitle();
 	
-	public abstract void preparePage(WizardContext context);
+	public abstract void preparePage(WizardSession session);
 
 	
 }

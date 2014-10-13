@@ -23,6 +23,7 @@ import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.features.DocearMapModelExtension;
 import org.docear.plugin.core.features.MapModificationSession;
 import org.docear.plugin.core.mindmap.AMindmapUpdater;
+import org.docear.plugin.core.util.NodeUtilities;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.features.link.NodeLinks;
 import org.freeplane.features.map.MapModel;
@@ -31,6 +32,7 @@ import org.freeplane.features.url.UrlManager;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.features.WorkspaceMapModelExtension;
+import org.freeplane.view.swing.map.NodeView;
 
 public class ReferenceUpdater extends AMindmapUpdater {
 
@@ -122,7 +124,7 @@ public class ReferenceUpdater extends AMindmapUpdater {
 				continue;
 			}
 
-			for (String path : jabRefAttributes.parsePathNames(entry, paths)) {
+			for (String path : JabRefAttributes.parsePathNames(entry, paths)) {
 				if (path.isEmpty()) {
 					continue;
 				}
@@ -241,6 +243,8 @@ public class ReferenceUpdater extends AMindmapUpdater {
 
 	private boolean updateReferenceNodes() {		
 		boolean changes = false;
+		NodeView.setModifyModelWithoutRepaint(true);
+		try {
 		for (Entry<BibtexEntry, Set<NodeModel>> entry : referenceNodes.entrySet()) {
 			// BibtexEntry bibtexEntry = database.getEntryByKey(entry.getKey());
 			// if (bibtexEntry != null) {
@@ -285,6 +289,11 @@ public class ReferenceUpdater extends AMindmapUpdater {
 			}
 		}
 		return changes;
+		}
+		finally {
+			NodeView.setModifyModelWithoutRepaint(false);
+			NodeUtilities.updateAttributeList();
+		}
 	}
 
 	int nodeNum = 0;

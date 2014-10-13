@@ -3,6 +3,10 @@ package org.docear.plugin.core.ui.wizard;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author genzmehr@docear.org
+ *
+ */
 public class WizardModel {
 	private Map<Object, WizardPageDescriptor> pages = new HashMap<Object, WizardPageDescriptor>();
 	private Object currenrId = null;

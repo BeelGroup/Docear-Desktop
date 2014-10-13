@@ -159,27 +159,9 @@ public class JabRefAttributes {
 					((NodeView) nodeView).getAttributeView().viewRemoved();
 				}
 			}
-		}
+		}		
 		
-		
-//		if(attributeTable.getRowCount() <= 0) {
-//			node.removeExtension(NodeAttributeTableModel.class);
-//			for(INodeView nodeView : node.getViewers()) {
-//				if(nodeView instanceof NodeView) {
-//					((NodeView) nodeView).getAttributeView().viewRemoved();
-//					((NodeView) nodeView).getContent().remove(3);
-//					((NodeView) nodeView).update();
-//				}
-//			}
-//		}
 	}
-
-	// public void updateReferenceOnPdf(URI uri, NodeModel node) {
-	// BibtexEntry entry = findBibtexEntryForPDF(uri, node);
-	// if (entry != null) {
-	// setReferenceToNode(new Reference(entry, node), node);
-	// }
-	// }
 
 	@SuppressWarnings("unchecked")
 	public boolean updateReferenceToNode(Reference reference, NodeModel node) throws ResolveDuplicateEntryAbortedException {
@@ -235,21 +217,6 @@ public class JabRefAttributes {
 						}
 					}
 
-//					if (file != null) {
-//						resolveDuplicateLinks(file);
-//					}
-//					else {
-//						resolveDuplicateLinks(url);
-//					}
-//					BibtexEntry entry = findBibtexEntryForPDF(uri, node.getMap());
-//					if (entry == null) {
-//						entry = findBibtexEntryForURL(uri, node.getMap(), false);
-//					}
-//
-//					if (entry != null) {
-//						reference = new Reference(entry);
-//					}
-
 				}
 				catch (NullPointerException e) {
 					LogUtils.warn("org.docear.plugin.bibtex.jabrefe.JabRefAttributes.updateReferenceToNode: " + e.getMessage());
@@ -264,7 +231,8 @@ public class JabRefAttributes {
 				}
 			}
 
-			NodeUtilities.setAttributeValue(node, reference.getKey().getName(), reference.getKey().getValue());
+			NodeUtilities.setAttributeValue(node, reference.getKey().getName(), reference.getKey().getValue(), true);
+			NodeUtilities.updateAttributeList();
 
 			NodeAttributeTableModel attributeTable = (NodeAttributeTableModel) node.getExtension(NodeAttributeTableModel.class);
 			if (attributeTable == null) {
@@ -304,7 +272,12 @@ public class JabRefAttributes {
 			int i = attributes.size();
 			for (Item item : inserts) {
 				changes = true;
-				AttributeController.getController(MModeController.getMModeController()).performInsertRow(attributeTable, i, item.getName(), item.getValue());
+				try {
+					AttributeController.getController(MModeController.getMModeController()).performInsertRow(attributeTable, i, item.getName(), item.getValue());
+				}
+				catch (Throwable ignore) {
+					// probably just another swing with threading issue that can (hopefully) be ignored
+				}
 				i++;
 			}
 		}

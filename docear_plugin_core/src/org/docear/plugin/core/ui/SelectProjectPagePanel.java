@@ -7,11 +7,9 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
-import javax.swing.JLabel;
-import javax.swing.text.EditorKit;
 
 import org.docear.plugin.core.ui.wizard.AWizardPage;
-import org.docear.plugin.core.ui.wizard.WizardContext;
+import org.docear.plugin.core.ui.wizard.WizardSession;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.map.MapModel;
 import org.freeplane.plugin.workspace.WorkspaceController;
@@ -89,7 +87,7 @@ public class SelectProjectPagePanel extends AWizardPage {
 	}
 	
 	@Override
-	public void preparePage(WizardContext context) {
+	public void preparePage(WizardSession context) {
 		context.setWizardTitle(getTitle());
 		context.getBackButton().setText(TextUtils.getText("docear.setup.wizard.second.select.label"));
 		getRootPane().setDefaultButton((JButton) context.getBackButton());

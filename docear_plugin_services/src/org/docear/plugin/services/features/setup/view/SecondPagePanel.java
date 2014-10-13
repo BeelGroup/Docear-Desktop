@@ -20,7 +20,7 @@ import org.docear.plugin.core.ui.MultiLineActionLabel;
 import org.docear.plugin.core.ui.components.DocearHTMLPanel;
 import org.docear.plugin.core.ui.components.DocearLicencePanel;
 import org.docear.plugin.core.ui.wizard.AWizardPage;
-import org.docear.plugin.core.ui.wizard.WizardContext;
+import org.docear.plugin.core.ui.wizard.WizardSession;
 import org.docear.plugin.services.features.user.DocearLocalUser;
 import org.docear.plugin.services.features.user.DocearUser;
 import org.freeplane.core.util.TextUtils;
@@ -37,7 +37,7 @@ public class SecondPagePanel extends AWizardPage {
 	
 	private static final long serialVersionUID = 1L;
 	private JCheckBox chckbxAcceptTOS;
-	private WizardContext cachedContext;
+	private WizardSession cachedContext;
 	private JCheckBox chckbxAcceptUsageTerms;
 	private JRadioButton rdbtnDataFromDocear;
 	private JRadioButton rdbtnImportFromHarddisk;
@@ -342,7 +342,7 @@ public class SecondPagePanel extends AWizardPage {
 		}
 	}
 	
-	private void enableControls(WizardContext context) {
+	private void enableControls(WizardSession context) {
 		if(context != null) {
 			context.getNextButton().setText(TextUtils.getText("docear.setup.wizard.controls.next"));
 			if(isTermsAccepted() && getOption() != null) {
@@ -458,7 +458,7 @@ public class SecondPagePanel extends AWizardPage {
 
 
 	@Override
-	public void preparePage(WizardContext context) {
+	public void preparePage(WizardSession context) {
 		this.cachedContext = context;
 		context.setWizardTitle(getTitle());
 		if(context.get(DocearLocalUser.class) != null) {

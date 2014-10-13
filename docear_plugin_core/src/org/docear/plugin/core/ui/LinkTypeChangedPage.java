@@ -7,7 +7,7 @@ import java.awt.event.ActionListener;
 import java.net.URI;
 
 import org.docear.plugin.core.ui.wizard.AWizardPage;
-import org.docear.plugin.core.ui.wizard.WizardContext;
+import org.docear.plugin.core.ui.wizard.WizardSession;
 import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.Controller;
@@ -62,7 +62,7 @@ public class LinkTypeChangedPage extends AWizardPage {
 	}
 
 	@Override
-	public void preparePage(WizardContext context) {
+	public void preparePage(WizardSession context) {
 		context.getNextButton().setText(TextUtils.getText("ok"));
 	}
 

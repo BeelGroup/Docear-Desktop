@@ -191,10 +191,12 @@ public class RibbonActionContributorFactory implements IRibbonContributorFactory
 			icon = ImageWrapperResizableIcon.getIcon(ico.getImage(), new Dimension(ico.getIconWidth(), ico.getIconHeight()));
 		}
 		else {
-			String resource = ResourceController.getResourceController().getProperty(action.getIconKey(), null);
+			String resource = ResourceController.getResourceController().getProperty(action.getIconKey(), null);			
 			if (resource != null) {
 				URL location = ResourceController.getResourceController().getResource(resource);
-				icon = ImageWrapperResizableIcon.getIcon(location, new Dimension(16, 16));
+				if (location != null) {
+					icon = ImageWrapperResizableIcon.getIcon(location, new Dimension(16, 16));
+				}
 			}
 		}
 		if(icon == null) {

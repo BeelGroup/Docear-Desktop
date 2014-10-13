@@ -30,7 +30,6 @@ import org.freeplane.core.util.LogUtils;
 import org.freeplane.n3.nanoxml.XMLElement;
 import org.freeplane.n3.nanoxml.XMLException;
 import org.freeplane.plugin.workspace.URIUtils;
-import org.freeplane.plugin.workspace.WorkspaceController;
 import org.freeplane.plugin.workspace.creator.ActionCreator;
 import org.freeplane.plugin.workspace.creator.FolderCreator;
 import org.freeplane.plugin.workspace.creator.FolderTypePhysicalCreator;

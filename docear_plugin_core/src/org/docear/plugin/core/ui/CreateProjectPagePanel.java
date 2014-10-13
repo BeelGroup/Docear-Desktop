@@ -32,7 +32,7 @@ import javax.swing.filechooser.FileFilter;
 
 import org.docear.plugin.core.ui.components.ComponentGroup;
 import org.docear.plugin.core.ui.wizard.AWizardPage;
-import org.docear.plugin.core.ui.wizard.WizardContext;
+import org.docear.plugin.core.ui.wizard.WizardSession;
 import org.docear.plugin.core.workspace.actions.DocearProjectSettings;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.freeplane.core.util.LogUtils;
@@ -58,7 +58,7 @@ public class CreateProjectPagePanel extends AWizardPage {
 	private JTextField txtProjectName_1;
 	private JTextField txtProjectHome_1;
 	private JTextField txtBibFile;
-	private WizardContext cachedContext;
+	private WizardSession cachedContext;
 	private JRadioButton rdbtnStartFromScratch;
 	private JRadioButton rdbtnUseExisting;
 	private JRadioButton rdbtnImportMendeley;
@@ -527,7 +527,7 @@ public class CreateProjectPagePanel extends AWizardPage {
 		}
 	}
 	
-	private void enableControls(WizardContext context) {
+	private void enableControls(WizardSession context) {
 		if(context != null) {
 			if(nameExistsInWorkspace(getProjectName())) {
 				lblWarning.setText(TextUtils.getText("docear.setup.wizard.create.warn1"));
@@ -809,7 +809,7 @@ public class CreateProjectPagePanel extends AWizardPage {
 	}
 
 	@Override
-	public void preparePage(WizardContext context) {
+	public void preparePage(WizardSession context) {
 		this.cachedContext = context;
 		context.setWizardTitle(getTitle());
 		context.getNextButton().setText(TextUtils.getText("docear.setup.wizard.controls.finish"));

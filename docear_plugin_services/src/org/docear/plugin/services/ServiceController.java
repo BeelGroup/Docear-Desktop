@@ -12,10 +12,11 @@ import org.docear.plugin.core.event.DocearEventType;
 import org.docear.plugin.core.event.IDocearEventListener;
 import org.docear.plugin.core.features.DocearFileBackupController;
 import org.docear.plugin.core.ui.OverlayViewport;
+import org.docear.plugin.services.features.documentretrieval.documentsearch.actions.ShowDocumentSearchAction;
+import org.docear.plugin.services.features.documentretrieval.recommendations.RecommendationsController;
+import org.docear.plugin.services.features.documentretrieval.recommendations.actions.ShowRecommendationsAction;
 import org.docear.plugin.services.features.io.DocearConnectionProvider;
 import org.docear.plugin.services.features.payment.DocearPaymentController;
-import org.docear.plugin.services.features.recommendations.RecommendationsController;
-import org.docear.plugin.services.features.recommendations.actions.ShowRecommendationsAction;
 import org.docear.plugin.services.features.setup.action.DocearSetupWizardAction;
 import org.docear.plugin.services.features.update.UpdateCheck;
 import org.docear.plugin.services.features.update.action.DocearCheckForUpdatesAction;
@@ -47,7 +48,7 @@ public class ServiceController {
 
 	private final Map<Class<? extends ADocearServiceFeature>, ADocearServiceFeature> features = new LinkedHashMap<Class<? extends ADocearServiceFeature>, ADocearServiceFeature>();
 	
-	private ServiceController(ModeController modeController) {
+	private ServiceController(ModeController modeController) {		
 		DocearFileBackupController.setFileBackupHandler(new UserFileBackupHandler());
 		WorkspaceController.getModeExtension(modeController).setModel(new DocearWorkspaceModel());
 		initListeners(modeController);
@@ -59,7 +60,14 @@ public class ServiceController {
 		Controller.getCurrentController().addAction(new DocearClearUserDataAction());
 		Controller.getCurrentController().addAction(new DocearCheckForUpdatesAction());
 		Controller.getCurrentController().addAction(new ShowRecommendationsAction());
+		Controller.getCurrentController().addAction(new ShowDocumentSearchAction());		
 		Controller.getCurrentController().addAction(new DocearBackupOpenLocation());
+	}
+	
+	private void initializeRibbon(ModeController modeController) {
+		modeController.getUserInputListenerFactory().getRibbonBuilder().updateRibbon(ServiceController.class.getResource("/xml/ribbons.xml"));
+		Controller.getCurrentController().getResourceController().setDefaultProperty(ShowRecommendationsAction.TYPE+".icon", "/images/docear/services/star.png");
+		Controller.getCurrentController().getResourceController().setDefaultProperty(ShowDocumentSearchAction.TYPE+".icon", "/images/docear/services/document_search.png");
 	}
 
 	protected static void initialize(ModeController modeController) {
@@ -129,6 +137,7 @@ public class ServiceController {
 		final URL defaults = this.getClass().getResource(ResourceController.PLUGIN_DEFAULTS_RESOURCE);
 		if (defaults == null) throw new RuntimeException("cannot open " + ResourceController.PLUGIN_DEFAULTS_RESOURCE);
 		Controller.getCurrentController().getResourceController().addDefaults(defaults);
+		initializeRibbon(modeController);
 		
 		DocearController.getController().getEventQueue().addEventListener(new IDocearEventListener() {		
 			public void handleEvent(DocearEvent event) {

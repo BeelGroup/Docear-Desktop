@@ -7,7 +7,7 @@ import javax.swing.JRadioButton;
 
 import org.docear.plugin.core.ui.MultiLineActionLabel;
 import org.docear.plugin.core.ui.wizard.AWizardPage;
-import org.docear.plugin.core.ui.wizard.WizardContext;
+import org.docear.plugin.core.ui.wizard.WizardSession;
 import org.docear.plugin.services.features.user.DocearUser;
 import org.freeplane.core.util.TextUtils;
 
@@ -92,7 +92,7 @@ public class KeepWorkspaceSettingsPagePanel extends AWizardPage {
 	}
 
 	@Override
-	public void preparePage(WizardContext context) {
+	public void preparePage(WizardSession context) {
 		DocearUser user = context.get(DocearUser.class);
 		if(user != null) {
 			keepLabel.setText(TextUtils.format("docear.wizard.registration.keep_workspace", user.getName()));

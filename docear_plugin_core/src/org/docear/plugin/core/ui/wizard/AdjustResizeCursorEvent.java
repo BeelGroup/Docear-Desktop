@@ -2,6 +2,10 @@ package org.docear.plugin.core.ui.wizard;
 
 import java.awt.Component;
 
+/**
+ * @author genzmehr@docear.org
+ *
+ */
 public class AdjustResizeCursorEvent {
 	private boolean consumed = false;
 	private final Component component;

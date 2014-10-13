@@ -123,36 +123,35 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		boolean ret = false;
 		this.currentFile = annotation.getSource();
 		PDDocument document = getPDDocument(annotation.getSource());
-		if(document == null){
-			ret = false;
-		}
-		try{
-			this.setImportAll(true);
-			this.setPDObject(true);
-			
-			this.importAnnotations(document, annotations);
-			this.importBookmarks(document, annotations);
-			
-		} catch(Exception e){
-			LogUtils.warn(e);
-		} finally {
-			this.setImportAll(true);
-			this.setPDObject(false);
-			AnnotationModel result = this.searchAnnotation(annotations, annotation);
-			if(result != null){
-				Object annotationObject = result.getAnnotationObject();
-				if(annotationObject != null && annotationObject instanceof PDOutlineItem){
-					((PDOutlineItem)annotationObject).setTitle(newTitle);
-					ret = true;
+		if(document != null){
+			try{
+				this.setImportAll(true);
+				this.setPDObject(true);
+				
+				this.importAnnotations(document, annotations);
+				this.importBookmarks(document, annotations);
+				
+			} catch(Exception e){
+				LogUtils.warn(e);
+			} finally {
+				this.setImportAll(true);
+				this.setPDObject(false);
+				AnnotationModel result = this.searchAnnotation(annotations, annotation);
+				if(result != null){
+					Object annotationObject = result.getAnnotationObject();
+					if(annotationObject != null && annotationObject instanceof PDOutlineItem){
+						((PDOutlineItem)annotationObject).setTitle(newTitle);
+						ret = true;
+					}
+					if(annotationObject != null && annotationObject instanceof PDAnnotation){
+						((PDAnnotation)annotationObject).setContents(newTitle);
+						ret = true;
+					}
+					document.save();
 				}
-				if(annotationObject != null && annotationObject instanceof PDAnnotation){
-					((PDAnnotation)annotationObject).setContents(newTitle);
-					ret = true;
+				if(document != null) {
+					document.close();
 				}
-				document.save();
-			}
-			if(document != null) {
-				document.close();
 			}
 		}
 		return ret;
@@ -298,22 +297,23 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		if(this.removeLinebreaksDialogResult == JOptionPane.CANCEL_OPTION) return;
 		
 		String oldText = annotation.getTitle();
-		String text = removeLinebreaks(annotation.getTitle());
+		String text = removeLinebreaks(annotation.getTitle(), false);
 		
 		if(text.equals(annotation.getTitle())) {
 			return;
 		}
-		
-		boolean removeFromBookmarks = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.REMOVE_LINEBREAKS_BOOKMARKS_KEY);
-		boolean removeFromComments = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.REMOVE_LINEBREAKS_COMMENTS_KEY);
-		boolean removeFromHighlights = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.REMOVE_LINEBREAKS_HIGHLIGHTED_KEY);
-		if((annotation.getAnnotationType() == AnnotationType.BOOKMARK && !removeFromBookmarks)
-				|| (annotation.getAnnotationType() == AnnotationType.COMMENT && !removeFromComments)
-				|| (annotation.getAnnotationType() == AnnotationType.HIGHLIGHTED_TEXT && !removeFromHighlights)
-				) {
-			return;
-		}
-		
+
+		// Existing properties are not used yet --> help for Marcel  :)
+//		boolean removeFromBookmarks = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.REMOVE_LINEBREAKS_BOOKMARKS_KEY);
+//		boolean removeFromComments = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.REMOVE_LINEBREAKS_COMMENTS_KEY);
+//		boolean removeFromHighlights = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.REMOVE_LINEBREAKS_HIGHLIGHTED_KEY);
+//		if((annotation.getAnnotationType() == AnnotationType.BOOKMARK && !removeFromBookmarks)
+//				|| (annotation.getAnnotationType() == AnnotationType.COMMENT && !removeFromComments)
+//				|| (annotation.getAnnotationType() == AnnotationType.HIGHLIGHTED_TEXT && !removeFromHighlights)
+//				) {
+//			return;
+//		}
+
 		if(annotationObject != null && annotationObject instanceof PDOutlineItem){
 			((PDOutlineItem)annotationObject).setTitle(text);
 			annotation.setTitle(text);
@@ -373,9 +373,9 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		}
 	}
 	
-	public static String removeLinebreaks(String text) {
+	public static String removeLinebreaks(String text, boolean forced) {
 		boolean removeLinebreaks = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.REMOVE_LINEBREAKS_KEY);
-		if(removeLinebreaks) {
+		if(removeLinebreaks || forced) {
 			boolean keepDoubleLinebreaks = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.KEEP_DOUBLE_LINEBREAKS_KEY);
 			boolean addSpaces = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.ADD_SPACES_KEY);
 			boolean removeDashes = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.REMOVE_DASHES_KEY);

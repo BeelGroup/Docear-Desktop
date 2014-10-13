@@ -40,7 +40,6 @@ import org.docear.plugin.bibtex.actions.CopyBibtexToClipboard;
 import org.docear.plugin.bibtex.actions.CopyCiteKeyToClipboard;
 import org.docear.plugin.bibtex.actions.ReferenceQuitAction;
 import org.docear.plugin.bibtex.actions.RemoveReferenceAction;
-import org.docear.plugin.bibtex.actions.RenameByMetaData;
 import org.docear.plugin.bibtex.actions.SelectInReferenceManagerAction;
 import org.docear.plugin.bibtex.actions.ShowJabrefPreferencesAction;
 import org.docear.plugin.bibtex.actions.UpdateReferencesAllMapsAction;
@@ -98,7 +97,6 @@ import org.freeplane.features.styles.MapStyle;
 import org.freeplane.features.ui.INodeViewLifeCycleListener;
 import org.freeplane.plugin.workspace.URIUtils;
 import org.freeplane.plugin.workspace.WorkspaceController;
-import org.freeplane.plugin.workspace.actions.AWorkspaceAction;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenu;
 import org.freeplane.plugin.workspace.components.menu.WorkspacePopupMenuBuilder;
 import org.freeplane.plugin.workspace.features.AWorkspaceModeExtension;
@@ -170,7 +168,7 @@ public class ReferencesController extends ALanguageController implements IDocear
 	private IProjectSelectionListener projectSelectionListener;
 	private Runnable runOnce;
 	private IProjectModelListener prjModelListener;
-	private AWorkspaceAction renameByMetaData = new RenameByMetaData();
+	//private AWorkspaceAction renameByMetaData = new RenameByMetaData();
 
 	public ReferencesController(ModeController modeController) {
 		super();
@@ -684,7 +682,6 @@ public class ReferencesController extends ALanguageController implements IDocear
 			public void updateMenus(ModeController modeController, MenuBuilder builder) {
 				
 				String referencesCategory = PdfUtilitiesController.getParentCategory(builder, PdfUtilitiesController.REFERENCE_CATEGORY);
-				String pdfCategory = PdfUtilitiesController.getParentCategory(builder, PdfUtilitiesController.PDF_CATEGORY);
 				
 				//RIBBONS builder.addMenuItem
 				builder.addMenuItem(MENU_BAR + TOOLS_MENU, new JMenu(TextUtils.getText(REFERENCE_MANAGEMENT_MENU_LANG_KEY)),

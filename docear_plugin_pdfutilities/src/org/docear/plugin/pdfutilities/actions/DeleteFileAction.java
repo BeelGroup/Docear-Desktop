@@ -11,6 +11,7 @@ import javax.swing.JOptionPane;
 
 import org.docear.plugin.core.mindmap.MindmapFileRemovedUpdater;
 import org.docear.plugin.core.mindmap.MindmapUpdateController;
+import org.docear.plugin.core.ui.wizard.Wizard;
 import org.docear.plugin.pdfutilities.util.MonitoringUtils;
 import org.freeplane.core.ui.EnabledAction;
 import org.freeplane.core.ui.components.UITools;
@@ -42,6 +43,7 @@ public class DeleteFileAction extends DocearAction {
 		
 		Set<File> deletedFiles = new HashSet<File>();
 		MapModel map = null;
+		Integer response = null;
 		for (NodeModel node : selection) {
 			URI uri = URIUtils.getAbsoluteURI(node);
 			if (uri == null) {
@@ -50,12 +52,21 @@ public class DeleteFileAction extends DocearAction {
 			if(map == null) {
 				map = node.getMap();
 			}
-			File file = URIUtils.getFile(uri);
-			if(!file.delete()){
-				JOptionPane.showMessageDialog(UITools.getFrame(), TextUtils.getText("DeleteFileAction.DeleteFailed.Message"), TextUtils.getText("DeleteFileAction.DeleteFailed.Title"), JOptionPane.WARNING_MESSAGE);
+			if(response == null) {
+				response = Wizard.showConfirmDialog(TextUtils.getText("DeleteFileAction.confirm.text"));
+			}
+			if(response == Wizard.OK_OPTION) {
+				File file = URIUtils.getFile(uri);
+				if(!file.delete()){
+					JOptionPane.showMessageDialog(UITools.getFrame(), TextUtils.getText("DeleteFileAction.DeleteFailed.Message"), TextUtils.getText("DeleteFileAction.DeleteFailed.Title"), JOptionPane.WARNING_MESSAGE);
+					return;
+				}			
+				deletedFiles.add(file);
+			}
+			else {
 				return;
-			}			
-			deletedFiles.add(file);			
+			}
+			
 		}
 				
 		MindmapUpdateController ctrl = new MindmapUpdateController();

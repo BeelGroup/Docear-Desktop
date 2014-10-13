@@ -110,6 +110,7 @@ import com.sun.jna.platform.win32.WinDef;
 
 
 public class CoreConfiguration extends ALanguageController {
+	private static boolean enableJnaUsage = true;
 
 	private static final String DOCEAR = "Docear";
 	private static final String APPLICATION_NAME = "ApplicationName";
@@ -241,9 +242,9 @@ public class CoreConfiguration extends ALanguageController {
 				
 				@Override
 				public void exec(String command, boolean waitFor) throws IOException {
-					if (Compat.isWindowsOS()) {
+					if (Compat.isWindowsOS() && enableJnaUsage) {
 						LogUtils.info("using jna to execute " + command);
-						windowsNativeExec(command, waitFor);
+						windowsNativeExec(command, null, waitFor);
 					}
 					else {
 						LogUtils.info("execute " + command);
@@ -253,14 +254,14 @@ public class CoreConfiguration extends ALanguageController {
 				}
 				
 				public void exec(String[] command, boolean waitFor) throws IOException {
-					if (Compat.isWindowsOS()) {
+					if (Compat.isWindowsOS() && enableJnaUsage) {
 						String commandString = command[0];
 						for (int i=1; i<command.length; i++) {
 							commandString += " " + command[i];
 						}
 						LogUtils.info("using jna to execute: " + commandString);
 						try {
-							windowsNativeExec(commandString, waitFor);
+							windowsNativeExec(commandString, command, waitFor);
 						} catch (Exception e) {
 							throw new IOException(e.getMessage()+" for command: "+commandString);
 						}
@@ -272,36 +273,49 @@ public class CoreConfiguration extends ALanguageController {
 					}
 				}
 				
-				private void windowsNativeExec(String command, boolean waitFor) throws IllegalStateException {
-					WinBase.PROCESS_INFORMATION.ByReference processInfo = new WinBase.PROCESS_INFORMATION.ByReference();
-					WinBase.STARTUPINFO startupInfo = new WinBase.STARTUPINFO();
-
+				private void windowsNativeExec(String commantString, String[] commandArray, boolean waitFor) throws IllegalStateException, IOException {
 					try {
-			    		if (!Kernel32.INSTANCE.CreateProcess(
-			    		    null,           // Application name, not needed if supplied in command line
-			    		    command,        // Command line
-			    		    null,           // Process security attributes
-			    		    null,           // Thread security attributes
-			    		    true,           // Inherit handles
-			    		    new WinDef.DWORD(0) ,              // Creation flags
-			    		    null,           // Environment
-			    		    null,           // Directory
-			    		    startupInfo,
-			    		    processInfo)) {
-			    		    throw new IllegalStateException("Error creating process. Last error: " +
-			    		        Kernel32.INSTANCE.GetLastError());
-			    		}
-			    
-			    		if (waitFor) {
-			    			Kernel32.INSTANCE.WaitForSingleObject(processInfo.hProcess, Kernel32.INFINITE);
-			    		}
+    					WinBase.PROCESS_INFORMATION.ByReference processInfo = new WinBase.PROCESS_INFORMATION.ByReference();
+    					WinBase.STARTUPINFO startupInfo = new WinBase.STARTUPINFO();
+    
+    					try {
+    			    		if (!Kernel32.INSTANCE.CreateProcess(
+    			    		    null,           // Application name, not needed if supplied in command line
+    			    		    commantString,        // Command line
+    			    		    null,           // Process security attributes
+    			    		    null,           // Thread security attributes
+    			    		    true,           // Inherit handles
+    			    		    new WinDef.DWORD(0) ,              // Creation flags
+    			    		    null,           // Environment
+    			    		    null,           // Directory
+    			    		    startupInfo,
+    			    		    processInfo)) {
+    			    		    throw new IllegalStateException("Error creating process. Last error: " +
+    			    		        Kernel32.INSTANCE.GetLastError());
+    			    		}
+    			    
+    			    		if (waitFor) {
+    			    			Kernel32.INSTANCE.WaitForSingleObject(processInfo.hProcess, Kernel32.INFINITE);
+    			    		}
+    					}
+    					finally {
+    			    		// The CreateProcess documentation indicates that it is very important to 
+    			    		// close the returned handles
+    			    		Kernel32.INSTANCE.CloseHandle(processInfo.hThread);
+    			    		Kernel32.INSTANCE.CloseHandle(processInfo.hProcess);
+    					}
 					}
-					finally {
-			    		// The CreateProcess documentation indicates that it is very important to 
-			    		// close the returned handles
-			    		Kernel32.INSTANCE.CloseHandle(processInfo.hThread);
-			    		Kernel32.INSTANCE.CloseHandle(processInfo.hProcess);
-					}
+    				catch(NoClassDefFoundError e) {
+    					LogUtils.warn(e);
+    					
+    					enableJnaUsage = false;
+    					if (commandArray != null) {
+    						exec(commandArray, waitFor);
+    					}
+    					else {
+    						exec(commantString, waitFor);
+    					}
+    				}
 				}
 				
 				private void waiting(boolean waitFor, Process proc) throws IOException {

@@ -4,7 +4,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 
 import org.docear.plugin.core.ui.wizard.Wizard;
-import org.docear.plugin.core.ui.wizard.WizardContext;
+import org.docear.plugin.core.ui.wizard.WizardSession;
 import org.docear.plugin.core.ui.wizard.WizardPageDescriptor;
 import org.docear.plugin.services.DocearServiceException;
 import org.docear.plugin.services.DocearServiceException.DocearServiceExceptionType;
@@ -46,11 +46,11 @@ public class DocearUserLoginAction extends AWorkspaceAction {
 				int ret = wiz.show();
 				if(ret == Wizard.OK_OPTION) {
 					DocearUser user;
-					if(wiz.getContext().get(DocearLocalUser.class) != null) {
+					if(wiz.getSession().get(DocearLocalUser.class) != null) {
 						user = DocearUserController.LOCAL_USER;
 					}
 					else {
-						user = wiz.getContext().get(DocearUser.class);
+						user = wiz.getSession().get(DocearUser.class);
 					}
 					if(!user.equals(DocearUserController.getActiveUser())) {
 						DocearUser clonedUser = user.clone();
@@ -72,18 +72,18 @@ public class DocearUserLoginAction extends AWorkspaceAction {
 	private static void initWizard(Wizard wizard, String message) {
 		//registration page
 		WizardPageDescriptor desc = new WizardPageDescriptor("page.login", new LoginPagePanel(message)) {
-			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
+			public WizardPageDescriptor getNextPageDescriptor(WizardSession context) {
 				return context.getModel().getPage("page.verify.login");
 			}
 		};
 		desc.getPage().setPreferredSize(new Dimension(640,320));
 		wizard.registerWizardPanel(desc);
 		wizard.setStartPage(desc.getIdentifier());
-		wizard.getContext().set(DocearUser.class, DocearUserController.getActiveUser());
+		wizard.getSession().set(DocearUser.class, DocearUserController.getActiveUser());
 		
 		//login verification
 		desc = new WizardPageDescriptor("page.verify.login", new VerifyServicePagePanel("Log-In", getLoginVerificationTask(), true)) {
-			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
+			public WizardPageDescriptor getNextPageDescriptor(WizardSession context) {
 				return Wizard.FINISH_PAGE;
 			}
 		};

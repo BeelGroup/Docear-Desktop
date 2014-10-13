@@ -3,6 +3,10 @@ package org.docear.plugin.core.ui.wizard;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * @author genzmehr@docear.org
+ *
+ */
 public class WizardController implements ActionListener {
 
 	private final Wizard wizard;
@@ -29,27 +33,27 @@ public class WizardController implements ActionListener {
 			wizard.cancel();
 		}
 		else {
-			if(e.getSource().equals(wizard.getContext().getNextButton())) {
-				WizardPageDescriptor desc = wizard.getContext().getCurrentDescriptor().getNextPageDescriptor(wizard.getContext());
+			if(e.getSource().equals(wizard.getSession().getNextButton())) {
+				WizardPageDescriptor desc = wizard.getSession().getCurrentDescriptor().getNextPageDescriptor(wizard.getSession());
 				if(desc == null || Wizard.FINISH_PAGE.equals(desc)) {
 					wizard.finish();
 				}
 				else {
-					wizard.getContext().getTraversalLog().add(wizard.getContext().getCurrentDescriptor());
+					wizard.getSession().getTraversalLog().add(wizard.getSession().getCurrentDescriptor());
 					wizard.setCurrentPage(desc.getIdentifier());
 				}
 			}
-			else if(e.getSource().equals(wizard.getContext().getBackButton())) {
-				WizardPageDescriptor desc = wizard.getContext().getCurrentDescriptor().getBackPageDescriptor(wizard.getContext());
+			else if(e.getSource().equals(wizard.getSession().getBackButton())) {
+				WizardPageDescriptor desc = wizard.getSession().getCurrentDescriptor().getBackPageDescriptor(wizard.getSession());
 				if(desc == null) {
-					wizard.getContext().getBackButton().setEnabled(false);
+					wizard.getSession().getBackButton().setEnabled(false);
 				}
 				else {
 					wizard.setCurrentPage(desc.getIdentifier());
 				}
 			}
-			else if(e.getSource().equals(wizard.getContext().getSkipButton())) {
-				WizardPageDescriptor desc = wizard.getContext().getCurrentDescriptor().getSkipPageDescriptor(wizard.getContext());
+			else if(e.getSource().equals(wizard.getSession().getSkipButton())) {
+				WizardPageDescriptor desc = wizard.getSession().getCurrentDescriptor().getSkipPageDescriptor(wizard.getSession());
 				if(desc == null || Wizard.FINISH_PAGE.equals(desc)) {
 					wizard.finish();
 				}

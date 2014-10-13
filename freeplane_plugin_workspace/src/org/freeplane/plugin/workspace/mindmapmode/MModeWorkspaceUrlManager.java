@@ -82,7 +82,15 @@ public class MModeWorkspaceUrlManager extends MFileManager {
 				URL url = urlConnection.getURL();
 				URI absoluteUri = url.toURI();
 				if("file".equalsIgnoreCase(absoluteUri.getScheme())) {
-					return new File(absoluteUri).getCanonicalFile();
+					File file = new File(absoluteUri);
+					try {
+						file = file.getCanonicalFile();
+					}
+					catch(IOException ignore) {
+						LogUtils.info("Exception in org.freeplane.plugin.workspace.mindmapmode.MModeWorkspaceUrlManager.getAbsoluteFile(map, uri) while canonicalizing the file " + file);
+						//can be ignored because it's just done to clear the path of unnecessary slashes etc.
+					}
+					return file;
 				}				
 			}
 		}
@@ -122,7 +130,14 @@ public class MModeWorkspaceUrlManager extends MFileManager {
 		URI preResolved = getAbsoluteURI(uri);
 		if(base == null || preResolved == null) {
 			if(preResolved != null) {
-				return preResolved.toURL();
+				try {
+					if (uri.isAbsolute()) {
+						return preResolved.toURL();
+					}
+				}
+				catch(Exception e) {
+					LogUtils.warn(e);
+				}
 			}
 			return null;
 		}

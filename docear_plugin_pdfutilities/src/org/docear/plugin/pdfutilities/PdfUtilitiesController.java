@@ -892,6 +892,7 @@ public class PdfUtilitiesController extends ALanguageController {
 				builder.addAction(MENU_BAR + PDF_MANAGEMENT_MENU, importAllChildAnnotationsAction, MenuBuilder.AS_CHILD);
 				builder.addAction(MENU_BAR + PDF_MANAGEMENT_MENU, importNewChildAnnotationsAction, MenuBuilder.AS_CHILD);
 				builder.addAction(MENU_BAR + PDF_MANAGEMENT_MENU, removeLinebreaksAction, MenuBuilder.AS_CHILD);
+				builder.addSeparator(MENU_BAR + PDF_MANAGEMENT_MENU, MenuBuilder.AS_CHILD);
 				builder.addAction(MENU_BAR + PDF_MANAGEMENT_MENU, deleteFileAction, MenuBuilder.AS_CHILD);
 
 				builder.addMenuItem(MENU_BAR + PDF_MANAGEMENT_MENU, new JMenu(TextUtils.getText(MONITORING_MENU_LANG_KEY)), MENU_BAR + MONITORING_MENU,
@@ -1017,6 +1018,7 @@ public class PdfUtilitiesController extends ALanguageController {
 				builder.addAction(pdfCategory + PDF_MANAGEMENT_MENU, importAllChildAnnotationsAction, MenuBuilder.AS_CHILD);
 				builder.addAction(pdfCategory + PDF_MANAGEMENT_MENU, importNewChildAnnotationsAction, MenuBuilder.AS_CHILD);
 				builder.addAction(pdfCategory + PDF_MANAGEMENT_MENU, removeLinebreaksAction, MenuBuilder.AS_CHILD);
+				builder.addSeparator(pdfCategory + PDF_MANAGEMENT_MENU, MenuBuilder.AS_CHILD);
 				builder.addAction(pdfCategory + PDF_MANAGEMENT_MENU, deleteFileAction, MenuBuilder.AS_CHILD);
 
 				importAllAnnotationsAction.initView(builder);

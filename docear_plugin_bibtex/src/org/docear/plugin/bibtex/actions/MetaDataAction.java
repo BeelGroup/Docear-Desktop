@@ -1,6 +1,5 @@
 package org.docear.plugin.bibtex.actions;
 
-import java.awt.event.ActionEvent;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,37 +10,23 @@ import net.sf.jabref.BibtexEntry;
 import org.docear.plugin.bibtex.dialogs.MetaDataExtractorPage;
 import org.docear.plugin.bibtex.dialogs.MetaDataOptionsPage;
 import org.docear.plugin.core.ui.wizard.Wizard;
-import org.docear.plugin.core.ui.wizard.WizardContext;
 import org.docear.plugin.core.ui.wizard.WizardPageDescriptor;
+import org.docear.plugin.core.ui.wizard.WizardSession;
 import org.freeplane.core.ui.components.UITools;
-import org.freeplane.plugin.workspace.actions.AWorkspaceAction;
 
-public class MetaDataAction/* extends AWorkspaceAction */{
-	
-	private static final long serialVersionUID = 1L;
-	
-	private static final String KEY = "MetaDataAction";
-
-	public MetaDataAction() {
-		//super(KEY);
-	}
-
-	/*@Override
-	public void actionPerformed(ActionEvent arg0) {
-		showDialog(null);
-	}*/
+public final class MetaDataAction {
 	
 	public static MetaDataActionObject showDialog(MetaDataActionObject result) {		
 		if(result.getResult().size() <= 0) return result;		
 		
 		final Wizard wiz = new Wizard(UITools.getFrame());
 		wiz.setResizable(true);
-		wiz.getContext().set(result.getClass(), result);
+		wiz.getSession().set(result.getClass(), result);
 				
 		WizardPageDescriptor metadataDescriptor = new WizardPageDescriptor("metadata", new MetaDataExtractorPage()) {
 
 			@Override
-			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
+			public WizardPageDescriptor getNextPageDescriptor(WizardSession context) {
 				MetaDataActionObject data = context.get(MetaDataActionObject.class);
 				while(data.getResultIterator().hasNext()){
 					data.setCurrentPDF(data.getResultIterator().next());
@@ -56,7 +41,7 @@ public class MetaDataAction/* extends AWorkspaceAction */{
 			}
 
 			@Override
-			public WizardPageDescriptor getBackPageDescriptor(WizardContext context) {
+			public WizardPageDescriptor getBackPageDescriptor(WizardSession context) {
 				wiz.cancel();
 				return Wizard.FINISH_PAGE;
 			}		
@@ -66,12 +51,12 @@ public class MetaDataAction/* extends AWorkspaceAction */{
 		WizardPageDescriptor optionsDescriptor = new WizardPageDescriptor("metadataOptions", new MetaDataOptionsPage()) {
 			
 			@Override
-			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
+			public WizardPageDescriptor getNextPageDescriptor(WizardSession context) {
 				return context.getModel().getPage("metadata");
 			}
 
 			@Override
-			public WizardPageDescriptor getBackPageDescriptor(WizardContext context) {				
+			public WizardPageDescriptor getBackPageDescriptor(WizardSession context) {				
 				return context.getModel().getPage("metadata");
 			}
 		};
@@ -80,11 +65,11 @@ public class MetaDataAction/* extends AWorkspaceAction */{
 		wiz.registerWizardPanel(metadataDescriptor);
 		wiz.registerWizardPanel(optionsDescriptor);		
 		
-		MetaDataActionObject data = wiz.getContext().get(MetaDataActionObject.class);
+		MetaDataActionObject data = wiz.getSession().get(MetaDataActionObject.class);
 		while(data.getResultIterator().hasNext()){
 			data.setCurrentPDF(data.getResultIterator().next());
 			if(data.getResult().get(data.getCurrentPDF()).isDuplicatePdf()){
-				MetaDataDuplicatePage.showDuplicateMessage(wiz.getContext());
+				MetaDataDuplicatePage.showDuplicateMessage(wiz.getSession());
 			}
 			else{
 				wiz.setStartPage(metadataDescriptor.getIdentifier());
@@ -92,17 +77,10 @@ public class MetaDataAction/* extends AWorkspaceAction */{
 				break;
 			}
 		}				
-		return wiz.getContext().get(MetaDataActionObject.class);
-	}
-	
-	
-
-	private static WizardPageDescriptor getBackMetaDataPageDescriptor(final Wizard wiz) {
-		wiz.cancel();
-		return Wizard.FINISH_PAGE;
+		return wiz.getSession().get(MetaDataActionObject.class);
 	}
 
-	public class MetaDataActionObject{
+	public static class MetaDataActionObject{
 		
 		private HashMap<URI, MetaDataActionResult> result = new HashMap<URI, MetaDataActionResult>();
 		private ArrayList<String> unhandledFiles = new ArrayList<String>();
@@ -137,7 +115,7 @@ public class MetaDataAction/* extends AWorkspaceAction */{
 		
 	}
 	
-	public class MetaDataActionResult{
+	public static class MetaDataActionResult {
 		
 		private BibtexEntry entryToUpdate;
 		private boolean duplicatePdf;

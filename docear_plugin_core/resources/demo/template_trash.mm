@@ -1,4 +1,4 @@
-<map version="docear 1.0" project="@PROJECT_ID@" project_last_home="file:/C:/Users/admin/Docear/projects/Demo%20files" type="trash" dcr_id="1377255079355_8mkgvh9a8l9nwiiml8bl7nure">
+<map version="docear 1.1" project="@PROJECT_ID@" project_last_home="file:/C:/Users/admin/Docear/projects/Demo%20files" type="trash" dcr_id="1377255079355_8mkgvh9a8l9nwiiml8bl7nure">
 <!--To view this file, download Docear - The Academic Literature Suite from http://www.docear.org -->
 <attribute_registry SHOW_ATTRIBUTES="hide"/>
 <node TEXT="Trash" FOLDED="false" ID="ID_1723255651" CREATED="1283093380553" MODIFIED="1377255079343" DCR_PRIVACY_LEVEL="DEMO"><hook NAME="MapStyle">

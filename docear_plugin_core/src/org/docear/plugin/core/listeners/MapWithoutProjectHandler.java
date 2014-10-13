@@ -8,7 +8,7 @@ import org.docear.plugin.core.features.DocearInternallyLoadedMap;
 import org.docear.plugin.core.ui.CreateProjectPagePanel;
 import org.docear.plugin.core.ui.SelectProjectPagePanel;
 import org.docear.plugin.core.ui.wizard.Wizard;
-import org.docear.plugin.core.ui.wizard.WizardContext;
+import org.docear.plugin.core.ui.wizard.WizardSession;
 import org.docear.plugin.core.ui.wizard.WizardPageDescriptor;
 import org.docear.plugin.core.workspace.actions.DocearNewProjectAction;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
@@ -28,14 +28,14 @@ public class MapWithoutProjectHandler {
 	
 	public static AWorkspaceProject showProjectSelectionWizard(MapModel map, boolean showCloseButton) {		
 		final Wizard wizard = new Wizard(UITools.getFrame());		
-		wizard.getContext().set(MapModel.class, map);		
+		wizard.getSession().set(MapModel.class, map);		
 		initWizard(wizard, showCloseButton);
 		
 		int ret = wizard.show();
 		if(ret == Wizard.OK_OPTION) {
-			DocearWorkspaceProject project = wizard.getContext().get(DocearWorkspaceProject.class);
-			Boolean contextObject = wizard.getContext().get(Boolean.class);			
-			if (wizard.getContext().get(Boolean.class) != null) {
+			DocearWorkspaceProject project = wizard.getSession().get(DocearWorkspaceProject.class);
+			Boolean contextObject = wizard.getSession().get(Boolean.class);			
+			if (wizard.getSession().get(Boolean.class) != null) {
 				if (contextObject) {
 					DocearNewProjectAction.createProject(project);
 				}
@@ -70,17 +70,17 @@ public class MapWithoutProjectHandler {
 	private static void initWizard(Wizard wizard, boolean showCloseButton) {
 		WizardPageDescriptor desc = new WizardPageDescriptor("page.project.select", new SelectProjectPagePanel(showCloseButton)) {
 			
-    		public WizardPageDescriptor getBackPageDescriptor(WizardContext context) {    			
+    		public WizardPageDescriptor getBackPageDescriptor(WizardSession context) {    			
     			AWorkspaceProject project = ((SelectProjectPagePanel)getPage()).getSelectedProject();
     			context.set(DocearWorkspaceProject.class, project);
     			return Wizard.FINISH_PAGE;
     		}
     		
-    		public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {    			
+    		public WizardPageDescriptor getNextPageDescriptor(WizardSession context) {    			
     			return context.getModel().getPage("page.project.create");
     		}
     		
-    		public WizardPageDescriptor getSkipPageDescriptor(WizardContext context) {
+    		public WizardPageDescriptor getSkipPageDescriptor(WizardSession context) {
     			context.set(Boolean.class, false);
     			return Wizard.FINISH_PAGE;
     		}
@@ -91,24 +91,24 @@ public class MapWithoutProjectHandler {
 		
 		//new project page
 		desc = new WizardPageDescriptor("page.project.create", new CreateProjectPagePanel()) {
-			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
+			public WizardPageDescriptor getNextPageDescriptor(WizardSession context) {
 				context.set(DocearWorkspaceProject.class, ((CreateProjectPagePanel) getPage()).getProject());
 				context.set(Boolean.class, true);
 				return Wizard.FINISH_PAGE;
 			}
 			
-			public WizardPageDescriptor getBackPageDescriptor(WizardContext context) {
+			public WizardPageDescriptor getBackPageDescriptor(WizardSession context) {
 				return context.getModel().getPage("page.project.select");
 			}
 			
 			@Override
-			public void aboutToDisplayPage(WizardContext context) {
+			public void aboutToDisplayPage(WizardSession context) {
 				super.aboutToDisplayPage(context);
 				context.getNextButton().setText(TextUtils.getText("docear.setup.wizard.controls.finish"));
 			}
 
 			@Override
-			public void displayingPage(WizardContext context) {
+			public void displayingPage(WizardSession context) {
 				super.displayingPage(context);
 				context.setWizardTitle(TextUtils.getText("workspace.action.node.new.project.dialog.title"));
 				context.getNextButton().setText(TextUtils.getText("docear.setup.wizard.controls.finish"));

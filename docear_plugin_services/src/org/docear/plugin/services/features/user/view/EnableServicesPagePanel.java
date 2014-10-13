@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.ui.wizard.AWizardPage;
-import org.docear.plugin.core.ui.wizard.WizardContext;
+import org.docear.plugin.core.ui.wizard.WizardSession;
 import org.docear.plugin.services.features.user.DocearUser;
 import org.freeplane.core.util.TextUtils;
 
@@ -197,7 +197,7 @@ public class EnableServicesPagePanel extends AWizardPage {
 	}
 
 	@Override
-	public void preparePage(WizardContext context) {
+	public void preparePage(WizardSession context) {
 		initFields(context.get(DocearUser.class));
 		context.setWizardTitle(getTitle());
 		context.getBackButton().setVisible(false);

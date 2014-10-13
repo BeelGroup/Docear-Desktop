@@ -2,6 +2,10 @@ package org.docear.plugin.core.ui.wizard;
 
 import java.util.Stack;
 
+/**
+ * @author genzmehr@docear.org
+ *
+ */
 public class WizardTraverseLog {
 	Stack<Object> pageTraverseLog = new Stack<Object>();
 	
@@ -19,7 +23,7 @@ public class WizardTraverseLog {
 		}
 	}
 	
-	public WizardPageDescriptor getPreviousPage(WizardContext context) {
+	public WizardPageDescriptor getPreviousPage(WizardSession context) {
 		try {
 			return context.getModel().getPage(pageTraverseLog.pop());
 		} catch (Exception e) {

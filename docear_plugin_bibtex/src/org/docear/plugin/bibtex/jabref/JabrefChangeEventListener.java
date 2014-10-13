@@ -25,8 +25,17 @@ public class JabrefChangeEventListener implements JabRefEventListener {
 			List<String> unhandledFileNames = JabRefCommons.addOrUpdateRefenceEntry(fileNames, dropRow, jabRefFrame, basePanel, entryTable, false);
 			
 			if (unhandledFileNames != null && unhandledFileNames.size() > 0 && evt.getHandler() != null) {
-				// apply default handling to all left over files
-				evt.getHandler().loadOrImportFiles(unhandledFileNames.toArray(new String[0]), dropRow);
+				for (int i = 0; i < unhandledFileNames.size(); i++) {
+					String file = unhandledFileNames.get(i);
+					if(file.toLowerCase().endsWith(".bib")) {
+						unhandledFileNames.remove(i);
+					}
+				}
+				
+				if(unhandledFileNames.size() > 0) {
+					// apply default handling to all left over files
+					evt.getHandler().loadOrImportFiles(unhandledFileNames.toArray(new String[0]), dropRow);
+				}
 			}
 			// prevent this event from further processing
 			event.consume();

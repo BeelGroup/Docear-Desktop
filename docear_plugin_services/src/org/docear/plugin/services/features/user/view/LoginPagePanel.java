@@ -13,7 +13,7 @@ import javax.swing.border.LineBorder;
 import org.docear.plugin.core.ui.components.LabeledPasswordField;
 import org.docear.plugin.core.ui.components.LabeledTextField;
 import org.docear.plugin.core.ui.wizard.AWizardPage;
-import org.docear.plugin.core.ui.wizard.WizardContext;
+import org.docear.plugin.core.ui.wizard.WizardSession;
 import org.docear.plugin.services.features.user.DocearLocalUser;
 import org.docear.plugin.services.features.user.DocearUser;
 import org.freeplane.core.util.TextUtils;
@@ -30,7 +30,7 @@ public class LoginPagePanel extends AWizardPage {
 	private LabeledTextField txtUsername;
 	private LabeledPasswordField pwdPasswd;
 
-	private WizardContext context;
+	private WizardSession context;
 
 	/***********************************************************************************
 	 * CONSTRUCTORS
@@ -166,7 +166,7 @@ public class LoginPagePanel extends AWizardPage {
 		
 	}
 	
-	private void enableButtons(WizardContext ctxt) {
+	private void enableButtons(WizardSession ctxt) {
 		DocearUser settings = context.get(DocearUser.class);
 		if((getUsername() == null || (getPassword() == null && (settings == null || settings.getAccessToken() == null))) ) {
 			ctxt.getNextButton().setEnabled(false);
@@ -184,7 +184,7 @@ public class LoginPagePanel extends AWizardPage {
 	}
 
 	@Override
-	public void preparePage(WizardContext context) {
+	public void preparePage(WizardSession context) {
 		this.context = context;
 		context.getBackButton().setText(TextUtils.getText("docear.setup.wizard.controls.skip2local"));
 		context.getBackButton().setEnabled(false);

@@ -19,7 +19,7 @@ import javax.swing.event.ChangeListener;
 import org.docear.plugin.core.ui.components.LabeledPasswordField;
 import org.docear.plugin.core.ui.components.LabeledTextField;
 import org.docear.plugin.core.ui.wizard.AWizardPage;
-import org.docear.plugin.core.ui.wizard.WizardContext;
+import org.docear.plugin.core.ui.wizard.WizardSession;
 import org.docear.plugin.services.features.user.DocearLocalUser;
 import org.docear.plugin.services.features.user.DocearUser;
 import org.freeplane.core.util.TextUtils;
@@ -44,7 +44,7 @@ public class StartPagePanel extends AWizardPage {
 
 	private JRadioButton rdbtnRegister;
 
-	private WizardContext context;
+	private WizardSession context;
 
 	/***********************************************************************************
 	 * CONSTRUCTORS
@@ -293,7 +293,7 @@ public class StartPagePanel extends AWizardPage {
 	}
 
 	@Override
-	public void preparePage(WizardContext context) {
+	public void preparePage(WizardSession context) {
 		this.context = context;
 		context.getBackButton().setText(TextUtils.getText("docear.setup.wizard.controls.skip2local"));
 		context.getNextButton().setText(TextUtils.getText("docear.setup.wizard.controls.next"));

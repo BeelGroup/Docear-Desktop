@@ -39,7 +39,7 @@ public class UploadThread extends DocearThread {
 				FiletransferClient client = new FiletransferClient("mindmaps");
 				while(jobBuffer.hasNext()) {
 					File file = jobBuffer.next();
-					if(file == null || !file.exists()) {
+					if(!file.exists()) {
 						jobBuffer.remove();
 						continue;
 					}
@@ -59,7 +59,7 @@ public class UploadThread extends DocearThread {
 					}
 				}
 			}
-		} catch (Exception e) {
+		} catch (Exception e) {			
 			DocearLogger.warn("org.docear.plugin.services.upload.UploadThread.execute(): "+e.getMessage());
 		}
 	}

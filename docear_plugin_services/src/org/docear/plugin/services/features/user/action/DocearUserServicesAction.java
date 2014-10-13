@@ -4,8 +4,9 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 
 import org.docear.plugin.core.ui.wizard.Wizard;
-import org.docear.plugin.core.ui.wizard.WizardContext;
+import org.docear.plugin.core.ui.wizard.WizardSession;
 import org.docear.plugin.core.ui.wizard.WizardPageDescriptor;
+import org.docear.plugin.services.features.documentretrieval.DocumentRetrievalController;
 import org.docear.plugin.services.features.user.DocearLocalUser;
 import org.docear.plugin.services.features.user.DocearUser;
 import org.docear.plugin.services.features.user.DocearUserController;
@@ -31,7 +32,7 @@ public class DocearUserServicesAction extends AWorkspaceAction {
 	
 	private static void initWizard(Wizard wizard) {
 		WizardPageDescriptor desc = new WizardPageDescriptor("page.services", new EnableServicesPagePanel()) {
-			public WizardPageDescriptor getNextPageDescriptor(WizardContext context) {
+			public WizardPageDescriptor getNextPageDescriptor(WizardSession context) {
 				context.get(DocearUser.class).setBackupEnabled(((EnableServicesPagePanel) getPage()).isOnlineBackupEnabled());
 				context.get(DocearUser.class).setSynchronizationEnabled(((EnableServicesPagePanel) getPage()).isSynchronizationEnabled());
 				context.get(DocearUser.class).setRecommendationsEnabled(((EnableServicesPagePanel) getPage()).isRecommendationsEnabled());
@@ -56,12 +57,16 @@ public class DocearUserServicesAction extends AWorkspaceAction {
 		
 		final Wizard wiz = new Wizard(UITools.getFrame());
 		initWizard(wiz);
-		wiz.getContext().set(DocearUser.class, user);
+		wiz.getSession().set(DocearUser.class, user);
 		new Thread(new Runnable() {
 			public void run() {
 				int ret = wiz.show();
 				if(ret == Wizard.OK_OPTION) {
 					WorkspaceController.save();
+					
+					if (DocumentRetrievalController.getController() != null && DocumentRetrievalController.getView() != null) {
+						DocumentRetrievalController.getController().refreshDocuments();
+					}
 				}
 			}
 		}).start();
