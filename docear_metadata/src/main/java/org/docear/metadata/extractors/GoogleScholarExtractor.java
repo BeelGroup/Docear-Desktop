@@ -6,6 +6,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -86,6 +88,7 @@ public class GoogleScholarExtractor extends HtmlDataExtractor {
 				if(requestNewCookie(cookieFileName) != null) return search(query);
 			}			
 		} catch (IOException e) {
+			System.out.println(e.getMessage());
 			logger.info(e.getMessage(), e);
 		}	
 		FetchedResultsEvent event = new FetchedResultsEvent(result);
@@ -146,22 +149,40 @@ public class GoogleScholarExtractor extends HtmlDataExtractor {
 									formData.put(inputElement.attr("name"), captcha);
 								}
 							}
-							Response captchaResponse = getConnection(BaseURL + "/sorry/" + formURL)
+							URI uri = new URI(e.getUrl());							
+							Response captchaResponse = getConnection(uri.getScheme() + "://" + uri.getHost() + "/sorry/" + formURL)
 															.data(formData)
 															.ignoreHttpErrors(true)
 															.referrer(e.getUrl())
 															.cookies(imgCookie)
+															.followRedirects(false)
 															.execute();
-							
-							Map<String, String> cookies = getCookies(cookieFileName);
-							cookies.putAll(captchaResponse.cookies());
-							saveCookies(cookies, cookieFileName);
+							if(captchaResponse.statusCode() == 302 && captchaResponse.hasHeader("Location")){
+								Map<String, String> cookies = getCookies(cookieFileName);
+								Response abuseResponse = getConnection(captchaResponse.header("Location"))
+															.ignoreHttpErrors(true)
+															.referrer(e.getUrl())
+															.cookies(cookies)
+															.followRedirects(false)
+															.execute();
+								Map<String, String> abuseCookies = abuseResponse.cookies();
+								cookies.putAll(abuseCookies);
+								saveCookies(cookies, cookieFileName);
+								System.out.println("Redirect Captcha");
+							}
+							else{
+								Map<String, String> cookies = requestNewCookie(cookieFileName);
+								saveCookies(cookies, cookieFileName);
+								System.out.println("Normal Captcha");
+							}
 							return true;
 						}
 					}
 				}												
 			}
 		}catch(IOException ex){
+			logger.info(e.getMessage(), e);
+		} catch (URISyntaxException e1) {
 			logger.info(e.getMessage(), e);
 		}
 		return false;
@@ -171,6 +192,12 @@ public class GoogleScholarExtractor extends HtmlDataExtractor {
 		Map<String, String> cookies = readCookies(fileName);
 		if(cookies == null){
 			cookies = requestNewCookie(fileName);				
+		}
+		else{
+			String gsp = cookies.get("GSP");
+			if(!gsp.endsWith(":CF=4")){
+				cookies.put("GSP", gsp + ":CF=4"); // :CF=4 enables the export to BibTex Link in the result list
+			}
 		}
 		return cookies;
 	}
