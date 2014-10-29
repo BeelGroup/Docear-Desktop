@@ -1,0 +1,4770 @@
+{
+    "Definitions":[
+        {"id":1,"detail":"Weight of moving object"},
+        {"id":2,"detail":"Weight of stationary object"},
+        {"id":3,"detail":"Length of moving object"},
+        {"id":4,"detail":"Length of stationary object"},
+        {"id":5,"detail":"Area of moving object"},
+        {"id":6,"detail":"Area of stationary object"},
+        {"id":7,"detail":"Volume of moving object"},
+        {"id":8,"detail":"Volume of stationary object"},
+        {"id":9,"detail":"Speed"},
+        {"id":10,"detail":"Force"},
+        {"id":11,"detail":"Tension, pressure"},
+        {"id":12,"detail":"Shapet"},
+        {"id":13,"detail":"Stability of object"},
+        {"id":14,"detail":"Strength"},
+        {"id":15,"detail":"Durability of moving object"},
+        {"id":16,"detail":"Durability of stationary object"},
+        {"id":17,"detail":"Temperature"},
+        {"id":18,"detail":"Brightness"},
+        {"id":19,"detail":"Energy spent by moving object"},
+        {"id":20,"detail":"Energy spent by stationary object"},
+        {"id":21,"detail":"Power"},
+        {"id":22,"detail":"Waste of energy"},
+        {"id":23,"detail":"Waste of substance"},
+        {"id":24,"detail":"Loss of information"},
+        {"id":25,"detail":"Waste of time"},
+        {"id":26,"detail":"Amount of substance"},
+        {"id":27,"detail":"Reliability"},
+        {"id":28,"detail":"Accuracy of measurement"},
+        {"id":29,"detail":"Accuracy of manufacturing"},
+        {"id":30,"detail":"Harmful factors acting on object"},
+        {"id":31,"detail":"Harmful side effects"},
+        {"id":32,"detail":"Manufacturability"},
+        {"id":33,"detail":"Convenience of use"},
+        {"id":34,"detail":"Repairability"},
+        {"id":35,"detail":"Adaptability"},
+        {"id":36,"detail":"Complexity of device"},
+        {"id":37,"detail":"Complexity of control"},
+        {"id":38,"detail":"Level of automation"},
+        {"id":39,"detail":"Productivity"}
+    ],
+
+    "Principles":[
+        {"id":1,"detail":"Segmentation"},
+        {"id":2,"detail":"Taking out"},
+        {"id":3,"detail":"Local quality"},
+        {"id":4,"detail":"Asymmetry"},
+        {"id":5,"detail":"Merging or combining"},
+        {"id":6,"detail":"Universality"},
+        {"id":7,"detail":"Nesting dolls"},
+        {"id":8,"detail":"Anti-weight"},
+        {"id":9,"detail":"Preliminary anti-action"},
+        {"id":10,"detail":"Preliminary action"},
+        {"id":11,"detail":"Beforehand cushioning"},
+        {"id":12,"detail":"Equipotential"},
+        {"id":13,"detail":"Other way around"},
+        {"id":14,"detail":"Spherical shapes"},
+        {"id":15,"detail":"Dynamism"},
+        {"id":16,"detail":"Partial or excessive action"},
+        {"id":17,"detail":"Moving to another dimension"},
+        {"id":18,"detail":"Mechanical vibration"},
+        {"id":19,"detail":"Periodic action"},
+        {"id":20,"detail":"Continuity of useful action"},
+        {"id":21,"detail":"Skipping / Rushing through"},
+        {"id":22,"detail":"Blessing in disguise (harm to benefit)"},
+        {"id":23,"detail":"Feedback"},
+        {"id":24,"detail":"Intermediary"},
+        {"id":25,"detail":"Self-service"},
+        {"id":26,"detail":"Copying"},
+        {"id":27,"detail":"Cheap disposable"},
+        {"id":28,"detail":"Replace a mechanical system"},
+        {"id":29,"detail":"Pneumatics or hydraulics"},
+        {"id":30,"detail":"Flexible films or membranes"},
+        {"id":31,"detail":"Porous materials"},
+        {"id":32,"detail":"Optical changes"},
+        {"id":33,"detail":"Homogeneity"},
+        {"id":34,"detail":"Recycling (rejecting and regenerating)"},
+        {"id":35,"detail":"Physical or chemical properties"},
+        {"id":36,"detail":"Use phase changes"},
+        {"id":37,"detail":"Thermal expansion"},
+        {"id":38,"detail":"Strong oxidants"},
+        {"id":39,"detail":"Inert environment"},
+        {"id":40,"detail":"Composite materials"},
+        {"id":90,"detail":"Any"},
+        {"id":99,"detail":"All"}
+    ],
+
+    "Contradiction":[{
+        "improve_id": 1,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [90]
+            }, {
+                "worsen_id": 2,
+                "rules": [99]
+            }, {
+                "worsen_id": 3,
+                "rules": [15, 8, 29, 34]
+            }, {
+                "worsen_id": 4,
+                "rules": [99]
+            }, {
+                "worsen_id": 5,
+                "rules": [29, 17, 38, 34]
+            }, {
+                "worsen_id": 6,
+                "rules": [99]
+            }, {
+                "worsen_id": 7,
+                "rules": [29, 2, 40, 28]
+            }, {
+                "worsen_id": 8,
+                "rules": [99]
+            }, {
+                "worsen_id": 9,
+                "rules": [2, 8, 15, 38]
+            }, {
+                "worsen_id": 10,
+                "rules": [8, 10, 18, 37]
+            }, {
+                "worsen_id": 11,
+                "rules": [10, 36, 37, 40]
+            }, {
+                "worsen_id": 12,
+                "rules": [10, 14, 35, 40]
+            }, {
+                "worsen_id": 13,
+                "rules": [1, 35, 19, 39]
+            }, {
+                "worsen_id": 14,
+                "rules": [28, 27, 18, 40]
+            }, {
+                "worsen_id": 15,
+                "rules": [5, 34, 31, 35]
+            }, {
+                "worsen_id": 16,
+                "rules": [99]
+            }, {
+                "worsen_id": 17,
+                "rules": [6, 29, 4, 38]
+            }, {
+                "worsen_id": 18,
+                "rules": [19, 1, 32]
+            }, {
+                "worsen_id": 19,
+                "rules": [35, 12, 34, 31]
+            }, {
+                "worsen_id": 20,
+                "rules": [99]
+            }, {
+                "worsen_id": 21,
+                "rules": [12, 36, 18, 31]
+            }, {
+                "worsen_id": 22,
+                "rules": [6, 2, 34, 19]
+            }, {
+                "worsen_id": 23,
+                "rules": [5, 35, 3, 31]
+            }, {
+                "worsen_id": 24,
+                "rules": [10, 24, 35]
+            }, {
+                "worsen_id": 25,
+                "rules": [10, 35, 20, 28]
+            }, {
+                "worsen_id": 26,
+                "rules": [3, 26, 18, 31]
+            }, {
+                "worsen_id": 27,
+                "rules": [1, 3, 11, 27]
+            }, {
+                "worsen_id": 28,
+                "rules": [28, 27, 35, 26]
+            }, {
+                "worsen_id": 29,
+                "rules": [28, 35, 26, 18]
+            }, {
+                "worsen_id": 30,
+                "rules": [22, 21, 18, 27]
+            }, {
+                "worsen_id": 31,
+                "rules": [22, 35, 31, 39]
+            }, {
+                "worsen_id": 32,
+                "rules": [27, 28, 1, 36]
+            }, {
+                "worsen_id": 33,
+                "rules": [35, 3, 2, 24]
+            }, {
+                "worsen_id": 34,
+                "rules": [2, 27, 28, 11]
+            }, {
+                "worsen_id": 35,
+                "rules": [29, 5, 15, 8]
+            }, {
+                "worsen_id": 36,
+                "rules": [26, 30, 36, 34]
+            }, {
+                "worsen_id": 37,
+                "rules": [28, 29, 26, 32]
+            }, {
+                "worsen_id": 38,
+                "rules": [26, 35, 18, 19]
+            }, {
+                "worsen_id": 39,
+                "rules": [35, 3, 24, 37]
+            }]
+    }, {
+        "improve_id": 2,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [99]
+            }, {
+                "worsen_id": 2,
+                "rules": [90]
+            }, {
+                "worsen_id": 3,
+                "rules": [99]
+            }, {
+                "worsen_id": 4,
+                "rules": [10, 1, 29, 35]
+            }, {
+                "worsen_id": 5,
+                "rules": [99]
+            }, {
+                "worsen_id": 6,
+                "rules": [35, 30, 13, 2]
+            }, {
+                "worsen_id": 7,
+                "rules": [99]
+            }, {
+                "worsen_id": 8,
+                "rules": [5, 35, 14, 2]
+            }, {
+                "worsen_id": 9,
+                "rules": [99]
+            }, {
+                "worsen_id": 10,
+                "rules": [8, 10, 19, 35]
+            }, {
+                "worsen_id": 11,
+                "rules": [13, 29, 10, 18]
+            }, {
+                "worsen_id": 12,
+                "rules": [13, 10, 29, 14]
+            }, {
+                "worsen_id": 13,
+                "rules": [26, 39, 1, 40]
+            }, {
+                "worsen_id": 14,
+                "rules": [28, 2, 10, 27]
+            }, {
+                "worsen_id": 15,
+                "rules": [99]
+            }, {
+                "worsen_id": 16,
+                "rules": [2, 27, 19, 6]
+            }, {
+                "worsen_id": 17,
+                "rules": [28, 19, 32, 22]
+            }, {
+                "worsen_id": 18,
+                "rules": [19, 32, 35]
+            }, {
+                "worsen_id": 19,
+                "rules": [99]
+            }, {
+                "worsen_id": 20,
+                "rules": [18, 19, 28, 1]
+            }, {
+                "worsen_id": 21,
+                "rules": [15, 19, 18, 22]
+            }, {
+                "worsen_id": 22,
+                "rules": [18, 19, 28, 15]
+            }, {
+                "worsen_id": 23,
+                "rules": [5, 8, 13, 30]
+            }, {
+                "worsen_id": 24,
+                "rules": [10, 15, 35]
+            }, {
+                "worsen_id": 25,
+                "rules": [10, 20, 35, 26]
+            }, {
+                "worsen_id": 26,
+                "rules": [19, 6, 18, 26]
+            }, {
+                "worsen_id": 27,
+                "rules": [10, 28, 8, 3]
+            }, {
+                "worsen_id": 28,
+                "rules": [18, 26, 28]
+            }, {
+                "worsen_id": 29,
+                "rules": [10, 1, 35, 17]
+            }, {
+                "worsen_id": 30,
+                "rules": [2, 19, 22, 37]
+            }, {
+                "worsen_id": 31,
+                "rules": [35, 22, 1, 39]
+            }, {
+                "worsen_id": 32,
+                "rules": [28, 1, 9]
+            }, {
+                "worsen_id": 33,
+                "rules": [6, 13, 1, 32]
+            }, {
+                "worsen_id": 34,
+                "rules": [2, 27, 28, 11]
+            }, {
+                "worsen_id": 35,
+                "rules": [19, 15, 29]
+            }, {
+                "worsen_id": 36,
+                "rules": [1, 10, 26, 39]
+            }, {
+                "worsen_id": 37,
+                "rules": [25, 28, 17, 15]
+            }, {
+                "worsen_id": 38,
+                "rules": [2, 26, 35]
+            }, {
+                "worsen_id": 39,
+                "rules": [1, 28, 15, 35]
+            }]
+    }, {
+        "improve_id": 3,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [8, 15, 29, 34]
+            }, {
+                "worsen_id": 2,
+                "rules": [99]
+            }, {
+                "worsen_id": 3,
+                "rules": [90]
+            }, {
+                "worsen_id": 4,
+                "rules": [99]
+            }, {
+                "worsen_id": 5,
+                "rules": [15, 17, 4]
+            }, {
+                "worsen_id": 6,
+                "rules": [99]
+            }, {
+                "worsen_id": 7,
+                "rules": [7, 17, 4, 35]
+            }, {
+                "worsen_id": 8,
+                "rules": [99]
+            }, {
+                "worsen_id": 9,
+                "rules": [13, 4, 8]
+            }, {
+                "worsen_id": 10,
+                "rules": [17, 10, 4]
+            }, {
+                "worsen_id": 11,
+                "rules": [1, 8, 35]
+            }, {
+                "worsen_id": 12,
+                "rules": [1, 8, 10, 29]
+            }, {
+                "worsen_id": 13,
+                "rules": [1, 8, 15, 34]
+            }, {
+                "worsen_id": 14,
+                "rules": [8, 35, 29, 34]
+            }, {
+                "worsen_id": 15,
+                "rules": [19]
+            }, {
+                "worsen_id": 16,
+                "rules": [99]
+            }, {
+                "worsen_id": 17,
+                "rules": [10, 15, 19]
+            }, {
+                "worsen_id": 18,
+                "rules": [32]
+            }, {
+                "worsen_id": 19,
+                "rules": [8, 35, 24]
+            }, {
+                "worsen_id": 20,
+                "rules": [99]
+            }, {
+                "worsen_id": 21,
+                "rules": [1, 35]
+            }, {
+                "worsen_id": 22,
+                "rules": [7, 2, 35, 39]
+            }, {
+                "worsen_id": 23,
+                "rules": [4, 29, 23, 10]
+            }, {
+                "worsen_id": 24,
+                "rules": [1, 24]
+            }, {
+                "worsen_id": 25,
+                "rules": [15, 2, 29]
+            }, {
+                "worsen_id": 26,
+                "rules": [29, 35]
+            }, {
+                "worsen_id": 27,
+                "rules": [10, 14, 29, 40]
+            }, {
+                "worsen_id": 28,
+                "rules": [28, 32, 4]
+            }, {
+                "worsen_id": 29,
+                "rules": [10, 28, 29, 37]
+            }, {
+                "worsen_id": 30,
+                "rules": [1, 15, 17, 24]
+            }, {
+                "worsen_id": 31,
+                "rules": [17, 15]
+            }, {
+                "worsen_id": 32,
+                "rules": [1, 29, 17]
+            }, {
+                "worsen_id": 33,
+                "rules": [15, 29, 35, 4]
+            }, {
+                "worsen_id": 34,
+                "rules": [1, 28, 10]
+            }, {
+                "worsen_id": 35,
+                "rules": [14, 15, 1, 16]
+            }, {
+                "worsen_id": 36,
+                "rules": [1, 19, 26, 24]
+            }, {
+                "worsen_id": 37,
+                "rules": [35, 1, 26, 24]
+            }, {
+                "worsen_id": 38,
+                "rules": [17, 24, 26, 16]
+            }, {
+                "worsen_id": 39,
+                "rules": [14, 4, 28, 29]
+            }]
+    }, {
+        "improve_id": 4,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [99]
+            }, {
+                "worsen_id": 2,
+                "rules": [35, 28, 40, 29]
+            }, {
+                "worsen_id": 3,
+                "rules": [99]
+            }, {
+                "worsen_id": 4,
+                "rules": [90]
+            }, {
+                "worsen_id": 5,
+                "rules": [99]
+            }, {
+                "worsen_id": 6,
+                "rules": [17, 7, 10, 40]
+            }, {
+                "worsen_id": 7,
+                "rules": [99]
+            }, {
+                "worsen_id": 8,
+                "rules": [35, 8, 2, 14]
+            }, {
+                "worsen_id": 9,
+                "rules": [99]
+            }, {
+                "worsen_id": 10,
+                "rules": [28, 10]
+            }, {
+                "worsen_id": 11,
+                "rules": [1, 14, 35]
+            }, {
+                "worsen_id": 12,
+                "rules": [13, 14, 15, 7]
+            }, {
+                "worsen_id": 13,
+                "rules": [39, 37, 35]
+            }, {
+                "worsen_id": 14,
+                "rules": [15, 14, 28, 26]
+            }, {
+                "worsen_id": 15,
+                "rules": [99]
+            }, {
+                "worsen_id": 16,
+                "rules": [1, 10, 35]
+            }, {
+                "worsen_id": 17,
+                "rules": [3, 35, 38, 18]
+            }, {
+                "worsen_id": 18,
+                "rules": [3, 25]
+            }, {
+                "worsen_id": 19,
+                "rules": [99]
+            }, {
+                "worsen_id": 20,
+                "rules": [99]
+            }, {
+                "worsen_id": 21,
+                "rules": [12, 8]
+            }, {
+                "worsen_id": 22,
+                "rules": [6, 28]
+            }, {
+                "worsen_id": 23,
+                "rules": [10, 28, 24, 35]
+            }, {
+                "worsen_id": 24,
+                "rules": [24, 26]
+            }, {
+                "worsen_id": 25,
+                "rules": [30, 29, 14]
+            }, {
+                "worsen_id": 26,
+                "rules": [99]
+            }, {
+                "worsen_id": 27,
+                "rules": [15, 29, 28]
+            }, {
+                "worsen_id": 28,
+                "rules": [32, 28, 3]
+            }, {
+                "worsen_id": 29,
+                "rules": [2, 32, 10]
+            }, {
+                "worsen_id": 30,
+                "rules": [1, 18]
+            }, {
+                "worsen_id": 31,
+                "rules": [99]
+            }, {
+                "worsen_id": 32,
+                "rules": [15, 17, 27]
+            }, {
+                "worsen_id": 33,
+                "rules": [2, 25]
+            }, {
+                "worsen_id": 34,
+                "rules": [3]
+            }, {
+                "worsen_id": 35,
+                "rules": [1, 35]
+            }, {
+                "worsen_id": 36,
+                "rules": [1, 26]
+            }, {
+                "worsen_id": 37,
+                "rules": [26]
+            }, {
+                "worsen_id": 38,
+                "rules": [99]
+            }, {
+                "worsen_id": 39,
+                "rules": [30, 14, 7, 26]
+            }]
+    }, {
+        "improve_id": 5,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [2, 17, 29, 4]
+            }, {
+                "worsen_id": 2,
+                "rules": [99]
+            }, {
+                "worsen_id": 3,
+                "rules": [14, 15, 18, 4]
+            }, {
+                "worsen_id": 4,
+                "rules": [99]
+            }, {
+                "worsen_id": 5,
+                "rules": [90]
+            }, {
+                "worsen_id": 6,
+                "rules": [99]
+            }, {
+                "worsen_id": 7,
+                "rules": [7, 14, 17, 4]
+            }, {
+                "worsen_id": 8,
+                "rules": [99]
+            }, {
+                "worsen_id": 9,
+                "rules": [29, 30, 4, 34]
+            }, {
+                "worsen_id": 10,
+                "rules": [19, 30, 35, 2]
+            }, {
+                "worsen_id": 11,
+                "rules": [10, 15, 36, 28]
+            }, {
+                "worsen_id": 12,
+                "rules": [5, 34, 29, 4]
+            }, {
+                "worsen_id": 13,
+                "rules": [11, 2, 13, 39]
+            }, {
+                "worsen_id": 14,
+                "rules": [3, 15, 40, 14]
+            }, {
+                "worsen_id": 15,
+                "rules": [6, 3]
+            }, {
+                "worsen_id": 16,
+                "rules": [99]
+            }, {
+                "worsen_id": 17,
+                "rules": [2, 15, 16]
+            }, {
+                "worsen_id": 18,
+                "rules": [15, 32, 19, 13]
+            }, {
+                "worsen_id": 19,
+                "rules": [19, 32]
+            }, {
+                "worsen_id": 20,
+                "rules": [99]
+            }, {
+                "worsen_id": 21,
+                "rules": [19, 10, 32, 18]
+            }, {
+                "worsen_id": 22,
+                "rules": [15, 17, 30, 26]
+            }, {
+                "worsen_id": 23,
+                "rules": [10, 35, 2, 39]
+            }, {
+                "worsen_id": 24,
+                "rules": [30, 26]
+            }, {
+                "worsen_id": 25,
+                "rules": [26, 4]
+            }, {
+                "worsen_id": 26,
+                "rules": [29, 30, 6, 13]
+            }, {
+                "worsen_id": 27,
+                "rules": [29, 9]
+            }, {
+                "worsen_id": 28,
+                "rules": [26, 28, 32, 3]
+            }, {
+                "worsen_id": 29,
+                "rules": [2, 32]
+            }, {
+                "worsen_id": 30,
+                "rules": [22, 33, 28, 1]
+            }, {
+                "worsen_id": 31,
+                "rules": [17, 2, 18, 39]
+            }, {
+                "worsen_id": 32,
+                "rules": [13, 1, 26, 24]
+            }, {
+                "worsen_id": 33,
+                "rules": [15, 17, 13, 16]
+            }, {
+                "worsen_id": 34,
+                "rules": [15, 13, 10, 1]
+            }, {
+                "worsen_id": 35,
+                "rules": [15, 30]
+            }, {
+                "worsen_id": 36,
+                "rules": [14, 1, 13]
+            }, {
+                "worsen_id": 37,
+                "rules": [2, 36, 26, 18]
+            }, {
+                "worsen_id": 38,
+                "rules": [14, 30, 28, 23]
+            }, {
+                "worsen_id": 39,
+                "rules": [10, 26, 34, 2]
+            }]
+    }, {
+        "improve_id": 6,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [99]
+            }, {
+                "worsen_id": 2,
+                "rules": [30, 2, 14, 18]
+            }, {
+                "worsen_id": 3,
+                "rules": [99]
+            }, {
+                "worsen_id": 4,
+                "rules": [26, 7, 9, 39]
+            }, {
+                "worsen_id": 5,
+                "rules": [99]
+            }, {
+                "worsen_id": 6,
+                "rules": [90]
+            }, {
+                "worsen_id": 7,
+                "rules": [99]
+            }, {
+                "worsen_id": 8,
+                "rules": [99]
+            }, {
+                "worsen_id": 9,
+                "rules": [99]
+            }, {
+                "worsen_id": 10,
+                "rules": [1, 18, 35, 36]
+            }, {
+                "worsen_id": 11,
+                "rules": [10, 15, 36, 37]
+            }, {
+                "worsen_id": 12,
+                "rules": [99]
+            }, {
+                "worsen_id": 13,
+                "rules": [2, 38]
+            }, {
+                "worsen_id": 14,
+                "rules": [40]
+            }, {
+                "worsen_id": 15,
+                "rules": [99]
+            }, {
+                "worsen_id": 16,
+                "rules": [2, 10, 19, 30]
+            }, {
+                "worsen_id": 17,
+                "rules": [35, 39, 38]
+            }, {
+                "worsen_id": 18,
+                "rules": [99]
+            }, {
+                "worsen_id": 19,
+                "rules": [99]
+            }, {
+                "worsen_id": 20,
+                "rules": [99]
+            }, {
+                "worsen_id": 21,
+                "rules": [17, 32]
+            }, {
+                "worsen_id": 22,
+                "rules": [17, 7, 30]
+            }, {
+                "worsen_id": 23,
+                "rules": [10, 14, 18, 39]
+            }, {
+                "worsen_id": 24,
+                "rules": [30, 16]
+            }, {
+                "worsen_id": 25,
+                "rules": [10, 35, 4, 18]
+            }, {
+                "worsen_id": 26,
+                "rules": [2, 18, 40, 4]
+            }, {
+                "worsen_id": 27,
+                "rules": [32, 35, 40, 4]
+            }, {
+                "worsen_id": 28,
+                "rules": [26, 28, 32, 3]
+            }, {
+                "worsen_id": 29,
+                "rules": [2, 29, 18, 36]
+            }, {
+                "worsen_id": 30,
+                "rules": [27, 2, 39, 35]
+            }, {
+                "worsen_id": 31,
+                "rules": [22, 1, 40]
+            }, {
+                "worsen_id": 32,
+                "rules": [40, 16]
+            }, {
+                "worsen_id": 33,
+                "rules": [16, 4]
+            }, {
+                "worsen_id": 34,
+                "rules": [16]
+            }, {
+                "worsen_id": 35,
+                "rules": [15, 16]
+            }, {
+                "worsen_id": 36,
+                "rules": [1, 18, 36]
+            }, {
+                "worsen_id": 37,
+                "rules": [2, 35, 30, 18]
+            }, {
+                "worsen_id": 38,
+                "rules": [23]
+            }, {
+                "worsen_id": 39,
+                "rules": [10, 15, 17, 7]
+            }]
+    }, {
+        "improve_id": 7,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [2, 26, 29, 40]
+            }, {
+                "worsen_id": 2,
+                "rules": [99]
+            }, {
+                "worsen_id": 3,
+                "rules": [1, 7, 4, 35]
+            }, {
+                "worsen_id": 4,
+                "rules": [99]
+            }, {
+                "worsen_id": 5,
+                "rules": [1, 7, 4, 17]
+            }, {
+                "worsen_id": 6,
+                "rules": [99]
+            }, {
+                "worsen_id": 7,
+                "rules": [90]
+            }, {
+                "worsen_id": 8,
+                "rules": [99]
+            }, {
+                "worsen_id": 9,
+                "rules": [29, 4, 38, 34]
+            }, {
+                "worsen_id": 10,
+                "rules": [15, 35, 36, 37]
+            }, {
+                "worsen_id": 11,
+                "rules": [6, 35, 36, 37]
+            }, {
+                "worsen_id": 12,
+                "rules": [1, 15, 29, 4]
+            }, {
+                "worsen_id": 13,
+                "rules": [28, 10, 1, 39]
+            }, {
+                "worsen_id": 14,
+                "rules": [9, 14, 15, 7]
+            }, {
+                "worsen_id": 15,
+                "rules": [6, 35, 4]
+            }, {
+                "worsen_id": 16,
+                "rules": [99]
+            }, {
+                "worsen_id": 17,
+                "rules": [34, 39, 10, 18]
+            }, {
+                "worsen_id": 18,
+                "rules": [2, 13, 10]
+            }, {
+                "worsen_id": 19,
+                "rules": [35]
+            }, {
+                "worsen_id": 20,
+                "rules": [99]
+            }, {
+                "worsen_id": 21,
+                "rules": [35, 6, 13, 18]
+            }, {
+                "worsen_id": 22,
+                "rules": [7, 15, 13, 16]
+            }, {
+                "worsen_id": 23,
+                "rules": [36, 39, 34, 10]
+            }, {
+                "worsen_id": 24,
+                "rules": [2, 22]
+            }, {
+                "worsen_id": 25,
+                "rules": [2, 6, 34, 10]
+            }, {
+                "worsen_id": 26,
+                "rules": [29, 30, 7]
+            }, {
+                "worsen_id": 27,
+                "rules": [14, 1, 40, 11]
+            }, {
+                "worsen_id": 28,
+                "rules": [25, 26, 28]
+            }, {
+                "worsen_id": 29,
+                "rules": [25, 28, 2, 16]
+            }, {
+                "worsen_id": 30,
+                "rules": [22, 21, 27, 35]
+            }, {
+                "worsen_id": 31,
+                "rules": [17, 2, 40, 1]
+            }, {
+                "worsen_id": 32,
+                "rules": [29, 1, 40]
+            }, {
+                "worsen_id": 33,
+                "rules": [15, 13, 30, 12]
+            }, {
+                "worsen_id": 34,
+                "rules": [10]
+            }, {
+                "worsen_id": 35,
+                "rules": [15, 29]
+            }, {
+                "worsen_id": 36,
+                "rules": [26, 1]
+            }, {
+                "worsen_id": 37,
+                "rules": [29, 26, 4]
+            }, {
+                "worsen_id": 38,
+                "rules": [35, 34, 16, 24]
+            }, {
+                "worsen_id": 39,
+                "rules": [10, 6, 2, 34]
+            }]
+    }, {
+        "improve_id": 8,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [99]
+            }, {
+                "worsen_id": 2,
+                "rules": [35, 10, 19, 14]
+            }, {
+                "worsen_id": 3,
+                "rules": [19, 14]
+            }, {
+                "worsen_id": 4,
+                "rules": [35, 8, 2, 14]
+            }, {
+                "worsen_id": 5,
+                "rules": [99]
+            }, {
+                "worsen_id": 6,
+                "rules": [99]
+            }, {
+                "worsen_id": 7,
+                "rules": [99]
+            }, {
+                "worsen_id": 8,
+                "rules": [90]
+            }, {
+                "worsen_id": 9,
+                "rules": [99]
+            }, {
+                "worsen_id": 10,
+                "rules": [2, 18, 37]
+            }, {
+                "worsen_id": 11,
+                "rules": [24, 35]
+            }, {
+                "worsen_id": 12,
+                "rules": [7, 2, 35]
+            }, {
+                "worsen_id": 13,
+                "rules": [34, 28, 35, 40]
+            }, {
+                "worsen_id": 14,
+                "rules": [9, 14, 17, 15]
+            }, {
+                "worsen_id": 15,
+                "rules": [99]
+            }, {
+                "worsen_id": 16,
+                "rules": [35, 34, 38]
+            }, {
+                "worsen_id": 17,
+                "rules": [35, 6, 4]
+            }, {
+                "worsen_id": 18,
+                "rules": [99]
+            }, {
+                "worsen_id": 19,
+                "rules": [99]
+            }, {
+                "worsen_id": 20,
+                "rules": [99]
+            }, {
+                "worsen_id": 21,
+                "rules": [30, 6]
+            }, {
+                "worsen_id": 22,
+                "rules": [99]
+            }, {
+                "worsen_id": 23,
+                "rules": [10, 39, 35, 34]
+            }, {
+                "worsen_id": 24,
+                "rules": [99]
+            }, {
+                "worsen_id": 25,
+                "rules": [35, 16, 32, 18]
+            }, {
+                "worsen_id": 26,
+                "rules": [35, 3]
+            }, {
+                "worsen_id": 27,
+                "rules": [2, 35, 16]
+            }, {
+                "worsen_id": 28,
+                "rules": [99]
+            }, {
+                "worsen_id": 29,
+                "rules": [35, 10, 25]
+            }, {
+                "worsen_id": 30,
+                "rules": [34, 39, 19, 27]
+            }, {
+                "worsen_id": 31,
+                "rules": [30, 18, 35, 4]
+            }, {
+                "worsen_id": 32,
+                "rules": [35]
+            }, {
+                "worsen_id": 33,
+                "rules": [99]
+            }, {
+                "worsen_id": 34,
+                "rules": [1]
+            }, {
+                "worsen_id": 35,
+                "rules": [99]
+            }, {
+                "worsen_id": 36,
+                "rules": [1, 31]
+            }, {
+                "worsen_id": 37,
+                "rules": [2, 17, 26]
+            }, {
+                "worsen_id": 38,
+                "rules": [99]
+            }, {
+                "worsen_id": 39,
+                "rules": [35, 37, 10, 2]
+            }]
+    }, {
+        "improve_id": 9,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [2, 28, 13, 38]
+            }, {
+                "worsen_id": 2,
+                "rules": [99]
+            }, {
+                "worsen_id": 3,
+                "rules": [13, 14, 8]
+            }, {
+                "worsen_id": 4,
+                "rules": [99]
+            }, {
+                "worsen_id": 5,
+                "rules": [29, 30, 34]
+            }, {
+                "worsen_id": 6,
+                "rules": [99]
+            }, {
+                "worsen_id": 7,
+                "rules": [7, 29, 34]
+            }, {
+                "worsen_id": 8,
+                "rules": [99]
+            }, {
+                "worsen_id": 9,
+                "rules": [90]
+            }, {
+                "worsen_id": 10,
+                "rules": [13, 28, 15, 19]
+            }, {
+                "worsen_id": 11,
+                "rules": [6, 18, 38, 40]
+            }, {
+                "worsen_id": 12,
+                "rules": [35, 15, 18, 34]
+            }, {
+                "worsen_id": 13,
+                "rules": [28, 33, 1, 18]
+            }, {
+                "worsen_id": 14,
+                "rules": [8, 3, 26, 14]
+            }, {
+                "worsen_id": 15,
+                "rules": [3, 19, 35, 5]
+            }, {
+                "worsen_id": 16,
+                "rules": [99]
+            }, {
+                "worsen_id": 17,
+                "rules": [28, 30, 36, 2]
+            }, {
+                "worsen_id": 18,
+                "rules": [10, 13, 19]
+            }, {
+                "worsen_id": 19,
+                "rules": [8, 15, 35, 38]
+            }, {
+                "worsen_id": 20,
+                "rules": [99]
+            }, {
+                "worsen_id": 21,
+                "rules": [19, 35, 38, 2]
+            }, {
+                "worsen_id": 22,
+                "rules": [14, 20, 19, 35]
+            }, {
+                "worsen_id": 23,
+                "rules": [10, 13, 28, 38]
+            }, {
+                "worsen_id": 24,
+                "rules": [13, 26]
+            }, {
+                "worsen_id": 25,
+                "rules": [99]
+            }, {
+                "worsen_id": 26,
+                "rules": [10, 19, 29, 38]
+            }, {
+                "worsen_id": 27,
+                "rules": [11, 35, 27, 28]
+            }, {
+                "worsen_id": 28,
+                "rules": [28, 32, 1, 24]
+            }, {
+                "worsen_id": 29,
+                "rules": [10, 28, 32, 25]
+            }, {
+                "worsen_id": 30,
+                "rules": [1, 28, 35, 23]
+            }, {
+                "worsen_id": 31,
+                "rules": [2, 24, 35, 21]
+            }, {
+                "worsen_id": 32,
+                "rules": [35, 13, 8, 1]
+            }, {
+                "worsen_id": 33,
+                "rules": [32, 28, 13, 12]
+            }, {
+                "worsen_id": 34,
+                "rules": [34, 2, 28, 27]
+            }, {
+                "worsen_id": 35,
+                "rules": [15, 10, 26]
+            }, {
+                "worsen_id": 36,
+                "rules": [10, 28, 4, 34]
+            }, {
+                "worsen_id": 37,
+                "rules": [3, 34, 27, 16]
+            }, {
+                "worsen_id": 38,
+                "rules": [10, 18]
+            }, {
+                "worsen_id": 39,
+                "rules": [99]
+            }]
+    }, {
+        "improve_id": 10,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [8, 1, 37, 18]
+            }, {
+                "worsen_id": 2,
+                "rules": [18, 13, 1, 28]
+            }, {
+                "worsen_id": 3,
+                "rules": [17, 19, 9, 36]
+            }, {
+                "worsen_id": 4,
+                "rules": [28, 10]
+            }, {
+                "worsen_id": 5,
+                "rules": [19, 10, 15]
+            }, {
+                "worsen_id": 6,
+                "rules": [1, 18, 36, 37]
+            }, {
+                "worsen_id": 7,
+                "rules": [15, 9, 12, 37]
+            }, {
+                "worsen_id": 8,
+                "rules": [2, 36, 18, 37]
+            }, {
+                "worsen_id": 9,
+                "rules": [13, 28, 15, 12]
+            }, {
+                "worsen_id": 10,
+                "rules": [90]
+            }, {
+                "worsen_id": 11,
+                "rules": [18, 21, 11]
+            }, {
+                "worsen_id": 12,
+                "rules": [10, 35, 40, 34]
+            }, {
+                "worsen_id": 13,
+                "rules": [35, 10, 21]
+            }, {
+                "worsen_id": 14,
+                "rules": [35, 10, 14, 27]
+            }, {
+                "worsen_id": 15,
+                "rules": [19, 2]
+            }, {
+                "worsen_id": 16,
+                "rules": [99]
+            }, {
+                "worsen_id": 17,
+                "rules": [35, 10, 21]
+            }, {
+                "worsen_id": 18,
+                "rules": [99]
+            }, {
+                "worsen_id": 19,
+                "rules": [19, 17, 10]
+            }, {
+                "worsen_id": 20,
+                "rules": [1, 16, 36, 37]
+            }, {
+                "worsen_id": 21,
+                "rules": [19, 35, 18, 37]
+            }, {
+                "worsen_id": 22,
+                "rules": [14, 15]
+            }, {
+                "worsen_id": 23,
+                "rules": [8, 35, 40, 5]
+            }, {
+                "worsen_id": 24,
+                "rules": [99]
+            }, {
+                "worsen_id": 25,
+                "rules": [10, 37, 36]
+            }, {
+                "worsen_id": 26,
+                "rules": [14, 29, 18, 36]
+            }, {
+                "worsen_id": 27,
+                "rules": [3, 35, 13, 21]
+            }, {
+                "worsen_id": 28,
+                "rules": [35, 10, 23, 24]
+            }, {
+                "worsen_id": 29,
+                "rules": [28, 29, 37, 36]
+            }, {
+                "worsen_id": 30,
+                "rules": [1, 35, 40, 18]
+            }, {
+                "worsen_id": 31,
+                "rules": [13, 3, 36, 24]
+            }, {
+                "worsen_id": 32,
+                "rules": [15, 37, 18, 1]
+            }, {
+                "worsen_id": 33,
+                "rules": [1, 28, 3, 25]
+            }, {
+                "worsen_id": 34,
+                "rules": [15, 1, 11]
+            }, {
+                "worsen_id": 35,
+                "rules": [15, 17, 18, 20]
+            }, {
+                "worsen_id": 36,
+                "rules": [26, 35, 10, 18]
+            }, {
+                "worsen_id": 37,
+                "rules": [36, 37, 10, 19]
+            }, {
+                "worsen_id": 38,
+                "rules": [2, 35]
+            }, {
+                "worsen_id": 39,
+                "rules": [3, 28, 35, 37]
+            }]
+    }, {
+        "improve_id": 11,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [10, 36, 37, 40]
+            }, {
+                "worsen_id": 2,
+                "rules": [13, 29, 10, 18]
+            }, {
+                "worsen_id": 3,
+                "rules": [35, 10, 36]
+            }, {
+                "worsen_id": 4,
+                "rules": [35, 1, 14, 16]
+            }, {
+                "worsen_id": 5,
+                "rules": [10, 15, 36, 28]
+            }, {
+                "worsen_id": 6,
+                "rules": [10, 15, 36, 37]
+            }, {
+                "worsen_id": 7,
+                "rules": [6, 35, 10]
+            }, {
+                "worsen_id": 8,
+                "rules": [35, 24]
+            }, {
+                "worsen_id": 9,
+                "rules": [6, 35, 36]
+            }, {
+                "worsen_id": 10,
+                "rules": [36, 35, 21]
+            }, {
+                "worsen_id": 11,
+                "rules": [90]
+            }, {
+                "worsen_id": 12,
+                "rules": [35, 4, 15, 10]
+            }, {
+                "worsen_id": 13,
+                "rules": [35, 33, 2, 40]
+            }, {
+                "worsen_id": 14,
+                "rules": [9, 18, 3, 40]
+            }, {
+                "worsen_id": 15,
+                "rules": [19, 3, 27]
+            }, {
+                "worsen_id": 16,
+                "rules": [99]
+            }, {
+                "worsen_id": 17,
+                "rules": [35, 39, 19, 2]
+            }, {
+                "worsen_id": 18,
+                "rules": [99]
+            }, {
+                "worsen_id": 19,
+                "rules": [14, 24, 10, 37]
+            }, {
+                "worsen_id": 20,
+                "rules": [99]
+            }, {
+                "worsen_id": 21,
+                "rules": [10, 35, 14]
+            }, {
+                "worsen_id": 22,
+                "rules": [2, 36, 25]
+            }, {
+                "worsen_id": 23,
+                "rules": [10, 36, 3, 37]
+            }, {
+                "worsen_id": 24,
+                "rules": [99]
+            }, {
+                "worsen_id": 25,
+                "rules": [37, 36, 4]
+            }, {
+                "worsen_id": 26,
+                "rules": [10, 14, 36]
+            }, {
+                "worsen_id": 27,
+                "rules": [10, 13, 19, 35]
+            }, {
+                "worsen_id": 28,
+                "rules": [6, 28, 25]
+            }, {
+                "worsen_id": 29,
+                "rules": [3, 35]
+            }, {
+                "worsen_id": 30,
+                "rules": [22, 2, 37]
+            }, {
+                "worsen_id": 31,
+                "rules": [2, 33, 27, 18]
+            }, {
+                "worsen_id": 32,
+                "rules": [1, 35, 16]
+            }, {
+                "worsen_id": 33,
+                "rules": [11]
+            }, {
+                "worsen_id": 34,
+                "rules": [2]
+            }, {
+                "worsen_id": 35,
+                "rules": [35]
+            }, {
+                "worsen_id": 36,
+                "rules": [19, 1, 35]
+            }, {
+                "worsen_id": 37,
+                "rules": [2, 36, 37]
+            }, {
+                "worsen_id": 38,
+                "rules": [35, 24]
+            }, {
+                "worsen_id": 39,
+                "rules": [10, 14, 35, 37]
+            }]
+    }, {
+        "improve_id": 12,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [8, 10, 29, 40]
+            }, {
+                "worsen_id": 2,
+                "rules": [15, 10, 26, 3]
+            }, {
+                "worsen_id": 3,
+                "rules": [29, 34, 5, 4]
+            }, {
+                "worsen_id": 4,
+                "rules": [13, 14, 10, 7]
+            }, {
+                "worsen_id": 5,
+                "rules": [5, 34, 4, 10]
+            }, {
+                "worsen_id": 6,
+                "rules": [99]
+            }, {
+                "worsen_id": 7,
+                "rules": [14, 4, 15, 22]
+            }, {
+                "worsen_id": 8,
+                "rules": [7, 2, 35]
+            }, {
+                "worsen_id": 9,
+                "rules": [35, 15, 34, 18]
+            }, {
+                "worsen_id": 10,
+                "rules": [35, 10, 37, 40]
+            }, {
+                "worsen_id": 11,
+                "rules": [34, 15, 10, 14]
+            }, {
+                "worsen_id": 12,
+                "rules": [90]
+            }, {
+                "worsen_id": 13,
+                "rules": [33, 1, 18, 4]
+            }, {
+                "worsen_id": 14,
+                "rules": [30, 14, 10, 40]
+            }, {
+                "worsen_id": 15,
+                "rules": [14, 26, 9, 25]
+            }, {
+                "worsen_id": 16,
+                "rules": [99]
+            }, {
+                "worsen_id": 17,
+                "rules": [22, 14, 19, 32]
+            }, {
+                "worsen_id": 18,
+                "rules": [13, 15, 32]
+            }, {
+                "worsen_id": 19,
+                "rules": [2, 6, 34, 14]
+            }, {
+                "worsen_id": 20,
+                "rules": [99]
+            }, {
+                "worsen_id": 21,
+                "rules": [4, 6, 2]
+            }, {
+                "worsen_id": 22,
+                "rules": [14]
+            }, {
+                "worsen_id": 23,
+                "rules": [35, 29, 3, 5]
+            }, {
+                "worsen_id": 24,
+                "rules": [99]
+            }, {
+                "worsen_id": 25,
+                "rules": [14, 10, 34, 17]
+            }, {
+                "worsen_id": 26,
+                "rules": [36, 22]
+            }, {
+                "worsen_id": 27,
+                "rules": [10, 40, 16]
+            }, {
+                "worsen_id": 28,
+                "rules": [28, 32, 1]
+            }, {
+                "worsen_id": 29,
+                "rules": [32, 30, 40]
+            }, {
+                "worsen_id": 30,
+                "rules": [22, 1, 2, 35]
+            }, {
+                "worsen_id": 31,
+                "rules": [35, 1]
+            }, {
+                "worsen_id": 32,
+                "rules": [1, 32, 17, 28]
+            }, {
+                "worsen_id": 33,
+                "rules": [32, 15, 26]
+            }, {
+                "worsen_id": 34,
+                "rules": [2, 13, 1]
+            }, {
+                "worsen_id": 35,
+                "rules": [1, 15, 29]
+            }, {
+                "worsen_id": 36,
+                "rules": [16, 29, 1, 28]
+            }, {
+                "worsen_id": 37,
+                "rules": [15, 13, 39]
+            }, {
+                "worsen_id": 38,
+                "rules": [15, 1, 32]
+            }, {
+                "worsen_id": 39,
+                "rules": [17, 26, 34, 10]
+            }]
+    }, {
+        "improve_id": 13,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [21, 35, 2, 39]
+            }, {
+                "worsen_id": 2,
+                "rules": [26, 39, 1, 40]
+            }, {
+                "worsen_id": 3,
+                "rules": [13, 15, 1, 28]
+            }, {
+                "worsen_id": 4,
+                "rules": [37]
+            }, {
+                "worsen_id": 5,
+                "rules": [2, 11, 13]
+            }, {
+                "worsen_id": 6,
+                "rules": [39]
+            }, {
+                "worsen_id": 7,
+                "rules": [28, 10, 19, 39]
+            }, {
+                "worsen_id": 8,
+                "rules": [34, 28, 35, 40]
+            }, {
+                "worsen_id": 9,
+                "rules": [33, 15, 28, 18]
+            }, {
+                "worsen_id": 10,
+                "rules": [10, 35, 21, 16]
+            }, {
+                "worsen_id": 11,
+                "rules": [2, 35, 40]
+            }, {
+                "worsen_id": 12,
+                "rules": [22, 1, 18, 4]
+            }, {
+                "worsen_id": 13,
+                "rules": [90]
+            }, {
+                "worsen_id": 14,
+                "rules": [17, 9, 15]
+            }, {
+                "worsen_id": 15,
+                "rules": [13, 27, 10, 35]
+            }, {
+                "worsen_id": 16,
+                "rules": [39, 3, 35, 23]
+            }, {
+                "worsen_id": 17,
+                "rules": [35, 1, 32]
+            }, {
+                "worsen_id": 18,
+                "rules": [32, 3, 27, 16]
+            }, {
+                "worsen_id": 19,
+                "rules": [13, 19]
+            }, {
+                "worsen_id": 20,
+                "rules": [27, 4, 29, 18]
+            }, {
+                "worsen_id": 21,
+                "rules": [32, 35, 27, 31]
+            }, {
+                "worsen_id": 22,
+                "rules": [14, 2, 39, 6]
+            }, {
+                "worsen_id": 23,
+                "rules": [2, 14, 30, 40]
+            }, {
+                "worsen_id": 24,
+                "rules": [99]
+            }, {
+                "worsen_id": 25,
+                "rules": [35, 27]
+            }, {
+                "worsen_id": 26,
+                "rules": [15, 32, 35]
+            }, {
+                "worsen_id": 27,
+                "rules": [99]
+            }, {
+                "worsen_id": 28,
+                "rules": [13]
+            }, {
+                "worsen_id": 29,
+                "rules": [18]
+            }, {
+                "worsen_id": 30,
+                "rules": [35, 24, 30, 18]
+            }, {
+                "worsen_id": 31,
+                "rules": [35, 40, 27, 39]
+            }, {
+                "worsen_id": 32,
+                "rules": [35, 19]
+            }, {
+                "worsen_id": 33,
+                "rules": [32, 35, 30]
+            }, {
+                "worsen_id": 34,
+                "rules": [2, 35, 10, 16]
+            }, {
+                "worsen_id": 35,
+                "rules": [35, 30, 34, 2]
+            }, {
+                "worsen_id": 36,
+                "rules": [2, 35, 22, 26]
+            }, {
+                "worsen_id": 37,
+                "rules": [35, 22, 39, 23]
+            }, {
+                "worsen_id": 38,
+                "rules": [1, 8, 35]
+            }, {
+                "worsen_id": 39,
+                "rules": [23, 35, 40, 3]
+            }]
+    }, {
+        "improve_id": 14,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [1, 8, 40, 15]
+            }, {
+                "worsen_id": 2,
+                "rules": [40, 26, 27, 1]
+            }, {
+                "worsen_id": 3,
+                "rules": [1, 15, 8, 35]
+            }, {
+                "worsen_id": 4,
+                "rules": [15, 14, 28, 26]
+            }, {
+                "worsen_id": 5,
+                "rules": [3, 34, 40, 29]
+            }, {
+                "worsen_id": 6,
+                "rules": [9, 40, 28]
+            }, {
+                "worsen_id": 7,
+                "rules": [10, 15, 14, 7]
+            }, {
+                "worsen_id": 8,
+                "rules": [9, 14, 17, 15]
+            }, {
+                "worsen_id": 9,
+                "rules": [8, 13, 26, 14]
+            }, {
+                "worsen_id": 10,
+                "rules": [10, 18, 3, 14]
+            }, {
+                "worsen_id": 11,
+                "rules": [10, 3, 18, 40]
+            }, {
+                "worsen_id": 12,
+                "rules": [10, 30, 35, 40]
+            }, {
+                "worsen_id": 13,
+                "rules": [13, 17, 35]
+            }, {
+                "worsen_id": 14,
+                "rules": [90]
+            }, {
+                "worsen_id": 15,
+                "rules": [27, 3, 26]
+            }, {
+                "worsen_id": 16,
+                "rules": [99]
+            }, {
+                "worsen_id": 17,
+                "rules": [30, 10, 40]
+            }, {
+                "worsen_id": 18,
+                "rules": [35, 19]
+            }, {
+                "worsen_id": 19,
+                "rules": [19, 35, 10]
+            }, {
+                "worsen_id": 20,
+                "rules": [35]
+            }, {
+                "worsen_id": 21,
+                "rules": [10, 26, 35, 28]
+            }, {
+                "worsen_id": 22,
+                "rules": [35]
+            }, {
+                "worsen_id": 23,
+                "rules": [35, 28, 31, 40]
+            }, {
+                "worsen_id": 24,
+                "rules": [99]
+            }, {
+                "worsen_id": 25,
+                "rules": [29, 3, 28, 10]
+            }, {
+                "worsen_id": 26,
+                "rules": [29, 10, 27]
+            }, {
+                "worsen_id": 27,
+                "rules": [11, 3]
+            }, {
+                "worsen_id": 28,
+                "rules": [3, 27, 16]
+            }, {
+                "worsen_id": 29,
+                "rules": [3, 27]
+            }, {
+                "worsen_id": 30,
+                "rules": [18, 35, 37, 1]
+            }, {
+                "worsen_id": 31,
+                "rules": [15, 35, 22, 2]
+            }, {
+                "worsen_id": 32,
+                "rules": [11, 3, 10, 32]
+            }, {
+                "worsen_id": 33,
+                "rules": [32, 40, 25, 2]
+            }, {
+                "worsen_id": 34,
+                "rules": [27, 11, 3]
+            }, {
+                "worsen_id": 35,
+                "rules": [15, 3, 32]
+            }, {
+                "worsen_id": 36,
+                "rules": [2, 13, 25, 28]
+            }, {
+                "worsen_id": 37,
+                "rules": [27, 3, 15, 40]
+            }, {
+                "worsen_id": 38,
+                "rules": [15]
+            }, {
+                "worsen_id": 39,
+                "rules": [29, 35, 10, 14]
+            }]
+    }, {
+        "improve_id": 15,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [19, 5, 34, 31]
+            }, {
+                "worsen_id": 2,
+                "rules": [99]
+            }, {
+                "worsen_id": 3,
+                "rules": [2, 19, 9]
+            }, {
+                "worsen_id": 4,
+                "rules": [99]
+            }, {
+                "worsen_id": 5,
+                "rules": [3, 17, 19]
+            }, {
+                "worsen_id": 6,
+                "rules": [99]
+            }, {
+                "worsen_id": 7,
+                "rules": [10, 2, 19, 30]
+            }, {
+                "worsen_id": 8,
+                "rules": [99]
+            }, {
+                "worsen_id": 9,
+                "rules": [3, 35, 5]
+            }, {
+                "worsen_id": 10,
+                "rules": [19, 2, 16]
+            }, {
+                "worsen_id": 11,
+                "rules": [19, 3, 27]
+            }, {
+                "worsen_id": 12,
+                "rules": [14, 26, 28, 25]
+            }, {
+                "worsen_id": 13,
+                "rules": [13, 3, 35]
+            }, {
+                "worsen_id": 14,
+                "rules": [27, 3, 10]
+            }, {
+                "worsen_id": 15,
+                "rules": [90]
+            }, {
+                "worsen_id": 16,
+                "rules": [99]
+            }, {
+                "worsen_id": 17,
+                "rules": [19, 35, 39]
+            }, {
+                "worsen_id": 18,
+                "rules": [2, 19, 4, 35]
+            }, {
+                "worsen_id": 19,
+                "rules": [28, 6, 35, 18]
+            }, {
+                "worsen_id": 20,
+                "rules": [99]
+            }, {
+                "worsen_id": 21,
+                "rules": [19, 10, 35, 38]
+            }, {
+                "worsen_id": 22,
+                "rules": [99]
+            }, {
+                "worsen_id": 23,
+                "rules": [28, 27, 3, 18]
+            }, {
+                "worsen_id": 24,
+                "rules": [10]
+            }, {
+                "worsen_id": 25,
+                "rules": [20, 10, 28, 18]
+            }, {
+                "worsen_id": 26,
+                "rules": [3, 35, 10, 40]
+            }, {
+                "worsen_id": 27,
+                "rules": [11, 2, 13]
+            }, {
+                "worsen_id": 28,
+                "rules": [3]
+            }, {
+                "worsen_id": 29,
+                "rules": [3, 27, 16, 40]
+            }, {
+                "worsen_id": 30,
+                "rules": [22, 15, 33, 28]
+            }, {
+                "worsen_id": 31,
+                "rules": [21, 39, 16, 22]
+            }, {
+                "worsen_id": 32,
+                "rules": [27, 1, 4]
+            }, {
+                "worsen_id": 33,
+                "rules": [12, 27]
+            }, {
+                "worsen_id": 34,
+                "rules": [29, 10, 27]
+            }, {
+                "worsen_id": 35,
+                "rules": [1, 35, 13]
+            }, {
+                "worsen_id": 36,
+                "rules": [10, 4, 29, 15]
+            }, {
+                "worsen_id": 37,
+                "rules": [19, 29, 39, 35]
+            }, {
+                "worsen_id": 38,
+                "rules": [6, 10]
+            }, {
+                "worsen_id": 39,
+                "rules": [35, 17, 14, 19]
+            }]
+    }, {
+        "improve_id": 16,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [99]
+            }, {
+                "worsen_id": 2,
+                "rules": [6, 27, 19, 16]
+            }, {
+                "worsen_id": 3,
+                "rules": [99]
+            }, {
+                "worsen_id": 4,
+                "rules": [1, 40, 35]
+            }, {
+                "worsen_id": 5,
+                "rules": [99]
+            }, {
+                "worsen_id": 6,
+                "rules": [99]
+            }, {
+                "worsen_id": 7,
+                "rules": [99]
+            }, {
+                "worsen_id": 8,
+                "rules": [35, 34, 38]
+            }, {
+                "worsen_id": 9,
+                "rules": [99]
+            }, {
+                "worsen_id": 10,
+                "rules": [99]
+            }, {
+                "worsen_id": 11,
+                "rules": [99]
+            }, {
+                "worsen_id": 12,
+                "rules": [99]
+            }, {
+                "worsen_id": 13,
+                "rules": [39, 3, 35, 23]
+            }, {
+                "worsen_id": 14,
+                "rules": [99]
+            }, {
+                "worsen_id": 15,
+                "rules": [99]
+            }, {
+                "worsen_id": 16,
+                "rules": [90]
+            }, {
+                "worsen_id": 17,
+                "rules": [19, 18, 36, 40]
+            }, {
+                "worsen_id": 18,
+                "rules": [99]
+            }, {
+                "worsen_id": 19,
+                "rules": [99]
+            }, {
+                "worsen_id": 20,
+                "rules": [99]
+            }, {
+                "worsen_id": 21,
+                "rules": [16]
+            }, {
+                "worsen_id": 22,
+                "rules": [99]
+            }, {
+                "worsen_id": 23,
+                "rules": [27, 16, 18, 38]
+            }, {
+                "worsen_id": 24,
+                "rules": [10]
+            }, {
+                "worsen_id": 25,
+                "rules": [28, 20, 10, 16]
+            }, {
+                "worsen_id": 26,
+                "rules": [3, 35, 31]
+            }, {
+                "worsen_id": 27,
+                "rules": [34, 27, 6, 40]
+            }, {
+                "worsen_id": 28,
+                "rules": [10, 26, 24]
+            }, {
+                "worsen_id": 29,
+                "rules": [99]
+            }, {
+                "worsen_id": 30,
+                "rules": [17, 1, 40, 33]
+            }, {
+                "worsen_id": 31,
+                "rules": [22]
+            }, {
+                "worsen_id": 32,
+                "rules": [35, 10]
+            }, {
+                "worsen_id": 33,
+                "rules": [1]
+            }, {
+                "worsen_id": 34,
+                "rules": [1]
+            }, {
+                "worsen_id": 35,
+                "rules": [2]
+            }, {
+                "worsen_id": 36,
+                "rules": [99]
+            }, {
+                "worsen_id": 37,
+                "rules": [25, 34, 6, 35]
+            }, {
+                "worsen_id": 38,
+                "rules": [1]
+            }, {
+                "worsen_id": 39,
+                "rules": [20, 10, 16, 38]
+            }]
+    }, {
+        "improve_id": 17,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [36, 22, 6, 38]
+            }, {
+                "worsen_id": 2,
+                "rules": [22, 35, 32]
+            }, {
+                "worsen_id": 3,
+                "rules": [15, 19, 9]
+            }, {
+                "worsen_id": 4,
+                "rules": [15, 19, 9]
+            }, {
+                "worsen_id": 5,
+                "rules": [3, 35, 39, 18]
+            }, {
+                "worsen_id": 6,
+                "rules": [35, 38]
+            }, {
+                "worsen_id": 7,
+                "rules": [34, 39, 40, 18]
+            }, {
+                "worsen_id": 8,
+                "rules": [35, 6, 4]
+            }, {
+                "worsen_id": 9,
+                "rules": [2, 28, 36, 30]
+            }, {
+                "worsen_id": 10,
+                "rules": [35, 10, 3, 21]
+            }, {
+                "worsen_id": 11,
+                "rules": [35, 39, 19, 2]
+            }, {
+                "worsen_id": 12,
+                "rules": [14, 22, 19, 32]
+            }, {
+                "worsen_id": 13,
+                "rules": [1, 35, 32]
+            }, {
+                "worsen_id": 14,
+                "rules": [10, 30, 22, 40]
+            }, {
+                "worsen_id": 15,
+                "rules": [19, 13, 39]
+            }, {
+                "worsen_id": 16,
+                "rules": [19, 18, 36, 40]
+            }, {
+                "worsen_id": 17,
+                "rules": [90]
+            }, {
+                "worsen_id": 18,
+                "rules": [32, 30, 21, 16]
+            }, {
+                "worsen_id": 19,
+                "rules": [19, 15, 3, 17]
+            }, {
+                "worsen_id": 20,
+                "rules": [99]
+            }, {
+                "worsen_id": 21,
+                "rules": [2, 14, 17, 25]
+            }, {
+                "worsen_id": 22,
+                "rules": [21, 17, 35, 38]
+            }, {
+                "worsen_id": 23,
+                "rules": [21, 36, 29, 31]
+            }, {
+                "worsen_id": 24,
+                "rules": [99]
+            }, {
+                "worsen_id": 25,
+                "rules": [35, 28, 21, 18]
+            }, {
+                "worsen_id": 26,
+                "rules": [3, 17, 30, 39]
+            }, {
+                "worsen_id": 27,
+                "rules": [19, 35, 3, 10]
+            }, {
+                "worsen_id": 28,
+                "rules": [32, 19, 24]
+            }, {
+                "worsen_id": 29,
+                "rules": [24]
+            }, {
+                "worsen_id": 30,
+                "rules": [22, 33, 35, 2]
+            }, {
+                "worsen_id": 31,
+                "rules": [22, 35, 2, 24]
+            }, {
+                "worsen_id": 32,
+                "rules": [26, 27]
+            }, {
+                "worsen_id": 33,
+                "rules": [26, 27]
+            }, {
+                "worsen_id": 34,
+                "rules": [4, 10, 16]
+            }, {
+                "worsen_id": 35,
+                "rules": [2, 18, 27]
+            }, {
+                "worsen_id": 36,
+                "rules": [2, 17, 16]
+            }, {
+                "worsen_id": 37,
+                "rules": [3, 27, 35, 31]
+            }, {
+                "worsen_id": 38,
+                "rules": [26, 2, 19, 16]
+            }, {
+                "worsen_id": 39,
+                "rules": [15, 28, 35]
+            }]
+    }, {
+        "improve_id": 18,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [19, 1, 32]
+            }, {
+                "worsen_id": 2,
+                "rules": [2, 35, 32]
+            }, {
+                "worsen_id": 3,
+                "rules": [19, 32, 16]
+            }, {
+                "worsen_id": 4,
+                "rules": [99]
+            }, {
+                "worsen_id": 5,
+                "rules": [19, 32, 26]
+            }, {
+                "worsen_id": 6,
+                "rules": [99]
+            }, {
+                "worsen_id": 7,
+                "rules": [2, 13, 10]
+            }, {
+                "worsen_id": 8,
+                "rules": [99]
+            }, {
+                "worsen_id": 9,
+                "rules": [10, 13, 19]
+            }, {
+                "worsen_id": 10,
+                "rules": [26, 19, 6]
+            }, {
+                "worsen_id": 11,
+                "rules": [99]
+            }, {
+                "worsen_id": 12,
+                "rules": [32, 30]
+            }, {
+                "worsen_id": 13,
+                "rules": [32, 3, 27]
+            }, {
+                "worsen_id": 14,
+                "rules": [35, 19]
+            }, {
+                "worsen_id": 15,
+                "rules": [2, 19, 6]
+            }, {
+                "worsen_id": 16,
+                "rules": [99]
+            }, {
+                "worsen_id": 17,
+                "rules": [32, 35, 19]
+            }, {
+                "worsen_id": 18,
+                "rules": [90]
+            }, {
+                "worsen_id": 19,
+                "rules": [32, 1, 19]
+            }, {
+                "worsen_id": 20,
+                "rules": [32, 35, 1, 15]
+            }, {
+                "worsen_id": 21,
+                "rules": [32]
+            }, {
+                "worsen_id": 22,
+                "rules": [13, 16, 1, 6]
+            }, {
+                "worsen_id": 23,
+                "rules": [13, 1]
+            }, {
+                "worsen_id": 24,
+                "rules": [1, 6]
+            }, {
+                "worsen_id": 25,
+                "rules": [19, 1, 26, 17]
+            }, {
+                "worsen_id": 26,
+                "rules": [1, 19]
+            }, {
+                "worsen_id": 27,
+                "rules": [99]
+            }, {
+                "worsen_id": 28,
+                "rules": [11, 15, 32]
+            }, {
+                "worsen_id": 29,
+                "rules": [3, 32]
+            }, {
+                "worsen_id": 30,
+                "rules": [15, 19]
+            }, {
+                "worsen_id": 31,
+                "rules": [35, 19, 32, 39]
+            }, {
+                "worsen_id": 32,
+                "rules": [19, 35, 28, 26]
+            }, {
+                "worsen_id": 33,
+                "rules": [28, 26, 19]
+            }, {
+                "worsen_id": 34,
+                "rules": [15, 17, 13, 16]
+            }, {
+                "worsen_id": 35,
+                "rules": [15, 1, 19]
+            }, {
+                "worsen_id": 36,
+                "rules": [6, 32, 13]
+            }, {
+                "worsen_id": 37,
+                "rules": [32, 15]
+            }, {
+                "worsen_id": 38,
+                "rules": [2, 26, 10]
+            }, {
+                "worsen_id": 39,
+                "rules": [2, 25, 16]
+            }]
+    }, {
+        "improve_id": 19,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [12, 18, 28, 31]
+            }, {
+                "worsen_id": 2,
+                "rules": [99]
+            }, {
+                "worsen_id": 3,
+                "rules": [12, 28]
+            }, {
+                "worsen_id": 4,
+                "rules": [99]
+            }, {
+                "worsen_id": 5,
+                "rules": [15, 19, 25]
+            }, {
+                "worsen_id": 6,
+                "rules": [99]
+            }, {
+                "worsen_id": 7,
+                "rules": [35, 13, 18]
+            }, {
+                "worsen_id": 8,
+                "rules": [99]
+            }, {
+                "worsen_id": 9,
+                "rules": [8, 15, 35]
+            }, {
+                "worsen_id": 10,
+                "rules": [16, 26, 21, 2]
+            }, {
+                "worsen_id": 11,
+                "rules": [23, 14, 25]
+            }, {
+                "worsen_id": 12,
+                "rules": [12, 2, 29]
+            }, {
+                "worsen_id": 13,
+                "rules": [19, 13, 17, 24]
+            }, {
+                "worsen_id": 14,
+                "rules": [5, 19, 9, 35]
+            }, {
+                "worsen_id": 15,
+                "rules": [28, 35, 6, 18]
+            }, {
+                "worsen_id": 16,
+                "rules": [99]
+            }, {
+                "worsen_id": 17,
+                "rules": [19, 24, 3, 14]
+            }, {
+                "worsen_id": 18,
+                "rules": [2, 15, 19]
+            }, {
+                "worsen_id": 19,
+                "rules": [90]
+            }, {
+                "worsen_id": 20,
+                "rules": [99]
+            }, {
+                "worsen_id": 21,
+                "rules": [6, 19, 37, 18]
+            }, {
+                "worsen_id": 22,
+                "rules": [12, 22, 15, 24]
+            }, {
+                "worsen_id": 23,
+                "rules": [35, 24, 18, 5]
+            }, {
+                "worsen_id": 24,
+                "rules": [99]
+            }, {
+                "worsen_id": 25,
+                "rules": [35, 38, 19, 18]
+            }, {
+                "worsen_id": 26,
+                "rules": [34, 23, 16, 18]
+            }, {
+                "worsen_id": 27,
+                "rules": [19, 21, 11, 27]
+            }, {
+                "worsen_id": 28,
+                "rules": [3, 1, 32]
+            }, {
+                "worsen_id": 29,
+                "rules": [99]
+            }, {
+                "worsen_id": 30,
+                "rules": [1, 35, 6, 27]
+            }, {
+                "worsen_id": 31,
+                "rules": [2, 35, 6]
+            }, {
+                "worsen_id": 32,
+                "rules": [28, 26, 30]
+            }, {
+                "worsen_id": 33,
+                "rules": [19, 35]
+            }, {
+                "worsen_id": 34,
+                "rules": [1, 15, 17, 28]
+            }, {
+                "worsen_id": 35,
+                "rules": [15, 17, 13, 16]
+            }, {
+                "worsen_id": 36,
+                "rules": [2, 29, 27, 28]
+            }, {
+                "worsen_id": 37,
+                "rules": [35, 38]
+            }, {
+                "worsen_id": 38,
+                "rules": [32, 2]
+            }, {
+                "worsen_id": 39,
+                "rules": [12, 28, 35]
+            }]
+    }, {
+        "improve_id": 20,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [99]
+            }, {
+                "worsen_id": 2,
+                "rules": [19, 9, 6, 27]
+            }, {
+                "worsen_id": 3,
+                "rules": [99]
+            }, {
+                "worsen_id": 4,
+                "rules": [99]
+            }, {
+                "worsen_id": 5,
+                "rules": [99]
+            }, {
+                "worsen_id": 6,
+                "rules": [99]
+            }, {
+                "worsen_id": 7,
+                "rules": [99]
+            }, {
+                "worsen_id": 8,
+                "rules": [99]
+            }, {
+                "worsen_id": 9,
+                "rules": [99]
+            }, {
+                "worsen_id": 10,
+                "rules": [36, 37]
+            }, {
+                "worsen_id": 11,
+                "rules": [99]
+            }, {
+                "worsen_id": 12,
+                "rules": [99]
+            }, {
+                "worsen_id": 13,
+                "rules": [27, 4, 29, 18]
+            }, {
+                "worsen_id": 14,
+                "rules": [35]
+            }, {
+                "worsen_id": 15,
+                "rules": [99]
+            }, {
+                "worsen_id": 16,
+                "rules": [99]
+            }, {
+                "worsen_id": 17,
+                "rules": [99]
+            }, {
+                "worsen_id": 18,
+                "rules": [19, 2, 35, 32]
+            }, {
+                "worsen_id": 19,
+                "rules": [99]
+            }, {
+                "worsen_id": 20,
+                "rules": [90]
+            }, {
+                "worsen_id": 21,
+                "rules": [99]
+            }, {
+                "worsen_id": 22,
+                "rules": [99]
+            }, {
+                "worsen_id": 23,
+                "rules": [28, 27, 18, 31]
+            }, {
+                "worsen_id": 24,
+                "rules": [99]
+            }, {
+                "worsen_id": 25,
+                "rules": [99]
+            }, {
+                "worsen_id": 26,
+                "rules": [3, 35, 31]
+            }, {
+                "worsen_id": 27,
+                "rules": [10, 36, 23]
+            }, {
+                "worsen_id": 28,
+                "rules": [99]
+            }, {
+                "worsen_id": 29,
+                "rules": [99]
+            }, {
+                "worsen_id": 30,
+                "rules": [10, 2, 22, 37]
+            }, {
+                "worsen_id": 31,
+                "rules": [19, 22, 18]
+            }, {
+                "worsen_id": 32,
+                "rules": [1, 4]
+            }, {
+                "worsen_id": 33,
+                "rules": [99]
+            }, {
+                "worsen_id": 34,
+                "rules": [99]
+            }, {
+                "worsen_id": 35,
+                "rules": [99]
+            }, {
+                "worsen_id": 36,
+                "rules": [99]
+            }, {
+                "worsen_id": 37,
+                "rules": [19, 35, 16, 25]
+            }, {
+                "worsen_id": 38,
+                "rules": [99]
+            }, {
+                "worsen_id": 39,
+                "rules": [1, 6]
+            }]
+    }, {
+        "improve_id": 21,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [8, 36, 38, 31]
+            }, {
+                "worsen_id": 2,
+                "rules": [19, 26, 17, 27]
+            }, {
+                "worsen_id": 3,
+                "rules": [1, 10, 35, 37]
+            }, {
+                "worsen_id": 4,
+                "rules": [99]
+            }, {
+                "worsen_id": 5,
+                "rules": [19, 38]
+            }, {
+                "worsen_id": 6,
+                "rules": [17, 32, 13, 38]
+            }, {
+                "worsen_id": 7,
+                "rules": [35, 6, 38]
+            }, {
+                "worsen_id": 8,
+                "rules": [30, 6, 25]
+            }, {
+                "worsen_id": 9,
+                "rules": [15, 35, 2]
+            }, {
+                "worsen_id": 10,
+                "rules": [26, 2, 36, 35]
+            }, {
+                "worsen_id": 11,
+                "rules": [22, 10, 35]
+            }, {
+                "worsen_id": 12,
+                "rules": [29, 14, 2, 40]
+            }, {
+                "worsen_id": 13,
+                "rules": [35, 32, 15, 31]
+            }, {
+                "worsen_id": 14,
+                "rules": [26, 10, 28]
+            }, {
+                "worsen_id": 15,
+                "rules": [19, 35, 10, 38]
+            }, {
+                "worsen_id": 16,
+                "rules": [16]
+            }, {
+                "worsen_id": 17,
+                "rules": [2, 14, 17, 25]
+            }, {
+                "worsen_id": 18,
+                "rules": [16, 6, 19]
+            }, {
+                "worsen_id": 19,
+                "rules": [16, 6, 19, 37]
+            }, {
+                "worsen_id": 20,
+                "rules": [99]
+            }, {
+                "worsen_id": 21,
+                "rules": [90]
+            }, {
+                "worsen_id": 22,
+                "rules": [10, 35, 38]
+            }, {
+                "worsen_id": 23,
+                "rules": [28, 27, 18, 38]
+            }, {
+                "worsen_id": 24,
+                "rules": [10, 19]
+            }, {
+                "worsen_id": 25,
+                "rules": [35, 20, 10, 6]
+            }, {
+                "worsen_id": 26,
+                "rules": [4, 34, 19]
+            }, {
+                "worsen_id": 27,
+                "rules": [19, 24, 26, 31]
+            }, {
+                "worsen_id": 28,
+                "rules": [32, 15, 2]
+            }, {
+                "worsen_id": 29,
+                "rules": [32, 2]
+            }, {
+                "worsen_id": 30,
+                "rules": [19, 22, 31, 2]
+            }, {
+                "worsen_id": 31,
+                "rules": [2, 35, 18]
+            }, {
+                "worsen_id": 32,
+                "rules": [26, 10, 34]
+            }, {
+                "worsen_id": 33,
+                "rules": [26, 35, 10]
+            }, {
+                "worsen_id": 34,
+                "rules": [35, 2, 10, 34]
+            }, {
+                "worsen_id": 35,
+                "rules": [19, 17, 34]
+            }, {
+                "worsen_id": 36,
+                "rules": [20, 19, 30, 34]
+            }, {
+                "worsen_id": 37,
+                "rules": [19, 35, 16]
+            }, {
+                "worsen_id": 38,
+                "rules": [28, 2, 17]
+            }, {
+                "worsen_id": 39,
+                "rules": [28, 35, 34]
+            }]
+    }, {
+        "improve_id": 22,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [15, 6, 19, 28]
+            }, {
+                "worsen_id": 2,
+                "rules": [19, 6, 18, 9]
+            }, {
+                "worsen_id": 3,
+                "rules": [7, 2, 6, 13]
+            }, {
+                "worsen_id": 4,
+                "rules": [6, 38, 7]
+            }, {
+                "worsen_id": 5,
+                "rules": [15, 26, 17, 30]
+            }, {
+                "worsen_id": 6,
+                "rules": [17, 7, 30, 18]
+            }, {
+                "worsen_id": 7,
+                "rules": [7, 18, 23]
+            }, {
+                "worsen_id": 8,
+                "rules": [7]
+            }, {
+                "worsen_id": 9,
+                "rules": [16, 35, 38]
+            }, {
+                "worsen_id": 10,
+                "rules": [36, 38]
+            }, {
+                "worsen_id": 11,
+                "rules": [99]
+            }, {
+                "worsen_id": 12,
+                "rules": [99]
+            }, {
+                "worsen_id": 13,
+                "rules": [14, 2, 39, 6]
+            }, {
+                "worsen_id": 14,
+                "rules": [26]
+            }, {
+                "worsen_id": 15,
+                "rules": [99]
+            }, {
+                "worsen_id": 16,
+                "rules": [99]
+            }, {
+                "worsen_id": 17,
+                "rules": [19, 38, 7]
+            }, {
+                "worsen_id": 18,
+                "rules": [1, 13, 32, 15]
+            }, {
+                "worsen_id": 19,
+                "rules": [99]
+            }, {
+                "worsen_id": 20,
+                "rules": [99]
+            }, {
+                "worsen_id": 21,
+                "rules": [3, 38]
+            }, {
+                "worsen_id": 22,
+                "rules": [90]
+            }, {
+                "worsen_id": 23,
+                "rules": [35, 27, 2, 37]
+            }, {
+                "worsen_id": 24,
+                "rules": [19, 10]
+            }, {
+                "worsen_id": 25,
+                "rules": [10, 18, 32, 7]
+            }, {
+                "worsen_id": 26,
+                "rules": [7, 18, 25]
+            }, {
+                "worsen_id": 27,
+                "rules": [11, 10, 35]
+            }, {
+                "worsen_id": 28,
+                "rules": [32]
+            }, {
+                "worsen_id": 29,
+                "rules": [99]
+            }, {
+                "worsen_id": 30,
+                "rules": [21, 22, 35, 2]
+            }, {
+                "worsen_id": 31,
+                "rules": [21, 35, 2, 22]
+            }, {
+                "worsen_id": 32,
+                "rules": [99]
+            }, {
+                "worsen_id": 33,
+                "rules": [35, 32, 1]
+            }, {
+                "worsen_id": 34,
+                "rules": [2, 19]
+            }, {
+                "worsen_id": 35,
+                "rules": [99]
+            }, {
+                "worsen_id": 36,
+                "rules": [7, 23]
+            }, {
+                "worsen_id": 37,
+                "rules": [35, 3, 15, 23]
+            }, {
+                "worsen_id": 38,
+                "rules": [2]
+            }, {
+                "worsen_id": 39,
+                "rules": [28, 10, 29, 35]
+            }]
+    }, {
+        "improve_id": 23,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [35, 6, 23, 40]
+            }, {
+                "worsen_id": 2,
+                "rules": [35, 6, 22, 32]
+            }, {
+                "worsen_id": 3,
+                "rules": [14, 29, 10, 39]
+            }, {
+                "worsen_id": 4,
+                "rules": [10, 28, 24]
+            }, {
+                "worsen_id": 5,
+                "rules": [35, 2, 10, 31]
+            }, {
+                "worsen_id": 6,
+                "rules": [10, 18, 39, 31]
+            }, {
+                "worsen_id": 7,
+                "rules": [1, 29, 30, 36]
+            }, {
+                "worsen_id": 8,
+                "rules": [3, 39, 18, 31]
+            }, {
+                "worsen_id": 9,
+                "rules": [10, 13, 28, 38]
+            }, {
+                "worsen_id": 10,
+                "rules": [14, 15, 18, 40]
+            }, {
+                "worsen_id": 11,
+                "rules": [3, 36, 37, 10]
+            }, {
+                "worsen_id": 12,
+                "rules": [29, 35, 3, 5]
+            }, {
+                "worsen_id": 13,
+                "rules": [2, 14, 30, 40]
+            }, {
+                "worsen_id": 14,
+                "rules": [35, 28, 31, 40]
+            }, {
+                "worsen_id": 15,
+                "rules": [28, 27, 3, 18]
+            }, {
+                "worsen_id": 16,
+                "rules": [27, 16, 18, 38]
+            }, {
+                "worsen_id": 17,
+                "rules": [21, 36, 39, 31]
+            }, {
+                "worsen_id": 18,
+                "rules": [1, 6, 13]
+            }, {
+                "worsen_id": 19,
+                "rules": [35, 18, 24, 5]
+            }, {
+                "worsen_id": 20,
+                "rules": [28, 27, 12, 31]
+            }, {
+                "worsen_id": 21,
+                "rules": [28, 27, 18, 38]
+            }, {
+                "worsen_id": 22,
+                "rules": [35, 27, 2, 31]
+            }, {
+                "worsen_id": 23,
+                "rules": [90]
+            }, {
+                "worsen_id": 24,
+                "rules": [99]
+            }, {
+                "worsen_id": 25,
+                "rules": [15, 18, 35, 10]
+            }, {
+                "worsen_id": 26,
+                "rules": [6, 3, 10, 24]
+            }, {
+                "worsen_id": 27,
+                "rules": [10, 29, 39, 35]
+            }, {
+                "worsen_id": 28,
+                "rules": [16, 34, 31, 28]
+            }, {
+                "worsen_id": 29,
+                "rules": [35, 10, 24, 31]
+            }, {
+                "worsen_id": 30,
+                "rules": [33, 22, 30, 40]
+            }, {
+                "worsen_id": 31,
+                "rules": [10, 1, 34, 29]
+            }, {
+                "worsen_id": 32,
+                "rules": [15, 34, 33]
+            }, {
+                "worsen_id": 33,
+                "rules": [32, 28, 2, 24]
+            }, {
+                "worsen_id": 34,
+                "rules": [2, 35, 34, 27]
+            }, {
+                "worsen_id": 35,
+                "rules": [15, 10, 2]
+            }, {
+                "worsen_id": 36,
+                "rules": [35, 10, 28, 24]
+            }, {
+                "worsen_id": 37,
+                "rules": [35, 18, 10, 13]
+            }, {
+                "worsen_id": 38,
+                "rules": [35, 10, 18]
+            }, {
+                "worsen_id": 39,
+                "rules": [28, 35, 10, 23]
+            }]
+    }, {
+        "improve_id": 24,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [10, 24, 35]
+            }, {
+                "worsen_id": 2,
+                "rules": [10, 35, 5]
+            }, {
+                "worsen_id": 3,
+                "rules": [1, 26]
+            }, {
+                "worsen_id": 4,
+                "rules": [26]
+            }, {
+                "worsen_id": 5,
+                "rules": [30, 26]
+            }, {
+                "worsen_id": 6,
+                "rules": [30, 16]
+            }, {
+                "worsen_id": 7,
+                "rules": [99]
+            }, {
+                "worsen_id": 8,
+                "rules": [2, 22]
+            }, {
+                "worsen_id": 9,
+                "rules": [26, 32]
+            }, {
+                "worsen_id": 10,
+                "rules": [99]
+            }, {
+                "worsen_id": 11,
+                "rules": [99]
+            }, {
+                "worsen_id": 12,
+                "rules": [99]
+            }, {
+                "worsen_id": 13,
+                "rules": [99]
+            }, {
+                "worsen_id": 14,
+                "rules": [99]
+            }, {
+                "worsen_id": 15,
+                "rules": [10]
+            }, {
+                "worsen_id": 16,
+                "rules": [10]
+            }, {
+                "worsen_id": 17,
+                "rules": [99]
+            }, {
+                "worsen_id": 18,
+                "rules": [19]
+            }, {
+                "worsen_id": 19,
+                "rules": [99]
+            }, {
+                "worsen_id": 20,
+                "rules": [99]
+            }, {
+                "worsen_id": 21,
+                "rules": [10, 19]
+            }, {
+                "worsen_id": 22,
+                "rules": [19, 10]
+            }, {
+                "worsen_id": 23,
+                "rules": [99]
+            }, {
+                "worsen_id": 24,
+                "rules": [90]
+            }, {
+                "worsen_id": 25,
+                "rules": [24, 26, 28, 32]
+            }, {
+                "worsen_id": 26,
+                "rules": [24, 28, 35]
+            }, {
+                "worsen_id": 27,
+                "rules": [10, 28, 23]
+            }, {
+                "worsen_id": 28,
+                "rules": [99]
+            }, {
+                "worsen_id": 29,
+                "rules": [99]
+            }, {
+                "worsen_id": 30,
+                "rules": [22, 10, 1]
+            }, {
+                "worsen_id": 31,
+                "rules": [10, 21, 22]
+            }, {
+                "worsen_id": 32,
+                "rules": [32]
+            }, {
+                "worsen_id": 33,
+                "rules": [27, 22]
+            }, {
+                "worsen_id": 34,
+                "rules": [99]
+            }, {
+                "worsen_id": 35,
+                "rules": [99]
+            }, {
+                "worsen_id": 36,
+                "rules": [99]
+            }, {
+                "worsen_id": 37,
+                "rules": [35, 33]
+            }, {
+                "worsen_id": 38,
+                "rules": [35]
+            }, {
+                "worsen_id": 39,
+                "rules": [13, 23, 15]
+            }]
+    }, {
+        "improve_id": 25,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [10, 20, 37, 35]
+            }, {
+                "worsen_id": 2,
+                "rules": [10, 20, 26, 5]
+            }, {
+                "worsen_id": 3,
+                "rules": [15, 2, 29]
+            }, {
+                "worsen_id": 4,
+                "rules": [30, 24, 14, 5]
+            }, {
+                "worsen_id": 5,
+                "rules": [26, 4, 5, 16]
+            }, {
+                "worsen_id": 6,
+                "rules": [10, 35, 17, 4]
+            }, {
+                "worsen_id": 7,
+                "rules": [2, 5, 34, 10]
+            }, {
+                "worsen_id": 8,
+                "rules": [35, 16, 32, 18]
+            }, {
+                "worsen_id": 9,
+                "rules": [99]
+            }, {
+                "worsen_id": 10,
+                "rules": [10, 37, 36, 5]
+            }, {
+                "worsen_id": 11,
+                "rules": [37, 36, 4]
+            }, {
+                "worsen_id": 12,
+                "rules": [4, 10, 34, 17]
+            }, {
+                "worsen_id": 13,
+                "rules": [35, 3, 22, 5]
+            }, {
+                "worsen_id": 14,
+                "rules": [29, 3, 28, 18]
+            }, {
+                "worsen_id": 15,
+                "rules": [20, 10, 28, 18]
+            }, {
+                "worsen_id": 16,
+                "rules": [28, 20, 10, 16]
+            }, {
+                "worsen_id": 17,
+                "rules": [35, 29, 21, 18]
+            }, {
+                "worsen_id": 18,
+                "rules": [1, 19, 26, 17]
+            }, {
+                "worsen_id": 19,
+                "rules": [35, 38, 19, 18]
+            }, {
+                "worsen_id": 20,
+                "rules": [1]
+            }, {
+                "worsen_id": 21,
+                "rules": [35, 20, 10, 6]
+            }, {
+                "worsen_id": 22,
+                "rules": [10, 5, 18, 32]
+            }, {
+                "worsen_id": 23,
+                "rules": [35, 18, 10, 39]
+            }, {
+                "worsen_id": 24,
+                "rules": [24, 26, 28, 32]
+            }, {
+                "worsen_id": 25,
+                "rules": [90]
+            }, {
+                "worsen_id": 26,
+                "rules": [35, 38, 18, 16]
+            }, {
+                "worsen_id": 27,
+                "rules": [10, 30, 4]
+            }, {
+                "worsen_id": 28,
+                "rules": [24, 34, 28, 32]
+            }, {
+                "worsen_id": 29,
+                "rules": [24, 26, 28, 18]
+            }, {
+                "worsen_id": 30,
+                "rules": [35, 18, 34]
+            }, {
+                "worsen_id": 31,
+                "rules": [35, 22, 18, 39]
+            }, {
+                "worsen_id": 32,
+                "rules": [35, 28, 34, 4]
+            }, {
+                "worsen_id": 33,
+                "rules": [4, 28, 10, 34]
+            }, {
+                "worsen_id": 34,
+                "rules": [32, 1, 10]
+            }, {
+                "worsen_id": 35,
+                "rules": [35, 28]
+            }, {
+                "worsen_id": 36,
+                "rules": [6, 29]
+            }, {
+                "worsen_id": 37,
+                "rules": [18, 28, 32, 10]
+            }, {
+                "worsen_id": 38,
+                "rules": [24, 28, 35, 30]
+            }, {
+                "worsen_id": 39,
+                "rules": [99]
+            }]
+    }, {
+        "improve_id": 26,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [35, 6, 18, 31]
+            }, {
+                "worsen_id": 2,
+                "rules": [27, 26, 18, 35]
+            }, {
+                "worsen_id": 3,
+                "rules": [29, 14, 35, 18]
+            }, {
+                "worsen_id": 4,
+                "rules": [99]
+            }, {
+                "worsen_id": 5,
+                "rules": [15, 14, 29]
+            }, {
+                "worsen_id": 6,
+                "rules": [2, 18, 40, 4]
+            }, {
+                "worsen_id": 7,
+                "rules": [15, 20, 29]
+            }, {
+                "worsen_id": 8,
+                "rules": [99]
+            }, {
+                "worsen_id": 9,
+                "rules": [35, 29, 34, 28]
+            }, {
+                "worsen_id": 10,
+                "rules": [35, 14, 3]
+            }, {
+                "worsen_id": 11,
+                "rules": [10, 36, 14, 3]
+            }, {
+                "worsen_id": 12,
+                "rules": [35, 14]
+            }, {
+                "worsen_id": 13,
+                "rules": [15, 2, 17, 40]
+            }, {
+                "worsen_id": 14,
+                "rules": [14, 35, 34, 10]
+            }, {
+                "worsen_id": 15,
+                "rules": [3, 35, 10, 40]
+            }, {
+                "worsen_id": 16,
+                "rules": [3, 35, 31]
+            }, {
+                "worsen_id": 17,
+                "rules": [3, 17, 39]
+            }, {
+                "worsen_id": 18,
+                "rules": [99]
+            }, {
+                "worsen_id": 19,
+                "rules": [34, 29, 16, 18]
+            }, {
+                "worsen_id": 20,
+                "rules": [3, 35, 31]
+            }, {
+                "worsen_id": 21,
+                "rules": [35]
+            }, {
+                "worsen_id": 22,
+                "rules": [7, 18, 25]
+            }, {
+                "worsen_id": 23,
+                "rules": [6, 3, 10, 24]
+            }, {
+                "worsen_id": 24,
+                "rules": [24, 28, 35]
+            }, {
+                "worsen_id": 25,
+                "rules": [35, 38, 18, 16]
+            }, {
+                "worsen_id": 26,
+                "rules": [90]
+            }, {
+                "worsen_id": 27,
+                "rules": [18, 3, 28, 40]
+            }, {
+                "worsen_id": 28,
+                "rules": [13, 2, 28]
+            }, {
+                "worsen_id": 29,
+                "rules": [33, 30]
+            }, {
+                "worsen_id": 30,
+                "rules": [35, 33, 29, 31]
+            }, {
+                "worsen_id": 31,
+                "rules": [3, 35, 40, 39]
+            }, {
+                "worsen_id": 32,
+                "rules": [29, 1, 35, 27]
+            }, {
+                "worsen_id": 33,
+                "rules": [35, 29, 25, 10]
+            }, {
+                "worsen_id": 34,
+                "rules": [2, 32, 10, 25]
+            }, {
+                "worsen_id": 35,
+                "rules": [15, 3, 29]
+            }, {
+                "worsen_id": 36,
+                "rules": [3, 13, 27, 10]
+            }, {
+                "worsen_id": 37,
+                "rules": [3, 27, 29, 18]
+            }, {
+                "worsen_id": 38,
+                "rules": [8, 35]
+            }, {
+                "worsen_id": 39,
+                "rules": [13, 29, 3, 27]
+            }]
+    }, {
+        "improve_id": 27,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [3, 8, 10, 40]
+            }, {
+                "worsen_id": 2,
+                "rules": [3, 10, 8, 28]
+            }, {
+                "worsen_id": 3,
+                "rules": [15, 9, 14, 4]
+            }, {
+                "worsen_id": 4,
+                "rules": [15, 29, 28, 11]
+            }, {
+                "worsen_id": 5,
+                "rules": [17, 10, 14, 16]
+            }, {
+                "worsen_id": 6,
+                "rules": [32, 35, 40, 4]
+            }, {
+                "worsen_id": 7,
+                "rules": [3, 10, 14, 24]
+            }, {
+                "worsen_id": 8,
+                "rules": [2, 35, 24]
+            }, {
+                "worsen_id": 9,
+                "rules": [21, 35, 11, 28]
+            }, {
+                "worsen_id": 10,
+                "rules": [8, 28, 10, 3]
+            }, {
+                "worsen_id": 11,
+                "rules": [10, 24, 35, 19]
+            }, {
+                "worsen_id": 12,
+                "rules": [35, 1, 16, 11]
+            }, {
+                "worsen_id": 13,
+                "rules": [99]
+            }, {
+                "worsen_id": 14,
+                "rules": [11, 28]
+            }, {
+                "worsen_id": 15,
+                "rules": [2, 35, 3, 25]
+            }, {
+                "worsen_id": 16,
+                "rules": [34, 27, 6, 40]
+            }, {
+                "worsen_id": 17,
+                "rules": [3, 35, 10]
+            }, {
+                "worsen_id": 18,
+                "rules": [11, 32, 13]
+            }, {
+                "worsen_id": 19,
+                "rules": [21, 11, 27, 19]
+            }, {
+                "worsen_id": 20,
+                "rules": [36, 23]
+            }, {
+                "worsen_id": 21,
+                "rules": [21, 11, 26, 31]
+            }, {
+                "worsen_id": 22,
+                "rules": [10, 11, 35]
+            }, {
+                "worsen_id": 23,
+                "rules": [10, 35, 29, 39]
+            }, {
+                "worsen_id": 24,
+                "rules": [10, 28]
+            }, {
+                "worsen_id": 25,
+                "rules": [10, 30, 4]
+            }, {
+                "worsen_id": 26,
+                "rules": [21, 28, 40, 3]
+            }, {
+                "worsen_id": 27,
+                "rules": [90]
+            }, {
+                "worsen_id": 28,
+                "rules": [32, 3, 11, 23]
+            }, {
+                "worsen_id": 29,
+                "rules": [11, 32, 1]
+            }, {
+                "worsen_id": 30,
+                "rules": [27, 35, 2, 40]
+            }, {
+                "worsen_id": 31,
+                "rules": [35, 2, 40, 26]
+            }, {
+                "worsen_id": 32,
+                "rules": [99]
+            }, {
+                "worsen_id": 33,
+                "rules": [27, 17, 40]
+            }, {
+                "worsen_id": 34,
+                "rules": [1, 11]
+            }, {
+                "worsen_id": 35,
+                "rules": [13, 35, 8, 24]
+            }, {
+                "worsen_id": 36,
+                "rules": [13, 35, 1]
+            }, {
+                "worsen_id": 37,
+                "rules": [27, 40, 28]
+            }, {
+                "worsen_id": 38,
+                "rules": [11, 13, 27]
+            }, {
+                "worsen_id": 39,
+                "rules": [1, 35, 29, 38]
+            }]
+    }, {
+        "improve_id": 28,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [32, 35, 26, 28]
+            }, {
+                "worsen_id": 2,
+                "rules": [28, 35, 25, 26]
+            }, {
+                "worsen_id": 3,
+                "rules": [28, 26, 5, 16]
+            }, {
+                "worsen_id": 4,
+                "rules": [32, 28, 3, 16]
+            }, {
+                "worsen_id": 5,
+                "rules": [26, 28, 32, 3]
+            }, {
+                "worsen_id": 6,
+                "rules": [26, 28, 32, 3]
+            }, {
+                "worsen_id": 7,
+                "rules": [32, 13, 6]
+            }, {
+                "worsen_id": 8,
+                "rules": [99]
+            }, {
+                "worsen_id": 9,
+                "rules": [28, 13, 32, 24]
+            }, {
+                "worsen_id": 10,
+                "rules": [32, 2]
+            }, {
+                "worsen_id": 11,
+                "rules": [6, 28, 32]
+            }, {
+                "worsen_id": 12,
+                "rules": [6, 28, 32]
+            }, {
+                "worsen_id": 13,
+                "rules": [32, 35, 13]
+            }, {
+                "worsen_id": 14,
+                "rules": [28, 6, 32]
+            }, {
+                "worsen_id": 15,
+                "rules": [28, 6, 32]
+            }, {
+                "worsen_id": 16,
+                "rules": [10, 26, 24]
+            }, {
+                "worsen_id": 17,
+                "rules": [6, 19, 28, 24]
+            }, {
+                "worsen_id": 18,
+                "rules": [6, 1, 32]
+            }, {
+                "worsen_id": 19,
+                "rules": [3, 6, 32]
+            }, {
+                "worsen_id": 20,
+                "rules": [99]
+            }, {
+                "worsen_id": 21,
+                "rules": [3, 6, 32]
+            }, {
+                "worsen_id": 22,
+                "rules": [26, 32, 27]
+            }, {
+                "worsen_id": 23,
+                "rules": [10, 16, 31, 28]
+            }, {
+                "worsen_id": 24,
+                "rules": [99]
+            }, {
+                "worsen_id": 25,
+                "rules": [24, 34, 28, 32]
+            }, {
+                "worsen_id": 26,
+                "rules": [2, 6, 32]
+            }, {
+                "worsen_id": 27,
+                "rules": [5, 11, 1, 23]
+            }, {
+                "worsen_id": 28,
+                "rules": [90]
+            }, {
+                "worsen_id": 29,
+                "rules": [99]
+            }, {
+                "worsen_id": 30,
+                "rules": [28, 24, 22, 26]
+            }, {
+                "worsen_id": 31,
+                "rules": [3, 33, 39, 10]
+            }, {
+                "worsen_id": 32,
+                "rules": [6, 35, 25, 18]
+            }, {
+                "worsen_id": 33,
+                "rules": [1, 13, 17, 34]
+            }, {
+                "worsen_id": 34,
+                "rules": [1, 32, 13, 11]
+            }, {
+                "worsen_id": 35,
+                "rules": [13, 35, 2]
+            }, {
+                "worsen_id": 36,
+                "rules": [27, 35, 10, 34]
+            }, {
+                "worsen_id": 37,
+                "rules": [26, 24, 32, 28]
+            }, {
+                "worsen_id": 38,
+                "rules": [28, 2, 10, 34]
+            }, {
+                "worsen_id": 39,
+                "rules": [10, 34, 28, 32]
+            }]
+    }, {
+        "improve_id": 29,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [28, 32, 13, 18]
+            }, {
+                "worsen_id": 2,
+                "rules": [28, 35, 27, 9]
+            }, {
+                "worsen_id": 3,
+                "rules": [10, 28, 29, 37]
+            }, {
+                "worsen_id": 4,
+                "rules": [2, 32, 10]
+            }, {
+                "worsen_id": 5,
+                "rules": [28, 33, 29, 32]
+            }, {
+                "worsen_id": 6,
+                "rules": [2, 29, 18, 36]
+            }, {
+                "worsen_id": 7,
+                "rules": [32, 23, 2]
+            }, {
+                "worsen_id": 8,
+                "rules": [25, 10, 35]
+            }, {
+                "worsen_id": 9,
+                "rules": [10, 28, 32]
+            }, {
+                "worsen_id": 10,
+                "rules": [28, 19, 34, 36]
+            }, {
+                "worsen_id": 11,
+                "rules": [3, 35]
+            }, {
+                "worsen_id": 12,
+                "rules": [32, 30, 40]
+            }, {
+                "worsen_id": 13,
+                "rules": [30, 18]
+            }, {
+                "worsen_id": 14,
+                "rules": [3, 27]
+            }, {
+                "worsen_id": 15,
+                "rules": [3, 27, 40]
+            }, {
+                "worsen_id": 16,
+                "rules": [99]
+            }, {
+                "worsen_id": 17,
+                "rules": [19, 26]
+            }, {
+                "worsen_id": 18,
+                "rules": [3, 32]
+            }, {
+                "worsen_id": 19,
+                "rules": [32, 2]
+            }, {
+                "worsen_id": 20,
+                "rules": [99]
+            }, {
+                "worsen_id": 21,
+                "rules": [32, 2]
+            }, {
+                "worsen_id": 22,
+                "rules": [13, 32, 2]
+            }, {
+                "worsen_id": 23,
+                "rules": [35, 31, 10, 24]
+            }, {
+                "worsen_id": 24,
+                "rules": [99]
+            }, {
+                "worsen_id": 25,
+                "rules": [32, 26, 28, 18]
+            }, {
+                "worsen_id": 26,
+                "rules": [32, 30]
+            }, {
+                "worsen_id": 27,
+                "rules": [11, 32, 1]
+            }, {
+                "worsen_id": 28,
+                "rules": [99]
+            }, {
+                "worsen_id": 29,
+                "rules": [90]
+            }, {
+                "worsen_id": 30,
+                "rules": [26, 28, 10, 36]
+            }, {
+                "worsen_id": 31,
+                "rules": [4, 17, 34, 26]
+            }, {
+                "worsen_id": 32,
+                "rules": [99]
+            }, {
+                "worsen_id": 33,
+                "rules": [1, 32, 35, 23]
+            }, {
+                "worsen_id": 34,
+                "rules": [25, 10]
+            }, {
+                "worsen_id": 35,
+                "rules": [99]
+            }, {
+                "worsen_id": 36,
+                "rules": [26, 2, 18]
+            }, {
+                "worsen_id": 37,
+                "rules": [99]
+            }, {
+                "worsen_id": 38,
+                "rules": [26, 28, 18, 23]
+            }, {
+                "worsen_id": 39,
+                "rules": [10, 18, 32, 39]
+            }]
+    }, {
+        "improve_id": 30,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [22, 21, 27, 39]
+            }, {
+                "worsen_id": 2,
+                "rules": [2, 22, 13, 24]
+            }, {
+                "worsen_id": 3,
+                "rules": [17, 1, 39, 4]
+            }, {
+                "worsen_id": 4,
+                "rules": [1, 18]
+            }, {
+                "worsen_id": 5,
+                "rules": [22, 1, 33, 28]
+            }, {
+                "worsen_id": 6,
+                "rules": [27, 2, 39, 35]
+            }, {
+                "worsen_id": 7,
+                "rules": [22, 23, 37, 35]
+            }, {
+                "worsen_id": 8,
+                "rules": [34, 39, 19, 27]
+            }, {
+                "worsen_id": 9,
+                "rules": [21, 22, 35, 28]
+            }, {
+                "worsen_id": 10,
+                "rules": [13, 35, 39, 18]
+            }, {
+                "worsen_id": 11,
+                "rules": [22, 2, 37]
+            }, {
+                "worsen_id": 12,
+                "rules": [22, 1, 3, 35]
+            }, {
+                "worsen_id": 13,
+                "rules": [35, 24, 30, 18]
+            }, {
+                "worsen_id": 14,
+                "rules": [18, 35, 37, 1]
+            }, {
+                "worsen_id": 15,
+                "rules": [22, 15, 33, 28]
+            }, {
+                "worsen_id": 16,
+                "rules": [17, 1, 40, 33]
+            }, {
+                "worsen_id": 17,
+                "rules": [22, 33, 35, 2]
+            }, {
+                "worsen_id": 18,
+                "rules": [1, 19, 32, 13]
+            }, {
+                "worsen_id": 19,
+                "rules": [1, 24, 6, 27]
+            }, {
+                "worsen_id": 20,
+                "rules": [10, 2, 22, 37]
+            }, {
+                "worsen_id": 21,
+                "rules": [19, 22, 31, 2]
+            }, {
+                "worsen_id": 22,
+                "rules": [21, 22, 35, 2]
+            }, {
+                "worsen_id": 23,
+                "rules": [33, 22, 19, 40]
+            }, {
+                "worsen_id": 24,
+                "rules": [22, 10, 2]
+            }, {
+                "worsen_id": 25,
+                "rules": [35, 18, 34]
+            }, {
+                "worsen_id": 26,
+                "rules": [35, 33, 29, 31]
+            }, {
+                "worsen_id": 27,
+                "rules": [27, 24, 2, 40]
+            }, {
+                "worsen_id": 28,
+                "rules": [28, 33, 23, 26]
+            }, {
+                "worsen_id": 29,
+                "rules": [26, 28, 10, 18]
+            }, {
+                "worsen_id": 30,
+                "rules": [90]
+            }, {
+                "worsen_id": 31,
+                "rules": [99]
+            }, {
+                "worsen_id": 32,
+                "rules": [24, 35, 2]
+            }, {
+                "worsen_id": 33,
+                "rules": [2, 25, 28, 39]
+            }, {
+                "worsen_id": 34,
+                "rules": [35, 10, 2]
+            }, {
+                "worsen_id": 35,
+                "rules": [35, 11, 22, 31]
+            }, {
+                "worsen_id": 36,
+                "rules": [22, 19, 29, 40]
+            }, {
+                "worsen_id": 37,
+                "rules": [22, 19, 29, 40]
+            }, {
+                "worsen_id": 38,
+                "rules": [33, 3, 34]
+            }, {
+                "worsen_id": 39,
+                "rules": [22, 35, 13, 24]
+            }]
+    }, {
+        "improve_id": 31,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [19, 22, 15, 39]
+            }, {
+                "worsen_id": 2,
+                "rules": [35, 22, 1, 39]
+            }, {
+                "worsen_id": 3,
+                "rules": [17, 15, 16, 22]
+            }, {
+                "worsen_id": 4,
+                "rules": [99]
+            }, {
+                "worsen_id": 5,
+                "rules": [17, 2, 18, 39]
+            }, {
+                "worsen_id": 6,
+                "rules": [22, 1, 40]
+            }, {
+                "worsen_id": 7,
+                "rules": [17, 2, 40]
+            }, {
+                "worsen_id": 8,
+                "rules": [30, 18, 35, 4]
+            }, {
+                "worsen_id": 9,
+                "rules": [35, 28, 3, 23]
+            }, {
+                "worsen_id": 10,
+                "rules": [35, 28, 1, 40]
+            }, {
+                "worsen_id": 11,
+                "rules": [2, 33, 27, 18]
+            }, {
+                "worsen_id": 12,
+                "rules": [35, 1]
+            }, {
+                "worsen_id": 13,
+                "rules": [35, 40, 27, 39]
+            }, {
+                "worsen_id": 14,
+                "rules": [15, 35, 22, 2]
+            }, {
+                "worsen_id": 15,
+                "rules": [15, 22, 33, 31]
+            }, {
+                "worsen_id": 16,
+                "rules": [21, 39, 16, 22]
+            }, {
+                "worsen_id": 17,
+                "rules": [22, 35, 2, 24]
+            }, {
+                "worsen_id": 18,
+                "rules": [19, 24, 39, 32]
+            }, {
+                "worsen_id": 19,
+                "rules": [2, 35, 6]
+            }, {
+                "worsen_id": 20,
+                "rules": [19, 22, 18]
+            }, {
+                "worsen_id": 21,
+                "rules": [2, 35, 18]
+            }, {
+                "worsen_id": 22,
+                "rules": [21, 35, 2, 22]
+            }, {
+                "worsen_id": 23,
+                "rules": [10, 1, 34]
+            }, {
+                "worsen_id": 24,
+                "rules": [10, 21, 29]
+            }, {
+                "worsen_id": 25,
+                "rules": [1, 22]
+            }, {
+                "worsen_id": 26,
+                "rules": [3, 24, 39, 1]
+            }, {
+                "worsen_id": 27,
+                "rules": [24, 2, 40, 39]
+            }, {
+                "worsen_id": 28,
+                "rules": [3, 33, 26]
+            }, {
+                "worsen_id": 29,
+                "rules": [4, 17, 34, 26]
+            }, {
+                "worsen_id": 30,
+                "rules": [99]
+            }, {
+                "worsen_id": 31,
+                "rules": [90]
+            }, {
+                "worsen_id": 32,
+                "rules": [99]
+            }, {
+                "worsen_id": 33,
+                "rules": [99]
+            }, {
+                "worsen_id": 34,
+                "rules": [99]
+            }, {
+                "worsen_id": 35,
+                "rules": [99]
+            }, {
+                "worsen_id": 36,
+                "rules": [19, 1, 31]
+            }, {
+                "worsen_id": 37,
+                "rules": [2, 21, 27, 1]
+            }, {
+                "worsen_id": 38,
+                "rules": [2]
+            }, {
+                "worsen_id": 39,
+                "rules": [22, 35, 18, 39]
+            }]
+    }, {
+        "improve_id": 32,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [28, 29, 15, 16]
+            }, {
+                "worsen_id": 2,
+                "rules": [1, 27, 36, 13]
+            }, {
+                "worsen_id": 3,
+                "rules": [1, 29, 13, 17]
+            }, {
+                "worsen_id": 4,
+                "rules": [15, 17, 27]
+            }, {
+                "worsen_id": 5,
+                "rules": [13, 1, 26, 12]
+            }, {
+                "worsen_id": 6,
+                "rules": [16, 40]
+            }, {
+                "worsen_id": 7,
+                "rules": [13, 29, 1, 40]
+            }, {
+                "worsen_id": 8,
+                "rules": [35]
+            }, {
+                "worsen_id": 9,
+                "rules": [35, 13, 8, 1]
+            }, {
+                "worsen_id": 10,
+                "rules": [35, 12]
+            }, {
+                "worsen_id": 11,
+                "rules": [35, 19, 1, 37]
+            }, {
+                "worsen_id": 12,
+                "rules": [1, 28, 13, 27]
+            }, {
+                "worsen_id": 13,
+                "rules": [11, 13, 1]
+            }, {
+                "worsen_id": 14,
+                "rules": [1, 3, 10, 32]
+            }, {
+                "worsen_id": 15,
+                "rules": [27, 1, 4]
+            }, {
+                "worsen_id": 16,
+                "rules": [35, 16]
+            }, {
+                "worsen_id": 17,
+                "rules": [27, 26, 18]
+            }, {
+                "worsen_id": 18,
+                "rules": [28, 24, 27, 1]
+            }, {
+                "worsen_id": 19,
+                "rules": [28, 26, 27, 1]
+            }, {
+                "worsen_id": 20,
+                "rules": [1, 4]
+            }, {
+                "worsen_id": 21,
+                "rules": [27, 1, 12, 24]
+            }, {
+                "worsen_id": 22,
+                "rules": [19, 35]
+            }, {
+                "worsen_id": 23,
+                "rules": [15, 34, 33]
+            }, {
+                "worsen_id": 24,
+                "rules": [32, 24, 18, 16]
+            }, {
+                "worsen_id": 25,
+                "rules": [35, 28, 34, 4]
+            }, {
+                "worsen_id": 26,
+                "rules": [35, 23, 1, 24]
+            }, {
+                "worsen_id": 27,
+                "rules": [99]
+            }, {
+                "worsen_id": 28,
+                "rules": [1, 35, 12, 18]
+            }, {
+                "worsen_id": 29,
+                "rules": [99]
+            }, {
+                "worsen_id": 30,
+                "rules": [24, 2]
+            }, {
+                "worsen_id": 31,
+                "rules": [99]
+            }, {
+                "worsen_id": 32,
+                "rules": [90]
+            }, {
+                "worsen_id": 33,
+                "rules": [2, 5, 13, 16]
+            }, {
+                "worsen_id": 34,
+                "rules": [35, 1, 11, 9]
+            }, {
+                "worsen_id": 35,
+                "rules": [2, 13, 15]
+            }, {
+                "worsen_id": 36,
+                "rules": [27, 26, 1]
+            }, {
+                "worsen_id": 37,
+                "rules": [6, 28, 11, 1]
+            }, {
+                "worsen_id": 38,
+                "rules": [8, 28, 1]
+            }, {
+                "worsen_id": 39,
+                "rules": [35, 1, 10, 28]
+            }]
+    }, {
+        "improve_id": 33,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [25, 2, 13, 15]
+            }, {
+                "worsen_id": 2,
+                "rules": [6, 13, 1, 25]
+            }, {
+                "worsen_id": 3,
+                "rules": [1, 17, 13, 12]
+            }, {
+                "worsen_id": 4,
+                "rules": [99]
+            }, {
+                "worsen_id": 5,
+                "rules": [1, 17, 13, 16]
+            }, {
+                "worsen_id": 6,
+                "rules": [18, 16, 15, 39]
+            }, {
+                "worsen_id": 7,
+                "rules": [1, 16, 35, 15]
+            }, {
+                "worsen_id": 8,
+                "rules": [4, 18, 39, 31]
+            }, {
+                "worsen_id": 9,
+                "rules": [18, 13, 34]
+            }, {
+                "worsen_id": 10,
+                "rules": [28, 13, 35]
+            }, {
+                "worsen_id": 11,
+                "rules": [2, 32, 12]
+            }, {
+                "worsen_id": 12,
+                "rules": [15, 34, 29, 28]
+            }, {
+                "worsen_id": 13,
+                "rules": [32, 35, 30]
+            }, {
+                "worsen_id": 14,
+                "rules": [32, 40, 3, 28]
+            }, {
+                "worsen_id": 15,
+                "rules": [29, 3, 8, 25]
+            }, {
+                "worsen_id": 16,
+                "rules": [1, 16, 25]
+            }, {
+                "worsen_id": 17,
+                "rules": [26, 27, 13]
+            }, {
+                "worsen_id": 18,
+                "rules": [13, 17, 1, 24]
+            }, {
+                "worsen_id": 19,
+                "rules": [1, 13, 24]
+            }, {
+                "worsen_id": 20,
+                "rules": [99]
+            }, {
+                "worsen_id": 21,
+                "rules": [35, 34, 2, 10]
+            }, {
+                "worsen_id": 22,
+                "rules": [2, 19, 13]
+            }, {
+                "worsen_id": 23,
+                "rules": [28, 32, 2, 24]
+            }, {
+                "worsen_id": 24,
+                "rules": [4, 10, 27, 22]
+            }, {
+                "worsen_id": 25,
+                "rules": [4, 28, 10, 34]
+            }, {
+                "worsen_id": 26,
+                "rules": [12, 35]
+            }, {
+                "worsen_id": 27,
+                "rules": [17, 27, 8, 40]
+            }, {
+                "worsen_id": 28,
+                "rules": [25, 13, 2, 34]
+            }, {
+                "worsen_id": 29,
+                "rules": [1, 32, 35, 23]
+            }, {
+                "worsen_id": 30,
+                "rules": [2, 25, 28, 39]
+            }, {
+                "worsen_id": 31,
+                "rules": [99]
+            }, {
+                "worsen_id": 32,
+                "rules": [2, 5, 12]
+            }, {
+                "worsen_id": 33,
+                "rules": [90]
+            }, {
+                "worsen_id": 34,
+                "rules": [12, 26, 1, 32]
+            }, {
+                "worsen_id": 35,
+                "rules": [15, 34, 1, 16]
+            }, {
+                "worsen_id": 36,
+                "rules": [32, 26, 12, 17]
+            }, {
+                "worsen_id": 37,
+                "rules": [99]
+            }, {
+                "worsen_id": 38,
+                "rules": [1, 34, 12, 3]
+            }, {
+                "worsen_id": 39,
+                "rules": [15, 1, 28]
+            }]
+    }, {
+        "improve_id": 34,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [2, 27, 35, 11]
+            }, {
+                "worsen_id": 2,
+                "rules": [2, 27, 35, 11]
+            }, {
+                "worsen_id": 3,
+                "rules": [1, 28, 10, 25]
+            }, {
+                "worsen_id": 4,
+                "rules": [3, 18, 31]
+            }, {
+                "worsen_id": 5,
+                "rules": [15, 13, 32]
+            }, {
+                "worsen_id": 6,
+                "rules": [16, 25]
+            }, {
+                "worsen_id": 7,
+                "rules": [25, 2, 35, 11]
+            }, {
+                "worsen_id": 8,
+                "rules": [1]
+            }, {
+                "worsen_id": 9,
+                "rules": [34, 9]
+            }, {
+                "worsen_id": 10,
+                "rules": [1, 11, 10]
+            }, {
+                "worsen_id": 11,
+                "rules": [13]
+            }, {
+                "worsen_id": 12,
+                "rules": [1, 13, 2, 4]
+            }, {
+                "worsen_id": 13,
+                "rules": [2, 35]
+            }, {
+                "worsen_id": 14,
+                "rules": [11, 1, 2, 9]
+            }, {
+                "worsen_id": 15,
+                "rules": [11, 29, 28, 27]
+            }, {
+                "worsen_id": 16,
+                "rules": [1]
+            }, {
+                "worsen_id": 17,
+                "rules": [4, 10]
+            }, {
+                "worsen_id": 18,
+                "rules": [15, 1, 13]
+            }, {
+                "worsen_id": 19,
+                "rules": [15, 1, 28, 16]
+            }, {
+                "worsen_id": 20,
+                "rules": [99]
+            }, {
+                "worsen_id": 21,
+                "rules": [15, 10, 32, 2]
+            }, {
+                "worsen_id": 22,
+                "rules": [15, 1, 32, 19]
+            }, {
+                "worsen_id": 23,
+                "rules": [2, 35, 34, 27]
+            }, {
+                "worsen_id": 24,
+                "rules": [99]
+            }, {
+                "worsen_id": 25,
+                "rules": [32, 1, 10, 25]
+            }, {
+                "worsen_id": 26,
+                "rules": [2, 28, 10, 25]
+            }, {
+                "worsen_id": 27,
+                "rules": [11, 10, 1, 16]
+            }, {
+                "worsen_id": 28,
+                "rules": [10, 2, 13]
+            }, {
+                "worsen_id": 29,
+                "rules": [25, 10]
+            }, {
+                "worsen_id": 30,
+                "rules": [35, 10, 2, 16]
+            }, {
+                "worsen_id": 31,
+                "rules": [99]
+            }, {
+                "worsen_id": 32,
+                "rules": [1, 35, 11, 10]
+            }, {
+                "worsen_id": 33,
+                "rules": [1, 12, 26, 15]
+            }, {
+                "worsen_id": 34,
+                "rules": [90]
+            }, {
+                "worsen_id": 35,
+                "rules": [7, 1, 4, 16]
+            }, {
+                "worsen_id": 36,
+                "rules": [35, 1, 13, 11]
+            }, {
+                "worsen_id": 37,
+                "rules": [99]
+            }, {
+                "worsen_id": 38,
+                "rules": [34, 35, 7, 13]
+            }, {
+                "worsen_id": 39,
+                "rules": [1, 32, 10]
+            }]
+    }, {
+        "improve_id": 35,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [1, 6, 15, 8]
+            }, {
+                "worsen_id": 2,
+                "rules": [19, 15, 29, 16]
+            }, {
+                "worsen_id": 3,
+                "rules": [35, 1, 29, 2]
+            }, {
+                "worsen_id": 4,
+                "rules": [1, 35, 16]
+            }, {
+                "worsen_id": 5,
+                "rules": [35, 30, 29, 7]
+            }, {
+                "worsen_id": 6,
+                "rules": [15, 16]
+            }, {
+                "worsen_id": 7,
+                "rules": [15, 35, 29]
+            }, {
+                "worsen_id": 8,
+                "rules": [99]
+            }, {
+                "worsen_id": 9,
+                "rules": [35, 10, 14]
+            }, {
+                "worsen_id": 10,
+                "rules": [15, 17, 20]
+            }, {
+                "worsen_id": 11,
+                "rules": [35, 16]
+            }, {
+                "worsen_id": 12,
+                "rules": [15, 37, 1, 8]
+            }, {
+                "worsen_id": 13,
+                "rules": [35, 30, 14]
+            }, {
+                "worsen_id": 14,
+                "rules": [35, 3, 32, 6]
+            }, {
+                "worsen_id": 15,
+                "rules": [13, 1, 35]
+            }, {
+                "worsen_id": 16,
+                "rules": [2, 16]
+            }, {
+                "worsen_id": 17,
+                "rules": [27, 2, 3, 35]
+            }, {
+                "worsen_id": 18,
+                "rules": [6, 22, 26, 1]
+            }, {
+                "worsen_id": 19,
+                "rules": [19, 35, 29, 13]
+            }, {
+                "worsen_id": 20,
+                "rules": [99]
+            }, {
+                "worsen_id": 21,
+                "rules": [19, 1, 29]
+            }, {
+                "worsen_id": 22,
+                "rules": [18, 15, 1]
+            }, {
+                "worsen_id": 23,
+                "rules": [15, 10, 2, 13]
+            }, {
+                "worsen_id": 24,
+                "rules": [99]
+            }, {
+                "worsen_id": 25,
+                "rules": [35, 28]
+            }, {
+                "worsen_id": 26,
+                "rules": [3, 35, 15]
+            }, {
+                "worsen_id": 27,
+                "rules": [35, 13, 8, 24]
+            }, {
+                "worsen_id": 28,
+                "rules": [35, 5, 1, 10]
+            }, {
+                "worsen_id": 29,
+                "rules": [99]
+            }, {
+                "worsen_id": 30,
+                "rules": [35, 11, 32, 31]
+            }, {
+                "worsen_id": 31,
+                "rules": [99]
+            }, {
+                "worsen_id": 32,
+                "rules": [1, 13, 31]
+            }, {
+                "worsen_id": 33,
+                "rules": [15, 34, 1, 16]
+            }, {
+                "worsen_id": 34,
+                "rules": [1, 16, 7, 4]
+            }, {
+                "worsen_id": 35,
+                "rules": [90]
+            }, {
+                "worsen_id": 36,
+                "rules": [15, 29, 37, 28]
+            }, {
+                "worsen_id": 37,
+                "rules": [1]
+            }, {
+                "worsen_id": 38,
+                "rules": [27, 34, 35]
+            }, {
+                "worsen_id": 39,
+                "rules": [35, 28, 6, 37]
+            }]
+    }, {
+        "improve_id": 36,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [26, 30, 34, 36]
+            }, {
+                "worsen_id": 2,
+                "rules": [2, 26, 35, 39]
+            }, {
+                "worsen_id": 3,
+                "rules": [1, 19, 26, 24]
+            }, {
+                "worsen_id": 4,
+                "rules": [26]
+            }, {
+                "worsen_id": 5,
+                "rules": [14, 1, 13, 16]
+            }, {
+                "worsen_id": 6,
+                "rules": [6, 36]
+            }, {
+                "worsen_id": 7,
+                "rules": [34, 26, 6]
+            }, {
+                "worsen_id": 8,
+                "rules": [1, 16]
+            }, {
+                "worsen_id": 9,
+                "rules": [34, 10, 28]
+            }, {
+                "worsen_id": 10,
+                "rules": [26, 16]
+            }, {
+                "worsen_id": 11,
+                "rules": [19, 1, 35]
+            }, {
+                "worsen_id": 12,
+                "rules": [29, 13, 28, 15]
+            }, {
+                "worsen_id": 13,
+                "rules": [2, 22, 17, 19]
+            }, {
+                "worsen_id": 14,
+                "rules": [2, 13, 28]
+            }, {
+                "worsen_id": 15,
+                "rules": [10, 4, 28, 15]
+            }, {
+                "worsen_id": 16,
+                "rules": [99]
+            }, {
+                "worsen_id": 17,
+                "rules": [2, 17, 13]
+            }, {
+                "worsen_id": 18,
+                "rules": [24, 17, 13]
+            }, {
+                "worsen_id": 19,
+                "rules": [27, 2, 29, 28]
+            }, {
+                "worsen_id": 20,
+                "rules": [99]
+            }, {
+                "worsen_id": 21,
+                "rules": [20, 19, 30, 34]
+            }, {
+                "worsen_id": 22,
+                "rules": [10, 35, 13, 2]
+            }, {
+                "worsen_id": 23,
+                "rules": [35, 10, 28, 29]
+            }, {
+                "worsen_id": 24,
+                "rules": [99]
+            }, {
+                "worsen_id": 25,
+                "rules": [6, 29]
+            }, {
+                "worsen_id": 26,
+                "rules": [13, 3, 27, 10]
+            }, {
+                "worsen_id": 27,
+                "rules": [13, 35, 1]
+            }, {
+                "worsen_id": 28,
+                "rules": [2, 26, 10, 34]
+            }, {
+                "worsen_id": 29,
+                "rules": [26, 24, 32]
+            }, {
+                "worsen_id": 30,
+                "rules": [22, 19, 29, 40]
+            }, {
+                "worsen_id": 31,
+                "rules": [19, 1]
+            }, {
+                "worsen_id": 32,
+                "rules": [27, 26, 1, 13]
+            }, {
+                "worsen_id": 33,
+                "rules": [27, 9, 26, 24]
+            }, {
+                "worsen_id": 34,
+                "rules": [1, 13]
+            }, {
+                "worsen_id": 35,
+                "rules": [29, 15, 28, 37]
+            }, {
+                "worsen_id": 36,
+                "rules": [90]
+            }, {
+                "worsen_id": 37,
+                "rules": [15, 10, 37, 28]
+            }, {
+                "worsen_id": 38,
+                "rules": [15, 1, 24]
+            }, {
+                "worsen_id": 39,
+                "rules": [12, 17, 28]
+            }]
+    }, {
+        "improve_id": 37,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [27, 26, 28, 13]
+            }, {
+                "worsen_id": 2,
+                "rules": [6, 13, 28, 1]
+            }, {
+                "worsen_id": 3,
+                "rules": [16, 17, 26, 24]
+            }, {
+                "worsen_id": 4,
+                "rules": [26]
+            }, {
+                "worsen_id": 5,
+                "rules": [2, 13, 18, 17]
+            }, {
+                "worsen_id": 6,
+                "rules": [2, 39, 30, 16]
+            }, {
+                "worsen_id": 7,
+                "rules": [29, 1, 4, 16]
+            }, {
+                "worsen_id": 8,
+                "rules": [2, 18, 26, 31]
+            }, {
+                "worsen_id": 9,
+                "rules": [3, 4, 16, 35]
+            }, {
+                "worsen_id": 10,
+                "rules": [30, 28, 40, 19]
+            }, {
+                "worsen_id": 11,
+                "rules": [35, 36, 37, 32]
+            }, {
+                "worsen_id": 12,
+                "rules": [27, 13, 1, 39]
+            }, {
+                "worsen_id": 13,
+                "rules": [11, 22, 39, 30]
+            }, {
+                "worsen_id": 14,
+                "rules": [27, 3, 15, 28]
+            }, {
+                "worsen_id": 15,
+                "rules": [19, 29, 39, 25]
+            }, {
+                "worsen_id": 16,
+                "rules": [25, 34, 6, 35]
+            }, {
+                "worsen_id": 17,
+                "rules": [3, 27, 35, 16]
+            }, {
+                "worsen_id": 18,
+                "rules": [2, 24, 26]
+            }, {
+                "worsen_id": 19,
+                "rules": [35, 38]
+            }, {
+                "worsen_id": 20,
+                "rules": [19, 35, 16]
+            }, {
+                "worsen_id": 21,
+                "rules": [18, 1, 16, 10]
+            }, {
+                "worsen_id": 22,
+                "rules": [35, 3, 15, 19]
+            }, {
+                "worsen_id": 23,
+                "rules": [1, 18, 10, 24]
+            }, {
+                "worsen_id": 24,
+                "rules": [35, 33, 27, 22]
+            }, {
+                "worsen_id": 25,
+                "rules": [18, 28, 32, 9]
+            }, {
+                "worsen_id": 26,
+                "rules": [3, 27, 29, 18]
+            }, {
+                "worsen_id": 27,
+                "rules": [27, 40, 28, 8]
+            }, {
+                "worsen_id": 28,
+                "rules": [26, 24, 32, 28]
+            }, {
+                "worsen_id": 29,
+                "rules": [99]
+            }, {
+                "worsen_id": 30,
+                "rules": [22, 19, 29, 28]
+            }, {
+                "worsen_id": 31,
+                "rules": [2, 21]
+            }, {
+                "worsen_id": 32,
+                "rules": [5, 28, 11, 29]
+            }, {
+                "worsen_id": 33,
+                "rules": [2, 5]
+            }, {
+                "worsen_id": 34,
+                "rules": [12, 26]
+            }, {
+                "worsen_id": 35,
+                "rules": [1, 15]
+            }, {
+                "worsen_id": 36,
+                "rules": [15, 10, 37, 28]
+            }, {
+                "worsen_id": 37,
+                "rules": [90]
+            }, {
+                "worsen_id": 38,
+                "rules": [34, 21]
+            }, {
+                "worsen_id": 39,
+                "rules": [35, 18]
+            }]
+    }, {
+        "improve_id": 38,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [28, 26, 18, 35]
+            }, {
+                "worsen_id": 2,
+                "rules": [28, 26, 35, 10]
+            }, {
+                "worsen_id": 3,
+                "rules": [14, 13, 17, 28]
+            }, {
+                "worsen_id": 4,
+                "rules": [23]
+            }, {
+                "worsen_id": 5,
+                "rules": [17, 14, 13]
+            }, {
+                "worsen_id": 6,
+                "rules": [99]
+            }, {
+                "worsen_id": 7,
+                "rules": [35, 13, 16]
+            }, {
+                "worsen_id": 8,
+                "rules": [99]
+            }, {
+                "worsen_id": 9,
+                "rules": [28, 10]
+            }, {
+                "worsen_id": 10,
+                "rules": [2, 35]
+            }, {
+                "worsen_id": 11,
+                "rules": [13, 35]
+            }, {
+                "worsen_id": 12,
+                "rules": [15, 32, 1, 13]
+            }, {
+                "worsen_id": 13,
+                "rules": [18, 1]
+            }, {
+                "worsen_id": 14,
+                "rules": [25, 13]
+            }, {
+                "worsen_id": 15,
+                "rules": [6, 9]
+            }, {
+                "worsen_id": 16,
+                "rules": [99]
+            }, {
+                "worsen_id": 17,
+                "rules": [26, 2, 19]
+            }, {
+                "worsen_id": 18,
+                "rules": [8, 32, 19]
+            }, {
+                "worsen_id": 19,
+                "rules": [2, 32, 13]
+            }, {
+                "worsen_id": 20,
+                "rules": [99]
+            }, {
+                "worsen_id": 21,
+                "rules": [28, 2, 27]
+            }, {
+                "worsen_id": 22,
+                "rules": [23, 28]
+            }, {
+                "worsen_id": 23,
+                "rules": [35, 10, 18, 5]
+            }, {
+                "worsen_id": 24,
+                "rules": [35, 33]
+            }, {
+                "worsen_id": 25,
+                "rules": [24, 28, 35, 30]
+            }, {
+                "worsen_id": 26,
+                "rules": [35, 13]
+            }, {
+                "worsen_id": 27,
+                "rules": [11, 27, 32]
+            }, {
+                "worsen_id": 28,
+                "rules": [28, 26, 10, 34]
+            }, {
+                "worsen_id": 29,
+                "rules": [28, 26, 18, 23]
+            }, {
+                "worsen_id": 30,
+                "rules": [2, 33]
+            }, {
+                "worsen_id": 31,
+                "rules": [2]
+            }, {
+                "worsen_id": 32,
+                "rules": [1, 26, 13]
+            }, {
+                "worsen_id": 33,
+                "rules": [1, 12, 34, 3]
+            }, {
+                "worsen_id": 34,
+                "rules": [1, 35, 13]
+            }, {
+                "worsen_id": 35,
+                "rules": [27, 4, 1, 35]
+            }, {
+                "worsen_id": 36,
+                "rules": [15, 24, 10]
+            }, {
+                "worsen_id": 37,
+                "rules": [34, 27, 25]
+            }, {
+                "worsen_id": 38,
+                "rules": [90]
+            }, {
+                "worsen_id": 39,
+                "rules": [5, 12, 35, 26]
+            }]
+    }, {
+        "improve_id": 39,
+        "rules": [{
+                "worsen_id": 1,
+                "rules": [35, 26, 24, 37]
+            }, {
+                "worsen_id": 2,
+                "rules": [28, 27, 15, 3]
+            }, {
+                "worsen_id": 3,
+                "rules": [18, 4, 28, 38]
+            }, {
+                "worsen_id": 4,
+                "rules": [30, 7, 14, 26]
+            }, {
+                "worsen_id": 5,
+                "rules": [10, 26, 34, 31]
+            }, {
+                "worsen_id": 6,
+                "rules": [10, 35, 17, 7]
+            }, {
+                "worsen_id": 7,
+                "rules": [2, 6, 34, 10]
+            }, {
+                "worsen_id": 8,
+                "rules": [35, 37, 10, 2]
+            }, {
+                "worsen_id": 9,
+                "rules": [99]
+            }, {
+                "worsen_id": 10,
+                "rules": [28, 15, 10, 36]
+            }, {
+                "worsen_id": 11,
+                "rules": [10, 37, 14]
+            }, {
+                "worsen_id": 12,
+                "rules": [14, 10, 34, 40]
+            }, {
+                "worsen_id": 13,
+                "rules": [35, 3, 22, 39]
+            }, {
+                "worsen_id": 14,
+                "rules": [29, 28, 10, 18]
+            }, {
+                "worsen_id": 15,
+                "rules": [35, 10, 2, 18]
+            }, {
+                "worsen_id": 16,
+                "rules": [20, 10, 16, 38]
+            }, {
+                "worsen_id": 17,
+                "rules": [35, 21, 28, 10]
+            }, {
+                "worsen_id": 18,
+                "rules": [26, 17, 19, 1]
+            }, {
+                "worsen_id": 19,
+                "rules": [35, 10, 38, 19]
+            }, {
+                "worsen_id": 20,
+                "rules": [1]
+            }, {
+                "worsen_id": 21,
+                "rules": [35, 20, 10]
+            }, {
+                "worsen_id": 22,
+                "rules": [28, 10, 29, 35]
+            }, {
+                "worsen_id": 23,
+                "rules": [28, 10, 35, 23]
+            }, {
+                "worsen_id": 24,
+                "rules": [13, 15, 23]
+            }, {
+                "worsen_id": 25,
+                "rules": [99]
+            }, {
+                "worsen_id": 26,
+                "rules": [35, 38]
+            }, {
+                "worsen_id": 27,
+                "rules": [1, 35, 10, 38]
+            }, {
+                "worsen_id": 28,
+                "rules": [1, 10, 34, 28]
+            }, {
+                "worsen_id": 29,
+                "rules": [18, 10, 32, 1]
+            }, {
+                "worsen_id": 30,
+                "rules": [22, 35, 13, 24]
+            }, {
+                "worsen_id": 31,
+                "rules": [35, 22, 18, 39]
+            }, {
+                "worsen_id": 32,
+                "rules": [35, 28, 2, 24]
+            }, {
+                "worsen_id": 33,
+                "rules": [1, 28, 7, 10]
+            }, {
+                "worsen_id": 34,
+                "rules": [1, 32, 10, 25]
+            }, {
+                "worsen_id": 35,
+                "rules": [1, 35, 28, 37]
+            }, {
+                "worsen_id": 36,
+                "rules": [12, 17, 28, 24]
+            }, {
+                "worsen_id": 37,
+                "rules": [35, 18, 27, 2]
+            }, {
+                "worsen_id": 38,
+                "rules": [5, 12, 35, 26]
+            }, {
+                "worsen_id": 39,
+                "rules": [90]
+            }]
+    }]
+}
