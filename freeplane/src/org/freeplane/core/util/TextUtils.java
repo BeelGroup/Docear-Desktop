@@ -89,6 +89,12 @@ public class TextUtils {
 		}
 		return removeTranslateComment(((ResourceBundles) ResourceController.getResourceController().getResources()).getResourceString(key));
 	}
+	public static String getSafeRawText(final String key) {
+		if (key == null) {
+			return null;
+		}
+		return ((ResourceBundles) ResourceController.getResourceController().getResources()).getSafeResourceString(key);
+	}
 
 	public static String getText(final String key, final String defaultString) {
 		final String text = getRawText(key, defaultString);

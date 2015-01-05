@@ -1,4 +1,7 @@
 <project name="freeplane" default="dist" basedir="..">
+	<setproxy  proxyhost="wwwgate0-ny.am.mot-solutions.com" proxyport="1080">
+       
+	</setproxy>
 	<property name="workspace" location=".." />
 	<property file="${workspace}/freeplane/viewer-resources/version.properties" />
 	<property file="ant/ant.properties" />
