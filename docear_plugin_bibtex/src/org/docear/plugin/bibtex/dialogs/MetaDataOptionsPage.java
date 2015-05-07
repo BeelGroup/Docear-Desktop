@@ -22,16 +22,19 @@ import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
+import javax.swing.SwingConstants;
 
 public class MetaDataOptionsPage extends AWizardPage {
 	
 	public static final String DOCEAR_METADATA_MAX_RESULT = "docear_metadata_maxResult";
+	public static final String DOCEAR_METADATA_DEBUG_LOGGING = "docear_metadata_debugLogging";
 	public static final String DOCEAR_METADATA_SEARCH_DOCEAR = "docear_metadata_searchDocear";
 	public static final String DOCEAR_METADATA_SEARCH_SCHOLAR = "docear_metadata_searchScholar";
 	private static final long serialVersionUID = 1L;
 	private JCheckBox checkBoxScholar;
 	private JCheckBox checkBoxDocear;
 	private JSpinner spinnerMaxResult;
+	private JCheckBox checkBoxLogging;
 	
 	public MetaDataOptionsPage() {
 		setBackground(Color.WHITE);
@@ -96,7 +99,8 @@ public class MetaDataOptionsPage extends AWizardPage {
 			new RowSpec[] {
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,}));
+				FormFactory.RELATED_GAP_ROWSPEC,
+				FormFactory.DEFAULT_ROWSPEC,}));
 		
 		JLabel labelMaxResult = new JLabel(TextUtils.getText("docear.metadata.extraction.options.maxResult"));
 		labelMaxResult.setBackground(Color.WHITE);
@@ -106,6 +110,14 @@ public class MetaDataOptionsPage extends AWizardPage {
 		spinnerMaxResult.setModel(new SpinnerNumberModel(3, 1, 50, 1));
 		spinnerMaxResult.setBackground(Color.WHITE);
 		panel_1.add(spinnerMaxResult, "4, 2");
+		
+		JLabel labelLogging = new JLabel(TextUtils.getText("docear.metadata.extraction.options.logging"));
+		panel_1.add(labelLogging, "2, 4");
+		
+		checkBoxLogging = new JCheckBox("");
+		checkBoxLogging.setBackground(Color.WHITE);
+		checkBoxLogging.setHorizontalAlignment(SwingConstants.TRAILING);
+		panel_1.add(checkBoxLogging, "4, 4");
 	}	
 
 	@Override
@@ -125,6 +137,7 @@ public class MetaDataOptionsPage extends AWizardPage {
 		this.checkBoxScholar.setSelected(properties.getBooleanProperty(DOCEAR_METADATA_SEARCH_SCHOLAR));
 		this.checkBoxDocear.setSelected(properties.getBooleanProperty(DOCEAR_METADATA_SEARCH_DOCEAR));
 		this.spinnerMaxResult.setModel(new SpinnerNumberModel(properties.getIntProperty(DOCEAR_METADATA_MAX_RESULT, 3), 1, 50, 1));
+		this.checkBoxLogging.setSelected(properties.getBooleanProperty(DOCEAR_METADATA_DEBUG_LOGGING));
 		
 		session.getNextButton().addActionListener(new ActionListener() {			
 			@Override
@@ -132,6 +145,7 @@ public class MetaDataOptionsPage extends AWizardPage {
 				properties.setProperty(DOCEAR_METADATA_SEARCH_SCHOLAR, checkBoxScholar.isSelected());
 				properties.setProperty(DOCEAR_METADATA_SEARCH_DOCEAR, checkBoxDocear.isSelected());
 				properties.setProperty(DOCEAR_METADATA_MAX_RESULT, spinnerMaxResult.getModel().getValue().toString());
+				properties.setProperty(DOCEAR_METADATA_DEBUG_LOGGING, checkBoxLogging.isSelected());
 			}
 		});
 	}

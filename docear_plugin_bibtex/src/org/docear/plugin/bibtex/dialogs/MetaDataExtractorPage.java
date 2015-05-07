@@ -431,6 +431,7 @@ public class MetaDataExtractorPage extends AWizardPage {
 		ResourceController properties = Controller.getCurrentController().getResourceController();
 		options.put(CommonConfigKeys.MAXRESULTS, properties.getIntProperty(MetaDataOptionsPage.DOCEAR_METADATA_MAX_RESULT));
 		options.put(CommonConfigKeys.COOKIE_FOLDER, new File(ServiceController.getController().getUserSettingsHome()).getAbsolutePath());
+		options.put(CommonConfigKeys.DEBUGLOGGING, properties.getBooleanProperty(MetaDataOptionsPage.DOCEAR_METADATA_DEBUG_LOGGING));
 		return options;
 	}
 

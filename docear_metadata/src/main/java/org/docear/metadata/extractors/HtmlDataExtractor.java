@@ -19,10 +19,11 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 public abstract class HtmlDataExtractor implements MetaDataExtractor{
 	
 	protected final static Logger logger = LoggerFactory.getLogger(HtmlDataExtractor.class);
-	private String userAgent = "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0";
+	private String userAgent = "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0";	
 	private String referrer = "http://www.google.com";
 	private int timeout = 3000;
 	private boolean followRedirects = true;
+	protected boolean debuglogging = false;
 	private String cookieFolder = System.getProperty("user.home");
 	protected String searchValue = "";	
 	protected int maxResults = 3;
@@ -36,7 +37,8 @@ public abstract class HtmlDataExtractor implements MetaDataExtractor{
 		REFERRER,
 		FOLLOWREDIRECTS,
 		COOKIE_FOLDER,		
-		MAXRESULTS;
+		MAXRESULTS,
+		DEBUGLOGGING;
 	}
 	
 	public HtmlDataExtractor(){};
@@ -83,6 +85,9 @@ public abstract class HtmlDataExtractor implements MetaDataExtractor{
 						case SEARCHVALUE:
 							this.searchValue = (String) config.get(CommonConfigKeys.SEARCHVALUE);
 							break;
+						case DEBUGLOGGING:
+							this.debuglogging = (Boolean) config.get(CommonConfigKeys.DEBUGLOGGING);						
+							break;	
 							
 						default:
 							break;					
@@ -95,7 +100,7 @@ public abstract class HtmlDataExtractor implements MetaDataExtractor{
 		}
 	}
 
-	protected Connection getConnection(String URL) {
+	protected Connection getConnection(String URL) {		
 		return Jsoup.connect(URL)				   
 		           .ignoreContentType(true)
 		           .userAgent(this.userAgent)  

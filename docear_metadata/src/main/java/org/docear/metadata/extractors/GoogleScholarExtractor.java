@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import org.docear.metadata.events.FetchedResultsEvent;
 import org.docear.metadata.events.MetaDataListener;
 import org.jsoup.Connection.Response;
 import org.jsoup.HttpStatusException;
+import org.jsoup.nodes.Attributes;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -60,9 +62,49 @@ public class GoogleScholarExtractor extends HtmlDataExtractor {
 					.data("q", query, "hl" , this.language)
 					.cookies(cookies)					
 					.execute();
-			
-			
+			if(this.debuglogging){
+				logger.info("1. Response URL: "  + response.url().toString());
+				logger.info("1. Response headers: "  + response.headers().toString());
+				logger.info("1. Response body: "  + response.body().toString());
+				logger.info("1. Response cookies: "  + response.cookies().toString());
+			}
 			Document doc = response.parse();
+			
+			//File input = new File("C:\\Users\\Anwender\\Desktop\\Neues Textdokument (2).html");
+			//Document doc = Jsoup.parse(input, "UTF-8", BaseURL);
+			
+			Elements captchaElements = doc.select("noscript > iframe");
+			
+			if(!captchaElements.isEmpty()){
+				String captchaUrl = captchaElements.first().attr("abs:src");
+				String token = handleReCaptchaRequest(captchaUrl);
+				if(token != null && !token.isEmpty()){
+					HashMap<String, String> formData = new HashMap<String, String>();
+					
+					for(Element inputElement : doc.select("input")){	
+						Attributes inputAttributes = inputElement.attributes();
+						if(inputAttributes.hasKey("value")){
+							formData.put(inputAttributes.get("name"), inputAttributes.get("value"));
+						}											
+					}
+					for(Element inputElement : doc.select("textarea")){	
+						Attributes inputAttributes = inputElement.attributes();
+						formData.put(inputAttributes.get("name"), token);																
+					}
+					Response captchaResponse = getConnection(BaseURL + "/scholar")
+							.data("q", query, "hl" , this.language)
+							.data(formData)
+							.cookies(cookies)					
+							.execute();
+					if(this.debuglogging){
+						logger.info("5. Response URL: "  + captchaResponse.url().toString());
+						logger.info("5. Response headers: "  + captchaResponse.headers().toString());
+						logger.info("5. Response body: "  + captchaResponse.body().toString());
+						logger.info("5. Response cookies: "  + captchaResponse.cookies().toString());
+					}
+					doc = captchaResponse.parse();					
+				}
+			}
 			
 			Iterator<Element> bibtexLinks = doc.select("a.gs_nta").iterator();
 			if(!bibtexLinks.hasNext()){
@@ -71,12 +113,18 @@ public class GoogleScholarExtractor extends HtmlDataExtractor {
 			for(int i = 0; i < maxResults; i++){
 				if(bibtexLinks.hasNext()){
 					Element bibtexLink = bibtexLinks.next();
-					response = getConnection(BaseURL + bibtexLink.attr("href"))						           
-					           .cookies(cookies)						           
-					           .execute();
-					String bibtex = response.body();
-					//System.out.println(bibtex); //todo delete
-					result.add(new ScholarMetaData(i, bibtex, query));
+					try{
+						logger.info(bibtexLink.attr("href"));
+						URL url = new URL(new URL(BaseURL), bibtexLink.attr("href"));
+						response = getConnection(url.toString())						           
+						           .cookies(cookies)						           
+						           .execute();
+						String bibtex = response.body();					
+						result.add(new ScholarMetaData(i, bibtex, query));					
+					} catch (IOException e) {
+						System.out.println(e.getMessage());
+						logger.info(e.getMessage(), e);
+					}
 				}
 			}			
 		}catch(HttpStatusException e){
@@ -100,11 +148,83 @@ public class GoogleScholarExtractor extends HtmlDataExtractor {
 		}
 		return result;
 	}
+	
+	
+	
+	private String handleReCaptchaRequest(String captchaUrl){
+		try{	
+			Response response = getConnection(captchaUrl).ignoreHttpErrors(true).execute();
+			if(this.debuglogging){
+				logger.info("2. Response URL: "  + response.url().toString());
+				logger.info("2. Response headers: "  + response.headers().toString());
+				logger.info("2. Response body: "  + response.body().toString());
+				logger.info("2. Response cookies: "  + response.cookies().toString());
+			}
+			Document doc = response.parse();
+			
+			Elements imageElements = doc.select("center > img");
+			
+			if(!imageElements.isEmpty()){
+				String imageUrl = imageElements.first().attr("abs:src");
+				
+				Response imgResponse = getConnection(imageUrl).execute();				
+				if(this.debuglogging){
+					logger.info("3. Response URL: "  + imgResponse.url().toString());
+					logger.info("3. Response headers: "  + imgResponse.headers().toString());
+					logger.info("3. Response body: "  + imgResponse.body().toString());
+					logger.info("3. Response cookies: "  + imgResponse.cookies().toString());
+				}
+				BufferedImage img = ImageIO.read(new ByteArrayInputStream(imgResponse.bodyAsBytes()));
+				
+				String captcha = sendCaptchaEvent(img);
+				
+				if(captcha != null && !captcha.isEmpty()){
+					HashMap<String, String> formData = new HashMap<String, String>();
+					
+					for(Element inputElement : doc.select("input")){	
+						Attributes inputAttributes = inputElement.attributes();
+						if(inputAttributes.hasKey("value")){
+							formData.put(inputAttributes.get("name"), inputAttributes.get("value"));
+						}
+						else{
+							formData.put(inputAttributes.get("name"), captcha);
+						}						
+					}
+					
+					Response captchaResponse = getConnection(captchaUrl)
+							.data(formData)
+							.ignoreHttpErrors(true)							
+							.followRedirects(false)
+							.execute();
+					
+					Document captchaDoc = captchaResponse.parse();
+					System.out.println();
+					Elements tokenElements = captchaDoc.select("textarea");
+					if(!tokenElements.isEmpty()){
+						if(this.debuglogging){
+							logger.info("4. Response URL: "  + captchaResponse.url().toString());
+							logger.info("4. Response headers: "  + captchaResponse.headers().toString());
+							logger.info("4. Response body: "  + captchaResponse.body().toString());
+							logger.info("4. Response cookies: "  + captchaResponse.cookies().toString());
+						}
+						String token = tokenElements.first().text();
+						return token;
+					}
+					else{
+						return handleReCaptchaRequest(captchaUrl);
+					}
+				}
+			}			
+		}catch(IOException ex){
+			logger.info(ex.getMessage(), ex);
+		} 
+		return null;
+	}
 
 	private boolean handleCaptchaRequest(HttpStatusException e) {
 		try{
 			Response response = getConnection(e.getUrl()).ignoreHttpErrors(true).execute();	
-			
+
 			final Document doc = response.parse();
 			
 			Iterator<Element> imgElements = doc.select("img").iterator();
@@ -115,22 +235,7 @@ public class GoogleScholarExtractor extends HtmlDataExtractor {
 					Response imgResponse = getConnection(BaseURL + imgURL).execute();
 					final Map<String, String> imgCookie = imgResponse.cookies();
 					BufferedImage img = ImageIO.read(new ByteArrayInputStream(imgResponse.bodyAsBytes()));
-					String captcha = null;
-					if(getListeners().size() <= 0){
-						ImageIO.write(img, "jpg", new File(getPath("captcha.jpg")));						
-						System.out.println("Enter Captcha here : ");					
-						BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));					    
-						captcha = bufferRead.readLine();
-					}
-					else{
-						CaptchaEvent event = new CaptchaEvent(ScholarSource.GOOGLESCHOLAR, img);
-						for(MetaDataListener listener : this.getListeners()){
-							listener.onCaptchaRequested(event);
-						}
-						if(!event.isCanceled() && event.getSolvedCaptcha() != null && !event.getSolvedCaptcha().isEmpty()){
-							captcha = event.getSolvedCaptcha();
-						}
-					}
+					String captcha = sendCaptchaEvent(img);
 					if(captcha != null && !captcha.isEmpty()){
 						Iterator<Element> formElements = doc.select("form").iterator();
 						if(formElements.hasNext()){
@@ -186,6 +291,26 @@ public class GoogleScholarExtractor extends HtmlDataExtractor {
 			logger.info(e.getMessage(), e);
 		}
 		return false;
+	}
+
+	private String sendCaptchaEvent(BufferedImage img) throws IOException {
+		String captcha = null;
+		if(getListeners().size() <= 0){
+			ImageIO.write(img, "jpg", new File(getPath("captcha.jpg")));						
+			System.out.println("Enter Captcha here : ");					
+			BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));					    
+			captcha = bufferRead.readLine();
+		}
+		else{
+			CaptchaEvent event = new CaptchaEvent(ScholarSource.GOOGLESCHOLAR, img);
+			for(MetaDataListener listener : this.getListeners()){
+				listener.onCaptchaRequested(event);
+			}
+			if(!event.isCanceled() && event.getSolvedCaptcha() != null && !event.getSolvedCaptcha().isEmpty()){
+				captcha = event.getSolvedCaptcha();
+			}
+		}
+		return captcha;
 	}
 
 	private Map<String, String> getCookies(String fileName) throws IOException {		
