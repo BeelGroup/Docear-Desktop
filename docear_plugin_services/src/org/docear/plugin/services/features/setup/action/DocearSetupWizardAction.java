@@ -60,7 +60,7 @@ public class DocearSetupWizardAction extends AFreeplaneAction {
 		initWizard(wiz);
 		if(!Compat.isWindowsOS()) {
 			UITools.backOtherWindows();
-		}
+		}		
 		int ret = wiz.show();
 		if(ret == Wizard.OK_OPTION) {
 			if(wiz.getSession().get(DocearLocalUser.class) != null) {
@@ -172,6 +172,11 @@ public class DocearSetupWizardAction extends AFreeplaneAction {
 		};
 		desc.getPage().setPreferredSize(new Dimension(640,480));
 		wizard.registerWizardPanel(desc);
+		//TODO Service
+		if(!DocearController.getController().isServiceAvailable()){
+			wizard.getSession().set(DocearLocalUser.class, DocearUserController.LOCAL_USER);		
+			wizard.setStartPage(desc.getIdentifier());
+		}
 		
 		//new project page
 		desc = new WizardPageDescriptor("page.project.create", new CreateProjectPagePanel()) {
@@ -189,7 +194,7 @@ public class DocearSetupWizardAction extends AFreeplaneAction {
 			
 		};
 		desc.getPage().setPreferredSize(new Dimension(640,480));
-		wizard.registerWizardPanel(desc);
+		wizard.registerWizardPanel(desc);		
 		
 		//import project page
 		desc = new WizardPageDescriptor("page.project.import", new ImportProjectPagePanel()) {
@@ -205,8 +210,7 @@ public class DocearSetupWizardAction extends AFreeplaneAction {
 			}
 		};
 		desc.getPage().setPreferredSize(new Dimension(640,480));
-		wizard.registerWizardPanel(desc);
-		
+		wizard.registerWizardPanel(desc);		
 	}
 	
 }

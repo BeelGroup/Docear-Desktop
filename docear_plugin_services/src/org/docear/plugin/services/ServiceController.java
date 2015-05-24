@@ -58,9 +58,14 @@ public class ServiceController {
 		addPluginDefaults(modeController);
 		
 		Controller.getCurrentController().addAction(new DocearClearUserDataAction());
-		Controller.getCurrentController().addAction(new DocearCheckForUpdatesAction());
-		Controller.getCurrentController().addAction(new ShowRecommendationsAction());
-		Controller.getCurrentController().addAction(new ShowDocumentSearchAction());		
+		
+		
+		//TODO SERVICE
+		if(DocearController.getController().isServiceAvailable()){
+			Controller.getCurrentController().addAction(new DocearCheckForUpdatesAction());		
+			Controller.getCurrentController().addAction(new ShowRecommendationsAction());
+			Controller.getCurrentController().addAction(new ShowDocumentSearchAction());
+		}
 		Controller.getCurrentController().addAction(new DocearBackupOpenLocation());
 	}
 	
@@ -72,6 +77,7 @@ public class ServiceController {
 
 	protected static void initialize(ModeController modeController) {
 		if (serviceController == null) {
+			
 			serviceController = new ServiceController(modeController);
 			
 			serviceController.installFeature(new DocearWorkspaceSettings());
@@ -83,12 +89,21 @@ public class ServiceController {
 			if (DocearController.getController().isLicenseDialogNecessary()) {
 				DocearSetupWizardAction.startWizard(true);
 			}
-			serviceController.installFeature(new UploadController());
-			serviceController.installFeature(new RecommendationsController());
-			serviceController.installFeature(new UpdateCheck());
+			
+			//TODO SERVICE
+			if(DocearController.getController().isServiceAvailable()){
+				serviceController.installFeature(new UploadController());			
+				serviceController.installFeature(new RecommendationsController());
+				serviceController.installFeature(new UpdateCheck());
+			}
+			
 			
 			ServiceController.getFeature(DocearUserController.class).installView(modeController);
-			ServiceController.getFeature(RecommendationsController.class).startRecommendationsRequest();
+			
+			//TODO SERVICE
+			if(DocearController.getController().isServiceAvailable()){
+				ServiceController.getFeature(RecommendationsController.class).startRecommendationsRequest();
+			}
 		}
 	}
 	
@@ -167,6 +182,7 @@ public class ServiceController {
 	public static DocearConnectionProvider getConnectionController() {
 		return getFeature(DocearConnectionProvider.class);
 	}	
+	
 	
 	private void shutdown() {
 		

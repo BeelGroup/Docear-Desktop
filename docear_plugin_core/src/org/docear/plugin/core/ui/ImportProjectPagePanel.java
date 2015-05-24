@@ -34,6 +34,7 @@ import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.ui.wizard.AWizardPage;
 import org.docear.plugin.core.ui.wizard.WizardSession;
 import org.docear.plugin.core.workspace.controller.DocearConversionDescriptor;
@@ -333,7 +334,13 @@ public class ImportProjectPagePanel extends AWizardPage {
 	 **********************************************************************************/
 	@Override
 	public String getTitle() {
-		return TextUtils.getText("docear.setup.wizard.import.title");
+		//TODO Service
+		if(DocearController.getController().isServiceAvailable()){
+			return TextUtils.getText("docear.setup.wizard.import.title");
+		}
+		else{
+			return TextUtils.getText("docear.setup.wizard.import.title.noservice");
+		}
 	}
 
 	@Override

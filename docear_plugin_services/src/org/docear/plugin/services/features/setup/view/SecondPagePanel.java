@@ -99,7 +99,10 @@ public class SecondPagePanel extends AWizardPage {
 				updateOption();
 			}
 		});
-		add(rdbtnDataFromDocear, "4, 4, 2, 1");
+		//TODO Service
+		if(DocearController.getController().isServiceAvailable()){
+			add(rdbtnDataFromDocear, "4, 4, 2, 1");
+		}
 		rdbtnDataFromDocear.setEnabled(false);
 		
 		rdbtnImportFromHarddisk = new JRadioButton(TextUtils.getText("docear.setup.wizard.second.import.label"));
@@ -452,7 +455,13 @@ public class SecondPagePanel extends AWizardPage {
 	
 	@Override
 	public String getTitle() {
-		return TextUtils.getText("docear.setup.wizard.second.title");
+		//TODO Service
+		if(DocearController.getController().isServiceAvailable()){
+			return TextUtils.getText("docear.setup.wizard.second.title");
+		}
+		else{
+			return TextUtils.getText("docear.setup.wizard.second.title.noservice");
+		}
 	}
 
 
@@ -461,6 +470,7 @@ public class SecondPagePanel extends AWizardPage {
 	public void preparePage(WizardSession context) {
 		this.cachedContext = context;
 		context.setWizardTitle(getTitle());
+		context.getBackButton().setVisible(false);
 		if(context.get(DocearLocalUser.class) != null) {
 			prepareForLocalUser();
 		}

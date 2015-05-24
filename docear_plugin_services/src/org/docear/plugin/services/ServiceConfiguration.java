@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.Collection;
 
 import org.docear.plugin.core.ALanguageController;
+import org.docear.plugin.core.DocearController;
 import org.docear.plugin.services.features.documentretrieval.view.DocumentDownloadObserver;
 import org.docear.plugin.services.features.io.DocearProxyAuthenticator;
 import org.freeplane.core.resources.OptionPanelController;
@@ -25,7 +26,15 @@ public class ServiceConfiguration extends ALanguageController {
 	}
 
 	private void addPropertiesToOptionPanel(ModeController modeController) {
-		final URL preferences = this.getClass().getResource("preferences.xml");
+		//TODO SERVICE
+		String preferencesFile;
+		if(DocearController.getController().isServiceAvailable()){
+			preferencesFile = "preferences.xml";
+		}
+		else{
+			preferencesFile = "preferences_without_services.xml";
+		}
+		final URL preferences = this.getClass().getResource(preferencesFile);
 		if (preferences == null)
 			throw new RuntimeException("cannot open preferences");
 		if(modeController instanceof MModeController) {

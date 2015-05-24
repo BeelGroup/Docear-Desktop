@@ -272,7 +272,8 @@ public class DocearUserController extends ADocearServiceFeature {
 	private void setupView(ModeController modeController) {
 		TreeView view = ((TreeView)WorkspaceController.getModeExtension(modeController).getView());
 		if(view != null) {
-			view.addToolBar(connectionBar, TreeView.BOTTOM_TOOLBAR_STACK);
+			//TODO SERVICE
+			//view.addToolBar(connectionBar, TreeView.BOTTOM_TOOLBAR_STACK);
 		}
 	}
 

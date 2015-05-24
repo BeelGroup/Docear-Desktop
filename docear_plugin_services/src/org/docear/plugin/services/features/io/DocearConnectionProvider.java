@@ -86,13 +86,13 @@ public class DocearConnectionProvider extends ADocearServiceFeature {
 			}
 		}
 		return is;
-	}
+	}	
 	
-	public URI getOnlineServiceUri() {
+	public URI getOnlineServiceUri() {		
 		if (System.getProperty("org.docear.localhost", "false").equals("true")) {
 			return URI.create("http://127.0.0.1:8080/");
-		}
-		return URI.create("https://api.docear.org/");
+		}	
+		return URI.create("https://api.docear.org/");		
 	}
 	
 	public void setDefaultHeader(String key, String value) {

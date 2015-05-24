@@ -30,6 +30,7 @@ import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileFilter;
 
+import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.ui.components.ComponentGroup;
 import org.docear.plugin.core.ui.wizard.AWizardPage;
 import org.docear.plugin.core.ui.wizard.WizardSession;
@@ -805,7 +806,13 @@ public class CreateProjectPagePanel extends AWizardPage {
 	 **********************************************************************************/
 	
 	public String getTitle() {
-		return TextUtils.getText("docear.setup.wizard.create.title");
+		//TODO Service
+		if(DocearController.getController().isServiceAvailable()){
+			return TextUtils.getText("docear.setup.wizard.create.title");
+		}
+		else{
+			return TextUtils.getText("docear.setup.wizard.create.title.noservice");
+		}
 	}
 
 	@Override
