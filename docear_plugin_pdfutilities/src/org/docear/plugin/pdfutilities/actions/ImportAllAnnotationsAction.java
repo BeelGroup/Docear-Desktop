@@ -49,10 +49,9 @@ public class ImportAllAnnotationsAction extends ImportAnnotationsAction {
 				while(warningHandler.retry()) {
 					try {
 		            	PdfAnnotationImporter importer = new PdfAnnotationImporter();            	
-						List<AnnotationModel> annotations = importer.importAnnotations(uri);
-						throw(new DocumentReadOnlyException());						
-//						MonitoringUtils.insertChildNodesFrom(annotations, selected.isLeft(), selected);
-//		                warningHandler.consume();
+						List<AnnotationModel> annotations = importer.importAnnotations(uri);										
+						MonitoringUtils.insertChildNodesFrom(annotations, selected.isLeft(), selected);
+		                warningHandler.consume();
 					} catch (DocumentReadOnlyException e) {
 						if(warningHandler.skip()) {
 							break;
