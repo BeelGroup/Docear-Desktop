@@ -142,9 +142,9 @@ public class ServiceController {
 		}
 	}
 	
-	public static <T extends ADocearServiceFeature> T getFeature(Class<T> featureKey) {
+	public static <T extends ADocearServiceFeature> T getFeature(Class<T> featureKey){
 		synchronized (ServiceController.getController().features) {
-			return (T) ServiceController.getController().features.get(featureKey);
+			return (T) ServiceController.getController().features.get(featureKey);			
 		}
 	}
 
@@ -166,11 +166,11 @@ public class ServiceController {
 		((OverlayViewport)Controller.getCurrentController().getMapViewManager().getViewport()).addOverlay(mapViewWarning);
 	}
 	
-	public URI getOnlineServiceUri() {
+	public URI getOnlineServiceUri(){
 		return getFeature(DocearConnectionProvider.class).getOnlineServiceUri();
 	}
 	
-	public URI getUserSettingsHome() {
+	public URI getUserSettingsHome(){
 		File home = new File(getFeature(DocearWorkspaceSettings.class).getSettingsPath());//new File(URIUtils.getFile(WorkspaceController.getApplicationSettingsHome()), "/users/"+getCurrentUser().getName());
 		return home.toURI();
 	}
@@ -179,7 +179,7 @@ public class ServiceController {
 		return DocearUserController.getActiveUser();
 	}
 
-	public static DocearConnectionProvider getConnectionController() {
+	public static DocearConnectionProvider getConnectionController(){
 		return getFeature(DocearConnectionProvider.class);
 	}	
 	

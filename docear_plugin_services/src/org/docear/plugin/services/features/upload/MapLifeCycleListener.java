@@ -16,7 +16,9 @@ public class MapLifeCycleListener implements IMapLifeCycleListener {
 	}
 
 	public void onSaved(MapModel map) {
-		ServiceController.getFeature(UploadController.class).addMapToUpload(map);
+		if(ServiceController.getFeature(UploadController.class) != null){
+			ServiceController.getFeature(UploadController.class).addMapToUpload(map);
+		}
 	}
 	
 	

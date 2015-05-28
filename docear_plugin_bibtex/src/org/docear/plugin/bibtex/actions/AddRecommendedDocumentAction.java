@@ -134,7 +134,9 @@ public class AddRecommendedDocumentAction extends AFreeplaneAction implements ID
 						@Override
 						public void run() {
 							addFileToLibrary(destinationFile);
-							ServiceController.getFeature(RecommendationsController.class).refreshDownloadsFolder();
+							if(ServiceController.getFeature(RecommendationsController.class) != null){
+								ServiceController.getFeature(RecommendationsController.class).refreshDownloadsFolder();
+							}
 						}
 					});
 				}

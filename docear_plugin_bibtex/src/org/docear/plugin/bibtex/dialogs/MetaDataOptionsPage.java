@@ -12,9 +12,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
+import org.docear.plugin.core.actions.OpenLogsFolderAction;
+import org.docear.plugin.core.ui.MultiLineActionLabel;
 import org.docear.plugin.core.ui.wizard.AWizardPage;
 import org.docear.plugin.core.ui.wizard.WizardSession;
 import org.freeplane.core.resources.ResourceController;
+import org.freeplane.core.util.LogUtils;
 import org.freeplane.core.util.TextUtils;
 import org.freeplane.features.mode.Controller;
 
@@ -22,7 +25,12 @@ import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
+
 import javax.swing.SwingConstants;
+
+import java.awt.FlowLayout;
+import java.net.URI;
+import java.awt.Component;
 
 public class MetaDataOptionsPage extends AWizardPage {
 	
@@ -102,7 +110,7 @@ public class MetaDataOptionsPage extends AWizardPage {
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,}));
 		
-		JLabel labelMaxResult = new JLabel(TextUtils.getText("docear.metadata.extraction.options.maxResult"));
+		MultiLineActionLabel labelMaxResult = new MultiLineActionLabel(TextUtils.getText("docear.metadata.extraction.options.maxResult"));
 		labelMaxResult.setBackground(Color.WHITE);
 		panel_1.add(labelMaxResult, "2, 2, left, default");
 		
@@ -111,8 +119,23 @@ public class MetaDataOptionsPage extends AWizardPage {
 		spinnerMaxResult.setBackground(Color.WHITE);
 		panel_1.add(spinnerMaxResult, "4, 2");
 		
-		JLabel labelLogging = new JLabel(TextUtils.getText("docear.metadata.extraction.options.logging"));
-		panel_1.add(labelLogging, "2, 4");
+		MultiLineActionLabel labelLogging = new MultiLineActionLabel(TextUtils.getText("docear.metadata.extraction.options.logging"));
+		labelLogging.setHorizontalAlignment(0);
+		labelLogging.setAlignmentX(Component.LEFT_ALIGNMENT);
+		labelLogging.setBackground(Color.WHITE);		
+		labelLogging.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {				
+				if("logging_source".equals(e.getActionCommand())) {
+					try {
+						new OpenLogsFolderAction().actionPerformed(null);						
+					}					
+					catch (Exception ex) {
+						LogUtils.warn(ex.getMessage());
+					}
+				}
+			}
+		});
+		panel_1.add(labelLogging, "2, 4, left, default");
 		
 		checkBoxLogging = new JCheckBox("");
 		checkBoxLogging.setBackground(Color.WHITE);
