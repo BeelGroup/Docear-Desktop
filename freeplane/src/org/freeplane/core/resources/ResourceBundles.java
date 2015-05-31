@@ -161,6 +161,14 @@ public class ResourceBundles extends ResourceBundle {
 		}
 		return resourceString;
 	}
+	
+	public String getSafeResourceString(final String key) {
+		final String resourceString = getResourceString(key, key);
+		if (resourceString == key) {
+			return null;
+		}
+		return resourceString;
+	}
 
 	public String getResourceString(final String key, final String resource) {
 		String value = languageResources.get(key);

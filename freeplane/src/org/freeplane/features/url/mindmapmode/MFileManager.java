@@ -678,6 +678,25 @@ public class MFileManager extends UrlManager implements IMapViewChangeListener {
 			return save(map, map.getFile());
 		}
 	}
+	
+	/**@deprecated -- use MMapIO*/
+	@Deprecated
+	public boolean close(final MapModel map) {
+		return close(map, false);
+	}
+	
+	public boolean close(final MapModel map, final boolean showHiddenFiles) {
+		if (map == null || map.isSaved()) {
+			return true;
+		}
+		if (map.getURL() == null || map.isReadOnly()) {
+			return saveAs(map, showHiddenFiles);
+		}
+		else {
+			return save(map, map.getFile());
+		}
+	}
+	
 
 	/**@deprecated -- use MMapIO*/
 	@Deprecated
