@@ -9,9 +9,11 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.Icon;
 
+import org.docear.addons.highlights.IHighlightsImporter;
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.logger.DocearLogEvent;
 import org.docear.plugin.core.ui.SwingWorkerDialog;
+import org.docear.plugin.pdfutilities.addons.DocearAddonController;
 import org.docear.plugin.pdfutilities.features.AnnotationID;
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
 import org.docear.plugin.pdfutilities.features.IAnnotation;
@@ -60,7 +62,12 @@ public abstract class AbstractMonitoringAction extends AFreeplaneAction {
 
 			SwingWorkerDialog workerDialog = new SwingWorkerDialog(Controller.getCurrentController().getViewController().getJFrame());
 			workerDialog.setHeadlineText(TextUtils.getText("AbstractMonitoringAction.0")); //$NON-NLS-1$
-			workerDialog.setSubHeadlineText(TextUtils.getText("AbstractMonitoringAction.1")); //$NON-NLS-1$
+			if(DocearAddonController.getController().hasPlugin(IHighlightsImporter.class)){
+				workerDialog.setSubHeadlineText(TextUtils.getText("AbstractMonitoringAction.1")); //$NON-NLS-1$
+			}
+			else{
+				workerDialog.setSubHeadlineText(TextUtils.getText("AbstractMonitoringAction.1.noAddon")); //$NON-NLS-1$
+			}
 			workerDialog.showDialog(thread);
 			workerDialog = null;
 			Map<AnnotationID, Collection<IAnnotation>> conflicts = thread.get();

@@ -14,6 +14,7 @@ import java.util.Map;
 
 import javax.swing.JOptionPane;
 
+import org.docear.addons.highlights.IHighlightsImporter;
 import org.docear.pdf.annotation.AnnotationExtractor;
 import org.docear.pdf.annotation.CommentAnnotation;
 import org.docear.pdf.annotation.HighlightAnnotation;
@@ -27,6 +28,7 @@ import org.docear.pdf.feature.UriDestination;
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.util.HtmlUtils;
 import org.docear.plugin.pdfutilities.PdfUtilitiesController;
+import org.docear.plugin.pdfutilities.addons.DocearAddonController;
 import org.docear.plugin.pdfutilities.features.AnnotationModel;
 import org.docear.plugin.pdfutilities.features.IAnnotation;
 import org.docear.plugin.pdfutilities.features.IAnnotation.AnnotationType;
@@ -187,7 +189,9 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 	
 	private void importAnnotations(PDDocument document, List<AnnotationModel> annotations) throws IOException {
 		boolean importComments = false;
-		boolean importHighlightedTexts = false;
+		boolean importHighlightedTexts = false;		
+		boolean importPopUpHighlighted = false;
+		boolean importPopUpOnly = false;
 		
 		if(this.importAll){
 			importComments = true;
@@ -196,23 +200,43 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		else{
 			importComments = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.IMPORT_COMMENTS_KEY);
 			importHighlightedTexts = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.IMPORT_HIGHLIGHTED_TEXTS_KEY);
-		}
-		AnnotationExtractor extractor = new AnnotationExtractor(document);
-		try {
-			extractor.setIgnoreComments(!importComments);
-			extractor.setIgnoreHighlights(!importHighlightedTexts);
-			
-			List<APDMetaObject> metaObjects = extractor.getMetaObjects();
-			this.modifiedDocument = extractor.isDocumentModified() || this.modifiedDocument;
-			for (APDMetaObject meta : metaObjects) {
-				AnnotationModel annotation = new AnnotationModel(meta.getUID());
-				transferMetaObject(document, meta, annotation);
-				annotations.add(annotation);
+		}		
+		importPopUpHighlighted = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.IMPORT_POP_UP_HIGHLIGHTED_KEY);
+		importPopUpOnly = DocearController.getPropertiesController().getBooleanProperty(PdfUtilitiesController.IMPORT_ONLY_POP_UP_KEY); 
+		if(DocearAddonController.getController().hasPlugin(IHighlightsImporter.class) && !importPopUpOnly){
+			IHighlightsImporter highlightsImporter = DocearAddonController.getController().getAddon(IHighlightsImporter.class);
+			try{				
+				List<APDMetaObject> metaObjects = highlightsImporter.getMetaObjects(document, importComments, importHighlightedTexts, importPopUpHighlighted);
+				this.modifiedDocument = highlightsImporter.isDocumentModified() || this.modifiedDocument;
+				for (APDMetaObject meta : metaObjects) {
+					AnnotationModel annotation = new AnnotationModel(meta.getUID());
+					transferMetaObject(document, meta, annotation);
+					annotations.add(annotation);
+				}
 			}
+			finally{
+				highlightsImporter.resetAll();
+			}
+			
 		}
-		finally {
-			extractor.resetAll();
-		}
+		else{
+			AnnotationExtractor extractor = new AnnotationExtractor(document);
+			try {
+				extractor.setIgnoreComments(!importComments);
+				extractor.setIgnoreHighlights(!importHighlightedTexts);
+				
+				List<APDMetaObject> metaObjects = extractor.getMetaObjects();
+				this.modifiedDocument = extractor.isDocumentModified() || this.modifiedDocument;
+				for (APDMetaObject meta : metaObjects) {
+					AnnotationModel annotation = new AnnotationModel(meta.getUID());
+					transferMetaObject(document, meta, annotation);
+					annotations.add(annotation);
+				}
+			}
+			finally {
+				extractor.resetAll();
+			}
+		}		
 	}
 	
 	private void importBookmarks(PDDocument document, List<AnnotationModel> annotations) throws IOException {
@@ -289,6 +313,9 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		}
 		if(HighlightAnnotation.HIGHTLIGHTED_TEXT.equals(metaType)) {
 			return AnnotationType.HIGHLIGHTED_TEXT;
+		}
+		if(metaType.toString().equalsIgnoreCase("TRUE_HIGHTLIGHTED_TEXT")){
+			return AnnotationType.TRUE_HIGHLIGHTED_TEXT;
 		}
 		return null;
 	}

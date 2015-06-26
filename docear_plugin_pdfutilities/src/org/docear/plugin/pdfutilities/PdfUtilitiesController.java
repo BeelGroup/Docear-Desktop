@@ -1,5 +1,6 @@
 package org.docear.plugin.pdfutilities;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.dnd.DropTarget;
@@ -46,16 +47,20 @@ import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeSelectionEvent;
 
 import org.apache.commons.io.FilenameUtils;
+import org.docear.addons.highlights.IHighlightsImporter;
 import org.docear.plugin.core.ALanguageController;
 import org.docear.plugin.core.CoreConfiguration;
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.event.DocearEvent;
 import org.docear.plugin.core.event.DocearEventType;
 import org.docear.plugin.core.event.IDocearEventListener;
+import org.docear.plugin.core.ui.LinkRadioButtonProperty;
+import org.docear.plugin.core.ui.LinkLabelProperty;
 import org.docear.plugin.core.util.CompareVersion;
 import org.docear.plugin.core.util.DirectoryFileFilter;
 import org.docear.plugin.core.util.MapUtils;
@@ -78,6 +83,7 @@ import org.docear.plugin.pdfutilities.actions.RemoveLinebreaksAction;
 import org.docear.plugin.pdfutilities.actions.ShowInstalledPdfReadersDialogAction;
 import org.docear.plugin.pdfutilities.actions.ShowPdfReaderDefinitionDialogAction;
 import org.docear.plugin.pdfutilities.actions.UpdateMonitoringFolderAction;
+import org.docear.plugin.pdfutilities.addons.DocearAddonController;
 import org.docear.plugin.pdfutilities.features.DocearNodeMonitoringExtensionController;
 import org.docear.plugin.pdfutilities.features.IAnnotation;
 import org.docear.plugin.pdfutilities.features.PDFReaderHandle;
@@ -107,10 +113,13 @@ import org.freeplane.core.resources.OptionPanelController.PropertyLoadListener;
 import org.freeplane.core.resources.ResourceController;
 import org.freeplane.core.resources.components.BooleanProperty;
 import org.freeplane.core.resources.components.IPropertyControl;
+import org.freeplane.core.resources.components.IPropertyControlCreator;
+import org.freeplane.core.resources.components.OptionPanelBuilder;
 import org.freeplane.core.resources.components.RadioButtonProperty;
 import org.freeplane.core.ui.AFreeplaneAction;
 import org.freeplane.core.ui.IMenuContributor;
 import org.freeplane.core.ui.IMouseListener;
+import org.freeplane.core.ui.IndexedTree;
 import org.freeplane.core.ui.MenuBuilder;
 import org.freeplane.core.ui.components.MultipleImage;
 import org.freeplane.core.ui.components.UITools;
@@ -182,6 +191,9 @@ public class PdfUtilitiesController extends ALanguageController {
 	public static final String ADD_SPACES_KEY = "docear_add_spaces"; //$NON-NLS-1$
 	public static final String REMOVE_DASHES_KEY = "docear_remove_dashes"; //$NON-NLS-1$
 	public static final String IMPORT_HIGHLIGHTED_TEXTS_KEY = "docear_import_highlighted_text"; //$NON-NLS-1$
+	public static final String IMPORT_ONLY_POP_UP_KEY = "docear_import_only_pop_up"; //$NON-NLS-1$
+	public static final String IMPORT_ONLY_HIGHLIGHTED_KEY = "docear_import_only_highlighted"; //$NON-NLS-1$
+	public static final String IMPORT_POP_UP_HIGHLIGHTED_KEY = "docear_import_pop_up_highlighted"; //$NON-NLS-1$
 	public static final String OPEN_ON_PAGE_WARNING_KEY = "OptionPanel.docear_open_on_page_reader_path_warning"; //$NON-NLS-1$
 	public static final String OPEN_ON_PAGE_ERROR_KEY = "OptionPanel.docear_open_on_page_reader_path_error"; //$NON-NLS-1$<https://sourceforge.net/apps/trac/docear/ticket/659
 
@@ -248,6 +260,7 @@ public class PdfUtilitiesController extends ALanguageController {
 		this.addMenuEntries(modeController);
 		
 		MapVersionInterpreter.addMapVersionInterpreter(new MapVersionInterpreter("SciploreMM", 1, "0.9.0\" software_name=\"SciPlore_", false, false, "SciploreMM", "http://sciplore.org", null, new MapConverter()));
+		
 	}
 
 	public static PdfUtilitiesController getController() {
@@ -1207,8 +1220,50 @@ public class PdfUtilitiesController extends ALanguageController {
 						}
 						changeLinebreakOptions(checked);
 					}
-				});
+				});				
 				changeLinebreakOptions(((BooleanProperty) opc.getPropertyControl(REMOVE_LINEBREAKS_KEY)).getBooleanValue());
+				
+				
+				((BooleanProperty) opc.getPropertyControl(IMPORT_HIGHLIGHTED_TEXTS_KEY))
+				.addPropertyChangeListener(new PropertyChangeListener() {
+					public void propertyChange(PropertyChangeEvent evt) {
+						((LinkRadioButtonProperty) opc.getPropertyControl(IMPORT_ONLY_POP_UP_KEY)).setEnabled(Boolean.parseBoolean(""+ evt.getNewValue()));
+						if(DocearAddonController.getController().hasPlugin(IHighlightsImporter.class)){
+							((LinkRadioButtonProperty) opc.getPropertyControl(IMPORT_ONLY_HIGHLIGHTED_KEY)).setEnabled(Boolean.parseBoolean(""+ evt.getNewValue()));
+							((LinkRadioButtonProperty) opc.getPropertyControl(IMPORT_POP_UP_HIGHLIGHTED_KEY)).setEnabled(Boolean.parseBoolean(""+ evt.getNewValue()));
+						}						
+					}
+				});	
+			
+				((LinkRadioButtonProperty) opc.getPropertyControl(IMPORT_ONLY_POP_UP_KEY))
+				.addPropertyChangeListener(new PropertyChangeListener() {					
+					public void propertyChange(PropertyChangeEvent evt) {
+						if (evt.getNewValue().equals("true")) {
+							((LinkRadioButtonProperty) opc.getPropertyControl(IMPORT_ONLY_HIGHLIGHTED_KEY)).setValue(false);
+							((LinkRadioButtonProperty) opc.getPropertyControl(IMPORT_POP_UP_HIGHLIGHTED_KEY)).setValue(false);
+						}						
+					}
+				});	
+				((LinkRadioButtonProperty) opc.getPropertyControl(IMPORT_ONLY_HIGHLIGHTED_KEY))
+				.addPropertyChangeListener(new PropertyChangeListener() {					
+					public void propertyChange(PropertyChangeEvent evt) {
+						if (evt.getNewValue().equals("true")) {
+							((LinkRadioButtonProperty) opc.getPropertyControl(IMPORT_ONLY_POP_UP_KEY)).setValue(false);
+							((LinkRadioButtonProperty) opc.getPropertyControl(IMPORT_POP_UP_HIGHLIGHTED_KEY)).setValue(false);
+						}						
+					}
+				});
+				((LinkRadioButtonProperty) opc.getPropertyControl(IMPORT_POP_UP_HIGHLIGHTED_KEY))
+				.addPropertyChangeListener(new PropertyChangeListener() {					
+					public void propertyChange(PropertyChangeEvent evt) {
+						if (evt.getNewValue().equals("true")) {
+							((LinkRadioButtonProperty) opc.getPropertyControl(IMPORT_ONLY_HIGHLIGHTED_KEY)).setValue(false);
+							((LinkRadioButtonProperty) opc.getPropertyControl(IMPORT_ONLY_POP_UP_KEY)).setValue(false);
+						}						
+					}
+				});
+				
+							
 			}
 			
 			private void changeLinebreakOptions(boolean checked) {
@@ -1274,6 +1329,11 @@ public class PdfUtilitiesController extends ALanguageController {
 		if (DocearController.getController().hasOutdatedConfigFiles()) {
 			ResourceController.getResourceController().setProperty("docear_auto_monitoring", false);
 		}
+		if(!DocearAddonController.getController().hasPlugin(IHighlightsImporter.class)){
+			DocearController.getPropertiesController().setProperty(IMPORT_ONLY_POP_UP_KEY, true);
+			DocearController.getPropertiesController().setProperty(IMPORT_ONLY_HIGHLIGHTED_KEY, false);
+			DocearController.getPropertiesController().setProperty(IMPORT_POP_UP_HIGHLIGHTED_KEY, false);
+		}
 	}
 	
 	public String buildCommandString(File reader) {
@@ -1314,8 +1374,59 @@ public class PdfUtilitiesController extends ALanguageController {
 	private void addPropertiesToOptionPanel(ModeController modeController) {
 		final URL preferences = this.getClass().getResource("preferences.xml"); //$NON-NLS-1$
 		if (preferences == null) throw new RuntimeException("cannot open docear.pdf_utilities plugin preferences"); //$NON-NLS-1$
-
-		((MModeController)modeController).getOptionPanelBuilder().load(preferences);
+		
+		OptionPanelBuilder builder = ((MModeController)modeController).getOptionPanelBuilder();
+		builder.load(preferences);		
+		builder.addCreator("pdf_management/annotations_import", new IPropertyControlCreator() {
+			
+			public IPropertyControl createControl() {				
+				return new LinkLabelProperty(TextUtils.getText("OptionPanel.docear_highlight_addon_text"));			
+			}
+		}, IndexedTree.AS_CHILD);		
+		builder.addCreator("pdf_management/annotations_import", new IPropertyControlCreator() {
+			
+			public IPropertyControl createControl() {						
+				LinkRadioButtonProperty prop = new LinkRadioButtonProperty(IMPORT_ONLY_POP_UP_KEY, TextUtils.getText("OptionPanel.docear_import_pop_up"));				
+				prop.setEnabled(true);
+				return prop;
+			}
+		}, IndexedTree.AS_CHILD);
+		if(DocearAddonController.getController().hasPlugin(IHighlightsImporter.class)){
+			builder.addCreator("pdf_management/annotations_import", new IPropertyControlCreator() {
+				
+				public IPropertyControl createControl() {						
+					LinkRadioButtonProperty prop = new LinkRadioButtonProperty(IMPORT_ONLY_HIGHLIGHTED_KEY, TextUtils.getText("OptionPanel.docear_import_highlight_activated"));				
+					prop.setEnabled(true);
+					return prop;
+				}
+			}, IndexedTree.AS_CHILD);
+			builder.addCreator("pdf_management/annotations_import", new IPropertyControlCreator() {
+				
+				public IPropertyControl createControl() {						
+					LinkRadioButtonProperty prop = new LinkRadioButtonProperty(IMPORT_POP_UP_HIGHLIGHTED_KEY, TextUtils.getText("OptionPanel.docear_import_pop_up_highlight_activated"));				
+					prop.setEnabled(true);
+					return prop;
+				}
+			}, IndexedTree.AS_CHILD);
+		}
+		else{
+			builder.addCreator("pdf_management/annotations_import", new IPropertyControlCreator() {
+				
+				public IPropertyControl createControl() {						
+					LinkRadioButtonProperty prop = new LinkRadioButtonProperty(IMPORT_ONLY_HIGHLIGHTED_KEY, TextUtils.getText("OptionPanel.docear_import_highlight_deactivated"));				
+					prop.setEnabled(false);
+					return prop;
+				}
+			}, IndexedTree.AS_CHILD);
+			builder.addCreator("pdf_management/annotations_import", new IPropertyControlCreator() {
+				
+				public IPropertyControl createControl() {						
+					LinkRadioButtonProperty prop = new LinkRadioButtonProperty(IMPORT_POP_UP_HIGHLIGHTED_KEY, TextUtils.getText("OptionPanel.docear_import_pop_up_highlight_deactivated"));				
+					prop.setEnabled(false);
+					return prop;
+				}
+			}, IndexedTree.AS_CHILD);
+		}		
 	}
 
 	public void importRegistrySettings(URL regResource) throws IOException {

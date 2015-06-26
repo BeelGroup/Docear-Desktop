@@ -19,6 +19,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.docear.addons.highlights.IHighlightsImporter;
 import org.docear.plugin.core.DocearController;
 import org.docear.plugin.core.event.DocearEvent;
 import org.docear.plugin.core.event.DocearEventType;
@@ -32,6 +33,7 @@ import org.docear.plugin.core.util.NodeUtilities;
 import org.docear.plugin.core.workspace.AVirtualDirectory;
 import org.docear.plugin.core.workspace.model.DocearWorkspaceProject;
 import org.docear.plugin.pdfutilities.actions.AbstractMonitoringAction;
+import org.docear.plugin.pdfutilities.addons.DocearAddonController;
 import org.docear.plugin.pdfutilities.features.DocearNodeMonitoringExtension.DocearExtensionKey;
 import org.docear.plugin.pdfutilities.features.IAnnotation.AnnotationType;
 import org.docear.plugin.pdfutilities.map.AnnotationController;
@@ -79,9 +81,11 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 	private boolean canceledDuringPasting;
 	private NodeModel currentTarget;
 	private long time;
+	boolean highlightAddon;
 
 	public MonitoringWorker(List<NodeModel> targets) {
 		this.targets = targets;
+		highlightAddon = DocearAddonController.getController().hasPlugin(IHighlightsImporter.class);
 		time = System.currentTimeMillis();
 	}
 
@@ -100,7 +104,7 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 		});
 		AnnotationConverter.SetConversionProcessHandler(batchHandler);
 		try {
-			// Controller.getCurrentController().getViewController().getMapView().setVisible(false);
+			// Controller.getCurrentController().getViewController().getMapView().setVisible(false);			
 			for (final NodeModel target : targets) {
 				currentTarget = target;
 				WorkspaceMapModelExtension ext = WorkspaceController.getMapModelExtension(target.getMap());
@@ -120,8 +124,14 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 	
 				if (canceled()) return conflicts;
 				String textWithoutHTML = HtmlUtils.extractText(target.getText());
-				fireStatusUpdate(SwingWorkerDialog.SET_SUB_HEADLINE, null,
-						TextUtils.getText("AbstractMonitoringAction.6") + textWithoutHTML + TextUtils.getText("AbstractMonitoringAction.7")); //$NON-NLS-1$ //$NON-NLS-2$
+				if(highlightAddon){
+					fireStatusUpdate(SwingWorkerDialog.SET_SUB_HEADLINE, null,
+							TextUtils.getText("AbstractMonitoringAction.6") + textWithoutHTML + TextUtils.getText("AbstractMonitoringAction.7")); //$NON-NLS-1$ //$NON-NLS-2$
+				}
+				else{
+					fireStatusUpdate(SwingWorkerDialog.SET_SUB_HEADLINE, null,
+							TextUtils.getText("AbstractMonitoringAction.6.noAddon") + textWithoutHTML + TextUtils.getText("AbstractMonitoringAction.7.noAddon")); //$NON-NLS-1$ //$NON-NLS-2$
+				}
 				fireStatusUpdate(SwingWorkerDialog.SET_PROGRESS_BAR_INDETERMINATE, null, null);
 	
 				if (!cleanUpCollections()) continue;
@@ -563,12 +573,13 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 			}
 			else {
 				AnnotationModel importedAnnotation = importedFiles.get(id);
+				if (importedAnnotation.getAnnotationType().equals(AnnotationType.TRUE_HIGHLIGHTED_TEXT)) continue;
 				for (NodeModel node : nodeIndex.get(id)) {
 					AnnotationNodeModel oldAnnotation = AnnotationController.getAnnotationNodeModel(node);
 					if (oldAnnotation != null) {
 						if (oldAnnotation.getAnnotationType() == null) continue;
 						if (oldAnnotation.getAnnotationType().equals(AnnotationType.PDF_FILE)) continue;
-						if (oldAnnotation.getAnnotationType().equals(AnnotationType.FILE)) continue;
+						if (oldAnnotation.getAnnotationType().equals(AnnotationType.FILE)) continue;						
 						String oldAnnotationWithoutHTML = HtmlUtils.extractText(oldAnnotation.getTitle());
 						String oldAnnotationTitle = oldAnnotation.getTitle().replace("\r", "").replace("\n", "").replace("\t", "")/*.replace(" ", "")*/;
 						String importedAnnotationWithoutHTML = HtmlUtils.extractText(importedAnnotation.getTitle());

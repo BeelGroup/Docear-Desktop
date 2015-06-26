@@ -105,7 +105,7 @@ public class AnnotationController implements IExtension{
 				String importedAnnotationTitle = importedAnnotation.getTitle().replace("\r", "").replace("\n", "").replace("\t", "").replace(" ", "");
 				String oldAnnotationTitle = oldAnnotation.getTitle().replace("\r", "").replace("\n", "").replace("\t", "").replace(" ", "");
 				oldAnnotationWithoutHTML = oldAnnotationWithoutHTML.replace("\r", "").replace("\n", "").replace("\t", "").replace(" ", "");
-				if(!importedAnnotationTitle.equals(oldAnnotationTitle) && !importedAnnotationTitle.equals(oldAnnotationWithoutHTML) && !oldAnnotation.getAnnotationType().equals(AnnotationType.PDF_FILE)){
+				if(!importedAnnotationTitle.equals(oldAnnotationTitle) && !importedAnnotationTitle.equals(oldAnnotationWithoutHTML) && !oldAnnotation.getAnnotationType().equals(AnnotationType.PDF_FILE) && !importedAnnotation.getAnnotationType().equals(AnnotationType.TRUE_HIGHLIGHTED_TEXT)){
 					importedAnnotation.setConflicted(true);					
 				}
 				
