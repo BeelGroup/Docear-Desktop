@@ -26,7 +26,8 @@ public class LinkLabel extends JEditorPane {
 		this.setText(html);
 		this.setEditable(false);
 		this.setOpaque(true);
-		this.setBackgroundColor();		
+		this.setBackgroundColor();	
+		this.getInsets().set(0, 0, 0, 0);
 		this.addHyperlinkListener(new HyperlinkListener() {
 			
 			@Override
@@ -45,22 +46,25 @@ public class LinkLabel extends JEditorPane {
 	}
 	
 	private void setBackgroundColor(){
-		Color col = UIManager.getColor("Label.background");
+		final Color col = UIManager.getColor("Label.background");
 		if(col != null){
-			UIDefaults defaults = new UIDefaults();
-			defaults.put("EditorPane[Enabled].backgroundPainter", col);
-			this.putClientProperty("Nimbus.Overrides", defaults);
-			this.putClientProperty("Nimbus.Overrides.InheritDefaults", true);
-			this.setBackground(col);
-			Object painter = UIManager.get("EditorPane[Enabled].backgroundPainter");
-			defaults.put("EditorPane[Enabled].backgroundPainter", painter);
+			if(UIManager.getLookAndFeel().getName().contentEquals("Nimbus")){
+				UIDefaults defaults = new UIDefaults();
+				defaults.put("EditorPane[Enabled].backgroundPainter", col);
+				this.putClientProperty("Nimbus.Overrides", defaults);
+				this.putClientProperty("Nimbus.Overrides.InheritDefaults", true);
+				this.setBackground(col);			
+			}
+			else{
+				this.setBackground(col);
+			}
 		}
 	}	
 
 	@Override
 	public void setEnabled(boolean enabled) {
 		if(enabled){
-			Color col = UIManager.getColor("Label.foreground");			
+			Color col = UIManager.getColor("Label.foreground");	
 			if(col == null) {
 				col = Color.BLACK;
 			}

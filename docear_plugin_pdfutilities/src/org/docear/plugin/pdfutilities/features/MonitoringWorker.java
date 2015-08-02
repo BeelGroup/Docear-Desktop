@@ -89,7 +89,7 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 		time = System.currentTimeMillis();
 	}
 
-	protected Map<AnnotationID, Collection<IAnnotation>> doInBackground() throws Exception {
+	protected Map<AnnotationID, Collection<IAnnotation>> doInBackground() throws Exception {	
 		DocearController.getController().getSemaphoreController().lock("MindmapUpdate");
 		NodeView.setModifyModelWithoutRepaint(true);
 		MapView.setNoRepaint(true);
@@ -189,7 +189,7 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 		finally {
 			closeAll();
 			AnnotationConverter.SetConversionProcessHandler(oldHandler);
-			batchHandler.close();
+			batchHandler.close();			
 		}
 	}
 	
@@ -327,7 +327,7 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 		}
 		time = System.currentTimeMillis() - time;
 		LogUtils.info("monitoring execution time: " + (time / 1000));
-
+		System.out.println("monitoring execution time: " + (time / 1000));
 	}
 
 	private boolean canceled() throws InterruptedException {
@@ -632,6 +632,10 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 								break;
 							}
 							warningHandler.showDialog(file);
+						} catch(StackOverflowError e){
+							System.out.println(uri);
+							System.out.println(e);
+							LogUtils.warn(e);
 						}
 					}
 				}

@@ -1,6 +1,8 @@
 package org.docear.plugin.pdfutilities.addons;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.base.PluginManager;
@@ -14,12 +16,14 @@ public class DocearAddonController {
 	private static DocearAddonController controller;
 	
 	private PluginManager manager;
+	private Set<Class<? extends Plugin>> plugins;
 	
 	public DocearAddonController(){
 		String userDir = ResourceController.getResourceController().getFreeplaneUserDirectory();	
 		File addonsDir = new File(userDir + File.separatorChar + "addons");	    
 		manager = PluginManagerFactory.createPluginManager();		
-		manager.addPluginsFrom(addonsDir.toURI(), new OptionReportAfter());			
+		manager.addPluginsFrom(addonsDir.toURI(), new OptionReportAfter());
+		plugins = new HashSet<Class<? extends Plugin>>();
 	}
 	
 	public <P extends Plugin> P getAddon(final Class<P> requestedPlugin){
@@ -27,7 +31,18 @@ public class DocearAddonController {
 	}
 	
 	public boolean hasPlugin(final Class<? extends Plugin> requestedPlugin){
-		return manager.getPlugin(requestedPlugin) != null;
+		if(plugins.contains(requestedPlugin)){
+			return true;
+		}
+		else{
+			if(manager.getPlugin(requestedPlugin) != null){
+				plugins.add(requestedPlugin);
+				return true;
+			}
+			else{
+				return false;
+			}
+		}		
 	}
 	
 	public static DocearAddonController getController(){

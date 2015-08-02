@@ -7,9 +7,9 @@
 	<classpathentry kind="lib" path="lib/jpod/isrt.jar" sourcepath="C:/Users/Anwender/Downloads/jPod.5.3.20100629.zip"/>
 	<classpathentry kind="lib" path="lib/jpod/jbig2.jar"/>
 	<classpathentry kind="lib" path="lib/jpod/jPod.jar" sourcepath="/JPod"/>
+	<classpathentry kind="lib" path="lib/docear-realhighlights-interface.jar"/>
 	<classpathentry kind="src" path="resources"/>
 	<classpathentry kind="lib" path="lib/docear-pdf-inspector.jar" sourcepath="/Docear&apos;s PDF Inspector"/>
-	<classpathentry kind="lib" path="lib/docear-highlights-interface-lib-0.0.1.jar" sourcepath="/docear-highlights-lib/src"/>
 	<classpathentry kind="lib" path="lib/jspf.core-1.0.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

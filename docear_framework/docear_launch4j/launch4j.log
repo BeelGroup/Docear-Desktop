@@ -1,0 +1,23 @@
+
+
+CmdLine:	C:\Users\Anwender\Documents\GitHub\Desktop\docear_framework\docear_launch4j\docear.exe --l4j-debug
+WOW64:		yes
+Check launcher:	 (n/a)
+64-bit search:	SOFTWARE\JavaSoft\Java Runtime Environment...
+32-bit search:	SOFTWARE\JavaSoft\Java Runtime Environment...
+Match:		SOFTWARE\JavaSoft\Java Runtime Environment\1.8
+Match:		SOFTWARE\JavaSoft\Java Runtime Environment\1.8.0_40
+Match:		SOFTWARE\JavaSoft\Java Runtime Environment\1.8.0_45
+64-bit search:	SOFTWARE\JavaSoft\Java Development Kit...
+32-bit search:	SOFTWARE\JavaSoft\Java Development Kit...
+Ignore:		SOFTWARE\JavaSoft\Java Development Kit\1.5
+Ignore:		SOFTWARE\JavaSoft\Java Development Kit\1.5.0_22
+Ignore:		SOFTWARE\JavaSoft\Java Development Kit\1.8
+Ignore:		SOFTWARE\JavaSoft\Java Development Kit\1.8.0_45
+Check launcher:	C:\Program Files (x86)\Java\jre1.8.0_45\bin\javaw.exe (OK)
+Heap -Xmx:	512 MB / 0%, Free: 2656 MB, Heap size: 512 MB
+Substitute:	APPDATA = C:\Users\Anwender\AppData\Roaming
+Launcher:	C:\Program Files (x86)\Java\jre1.8.0_45\bin\javaw.exe
+Launcher args:	-Xmx512m -Dorg.freeplane.userfpdir="C:\Users\Anwender\AppData\Roaming\Docear" -jar "C:\Users\Anwender\Documents\GitHub\Desktop\docear_framework\docear_launch4j\freeplanelauncher.jar"
+Args length:	182/32768 chars
+Exit code:	1

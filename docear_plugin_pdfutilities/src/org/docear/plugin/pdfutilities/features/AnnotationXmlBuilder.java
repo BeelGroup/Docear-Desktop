@@ -24,6 +24,7 @@ public class AnnotationXmlBuilder implements IElementDOMHandler, IExtensionEleme
 	
 	private static final String ANNOTATION_PAGE_XML_TAG = "page"; //$NON-NLS-1$
 	private static final String ANNOTATION_TYPE_XML_TAG = "type"; //$NON-NLS-1$
+	private static final String ANNOTATION_HIGHLIGHT_TYPE_XML_TAG = "highlight_type"; //$NON-NLS-1$
 	private static final String ANNOTATION_OBJECT_NUMBER_XML_TAG = "object_number"; //$NON-NLS-1$
 	private static final String ANNOTATION_OBJECT_ID_XML_TAG = "object_id"; //$NON-NLS-1$
 	private static final String DOCUMENT_HASH_XML_TAG = "document_hash"; //$NON-NLS-1$
@@ -54,7 +55,9 @@ public class AnnotationXmlBuilder implements IElementDOMHandler, IExtensionEleme
 			
 			public void setAttribute(Object node, String value) {
 				final AnnotationModel annotation = (AnnotationModel) node;
-				annotation.setAnnotationType(AnnotationModel.AnnotationType.valueOf(value));				
+				if(annotation.getAnnotationType() == null || !annotation.getAnnotationType().equals(AnnotationType.TRUE_HIGHLIGHTED_TEXT)){
+					annotation.setAnnotationType(AnnotationModel.AnnotationType.valueOf(value));
+				}
 			}
 			
 		});
@@ -81,6 +84,15 @@ public class AnnotationXmlBuilder implements IElementDOMHandler, IExtensionEleme
 				} catch(NumberFormatException e){
 					LogUtils.warn("Could not Parse Pdf Annotation Object Number."); //$NON-NLS-1$
 				}
+			}
+			
+		});
+		
+		reader.addAttributeHandler(PDF_ANNOTATION_XML_TAG, ANNOTATION_HIGHLIGHT_TYPE_XML_TAG, new IAttributeHandler() {
+			
+			public void setAttribute(Object node, String value) {
+				final AnnotationModel annotation = (AnnotationModel) node;				
+				annotation.setAnnotationType(AnnotationModel.AnnotationType.valueOf(value));				
 			}
 			
 		});
@@ -179,7 +191,13 @@ public class AnnotationXmlBuilder implements IElementDOMHandler, IExtensionEleme
 		
 		final AnnotationType annotationType = model.getAnnotationType();
 		if (annotationType != null) {
-			pdfAnnotation.setAttribute(ANNOTATION_TYPE_XML_TAG, annotationType.toString());
+			if(annotationType.equals(AnnotationType.TRUE_HIGHLIGHTED_TEXT)){
+				pdfAnnotation.setAttribute(ANNOTATION_HIGHLIGHT_TYPE_XML_TAG, annotationType.toString());
+				pdfAnnotation.setAttribute(ANNOTATION_TYPE_XML_TAG, AnnotationType.HIGHLIGHTED_TEXT.toString());
+			}
+			else{
+				pdfAnnotation.setAttribute(ANNOTATION_TYPE_XML_TAG, annotationType.toString());
+			}
 		}
 		
 		final Integer page = model.getPage();

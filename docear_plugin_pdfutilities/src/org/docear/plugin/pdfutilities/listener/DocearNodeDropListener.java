@@ -103,22 +103,22 @@ public class DocearNodeDropListener extends MNodeDropListener {
 	    		}
 	            
 	            Iterator<NodeModel> iter = nodes.iterator();
-            	while (iter.hasNext()) {
-            		pasteFileList(fileList, iter.next(), isLeft);
+            	while (iter.hasNext()) {            		
+            		pasteFileList(fileList, iter.next(), isLeft);            		
             	}
 	            
 	            dtde.dropComplete(true);
 	            return;		
 	        }
-		 } catch (final Exception e) {
+		 } catch (final Exception e) {			 
 			LogUtils.severe("DocearNodeDropListener Drop exception:", e); //$NON-NLS-1$
 			dtde.dropComplete(false);
 			return;
 		 }
-		finally {
+		finally {		
 			modelExtension.resetModificationSession();
-		}
-		 super.drop(dtde);
+		}		
+		super.drop(dtde);
 	}
 	
 	public static List<File> textURIListToFileList(String data) {
@@ -168,11 +168,11 @@ public class DocearNodeDropListener extends MNodeDropListener {
 		            	List<AnnotationModel> annotations = new ArrayList<AnnotationModel>();
 		            	try{
 		            		while(warningHandler.retry()) {
-		    					try {
-				            		PdfAnnotationImporter importer = new PdfAnnotationImporter();
-				            		annotations = importer.importAnnotations(file.toURI());
+		    					try {		    						
+				            		PdfAnnotationImporter importer = new PdfAnnotationImporter();				            		
+				            		annotations = importer.importAnnotations(file.toURI());				            		
 					                warningHandler.consume();
-		    					} catch (DocumentReadOnlyException e) {
+		    					} catch (DocumentReadOnlyException e) {		    						
 		    						if(warningHandler.skip()) {
 		    							annotations = null;
 		    							break;
@@ -185,7 +185,7 @@ public class DocearNodeDropListener extends MNodeDropListener {
 		            		LogUtils.warn("Exception during import on file: " + file.getName(), e); //$NON-NLS-1$
 		            	} catch(IOException e) {
 		            		LogUtils.warn("Exception during import on file: " + file.getName(), e); //$NON-NLS-1$
-		            	}
+		            	} 
 		            	
 		            	if(annotations != null){
 		            		final List<AnnotationModel> finalAnnotations = annotations;

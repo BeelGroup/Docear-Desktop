@@ -75,21 +75,20 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 	}	
 	
 	public List<AnnotationModel> importAnnotations(URI uri) throws IOException, DocumentReadOnlyException {
-		List<AnnotationModel> annotations = new ArrayList<AnnotationModel>();
-		
+		List<AnnotationModel> annotations = new ArrayList<AnnotationModel>();		
 		this.currentFile = uri;
 		PDDocument document = getPDDocument(uri);
-		if(document == null){
+		if(document == null){				
 			return annotations;
 		}
 		this.modifiedDocument = false;
-		try{
-			this.importAnnotations(document, annotations);
-			this.importBookmarks(document, annotations);
-		} catch(Exception e){
+		try{			
+			this.importAnnotations(document, annotations);			
+			this.importBookmarks(document, annotations);			
+		} catch(Exception e){			
 			LogUtils.warn(e);
 			return annotations;
-		} finally {
+		} finally {			
 			if(document != null){
 				if(this.modifiedDocument && !document.isReadOnly()) {
 					document.save();
@@ -97,7 +96,7 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 				document.close();
 				document = null;
 			}
-		}
+		}		
 		return annotations;
 	}
 	
@@ -173,7 +172,7 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		File file = URIUtils.getFile(absoluteUri);
 		if(uri == null || file == null || !file.exists() || !PdfFileFilter.accept(uri)){
 			return null;
-		}
+		}		
 		
 		PDDocument document = ADocumentCreator.getPDDocument(file);
 		

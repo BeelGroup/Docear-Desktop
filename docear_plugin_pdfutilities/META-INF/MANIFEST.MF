@@ -27,7 +27,8 @@ Bundle-ClassPath: .,
  lib/jpod/isrt.jar,
  lib/jpod/jbig2.jar,
  lib/docear-pdf-inspector.jar,
- lib/docear-highlights-interface-lib-0.0.1.jar
+ lib/docear-realhighlights-interface.jar,
+ lib/jspf.core-1.0.2.jar
 Export-Package: org.docear.plugin.pdfutilities,
  org.docear.plugin.pdfutilities.features,
  org.docear.plugin.pdfutilities.listener,
