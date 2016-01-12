@@ -632,11 +632,7 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 								break;
 							}
 							warningHandler.showDialog(file);
-						} catch(StackOverflowError e){
-							System.out.println(uri);
-							System.out.println(e);
-							LogUtils.warn(e);
-						}
+						} 
 					}
 				}
 				else {
