@@ -24,6 +24,84 @@ public abstract class _JabRefPlugin extends Plugin {
 
 	static Log log = LogFactory.getLog(_JabRefPlugin.class);
 
+	public List<EntryFetcherExtension> getEntryFetcherExtensions(){
+        ExtensionPoint extPoint = getManager().getRegistry().getExtensionPoint(getId(), "EntryFetcher");
+        List<EntryFetcherExtension> result = new ArrayList<EntryFetcherExtension>();
+        for (Extension ext : extPoint.getConnectedExtensions()) {
+			try {
+				result.add(new EntryFetcherExtension(getManager().getPlugin(
+						ext.getDeclaringPluginDescriptor().getId()), ext));
+			} catch (PluginLifecycleException e) {
+				log.error("Failed to activate plug-in " + ext.getDeclaringPluginDescriptor().getId(), e);
+			}
+		}
+        return result;
+    }
+
+    public static class EntryFetcherExtension extends RuntimeExtension {
+        public EntryFetcherExtension(Plugin declaringPlugin, Extension wrapped){
+            super(declaringPlugin, wrapped);
+        }
+                
+	     
+              /**
+         * @return A singleton instance of the class parameter or null if the class could not be found!
+         */
+        public net.sf.jabref.imports.EntryFetcher getEntryFetcher(){
+          return (net.sf.jabref.imports.EntryFetcher)getClassParameter("entryFetcher");
+        }
+  
+  	     
+              public String getName(){
+            return getStringParameter("name");
+        }
+  
+  	     
+              public String getDescription(){
+            return getStringParameter("description");
+        }
+  
+      }
+
+	public List<ExportFormatProviderExtension> getExportFormatProviderExtensions(){
+        ExtensionPoint extPoint = getManager().getRegistry().getExtensionPoint(getId(), "ExportFormatProvider");
+        List<ExportFormatProviderExtension> result = new ArrayList<ExportFormatProviderExtension>();
+        for (Extension ext : extPoint.getConnectedExtensions()) {
+			try {
+				result.add(new ExportFormatProviderExtension(getManager().getPlugin(
+						ext.getDeclaringPluginDescriptor().getId()), ext));
+			} catch (PluginLifecycleException e) {
+				log.error("Failed to activate plug-in " + ext.getDeclaringPluginDescriptor().getId(), e);
+			}
+		}
+        return result;
+    }
+
+    public static class ExportFormatProviderExtension extends RuntimeExtension {
+        public ExportFormatProviderExtension(Plugin declaringPlugin, Extension wrapped){
+            super(declaringPlugin, wrapped);
+        }
+                
+	     
+              /**
+         * @return A singleton instance of the class parameter or null if the class could not be found!
+         */
+        public net.sf.jabref.export.IExportFormatProvider getFormatProvider(){
+          return (net.sf.jabref.export.IExportFormatProvider)getClassParameter("formatProvider");
+        }
+  
+  	     
+              public String getName(){
+            return getStringParameter("name");
+        }
+  
+  	     
+              public String getDescription(){
+            return getStringParameter("description");
+        }
+  
+      }
+
 	public List<ExportFormatTemplateExtension> getExportFormatTemplateExtensions(){
         ExtensionPoint extPoint = getManager().getRegistry().getExtensionPoint(getId(), "ExportFormatTemplate");
         List<ExportFormatTemplateExtension> result = new ArrayList<ExportFormatTemplateExtension>();
@@ -75,6 +153,84 @@ public abstract class _JabRefPlugin extends Plugin {
   	     
               public String getEncoding(){
             return getStringParameter("encoding");
+        }
+  
+      }
+
+	public List<PushToApplicationExtension> getPushToApplicationExtensions(){
+        ExtensionPoint extPoint = getManager().getRegistry().getExtensionPoint(getId(), "PushToApplication");
+        List<PushToApplicationExtension> result = new ArrayList<PushToApplicationExtension>();
+        for (Extension ext : extPoint.getConnectedExtensions()) {
+			try {
+				result.add(new PushToApplicationExtension(getManager().getPlugin(
+						ext.getDeclaringPluginDescriptor().getId()), ext));
+			} catch (PluginLifecycleException e) {
+				log.error("Failed to activate plug-in " + ext.getDeclaringPluginDescriptor().getId(), e);
+			}
+		}
+        return result;
+    }
+
+    public static class PushToApplicationExtension extends RuntimeExtension {
+        public PushToApplicationExtension(Plugin declaringPlugin, Extension wrapped){
+            super(declaringPlugin, wrapped);
+        }
+                
+	     
+              /**
+         * @return A singleton instance of the class parameter or null if the class could not be found!
+         */
+        public net.sf.jabref.external.PushToApplication getPushToApp(){
+          return (net.sf.jabref.external.PushToApplication)getClassParameter("pushToApp");
+        }
+  
+  	     
+              public String getName(){
+            return getStringParameter("name");
+        }
+  
+  	     
+              public String getDescription(){
+            return getStringParameter("description");
+        }
+  
+      }
+
+	public List<LayoutFormatterExtension> getLayoutFormatterExtensions(){
+        ExtensionPoint extPoint = getManager().getRegistry().getExtensionPoint(getId(), "LayoutFormatter");
+        List<LayoutFormatterExtension> result = new ArrayList<LayoutFormatterExtension>();
+        for (Extension ext : extPoint.getConnectedExtensions()) {
+			try {
+				result.add(new LayoutFormatterExtension(getManager().getPlugin(
+						ext.getDeclaringPluginDescriptor().getId()), ext));
+			} catch (PluginLifecycleException e) {
+				log.error("Failed to activate plug-in " + ext.getDeclaringPluginDescriptor().getId(), e);
+			}
+		}
+        return result;
+    }
+
+    public static class LayoutFormatterExtension extends RuntimeExtension {
+        public LayoutFormatterExtension(Plugin declaringPlugin, Extension wrapped){
+            super(declaringPlugin, wrapped);
+        }
+                
+	     
+              /**
+         * @return A singleton instance of the class parameter or null if the class could not be found!
+         */
+        public net.sf.jabref.export.layout.LayoutFormatter getLayoutFormatter(){
+          return (net.sf.jabref.export.layout.LayoutFormatter)getClassParameter("layoutFormatter");
+        }
+  
+  	     
+              public String getDescription(){
+            return getStringParameter("description");
+        }
+  
+  	     
+              public String getName(){
+            return getStringParameter("name");
         }
   
       }
@@ -158,162 +314,6 @@ public abstract class _JabRefPlugin extends Plugin {
   	     
               public String getDescription(){
             return getStringParameter("description");
-        }
-  
-      }
-
-	public List<EntryFetcherExtension> getEntryFetcherExtensions(){
-        ExtensionPoint extPoint = getManager().getRegistry().getExtensionPoint(getId(), "EntryFetcher");
-        List<EntryFetcherExtension> result = new ArrayList<EntryFetcherExtension>();
-        for (Extension ext : extPoint.getConnectedExtensions()) {
-			try {
-				result.add(new EntryFetcherExtension(getManager().getPlugin(
-						ext.getDeclaringPluginDescriptor().getId()), ext));
-			} catch (PluginLifecycleException e) {
-				log.error("Failed to activate plug-in " + ext.getDeclaringPluginDescriptor().getId(), e);
-			}
-		}
-        return result;
-    }
-
-    public static class EntryFetcherExtension extends RuntimeExtension {
-        public EntryFetcherExtension(Plugin declaringPlugin, Extension wrapped){
-            super(declaringPlugin, wrapped);
-        }
-                
-	     
-              /**
-         * @return A singleton instance of the class parameter or null if the class could not be found!
-         */
-        public net.sf.jabref.imports.EntryFetcher getEntryFetcher(){
-          return (net.sf.jabref.imports.EntryFetcher)getClassParameter("entryFetcher");
-        }
-  
-  	     
-              public String getName(){
-            return getStringParameter("name");
-        }
-  
-  	     
-              public String getDescription(){
-            return getStringParameter("description");
-        }
-  
-      }
-
-	public List<ExportFormatProviderExtension> getExportFormatProviderExtensions(){
-        ExtensionPoint extPoint = getManager().getRegistry().getExtensionPoint(getId(), "ExportFormatProvider");
-        List<ExportFormatProviderExtension> result = new ArrayList<ExportFormatProviderExtension>();
-        for (Extension ext : extPoint.getConnectedExtensions()) {
-			try {
-				result.add(new ExportFormatProviderExtension(getManager().getPlugin(
-						ext.getDeclaringPluginDescriptor().getId()), ext));
-			} catch (PluginLifecycleException e) {
-				log.error("Failed to activate plug-in " + ext.getDeclaringPluginDescriptor().getId(), e);
-			}
-		}
-        return result;
-    }
-
-    public static class ExportFormatProviderExtension extends RuntimeExtension {
-        public ExportFormatProviderExtension(Plugin declaringPlugin, Extension wrapped){
-            super(declaringPlugin, wrapped);
-        }
-                
-	     
-              /**
-         * @return A singleton instance of the class parameter or null if the class could not be found!
-         */
-        public net.sf.jabref.export.IExportFormatProvider getFormatProvider(){
-          return (net.sf.jabref.export.IExportFormatProvider)getClassParameter("formatProvider");
-        }
-  
-  	     
-              public String getName(){
-            return getStringParameter("name");
-        }
-  
-  	     
-              public String getDescription(){
-            return getStringParameter("description");
-        }
-  
-      }
-
-	public List<PushToApplicationExtension> getPushToApplicationExtensions(){
-        ExtensionPoint extPoint = getManager().getRegistry().getExtensionPoint(getId(), "PushToApplication");
-        List<PushToApplicationExtension> result = new ArrayList<PushToApplicationExtension>();
-        for (Extension ext : extPoint.getConnectedExtensions()) {
-			try {
-				result.add(new PushToApplicationExtension(getManager().getPlugin(
-						ext.getDeclaringPluginDescriptor().getId()), ext));
-			} catch (PluginLifecycleException e) {
-				log.error("Failed to activate plug-in " + ext.getDeclaringPluginDescriptor().getId(), e);
-			}
-		}
-        return result;
-    }
-
-    public static class PushToApplicationExtension extends RuntimeExtension {
-        public PushToApplicationExtension(Plugin declaringPlugin, Extension wrapped){
-            super(declaringPlugin, wrapped);
-        }
-                
-	     
-              /**
-         * @return A singleton instance of the class parameter or null if the class could not be found!
-         */
-        public net.sf.jabref.external.PushToApplication getPushToApp(){
-          return (net.sf.jabref.external.PushToApplication)getClassParameter("pushToApp");
-        }
-  
-  	     
-              public String getName(){
-            return getStringParameter("name");
-        }
-  
-  	     
-              public String getDescription(){
-            return getStringParameter("description");
-        }
-  
-      }
-
-	public List<LayoutFormatterExtension> getLayoutFormatterExtensions(){
-        ExtensionPoint extPoint = getManager().getRegistry().getExtensionPoint(getId(), "LayoutFormatter");
-        List<LayoutFormatterExtension> result = new ArrayList<LayoutFormatterExtension>();
-        for (Extension ext : extPoint.getConnectedExtensions()) {
-			try {
-				result.add(new LayoutFormatterExtension(getManager().getPlugin(
-						ext.getDeclaringPluginDescriptor().getId()), ext));
-			} catch (PluginLifecycleException e) {
-				log.error("Failed to activate plug-in " + ext.getDeclaringPluginDescriptor().getId(), e);
-			}
-		}
-        return result;
-    }
-
-    public static class LayoutFormatterExtension extends RuntimeExtension {
-        public LayoutFormatterExtension(Plugin declaringPlugin, Extension wrapped){
-            super(declaringPlugin, wrapped);
-        }
-                
-	     
-              /**
-         * @return A singleton instance of the class parameter or null if the class could not be found!
-         */
-        public net.sf.jabref.export.layout.LayoutFormatter getLayoutFormatter(){
-          return (net.sf.jabref.export.layout.LayoutFormatter)getClassParameter("layoutFormatter");
-        }
-  
-  	     
-              public String getDescription(){
-            return getStringParameter("description");
-        }
-  
-  	     
-              public String getName(){
-            return getStringParameter("name");
         }
   
       }
