@@ -19,6 +19,8 @@ posts. They contain new features which are to be integrated in our official vers
 If you want to test our experimental releases you are highly welcome. Please tell us about any bugs and 
 issues you can find.
 
+Binaries can be found in a dropbox folder: https://www.dropbox.com/sh/qd0eangvw85ni9n/AADuDiRwUMdVoXn37NEgkIHMa?dl=0 
+
 # Code Documentation
 Docear is based on the mind mapping software Freeplane. Like Freeplane it consists of severall OSGi 
 plugins which offer their functionality to the core components “freeplane” and “docear_plugin_core”. 
