@@ -638,7 +638,6 @@ public abstract class JabRefCommons {
 		if(oldEntry == null) {
 			selected.setId(Util.createNeutralId());
 			wrapper.getBasePanel().getDatabase().insertEntry(selected);
-			showInReferenceManager(selected, false);
 			DroppedFileHandler dfh = new DroppedFileHandler(wrapper.getJabrefFrame(), wrapper.getBasePanel());
 			
 			if(file != null) {
@@ -646,6 +645,7 @@ public abstract class JabRefCommons {
 				dfh.linkPdfToEntry(file.getPath(), selected);
 				LabelPatternUtil.makeLabel(Globals.prefs.getKeyPattern(), wrapper.getDatabase(), selected);
 			}
+			showInReferenceManager(selected, false);
 		}
 		else {
 			JabRefCommons.updateEntryInDatabase(file, selected, oldEntry);

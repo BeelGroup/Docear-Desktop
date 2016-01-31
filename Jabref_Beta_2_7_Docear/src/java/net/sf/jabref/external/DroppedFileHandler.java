@@ -430,7 +430,6 @@ public class DroppedFileHandler {
     private void doLink(BibtexEntry entry, ExternalFileType fileType, String filename,
         boolean avoidDuplicate, NamedCompound edits) {
 
-
         String oldValue = entry.getField(GUIGlobals.FILE_FIELD);
         FileListTableModel tm = new FileListTableModel();
         if (oldValue != null)
@@ -442,7 +441,7 @@ public class DroppedFileHandler {
             String fileDir = panel.metaData().getFileDirectory(GUIGlobals.FILE_FIELD);
             String absFilename = (!(new File(filename).isAbsolute()) && (fileDir != null)) ?
                     new File(fileDir, filename).getAbsolutePath() : filename;
-            System.out.println("absFilename: "+absFilename);
+            System.out.println("absFilename: "+absFilename+"\n");
             
             for (int i=0; i<tm.getRowCount(); i++) {
                 FileListEntry flEntry = tm.getEntry(i);
