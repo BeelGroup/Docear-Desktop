@@ -26,5 +26,6 @@
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.0.7-bin.jar"/>
 	<classpathentry kind="lib" path="lib/PDFBox-0.7.3-dev-reduced.jar"/>
 	<classpathentry kind="lib" path="lib/spin.jar"/>
+	<classpathentry kind="lib" path="lib/saxon9he.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
