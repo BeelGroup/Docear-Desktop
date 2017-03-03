@@ -227,13 +227,15 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 		fireStatusUpdate(SwingWorkerDialog.SET_PROGRESS_BAR_DETERMINATE, null, null);
 		fireStatusUpdate(SwingWorkerDialog.PROGRESS_BAR_TEXT, null, TextUtils.getText("AbstractMonitoringAction.11")); //$NON-NLS-1$
 		int count = 0;
+		int progressForStep1 = 30;
+		int progressForStep2 = 100 - progressForStep1;
 		
 		// Step 1: collect all files that have to be checked.
 		Map<File, List<NodeModel>> filesWithAnnotations = new HashMap<File, List<NodeModel>>();
 		for (AnnotationID id : nodeIndex.keySet()) {
 			if (canceled()) return false;
 			count++;
-			fireProgressUpdate(100 * count / nodeIndex.keySet().size());
+			fireProgressUpdate(progressForStep1 * count / nodeIndex.keySet().size());
 			if (importedFiles.containsKey(id)) continue;
 			for (NodeModel node : nodeIndex.get(id)) {
 				if (!isMonitoringNodeChild(target, node)) continue;
@@ -253,8 +255,12 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 			}
 		}
 		
+		count = 0;
+		int numberOfFiles = filesWithAnnotations.keySet().size();
 		// Step 2: Open each file only once, and check for orphaned annotations
 		for (File file : filesWithAnnotations.keySet()) {
+			count++;
+			fireProgressUpdate(progressForStep1 + progressForStep2 * count / numberOfFiles);
 			List<NodeModel> nodes = filesWithAnnotations.get(file);
 			
 			if (file != null && !file.exists()) {
