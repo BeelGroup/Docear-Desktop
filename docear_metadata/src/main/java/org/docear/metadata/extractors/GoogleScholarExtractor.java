@@ -106,7 +106,7 @@ public class GoogleScholarExtractor extends HtmlDataExtractor {
 				}
 			}
 			
-			Iterator<Element> bibtexLinks = doc.select("a.gs_nta").iterator();
+			Iterator<Element> bibtexLinks = doc.select("a[href*=usercontent]").iterator();
 			if(!bibtexLinks.hasNext()){
 				System.out.println();
 			}
@@ -115,27 +115,37 @@ public class GoogleScholarExtractor extends HtmlDataExtractor {
 					Element bibtexLink = bibtexLinks.next();
 					try{
 						logger.info("trying bibtex link: " + bibtexLink.attr("href"));
-						System.out.println(bibtexLink.attr("href"));
 						URL url = new URL(new URL(BaseURL), bibtexLink.attr("href"));
 						response = getConnection(url.toString())						           
 						           .cookies(cookies)						           
 						           .execute();
-						String bibtex = response.body();					
-						result.add(new ScholarMetaData(i, bibtex, query));					
+						if(this.debuglogging){
+							//logger.info("bibtex " + i + " Response URL: "  + response.url().toString());
+							//logger.info("bibtex " + i + " Response headers: "  + response.headers().toString());
+							logger.info("bibtex " + i + " Response body: "  + response.body().toString());
+							//logger.info("bibtex " + i + " Response cookies: "  + response.cookies().toString());
+						}
+						String bibtex = response.body();
+						bibtex = bibtex.trim(); // remove leading and trailing whitespace
+						if(bibtex.startsWith("@") && bibtex.endsWith("}")){
+							result.add(new ScholarMetaData(i, bibtex, query));
+						} else {
+							logger.info("link resolved to non-bibtex content: " + bibtex + "\nignoring.");
+						}
 					} catch (IOException e) {
 						System.out.println(e.getMessage());
 						logger.info("Exception: " + e.getMessage(), e);
 					}
 				}
-			}			
-		}catch(HttpStatusException e){
+			}
+		} catch(HttpStatusException e) {
 			logger.info(e.getMessage(), e);
 			if(e.getStatusCode() == 503){
 				if(handleCaptchaRequest(e)) return search(query);
 			}
 			else if(e.getStatusCode() == 403 && !triedNewCookie){
 				if(requestNewCookie(cookieFileName) != null) return search(query);
-			}			
+			}		
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
 			logger.info(e.getMessage(), e);
