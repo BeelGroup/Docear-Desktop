@@ -69,7 +69,7 @@ public class GoogleScholarExtractor extends HtmlDataExtractor {
 				logger.info("1. Response cookies: "  + response.cookies().toString());
 			}
 			Document doc = response.parse();
-			
+
 			//File input = new File("C:\\Users\\Anwender\\Desktop\\Neues Textdokument (2).html");
 			//Document doc = Jsoup.parse(input, "UTF-8", BaseURL);
 			
@@ -114,7 +114,8 @@ public class GoogleScholarExtractor extends HtmlDataExtractor {
 				if(bibtexLinks.hasNext()){
 					Element bibtexLink = bibtexLinks.next();
 					try{
-						logger.info(bibtexLink.attr("href"));
+						logger.info("trying bibtex link: " + bibtexLink.attr("href"));
+						System.out.println(bibtexLink.attr("href"));
 						URL url = new URL(new URL(BaseURL), bibtexLink.attr("href"));
 						response = getConnection(url.toString())						           
 						           .cookies(cookies)						           
@@ -123,7 +124,7 @@ public class GoogleScholarExtractor extends HtmlDataExtractor {
 						result.add(new ScholarMetaData(i, bibtex, query));					
 					} catch (IOException e) {
 						System.out.println(e.getMessage());
-						logger.info(e.getMessage(), e);
+						logger.info("Exception: " + e.getMessage(), e);
 					}
 				}
 			}			
@@ -148,8 +149,6 @@ public class GoogleScholarExtractor extends HtmlDataExtractor {
 		}
 		return result;
 	}
-	
-	
 	
 	private String handleReCaptchaRequest(String captchaUrl){
 		try{	
