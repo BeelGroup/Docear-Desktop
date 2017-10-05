@@ -227,10 +227,15 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 		fireStatusUpdate(SwingWorkerDialog.SET_PROGRESS_BAR_DETERMINATE, null, null);
 		fireStatusUpdate(SwingWorkerDialog.PROGRESS_BAR_TEXT, null, TextUtils.getText("AbstractMonitoringAction.11")); //$NON-NLS-1$
 		int count = 0;
+		int progressForStep1 = 30;
+		int progressForStep2 = 100 - progressForStep1;
+		
+		// Step 1: collect all files that have to be checked.
+		Map<File, List<NodeModel>> filesWithAnnotations = new HashMap<File, List<NodeModel>>();
 		for (AnnotationID id : nodeIndex.keySet()) {
 			if (canceled()) return false;
 			count++;
-			fireProgressUpdate(100 * count / nodeIndex.keySet().size());
+			fireProgressUpdate(progressForStep1 * count / nodeIndex.keySet().size());
 			if (importedFiles.containsKey(id)) continue;
 			for (NodeModel node : nodeIndex.get(id)) {
 				if (!isMonitoringNodeChild(target, node)) continue;
@@ -239,39 +244,61 @@ public class MonitoringWorker extends SwingWorker<Map<AnnotationID, Collection<I
 				if (annotation.getAnnotationType() == null) continue;
 				if (annotation.getAnnotationType().equals(AnnotationType.FILE)) continue;
 				if (orphanedNodes.contains(node)) continue;
-				try {
-					File file = URIUtils.getAbsoluteFile(URIUtils.getAbsoluteURI(node));
-					if (file != null && !file.exists()) {
-						orphanedNodes.add(node);
-						continue;
-					}
-					else if (file != null) {
-						File monitoringDirectory = MonitoringUtils.getPdfDirFromMonitoringNode(target);
-						boolean ok = false;
-						if(monitoringDirectory instanceof AVirtualDirectory) {
-							for(File repo : monitoringDirectory.listFiles()) {
-								if (file.getPath().startsWith(repo.getPath())) {
-									ok = true;
-								}
-							}
-						}
-						else if (file.getPath().startsWith(monitoringDirectory.getPath())) {
+				
+				File file = URIUtils.getAbsoluteFile(URIUtils.getAbsoluteURI(node));
+				List<NodeModel> annotationsForFile = filesWithAnnotations.get(file);
+				if (annotationsForFile == null) {
+					annotationsForFile = new ArrayList<NodeModel>();
+					filesWithAnnotations.put(file, annotationsForFile);
+				}
+				annotationsForFile.add(node);
+			}
+		}
+		
+		count = 0;
+		int numberOfFiles = filesWithAnnotations.keySet().size();
+		// Step 2: Open each file only once, and check for orphaned annotations
+		for (File file : filesWithAnnotations.keySet()) {
+			count++;
+			fireProgressUpdate(progressForStep1 + progressForStep2 * count / numberOfFiles);
+			List<NodeModel> nodes = filesWithAnnotations.get(file);
+			
+			if (file != null && !file.exists()) {
+				orphanedNodes.addAll(nodes);
+				continue;
+			}
+			else if (file != null) {
+				File monitoringDirectory = MonitoringUtils.getPdfDirFromMonitoringNode(target);
+				boolean ok = false;
+				if(monitoringDirectory instanceof AVirtualDirectory) {
+					for(File repo : monitoringDirectory.listFiles()) {
+						if (file.getPath().startsWith(repo.getPath())) {
 							ok = true;
 						}
-						if(ok) {
-							AnnotationModel annoation = new PdfAnnotationImporter().searchAnnotation(URIUtils.getAbsoluteURI(node), node);
-							if (annoation == null) {
+					}
+				}
+				else if (file.getPath().startsWith(monitoringDirectory.getPath())) {
+					ok = true;
+				}
+				if(ok) {
+					PdfAnnotationImporter importer = new PdfAnnotationImporter();
+					importer.setImportAll(true);
+					try {
+						List<AnnotationModel> annotationsInFile = importer.importAnnotations(file.toURI());
+						for (NodeModel node : nodes) {
+							AnnotationModel foundAnnotation =
+									importer.searchAnnotation(annotationsInFile, node);
+							if (foundAnnotation == null) {
 								orphanedNodes.add(node);
 							}
 						}
+					} catch (Exception e) {
+						LogUtils.info("Exception during import file: " + file.toURI()); //$NON-NLS-1$
 					}
-
-				}
-				catch (Exception e) {
-					LogUtils.info("Exception during import file: " + URIUtils.getAbsoluteURI(node)); //$NON-NLS-1$
 				}
 			}
 		}
+		
 		return true;
 	}
 

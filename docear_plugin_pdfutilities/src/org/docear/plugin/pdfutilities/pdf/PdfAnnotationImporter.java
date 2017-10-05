@@ -496,8 +496,7 @@ public class PdfAnnotationImporter implements IAnnotationImporter {
 		}
 	}
 	
-	
-	private AnnotationModel searchAnnotation(List<AnnotationModel> annotations, NodeModel node) {
+	public AnnotationModel searchAnnotation(List<AnnotationModel> annotations, NodeModel node) {
 		for(AnnotationModel annotation : annotations){           
 			AnnotationModel extensionModel = AnnotationController.getModel(node, false);
 			if(extensionModel == null){
