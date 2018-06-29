@@ -61,6 +61,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
 
 import org.freeplane.core.io.IElementHandler;
 import org.freeplane.core.io.ReadManager;
@@ -889,7 +890,7 @@ public class MenuBuilder extends UIBuilder implements IKeyStrokeProcessor {
 		if (userObject instanceof JMenuItem && !(userObject instanceof JMenu)) {
 			setAccelerator((Node) node, null);
 		}
-		for (final Enumeration<Object> children = node.children(); children.hasMoreElements();) {
+		for (final Enumeration<TreeNode> children = node.children(); children.hasMoreElements();) {
 			removeAccelerators((DefaultMutableTreeNode) children.nextElement());
 		}
 	}
