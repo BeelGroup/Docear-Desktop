@@ -1,14 +1,17 @@
-<project name="GlobalFreeplane" default="dist" basedir=".">
+<project name="Docear" default="dist" basedir=".">
 
 	<target name="build">
-		<ant antfile="freeplane_framework/ant/build.xml"  target="build"
-			inheritAll="false" />
+	        <ant antfile="Jabref_Beta_2_7_Docear/build.xml" target="build" inheritAll="false" />
+	        <ant antfile="freeplane/ant/build.xml" target="build" inheritAll="false" />
+	        <ant antfile="docear_framework/ant/build.xml" target="build" inheritAll="false" />
 	</target>
 
 	<target name="dist">
-		<ant antfile="freeplane_framework/ant/build.xml"  target="dist"
-			inheritAll="false" />
+	        <ant antfile="Jabref_Beta_2_7_Docear/build.xml" target="dist" inheritAll="false" />
+	        <ant antfile="freeplane/ant/build.xml" target="dist" inheritAll="false" />
+	        <ant antfile="docear_framework/ant/build.xml" target="dist" inheritAll="false" />
 	</target>
+
 	<target name="format-translation">
 		<ant antfile="JOrtho_0.4_freeplane/build.xml"  target="format-translation"
 			inheritAll="false" />
@@ -17,14 +20,13 @@
 	</target>
 
 	<target name="clean">
-		<ant antfile="freeplane_framework/ant/build.xml"  target="clean"
-			inheritAll="false" />
+	        <ant antfile="Jabref_Beta_2_7_Docear/build.xml" target="clean" inheritAll="false" />
+	        <ant antfile="freeplane/ant/build.xml" target="clean" inheritAll="false" />
+	        <ant antfile="docear_framework/ant/build.xml" target="clean" inheritAll="false" />
 
-	<ant antfile="freeplane_ant/build.xml" target="clean"
-			inheritAll="false" />
+		<ant antfile="freeplane_ant/build.xml" target="clean" inheritAll="false" />
 
-	<ant antfile="JOrtho_0.4_freeplane/build.xml" target="clean"
-		inheritAll="false" />
+		<ant antfile="JOrtho_0.4_freeplane/build.xml" target="clean" inheritAll="false" />
 	</target>
 
 	<target name="cleandist" depends="clean, dist">
